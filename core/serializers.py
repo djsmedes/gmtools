@@ -2,9 +2,10 @@ from rest_framework import serializers
 
 
 class LiteSerializer(serializers.HyperlinkedModelSerializer):
-    str = serializers.SerializerMethodField(
-        method_name=str
-    )
+    def get_str(self, val):
+        return str(val)
+
+    str = serializers.SerializerMethodField()
 
     class Meta:
         model = None
