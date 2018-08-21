@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'rules.apps.AutodiscoverRulesConfig',
 
     # local apps
+    'core.apps.CoreConfig',
     'accounts.apps.AccountsConfig',
 ]
 
