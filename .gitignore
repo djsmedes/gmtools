@@ -1,0 +1,13 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# may contain sensitive info
+.env
+
+# Django stuff
+staticfiles/
+
+# PyCharm stuff
+.idea/
