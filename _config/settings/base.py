@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'rules.apps.AutodiscoverRulesConfig',
 
     # local apps
+    'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [
