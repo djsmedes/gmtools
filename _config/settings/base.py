@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     # third part apps
     'rest_framework',
     'rules.apps.AutodiscoverRulesConfig',
+    'authtools',
 
     # local apps
     'core.apps.CoreConfig',
@@ -137,11 +138,6 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
 
-# Extra places for collectstatic to find static files.
-STATICFILES_DIRS = [
-    BASE_DIR / '_assets/static'
-]
-
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -160,3 +156,5 @@ AUTHENTICATION_BACKENDS = [
     'rules.permissions.ObjectPermissionBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+AUTH_USER_MODEL = 'accounts.User'
