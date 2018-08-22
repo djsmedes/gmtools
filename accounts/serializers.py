@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from core.serializers import LiteSerializer
 from .models import User
 
 
@@ -12,8 +11,3 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             'url': {'lookup_field': 'uuid'}
         }
-
-
-class UserLiteSerializer(LiteSerializer):
-    class Meta(LiteSerializer.Meta):
-        model = User
