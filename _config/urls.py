@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
+from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 
 from accounts.viewsets import UserViewSet
@@ -37,9 +38,11 @@ router.register(
 
 urlpatterns = [
     path('api/', include(router.urls)),
+    path('', TemplateView.as_view(template_name='base.html'), name='home')
 ]
 
 if settings.DEBUG:
     urlpatterns += [
+        path('', include('accounts.urls')),
         path('admin/', admin.site.urls),
     ]

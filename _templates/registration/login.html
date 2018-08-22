@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    {{ form.username }}
+    {{ form.password }}
+    <button type="submit">Sign in</button>
+    <input type="hidden" name="next" value="{{ next }}" />
+  </form>
+
+  Don't have an account yet? You can <a href="{% url 'signup' %}?next={{ next }}">sign up here</a>.
+{% endblock content %}

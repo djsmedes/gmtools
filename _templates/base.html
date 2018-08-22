@@ -1,0 +1,27 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{% block title %}GMTOOLS{% endblock title %}</title>
+  <meta charset="utf-8">
+{#  <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}">#}
+  {% block stylesheets %}
+{#    <link rel="stylesheet" href="{% static 'css/app.css' %}">#}
+  {% endblock stylesheets %}
+</head>
+
+<body>
+
+{% block content %}
+{% endblock content %}
+
+<!-- load scripts -->
+{% block javascripts %}
+{#<script src="{% static 'js/vendor.js' %}"></script>#}
+{#<script src="{% static 'js/app.js' %}"></script>#}
+{% endblock javascripts %}
+
+</body>
+
+</html>
