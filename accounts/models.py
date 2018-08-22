@@ -9,6 +9,14 @@ class User(AbstractEmailUser):
     first_name = models.CharField(max_length=31, null=True, blank=True)
     last_name = models.CharField(max_length=31, null=True, blank=True)
 
+    current_campaign = models.ForeignKey(
+        'plot.Campaign',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='current_users',
+    )
+
     class Meta:
         ordering = ['last_name', 'first_name']
 
