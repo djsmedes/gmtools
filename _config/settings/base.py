@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     # local apps
     'core.apps.CoreConfig',
     'accounts.apps.AccountsConfig',
+    'plot.apps.PlotConfig',
 ]
 
 MIDDLEWARE = [
