@@ -19,6 +19,7 @@ from django.conf import settings
 from rest_framework.routers import DefaultRouter
 
 from accounts.viewsets import UserViewSet
+from plot.viewsets import CampaignViewSet
 
 router = DefaultRouter()
 
@@ -26,6 +27,11 @@ router.register(
     prefix='user',
     viewset=UserViewSet,
     base_name='user'
+)
+router.register(
+    prefix='campaign',
+    viewset=CampaignViewSet,
+    base_name='campaign'
 )
 
 
