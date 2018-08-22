@@ -14,4 +14,5 @@ class Campaign(TenantModel):
     player_set = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='campaigns_player_of',
+        blank=True
     )

@@ -14,5 +14,10 @@ class TenantModel(models.Model):
         related_name="%(app_label)s_%(class)s_owned_set",
         editable=False
     )
-    uuid = models.UUIDField(db_index=True, default=uuid4, unique=True)
+    uuid = models.UUIDField(
+        db_index=True,
+        default=uuid4,
+        unique=True,
+        editable=False
+    )
     objects = TenantModelManager()
