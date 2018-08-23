@@ -72,7 +72,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / '_templates'
+            BASE_DIR / '_templates',
+            BASE_DIR / '_assets/dist',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -140,6 +141,11 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
+
+# additional static files
+STATICFILES_DIRS = [
+    BASE_DIR / '_assets/dist/static'
+]
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
