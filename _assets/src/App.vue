@@ -32,11 +32,30 @@
       </div>
     </nav>
 
+    <div v-if="user">
+      {{ user.email }}
+    </div>
+
     <div class="container">
       <router-view/>
     </div>
   </div>
 </template>
+
+<script>
+  export default {
+    computed: {
+      user() {
+        return this.$store.user;
+      }
+    },
+    created() {
+      this.$store.dispatch({
+        type: 'get_user',
+      })
+    }
+  }
+</script>
 
 <style lang="scss">
   @import "scss/custom";

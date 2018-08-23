@@ -2,8 +2,28 @@ from django.contrib.auth import login
 from django.contrib.auth.views import FormView
 from django.urls import reverse
 from authtools.forms import UserCreationForm
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import User
+
+
+class UserView(APIView):
+
+    def get(self, request, format=None):
+        if request.user.is_authenticated:
+            content = {
+                'repr': str(request.user),
+                'first_name': request.user.first_name,
+                'last_name': request.user.last_name,
+                'email': request.user.email
+            }
+        else:
+            content = {
+                'detail': 'No logged in user.'
+            }
+        return Response(content)
+
 
 class SignupView(FormView):
     template_name = 'registration/signup.html'

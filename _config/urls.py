@@ -21,6 +21,7 @@ from rest_framework.routers import DefaultRouter
 
 from accounts.viewsets import UserViewSet
 from plot.viewsets import CampaignViewSet
+from accounts.views import UserView
 
 router = DefaultRouter()
 
@@ -38,6 +39,7 @@ router.register(
 
 urlpatterns = [
     path('api/', include(router.urls)),
+    path('api/request-user/', UserView.as_view(), name='request-user-detail'),
     path('', TemplateView.as_view(template_name='index.html'), name='home')
 ]
 
