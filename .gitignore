@@ -11,3 +11,6 @@ staticfiles/
 
 # PyCharm stuff
 .idea/
+
+# npm stuff
+node_modules/
