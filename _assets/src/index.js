@@ -1,10 +1,17 @@
 import Vue from 'vue/dist/vue';
-import TestComponent from './TestComponent.vue'
+
+function component() {
+  let element = document.createElement('div');
+  element.id = 'app';
+  return element;
+}
+
+document.body.appendChild(component());
 
 const app = new Vue({
   el: '#app',
   data: {
     message: 'Hello Vue!'
   },
-  components: {TestComponent}
+  template: '<div>{{ message }}</div>'
 });
