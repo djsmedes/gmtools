@@ -1,0 +1,15 @@
+$theme-colors: (
+        "purple": #7c00b3,
+        "brown": #573511,
+        "orange": #e48a30,
+        "pink": #d84fc4,
+);
+
+$body-bg: #f4f4f4;
+
+@import "~bootstrap/scss/bootstrap.scss";
+
+p.hanging-indent {
+  text-indent: -2em;
+  padding-left: 2em;
+}
