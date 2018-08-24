@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import api from './api'
 
+// todo - remove this if there is a better way
 if (typeof debug !== 'undefined') {
   Vue.config.devtools = true;
 }
