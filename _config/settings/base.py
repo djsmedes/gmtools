@@ -44,8 +44,9 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 
-    # third part apps
+    # third party apps
     'rest_framework',
+    'rest_framework.authtoken',
     'rules.apps.AutodiscoverRulesConfig',
     'authtools',
 
@@ -156,6 +157,10 @@ LOGIN_REDIRECT_URL = '/'
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ]
 }
 
