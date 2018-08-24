@@ -51,8 +51,15 @@
     },
     created() {
       this.$store.dispatch({
-        type: 'get_user',
-      })
+        type: 'get_token',
+        username: 'gm@example.com',
+        password: 'paradiddle0708'
+      }).then(() => {
+        this.$store.dispatch({
+          type: 'get_user',
+        });
+      });
+
     }
   }
 </script>

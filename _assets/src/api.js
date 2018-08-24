@@ -1,11 +1,22 @@
 import axios from 'axios'
 
 export default {
+  get_token(context, params) {
+    return axios.post(
+        'http://localhost:8000/api/token-auth/', {
+          username: params.username,
+          password: params.password
+        }
+    ).then(r => {
+      axios.defaults.headers.common['Authorization'] = 'Token ' + r.data.token;
+    }).catch(e => {
+      console.log(e)
+    })
+  },
   get_user(context, params) {
     return axios.get(
         'http://localhost:8000/api/request-user/'
     ).then(r => {
-      console.log(r.data);
       context.commit({
         type: 'set_user',
         object: r.data
