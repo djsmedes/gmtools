@@ -18,6 +18,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
+from rest_framework.authtoken.views import ObtainAuthToken
 
 from accounts.viewsets import UserViewSet
 from plot.viewsets import CampaignViewSet
@@ -39,6 +40,7 @@ router.register(
 
 urlpatterns = [
     path('api/', include(router.urls)),
+    path('api/token-auth/', ObtainAuthToken.as_view(), name='token-auth'),
     path('api/request-user/', UserView.as_view(), name='request-user-detail'),
     path('', TemplateView.as_view(template_name='index.html'), name='home')
 ]
