@@ -1,4 +1,4 @@
-[[source]]
+ [[source]]
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
@@ -17,3 +17,4 @@ rules = "*"
 django-authtools = "*"
 
 [dev-packages]
+django-cors-headers = "*"
