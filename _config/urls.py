@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
@@ -42,11 +42,14 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/token-auth/', ObtainAuthToken.as_view(), name='token-auth'),
     path('api/request-user/', UserView.as_view(), name='request-user-detail'),
-    path('', TemplateView.as_view(template_name='index.html'), name='home')
+    path('', include('accounts.urls')),
+    path('', TemplateView.as_view(template_name='index.html'), name='home'),
+    # have a fallback that matches anything, send it to vue-router
+    re_path('.*', TemplateView.as_view(template_name='index.html')),
 ]
 
 if settings.DEBUG:
     urlpatterns += [
-        path('', include('accounts.urls')),
+
         path('admin/', admin.site.urls),
     ]

@@ -1,1 +1,24 @@
 {% extends 'index.html' %}
+
+{% block _content %}
+  <nav id="nav" class="navbar navbar-expand-lg navbar-dark bg-dark mb-2">
+      <a href="{% url 'home' %}" class="navbar-brand">GMTOOLS</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a href="/about/" class="nav-link">About</a>
+          </li>
+        </ul>
+      </div>
+  </nav>
+
+  <div class="container">
+    {% block content %}
+    {% endblock content %}
+  </div>
+{% endblock _content %}
