@@ -1,9 +1,12 @@
 import axios from 'axios'
 
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+
 export default {
   get_token(context, params) {
     return axios.post(
-        'http://localhost:8000/api/token-auth/', {
+        '/api/token-auth/', {
           username: params.username,
           password: params.password
         }
@@ -15,7 +18,7 @@ export default {
   },
   get_user(context, params) {
     return axios.get(
-        'http://localhost:8000/api/request-user/'
+        '/api/request-user/'
     ).then(r => {
       context.commit({
         type: 'set_user',

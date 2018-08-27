@@ -92,7 +92,7 @@ WSGI_APPLICATION = '_config.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/2.0/ref/settings/#databases
+# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -104,7 +104,7 @@ DATABASES['default'].update(dj_database_url.config(conn_max_age=500))
 
 
 # Password validation
-# https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -123,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/2.0/topics/i18n/
+# https://docs.djangoproject.com/en/2.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -131,9 +131,9 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-
-# Allow all host headers
-ALLOWED_HOSTS = ['*']
+# Don't allow any host headers; in DEBUG mode localhost and others will be allowed
+# https://docs.djangoproject.com/en/2.1/ref/settings/#allowed-hosts
+ALLOWED_HOSTS = []
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -165,7 +165,7 @@ REST_FRAMEWORK = {
 }
 
 # authentication backends
-# https://docs.djangoproject.com/en/2.0/topics/auth/customizing/#specifying-authentication-backends
+# https://docs.djangoproject.com/en/2.1/topics/auth/customizing/#specifying-authentication-backends
 AUTHENTICATION_BACKENDS = [
     'rules.permissions.ObjectPermissionBackend',
     'django.contrib.auth.backends.ModelBackend',
