@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  This is _templates/registration/options.html. There will eventually be account options here
+  <div class="list-group">
+    <a class="list-group-item list-group-item-action" href="{% url 'logout' %}">Sign out</a>
+    <a class="list-group-item list-group-item-action" href="{% url 'password_change' %}">Change password</a>
+  </div>
 {% endblock content %}
