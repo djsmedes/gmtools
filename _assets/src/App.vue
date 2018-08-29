@@ -50,18 +50,19 @@
 </template>
 
 <script>
-  import { mapState, mapActions } from 'vuex'
+  import {mapState, mapActions} from 'vuex'
+  import {models, actionTypes} from '@/api'
 
   export default {
     computed: {
       ...mapState([
-        'user'
+        models.USER
       ])
     },
     methods: {
-        ...mapActions([
-            'get_user'
-        ])
+      ...mapActions({
+        get_user: actionTypes.GET_USER
+      })
     },
     created() {
       this.get_user()
