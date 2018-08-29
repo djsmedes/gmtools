@@ -22,6 +22,7 @@ from rest_framework.routers import DefaultRouter
 from accounts.viewsets import UserViewSet
 from plot.viewsets import CampaignViewSet
 from accounts.views import UserView
+from combat.viewsets import CombatantViewSet
 
 router = DefaultRouter()
 
@@ -34,6 +35,11 @@ router.register(
     prefix='campaign',
     viewset=CampaignViewSet,
     base_name='campaign'
+)
+router.register(
+    prefix='combatant',
+    viewset=CombatantViewSet,
+    base_name='combatant'
 )
 
 

@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from core.serializers import UUIDHyperlinkedModelSerializer
+from core.serializers import BaseModelSerializer
 from .models import Campaign
 
 
-class CampaignSerializer(UUIDHyperlinkedModelSerializer):
+class CampaignSerializer(BaseModelSerializer):
     class Meta:
         model = Campaign
         fields = (
