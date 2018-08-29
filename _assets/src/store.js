@@ -2,11 +2,6 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import api from './api'
 
-// todo - remove this if there is a better way
-if (typeof debug !== 'undefined') {
-  Vue.config.devtools = true;
-}
-
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -14,11 +9,11 @@ export default new Vuex.Store({
     user: null
   },
   mutations: {
-    set_object(state, params) {
-      state[params.model][params.object.uuid] = params.object
+    set_object(state, { object, model }) {
+      state[model][object.uuid] = object
     },
-    set_user(state, params) {
-      state['user'] = params.object
+    set_user(state, { user }) {
+      state['user'] = user
     }
   },
   actions: {

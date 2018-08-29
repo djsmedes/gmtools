@@ -57,7 +57,7 @@ class BaseModelViewSet(ModelViewSet):
         if self._has_permission(which_permission, request, kwargs.get('uuid', None)):
             return success_function(request, *args, **kwargs)
         else:
-            return HttpResponseForbidden
+            return HttpResponseForbidden()
 
     def create(self, request, *args, **kwargs):
         return self._permission_wrapper_function(

@@ -50,7 +50,7 @@
 </template>
 
 <script>
-  import {mapState} from 'vuex'
+  import { mapState, mapActions } from 'vuex'
 
   export default {
     computed: {
@@ -58,10 +58,13 @@
         'user'
       ])
     },
+    methods: {
+        ...mapActions([
+            'get_user'
+        ])
+    },
     created() {
-      this.$store.dispatch({
-        type: 'get_user',
-      });
+      this.get_user()
     }
   }
 </script>
