@@ -16,10 +16,23 @@
 </template>
 
 <script>
+  import _ from 'lodash'
+
   export default {
     name: "Combatant",
     props: {
-      combatant: Object
+      uuid: String
+    },
+    data() {
+      return {
+        combatant: {name: 'jim', initiative: 10}
+      }
+    },
+    methods: {
+    //  refresh, update, delete
+    },
+    created() {
+      this.combatant = _.cloneDeep(this.$store.state.combatant[this.uuid])
     }
   }
 </script>

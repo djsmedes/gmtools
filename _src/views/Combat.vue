@@ -1,7 +1,7 @@
 <template>
   <div class="card-deck">
     <template v-for="(combatant, uuid) in combatants">
-      <combatant :combatant="combatant"/>
+      <combatant :uuid="uuid"/>
     </template>
   </div>
 </template>
