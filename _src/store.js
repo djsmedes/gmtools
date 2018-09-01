@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import api from '@/api'
+import combatant from './models/combatant'
 
 Vue.use(Vuex);
 
@@ -13,5 +14,8 @@ export default new Vuex.Store({
   },
   actions: {
     ...api.actions
+  },
+  modules: {
+    [combatant.namespace]: combatant.store
   }
 })

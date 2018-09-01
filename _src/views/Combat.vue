@@ -9,7 +9,7 @@
 <script>
   import {mapState, mapActions} from 'vuex'
   import Combatant from '@/components/Combatant'
-  import {actionTypes, models} from '@/api'
+  import combatantModel from '../models/combatant'
 
   export default {
     name: "Combat",
@@ -17,20 +17,20 @@
       Combatant
     },
     computed: {
-      ...mapState({
-        combatants: models.COMBATANT
+      ...mapState(combatantModel.namespace, {
+        combatants: combatantModel.modelName
       })
     },
     methods: {
-      ...mapActions({
-        load_objects: actionTypes.LIST_OBJECTS
+      ...mapActions(combatantModel.namespace, {
+        loadCombatants: combatantModel.actionTypes.LIST
       })
     },
     data() {
       return {}
     },
     created() {
-      this.load_objects({model: models.COMBATANT})
+      this.loadCombatants()
     }
   }
 </script>

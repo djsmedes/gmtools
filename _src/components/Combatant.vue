@@ -16,7 +16,9 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
   import _ from 'lodash'
+  import combatantModel from '../models/combatant'
 
   export default {
     name: "Combatant",
@@ -25,14 +27,19 @@
     },
     data() {
       return {
-        combatant: {name: 'jim', initiative: 10}
+        combatant: new combatantModel.Combatant()
       }
+    },
+    computed: {
+        ...mapGetters(combatantModel.namespace, {
+          getCombatant: combatantModel.getterTypes.BY_ID
+        })
     },
     methods: {
     //  refresh, update, delete
     },
     created() {
-      this.combatant = _.cloneDeep(this.$store.state.combatant[this.uuid])
+      this.combatant = _.cloneDeep(this.getCombatant(this.uuid))
     }
   }
 </script>

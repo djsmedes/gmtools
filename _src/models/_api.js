@@ -1,0 +1,87 @@
+import axios from 'axios'
+
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+function generateUrl (model, uuid = null) {
+  const baseStr = '/api/' + model + '/';
+  if (uuid) {
+    return baseStr + uuid + '/'
+  } else {
+    return baseStr
+  }
+}
+
+function consoleWarnError (error) {
+  let errString = String(error.response.status) + ' ' + String(error.response.statusText)
+
+  if (error.response.data) {
+    errString += ': ';
+    Object.entries(error.response.data).reduce((a, cur) => {
+      errString += cur[0];
+      for (let err of cur[1]) {
+        errString += ', ' + err
+      }
+      errString += '; '
+    }, {})
+  }
+
+  console.warn(errString)
+}
+
+export default {
+  listObjects ({ model }, resolve, reject = consoleWarnError) {
+    return axios.get(
+      generateUrl(model)
+    ).then(r => {
+      resolve(r.data)
+    }).catch(e => {
+      reject(e)
+    })
+  },
+  createObject ({ object, model }, resolve, reject = consoleWarnError) {
+    return axios.post(
+      generateUrl(model), object
+    ).then(r => {
+      resolve(r.data)
+    }).catch(e => {
+      reject(e)
+    })
+  },
+  retrieveObject ({ uuid, model }, resolve, reject = consoleWarnError) {
+    return axios.get(
+      generateUrl(model, uuid)
+    ).then(r => {
+      resolve(r.data)
+    }).catch(e => {
+      reject(e)
+    })
+  },
+  updateObject ({ object, model }, resolve, reject = consoleWarnError) {
+    return axios.put(
+      generateUrl(model, object.uuid), object
+    ).then(r => {
+      resolve(r.data)
+    }).catch(e => {
+      reject(e)
+    })
+  },
+  destroyObject ({ uuid, model }, resolve, reject = consoleWarnError) {
+    return axios.delete(
+      generateUrl(model, uuid)
+    ).then(() => {
+      resolve()
+    }).catch(e => {
+      reject(e)
+    })
+  },
+  optionsObject ({ model }, resolve, reject = consoleWarnError) {
+    return axios.options(
+      generateUrl(model)
+    ).then(r => {
+      resolve(r.data)
+    }).catch(e => {
+      reject(e)
+    })
+  }
+}
