@@ -1,5 +1,5 @@
-import { modelName as combatantModelName } from './combatant'
+import combatant from './combatant'
 
 export default {
-  COMBATANT: combatantModelName
+  COMBATANT: combatant.modelName
 }

@@ -51,9 +51,9 @@ export function ApiVuexModel (modelName) {
       [this.getterTypes.BY_ID]: state => uuid => state[modelName][uuid]
     },
     actions: {
-      [this.actionTypes.LIST]: ({ state, commit }) => {
+      [this.actionTypes.LIST]: ({ state, commit, rootState }) => {
         if (typeof state[modelName] === 'undefined' || _.isEmpty(state[modelName])) {
-          return api.listObjects({ model: this.modelName }, objList => {
+          return api.listObjects({ model: this.modelName, axiosConfig: { headers: { Authorization: rootState.Authorization } } }, objList => {
             commit(this.mutationTypes.SET_LIST, {
               objList: array2ObjByUUID(objList)
             })
@@ -74,7 +74,3 @@ export function ApiVuexModel (modelName) {
 ApiVuexModel.prototype = {
   constructor: ApiVuexModel,
 };
-
-export default {
-  ApiVuexModel
-}
