@@ -19,11 +19,13 @@ from django.core.exceptions import ImproperlyConfigured
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
-def get_env_variable(var_name):
+def get_env_variable(var_name, default=None):
     """Get environment variable or return exception."""
     try:
         return os.environ[var_name]
     except KeyError:
+        if default is not None:
+            return default
         error_msg = 'Set the {} environment variable'.format(var_name)
         raise ImproperlyConfigured(error_msg)
 
