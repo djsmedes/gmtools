@@ -4,7 +4,9 @@
       {{ model }}
     </div>
     <div class="list-group list-group-flush">
-      <router-link v-for="object in object_list" :to="object.uuid" class="list-group-item" :key="object.uuid">
+      <router-link v-for="object in object_list"
+                   :to="{ name: objDetailViewName, params: { uuid: object.uuid }}"
+                   class="list-group-item" :key="object.uuid">
         {{ object.name }}
       </router-link>
     </div>
@@ -15,7 +17,8 @@
   export default {
     name: "ObjectList",
     props: {
-      model: String
+      model: String,
+      objDetailViewName: String
     },
     computed: {
       object_list () {
