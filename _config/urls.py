@@ -59,6 +59,6 @@ if settings.DEBUG:
 urlpatterns += [
     # have a final fallback that matches anything that ends in /, send it to vue-router
     #   if it doesn't end in /, APPEND_SLASH django setting causes it to be re-run with
-    #   a / appended
+    #   a / appended; if a match is found, sends a redirect to the /-appended url
     re_path(r'^.*/$', TemplateView.as_view(template_name='index.html')),
 ]
