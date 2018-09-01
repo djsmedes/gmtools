@@ -16,7 +16,7 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
+  import { mapGetters, mapActions } from 'vuex'
   import _ from 'lodash'
   import combatantModel from '../models/combatant'
 
@@ -36,10 +36,13 @@
         })
     },
     methods: {
-    //  refresh, update, delete
+        ...mapActions(combatantModel.namespace, {
+          loadCombatants: combatantModel.actionTypes.LIST
+        })
     },
     created() {
-      this.combatant = _.cloneDeep(this.getCombatant(this.uuid))
+      this.loadCombatants();
+      this.combatant = _.cloneDeep(this.getCombatant(this.uuid));
     }
   }
 </script>
