@@ -51,7 +51,7 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
     # have a fallback that matches anything, send it to vue-router
-    re_path('.*', TemplateView.as_view(template_name='index.html')),
+    # re_path('.*', TemplateView.as_view(template_name='index.html')),
 ]
 
 if settings.DEBUG:

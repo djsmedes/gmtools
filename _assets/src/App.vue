@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <nav id="nav" class="navbar navbar-expand-lg navbar-dark bg-dark mb-2">
-      <router-link to="/" class="navbar-brand">GMTOOLS</router-link>
+      <router-link to="/" class="navbar-brand" exact>GMTOOLS</router-link>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
               aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -10,7 +10,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <router-link to="/about" class="nav-link">About</router-link>
+            <router-link to="/combatants/" class="nav-link">Combatants</router-link>
           </li>
         </ul>
         <ul v-if="!user" class="navbar-nav">
@@ -81,7 +81,7 @@
   #nav {
     a {
       font-weight: bold;
-      &.router-link-exact-active {
+      &.router-link-active {
         color: map_get($theme-colors, 'primary');
       }
     }

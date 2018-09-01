@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Combat from '@/views/Combat'
+import Combat from './views/Combat'
+import passthrough from './views/_passthrough'
 
 Vue.use(Router);
 
@@ -13,12 +14,20 @@ export default new Router({
       component: Combat
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+      path: '/combatants/',
+      component: passthrough,
+      children: [
+        {
+          path: '',
+          name: 'combatants',
+          component: () => import(/* webpackChunkName: "combatants" */ './views/CombatantList'),
+        },
+        {
+          path: ':uuid/',
+          name: 'combatant',
+          component: () => import(/* webpackChunkName: "combatants" */ './views/CombatantDetail')
+        }
+      ]
     }
   ]
 })
