@@ -71,7 +71,7 @@
 </script>
 
 <style lang="scss">
-  @import "scss/custom";
+  @import "scss/shared";
 
   #app {
     -webkit-font-smoothing: antialiased;
