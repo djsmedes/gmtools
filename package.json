@@ -1,7 +1,12 @@
 {
   "name": "gmtools",
   "version": "0.1.0",
+  "author": "Daniel Smedema",
   "private": true,
+  "engines": {
+    "node": "9.11.2",
+    "npm": "6.4.0"
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build"
@@ -22,5 +27,18 @@
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.1",
     "vue-template-compiler": "^2.5.17"
-  }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ],
+  "cacheDirectories": [
+    "node_nodules"
+  ]
 }

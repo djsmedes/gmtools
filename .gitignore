@@ -17,8 +17,7 @@ node_modules/
 
 # vue-cli stuff
 .DS_Store
-node_modules
-_assets/dist
+dist/
 
 # local env files
 .env.local
