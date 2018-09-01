@@ -43,7 +43,6 @@ router.register(
     base_name='combatant'
 )
 
-
 urlpatterns = [
     path('api/', include(router.urls)),
     path('api/token-auth/', ObtainAuthToken.as_view(), name='token-auth'),
@@ -58,6 +57,8 @@ if settings.DEBUG:
     ]
 
 urlpatterns += [
-    # have a final fallback that matches anything, send it to vue-router
-    re_path(r'.*', TemplateView.as_view(template_name='index.html')),
+    # have a final fallback that matches anything that ends in /, send it to vue-router
+    #   if it doesn't end in /, APPEND_SLASH django setting causes it to be re-run with
+    #   a / appended
+    re_path(r'^.*/$', TemplateView.as_view(template_name='index.html')),
 ]
