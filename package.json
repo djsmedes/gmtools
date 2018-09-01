@@ -10,7 +10,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "postinstall": "npm install --only=dev && npm run build"
+    "prepare": "npm run build"
   },
   "dependencies": {
     "axios": "^0.18.0",
