@@ -1,6 +1,7 @@
 import api from './_api'
 import Vue from 'vue'
 import _ from 'lodash'
+import { getterTypes } from '../auth'
 
 
 function array2ObjByUUID (array) {
@@ -52,11 +53,11 @@ export class ApiVuexModel {
         [this.getterTypes.BY_ID]: state => uuid => state[modelName][uuid]
       },
       actions: {
-        [this.actionTypes.LIST]: ({ state, commit, rootState }) => {
+        [this.actionTypes.LIST]: ({ state, commit, rootGetters }) => {
           if (typeof state[modelName] === 'undefined' || _.isEmpty(state[modelName])) {
             return api.listObjects({
               model: this.modelName,
-              axiosConfig: { headers: { Authorization: rootState.Authorization } }
+              axiosConfig: { headers: { ...rootGetters[getterTypes.AUTH_HEADER] } }
             }, objList => {
               commit(this.mutationTypes.SET_LIST, {
                 objList: array2ObjByUUID(objList)

@@ -1,8 +1,5 @@
 import axios from 'axios'
 
-axios.defaults.xsrfCookieName = 'csrftoken';
-axios.defaults.xsrfHeaderName = 'X-CSRFToken';
-
 function generateUrl (model, uuid = null) {
   const baseStr = '/api/' + model + '/';
   if (uuid) {
@@ -32,7 +29,7 @@ function consoleWarnError (error) {
 export default {
   listObjects ({ model, axiosConfig={} }, resolve, reject = consoleWarnError) {
     return axios.get(
-      generateUrl(model), {...axiosConfig}
+      generateUrl(model), axiosConfig
     ).then(r => {
       resolve(r.data)
     }).catch(e => {

@@ -1,9 +1,6 @@
 import axios from 'axios'
 import Vue from 'vue'
 
-axios.defaults.xsrfCookieName = 'csrftoken';
-axios.defaults.xsrfHeaderName = 'X-CSRFToken';
-
 export const models = {
   USER: 'user',
 };
@@ -15,7 +12,7 @@ export const actionTypes = {
 
 export const mutationTypes = {
   SET_USER: 'setUser',
-  SET_AUTH: 'setAuth'
+  SET_TOKEN: 'setAuth'
 };
 
 export default {
@@ -62,12 +59,12 @@ export default {
   }
 }
 
-export function getToken ({ email, password }, resolve) {
+export function getToken ({ email, password }, resolve, axiosConfig = {}) {
   return axios.post(
       '/api/token-auth/', {
         username: email,
         password: password
-      }
+      }, axiosConfig
   ).then(r => {
     resolve(r.data.token)
   }).catch(e => {

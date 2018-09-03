@@ -5,11 +5,13 @@ import { User } from './classes'
 export const namespace = 'auth';
 
 export const stateKeys = {
-  AUTHORIZATION: 'Authorization',
+  TOKEN: 'token',
   USER: 'user'
 };
 
-export const getterTypes = {};
+export const getterTypes = {
+  AUTH_HEADER: 'authHeader'
+};
 
 export const actionTypes = {
   GET_USER: 'getUser',
@@ -18,20 +20,28 @@ export const actionTypes = {
 
 export const mutationTypes = {
   SET_USER: 'setUser',
-  SET_AUTH: 'setAuth'
+  SET_TOKEN: 'setAuth'
 };
 
 export const store = {
   namespaced: true,
   state: {
-    [stateKeys.AUTHORIZATION]: '',
+    [stateKeys.TOKEN]: '',
     [stateKeys.USER]: new User()
   },
-  getters: {},
+  getters: {
+    [getterTypes.AUTH_HEADER]: state => {
+      if (state[stateKeys.TOKEN]) {
+        return { Authorization: 'Token ' + state[stateKeys.TOKEN] }
+      } else {
+        return {}
+      }
+    }
+  },
   actions: {
     [actionTypes.LOGIN]: ({ commit }, { email, password }) => {
       return getToken({email, password}, token => {
-        commit(mutationTypes.SET_AUTH, { auth_string: 'Token ' + token });
+        commit(mutationTypes.SET_TOKEN, { token });
         commit(mutationTypes.SET_USER, { user: new User(email) })
       })
     }
@@ -40,11 +50,10 @@ export const store = {
     [mutationTypes.SET_USER] (state, { user }) {
       Vue.set(state, stateKeys.USER, user)
     },
-    [mutationTypes.SET_AUTH] (state, { auth_string }) {
-      Vue.set(state, stateKeys.AUTHORIZATION, auth_string)
+    [mutationTypes.SET_TOKEN] (state, { token }) {
+      Vue.set(state, stateKeys.TOKEN, token)
     }
   }
-
 };
 
 export default {
