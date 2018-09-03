@@ -61,3 +61,20 @@ export default {
     }
   }
 }
+
+export function getToken ({ email, password }, resolve) {
+  return axios.post(
+      '/api/token-auth/', {
+        username: email,
+        password: password
+      }
+  ).then(r => {
+    resolve(r.data.token)
+  }).catch(e => {
+    if (String(e.response.status) === '400') {
+      return Promise.reject(e.response.data)
+    } else {
+      return e;
+    }
+  })
+}

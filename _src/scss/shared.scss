@@ -13,3 +13,8 @@ p.hanging-indent {
   text-indent: -2em;
   padding-left: 2em;
 }
+
+.was-validated .invalid-feedback-force-show {
+  @extend .invalid-feedback;
+  display: block;
+}
