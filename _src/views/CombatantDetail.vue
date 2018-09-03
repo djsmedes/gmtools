@@ -1,13 +1,13 @@
 <template>
-  <combatant :uuid="uuid"/>
+  <combatant-card :uuid="uuid"/>
 </template>
 
 <script>
-  import Combatant from '../components/Combatant'
+  import CombatantCard from '../components/CombatantCard'
 
   export default {
     name: "CombatantDetail",
-    components: { Combatant },
+    components: { CombatantCard },
     computed: {
       uuid() {
         return this.$route.params.uuid

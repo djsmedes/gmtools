@@ -1,29 +1,29 @@
 <template>
   <div class="card-deck">
     <template v-for="(combatant, uuid) in combatants">
-      <combatant :uuid="uuid"/>
+      <combatant-card :uuid="uuid"/>
     </template>
   </div>
 </template>
 
 <script>
   import {mapState, mapActions} from 'vuex'
-  import Combatant from '@/components/Combatant'
-  import combatantModel from '../models/combatant'
+  import CombatantCard from '../components/CombatantCard'
+  import combatant from '../models/combatant'
 
   export default {
     name: "Combat",
     components: {
-      Combatant
+      CombatantCard
     },
     computed: {
-      ...mapState(combatantModel.namespace, {
-        combatants: combatantModel.modelName
+      ...mapState(combatant.namespace, {
+        combatants: combatant.modelName
       })
     },
     methods: {
-      ...mapActions(combatantModel.namespace, {
-        loadCombatants: combatantModel.actionTypes.LIST
+      ...mapActions(combatant.namespace, {
+        loadCombatants: combatant.actionTypes.LIST
       })
     },
     data() {
