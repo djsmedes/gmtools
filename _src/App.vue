@@ -15,7 +15,7 @@
         </ul>
         <ul v-if="!user.isAuthenticated" class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="/account/login/">Sign in</a>
+            <router-link class="nav-link" :to="{name: routeNames.LOGIN}" >Sign in</router-link>
           </li>
           <li class="navbar-text">
             or
@@ -52,10 +52,13 @@
 <script>
   import { mapState } from 'vuex'
   import auth from './auth'
+  import { routeNames } from "./router"
 
   export default {
     data () {
-      return {}
+      return {
+        routeNames
+      }
     },
     computed: {
       ...mapState({

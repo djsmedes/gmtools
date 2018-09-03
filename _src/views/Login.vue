@@ -19,7 +19,8 @@
           </p>
         </div>
       </div>
-      <button class="btn btn-primary" type="button" @click="submitCredentials(email.value, password.value)">Log in</button>
+      <button class="btn btn-primary" type="button" @click="submitCredentials(email.value, password.value)">Log in
+      </button>
       <div class="invalid-feedback-force-show">
         <p v-for="err in nonFieldErrors">
           {{ err }}
@@ -33,6 +34,7 @@
   import { mapActions } from 'vuex'
   import auth from '../auth'
   import $ from 'jquery'
+  import { routeNames } from '../router'
 
   export default {
     name: "Login",
@@ -62,7 +64,9 @@
           });
           form.addClass('was-validated')
         } else {
-          this.login({ email, password }).catch(errors => {
+          this.login({ email, password }).then(() => {
+            this.$router.push({name: routeNames.HOME})
+          }).catch(errors => {
             this.nonFieldErrors = errors.non_field_errors;
             this.email.errors = errors.email;
             this.password.errors = errors.password;
@@ -70,7 +74,8 @@
           })
         }
       }
-    }
+    },
+    created() {}
   }
 </script>
 
