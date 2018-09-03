@@ -9,7 +9,7 @@ export const routeNames = {
   COMBATANTS: 'combatants',
   COMBATANT: 'combatant',
   LOGIN: 'login'
-}
+};
 
 export default new Router({
   mode: 'history',
@@ -22,7 +22,7 @@ export default new Router({
     {
       path: '/combatants/',
       name: routeNames.COMBATANTS,
-      component: () => import(/* webpackChunkName: "combatants" */ './views/CombatantList'),
+      component: () => import(/* webpackChunkName: "combatants" */ './views/CombatantList')
     },
     {
       path: '/combatants/:uuid/',

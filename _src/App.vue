@@ -36,7 +36,7 @@
               </span>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="/account/">Account options</a>
-              <a class="dropdown-item" href="/account/logout/">Sign out</a>
+              <a class="dropdown-item" href="#" @click.prevent="logout">Sign out</a>
             </div>
           </li>
         </ul>
@@ -50,7 +50,7 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
+  import { mapState, mapActions } from 'vuex'
   import auth from './auth'
   import { routeNames } from "./router"
 
@@ -65,6 +65,20 @@
         user: auth.stateKeys.USER
       })
     },
+    methods: {
+      ...mapActions({
+        getUser: auth.actionTypes.GET_USER,
+        logoutUser: auth.actionTypes.LOGOUT
+      }),
+      logout() {
+        this.logoutUser().then(
+            this.$router.push({name: routeNames.LOGIN})
+        )
+      }
+    },
+    created() {
+      this.getUser()
+    }
   }
 </script>
 
