@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form id="login-form" novalidate>
+    <form id="login-form" novalidate @submit.prevent="submitCredentials">
       <div class="form-group">
         <label for="email">Email</label>
         <input id="email" type="email" class="form-control" v-model="email.value" required>
@@ -19,8 +19,7 @@
           </p>
         </div>
       </div>
-      <button class="btn btn-primary" type="button" @click="submitCredentials(email.value, password.value)">Log in
-      </button>
+      <button class="btn btn-primary" type="submit">Log in</button>
       <div class="invalid-feedback-force-show">
         <p v-for="err in nonFieldErrors">
           {{ err }}
@@ -55,7 +54,7 @@
       ...mapActions({
         login: auth.actionTypes.LOGIN
       }),
-      submitCredentials (email, password) {
+      submitCredentials () {
         const form = $('#login-form');
         form.removeClass('was-validated');
         if (!form[0].checkValidity()) {
@@ -64,8 +63,8 @@
           });
           form.addClass('was-validated')
         } else {
-          this.login({ email, password }).then(() => {
-            this.$router.push({name: routeNames.HOME})
+          this.login({ email: this.email.value, password: this.password.value }).then(() => {
+            this.$router.push({ name: routeNames.HOME })
           }).catch(errors => {
             this.nonFieldErrors = errors.non_field_errors;
             this.email.errors = errors.email;
@@ -75,7 +74,8 @@
         }
       }
     },
-    created() {}
+    created () {
+    }
   }
 </script>
 

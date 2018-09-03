@@ -1,5 +1,5 @@
 import Vue from "vue";
-import { getToken } from './api'
+import api from './api'
 import { User } from './classes'
 
 export const namespace = 'auth';
@@ -40,7 +40,7 @@ export const store = {
   },
   actions: {
     [actionTypes.LOGIN]: ({ commit }, { email, password }) => {
-      return getToken({email, password}, token => {
+      return api.getToken({email, password}, token => {
         commit(mutationTypes.SET_TOKEN, { token });
         commit(mutationTypes.SET_USER, { user: new User(email) })
       })
