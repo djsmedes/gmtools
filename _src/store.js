@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import api from '@/api'
+import api from './auth/api'
 import combatant from './models/combatant'
 
 Vue.use(Vuex);

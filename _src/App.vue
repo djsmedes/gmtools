@@ -13,7 +13,7 @@
             <router-link to="/combatants/" class="nav-link">Combatants</router-link>
           </li>
         </ul>
-        <ul v-if="!user" class="navbar-nav">
+        <ul v-if="!userAuthenticated" class="navbar-nav">
           <li class="nav-item">
             <a class="nav-link" href="/account/login/">Sign in</a>
           </li>
@@ -50,23 +50,34 @@
 </template>
 
 <script>
-  import {mapState, mapActions} from 'vuex'
-  import {models, actionTypes} from '@/api'
+  // import {mapState, mapActions} from 'vuex'
+  // import {models, actionTypes} from './auth/api'
+  import _ from 'lodash'
 
   export default {
+    data() {
+      return {
+        user: {}
+      }
+    },
     computed: {
-      ...mapState([
-        models.USER
-      ])
-    },
-    methods: {
-      ...mapActions({
-        get_user: actionTypes.GET_USER
-      })
-    },
-    created() {
-      this.get_user()
+      userAuthenticated() {
+        return (this.user && !_.isEmpty(this.user))
+      }
     }
+    // computed: {
+    //   ...mapState([
+    //     models.USER
+    //   ])
+    // },
+    // methods: {
+    //   ...mapActions({
+    //     get_user: actionTypes.GET_USER
+    //   })
+    // },
+    // created() {
+    //   this.get_user()
+    // }
   }
 </script>
 

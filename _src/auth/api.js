@@ -9,20 +9,19 @@ export const models = {
 };
 
 export const actionTypes = {
-  GET_USER: 'get_user',
-  GET_TOKEN: 'get_token'
+  GET_USER: 'getUser',
+  GET_TOKEN: 'getToken'
 };
 
 export const mutationTypes = {
-  SET_USER: 'set_user',
-  SET_AUTH: 'set_auth'
+  SET_USER: 'setUser',
+  SET_AUTH: 'setAuth'
 };
 
 export default {
   models: models,
   state: {
     [models.USER]: {},
-    [models.COMBATANT]: {},
     Authorization: ''
   },
   actionTypes: actionTypes,

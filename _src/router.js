@@ -7,7 +7,8 @@ Vue.use(Router);
 export const routeNames = {
   HOME: 'home',
   COMBATANTS: 'combatants',
-  COMBATANT: 'combatant'
+  COMBATANT: 'combatant',
+  LOGIN: 'login'
 }
 
 export default new Router({
@@ -27,6 +28,11 @@ export default new Router({
       path: '/combatants/:uuid/',
       name: routeNames.COMBATANT,
       component: () => import(/* webpackChunkName: "combatants" */ './views/CombatantDetail')
+    },
+    {
+      path: '/login/',
+      name: routeNames.LOGIN,
+      component: () => import(/* webpackChunkName: "account" */ './views/Login')
     }
   ]
 })
