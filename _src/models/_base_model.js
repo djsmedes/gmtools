@@ -72,7 +72,18 @@ export class ApiVuexModel {
           return api.createObject({
             object,
             model: this.modelName,
-            axiosConfig: {}
+            axiosConfig: { headers: { ...rootGetters[getterTypes.AUTH_HEADER] }}
+          }, returnedObject => {
+            commit(this.mutationTypes.SET, {
+              object: new modelConstructor(returnedObject)
+            })
+          })
+        },
+        [this.actionTypes.UPDATE]: ({ state, commit, rootGetters }, object) => {
+          return api.updateObject({
+            object,
+            model: this.modelName,
+            axiosConfig: { headers: { ...rootGetters[getterTypes.AUTH_HEADER] }}
           }, returnedObject => {
             commit(this.mutationTypes.SET, {
               object: new modelConstructor(returnedObject)

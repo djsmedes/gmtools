@@ -4,7 +4,7 @@
       <combatant-card :combatant="combatant"/>
     </template>
     <div v-if="tempCombatant">
-
+      <combatant-card :combatant="tempCombatant" start-editing="true"/>
     </div>
     <div v-else class="card">
       <button class="btn btn-outline-primary btn-block" @click="generateBlankCombatant">Add combatant</button>
