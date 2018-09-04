@@ -48,7 +48,7 @@ export class ApiVuexModel {
         },
         [this.getterTypes.LIST]: (state, getters) => {
           return getters[this.getterTypes.IDS].map(
-              ID => Object.assign(state[modelName][ID], { uuid: ID })
+              uuid => Object.assign(state[modelName][uuid], { uuid: uuid })
           )
         },
         [this.getterTypes.BY_ID]: state => uuid => state[modelName][uuid]
@@ -75,7 +75,7 @@ export class ApiVuexModel {
             axiosConfig: {}
           }, returnedObject => {
             commit(this.mutationTypes.SET, {
-              object: returnedObject
+              object: modelConstructor ? new modelConstructor(returnedObject) : returnedObject
             })
           })
         }
