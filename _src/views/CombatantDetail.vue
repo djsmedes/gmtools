@@ -1,7 +1,5 @@
 <template>
-  <!--<div v-if="loaded">-->
-    <combatant-card :combatant="getCombatant(uuid)"/>
-  <!--</div>-->
+  <combatant-card :combatant="getCombatant(uuid)"/>
 </template>
 
 <script>
@@ -13,9 +11,7 @@
     name: "CombatantDetail",
     components: { CombatantCard },
     data() {
-      return {
-        loaded: false
-      }
+      return {}
     },
     computed: {
       uuid () {
@@ -31,7 +27,7 @@
       })
     },
     created () {
-      this.loadCombatants().then(() => this.loaded = true)
+      this.loadCombatants()
     }
   }
 </script>

@@ -1,19 +1,19 @@
 <template>
   <div class="card-deck">
-    <template v-for="(combatant, uuid) in combatants">
+    <template v-for="combatant in combatants">
       <combatant-card :combatant="combatant"/>
     </template>
-    <div v-if="!tempCombatant" class="card">
-      <button class="btn btn-outline-primary btn-block" @click="generateBlankCombatant">Add combatant</button>
+    <div v-if="tempCombatant">
+
     </div>
-    <div v-else>
-      ...
+    <div v-else class="card">
+      <button class="btn btn-outline-primary btn-block" @click="generateBlankCombatant">Add combatant</button>
     </div>
   </div>
 </template>
 
 <script>
-  import {mapState, mapActions} from 'vuex'
+  import { mapGetters, mapActions } from 'vuex'
   import CombatantCard from '../components/CombatantCard'
   import combatant from '../models/combatant'
 
@@ -23,8 +23,8 @@
       CombatantCard
     },
     computed: {
-      ...mapState(combatant.namespace, {
-        combatants: state => state[combatant.modelName]
+      ...mapGetters(combatant.namespace, {
+        combatants: combatant.getterTypes.LIST
       })
     },
     methods: {

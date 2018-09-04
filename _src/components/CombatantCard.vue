@@ -42,7 +42,6 @@
           loadCombatants: combatant.actionTypes.LIST
         })
     },
-    created() {
-    }
+    created() {}
   }
 </script>
