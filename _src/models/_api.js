@@ -38,7 +38,7 @@ export default {
   },
   createObject ({ object, model, axiosConfig={} }, resolve, reject = consoleWarnError) {
     return axios.post(
-      generateUrl(model), object, {...axiosConfig}
+      generateUrl(model), object, axiosConfig
     ).then(r => {
       resolve(r.data)
     }).catch(e => {

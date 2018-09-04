@@ -17,32 +17,32 @@
 
 <script>
   import { mapGetters, mapActions } from 'vuex'
-  import _ from 'lodash'
-  import combatantModel from '../models/combatant'
+  import combatant from '../models/combatant'
 
   export default {
     name: "Combatant",
     props: {
-      uuid: String
+      combatant: {
+        type: combatant.Combatant,
+        default: () => new combatant.Combatant()
+      }
     },
     data() {
       return {
-        combatant: new combatantModel.Combatant()
+        editingCombatant: null
       }
     },
     computed: {
-        ...mapGetters(combatantModel.namespace, {
-          getCombatant: combatantModel.getterTypes.BY_ID
+        ...mapGetters(combatant.namespace, {
+          getCombatant: combatant.getterTypes.BY_ID
         })
     },
     methods: {
-        ...mapActions(combatantModel.namespace, {
-          loadCombatants: combatantModel.actionTypes.LIST
+        ...mapActions(combatant.namespace, {
+          loadCombatants: combatant.actionTypes.LIST
         })
     },
     created() {
-      this.loadCombatants();
-      this.combatant = _.cloneDeep(this.getCombatant(this.uuid));
     }
   }
 </script>

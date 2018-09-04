@@ -18,7 +18,7 @@ export class Combatant {
 
 class ApiVuexCombatant extends ApiVuexModel {
   constructor() {
-    super(modelName);
+    super(modelName, Combatant);
   }
 }
 

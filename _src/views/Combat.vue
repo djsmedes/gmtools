@@ -1,8 +1,14 @@
 <template>
   <div class="card-deck">
     <template v-for="(combatant, uuid) in combatants">
-      <combatant-card :uuid="uuid"/>
+      <combatant-card :combatant="combatant"/>
     </template>
+    <div v-if="!tempCombatant" class="card">
+      <button class="btn btn-outline-primary btn-block" @click="generateBlankCombatant">Add combatant</button>
+    </div>
+    <div v-else>
+      ...
+    </div>
   </div>
 </template>
 
@@ -18,23 +24,24 @@
     },
     computed: {
       ...mapState(combatant.namespace, {
-        combatants: combatant.modelName
+        combatants: state => state[combatant.modelName]
       })
     },
     methods: {
       ...mapActions(combatant.namespace, {
         loadCombatants: combatant.actionTypes.LIST
-      })
+      }),
+      generateBlankCombatant() {
+        this.tempCombatant = new combatant.Combatant()
+      }
     },
     data() {
-      return {}
+      return {
+        tempCombatant: null
+      }
     },
     created() {
       this.loadCombatants()
     }
   }
 </script>
-
-<style scoped>
-
-</style>
