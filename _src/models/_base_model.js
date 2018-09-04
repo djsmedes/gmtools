@@ -5,15 +5,15 @@ import { getterTypes } from '../auth'
 import debounce from 'debounce-promise'
 
 
-function array2ObjByUUID (array, objConstructor = null) {
+function array2ObjByUUID (array, objConstructor) {
   return array.reduce((accumulator, currentVal) => {
-    accumulator[currentVal.uuid] = objConstructor ? new objConstructor(currentVal) : currentVal;
+    accumulator[currentVal.uuid] = new objConstructor(currentVal);
     return accumulator
   }, {})
 }
 
 export class ApiVuexModel {
-  constructor (modelName, modelConstructor = null) {
+  constructor (modelName, modelConstructor) {
     this.namespace = modelName;
     this.modelName = modelName;
     this.getterTypes = {
@@ -75,7 +75,7 @@ export class ApiVuexModel {
             axiosConfig: {}
           }, returnedObject => {
             commit(this.mutationTypes.SET, {
-              object: modelConstructor ? new modelConstructor(returnedObject) : returnedObject
+              object: new modelConstructor(returnedObject)
             })
           })
         }
