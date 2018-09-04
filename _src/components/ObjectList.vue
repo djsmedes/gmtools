@@ -5,9 +5,14 @@
     </div>
     <div class="list-group list-group-flush">
       <router-link v-for="object in objectList"
-                   :to="{ name: objDetailViewName, params: { uuid: object.uuid }}"
+                   :to="{ name: detailViewName, params: { uuid: object.uuid }}"
                    class="list-group-item" :key="object.uuid">
         {{ object.name }}
+      </router-link>
+      <router-link v-if="createViewName"
+                   :to="{ name: createViewName }"
+                   class="list-group-item" key="new">
+        Create new {{ model.modelName }}
       </router-link>
     </div>
   </div>
@@ -18,7 +23,8 @@
     name: "ObjectList",
     props: {
       model: Object,
-      objDetailViewName: String
+      detailViewName: String,
+      createViewName: String
     },
     data() {
       return {}

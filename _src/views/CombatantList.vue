@@ -1,5 +1,8 @@
 <template>
-  <object-list :model="model" :obj-detail-view-name="routeNames.COMBATANT"></object-list>
+  <object-list :model="model"
+               :detail-view-name="routeNames.COMBATANT"
+               :create-view-name="routeNames.COMBATANT_CREATE">
+  </object-list>
 </template>
 
 <script>

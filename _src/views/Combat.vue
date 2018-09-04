@@ -1,13 +1,14 @@
 <template>
-  <div class="card-deck">
-    <template v-for="combatant in combatants">
-      <combatant-card :combatant="combatant"/>
-    </template>
-    <div v-if="tempCombatant">
-      <combatant-card :combatant="tempCombatant" start-editing="true"/>
+  <div>
+    <div class="mb-2">
+      <button class="btn btn-primary mr-2">Blue</button>
+      <button class="btn btn-success mr-2">Green</button>
+      <button class="btn btn-danger">Red</button>
     </div>
-    <div v-else class="card">
-      <button class="btn btn-outline-primary btn-block" @click="generateBlankCombatant">Add combatant</button>
+    <div class="card-deck">
+      <template v-for="combatant in combatants">
+        <combatant-card :combatant="combatant"/>
+      </template>
     </div>
   </div>
 </template>
@@ -30,17 +31,12 @@
     methods: {
       ...mapActions(combatant.namespace, {
         loadCombatants: combatant.actionTypes.LIST
-      }),
-      generateBlankCombatant() {
-        this.tempCombatant = new combatant.Combatant()
-      }
+      })
     },
-    data() {
-      return {
-        tempCombatant: null
-      }
+    data () {
+      return {}
     },
-    created() {
+    created () {
       this.loadCombatants()
     }
   }

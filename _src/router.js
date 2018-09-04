@@ -8,6 +8,7 @@ export const routeNames = {
   HOME: 'home',
   COMBATANTS: 'combatants',
   COMBATANT: 'combatant',
+  COMBATANT_CREATE: 'combatantCreate',
   LOGIN: 'login'
 };
 
@@ -28,6 +29,11 @@ export default new Router({
       path: '/combatants/:uuid/',
       name: routeNames.COMBATANT,
       component: () => import(/* webpackChunkName: "combatants" */ './views/CombatantDetail')
+    },
+    {
+      path: '/combatants/new/',
+      name: routeNames.COMBATANT_CREATE,
+      component: () => import(/* webpackChunkName: "combatants" */ './views/CombatantCreate')
     },
     {
       path: '/login/',
