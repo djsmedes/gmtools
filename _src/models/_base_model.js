@@ -54,11 +54,10 @@ export class ApiVuexModel {
         [this.getterTypes.BY_ID]: state => uuid => state[modelName][uuid]
       },
       actions: {
-        [this.actionTypes.LIST]: debounce(({ state, commit, rootGetters }) => {
+        [this.actionTypes.LIST]: debounce(({ state, commit }) => {
           if (typeof state[modelName] === 'undefined' || _.isEmpty(state[modelName])) {
             return api.listObjects({
-              model: this.modelName,
-              axiosConfig: { headers: { ...rootGetters[getterTypes.AUTH_HEADER] } }
+              model: this.modelName
             }, objList => {
               commit(this.mutationTypes.SET_LIST, {
                 objList: array2ObjByUUID(objList, modelConstructor)
@@ -68,22 +67,20 @@ export class ApiVuexModel {
             return Promise.resolve()
           }
         }, 100, { leading: true }),
-        [this.actionTypes.CREATE]: ({ state, commit, rootGetters }, object) => {
+        [this.actionTypes.CREATE]: ({ state, commit }, object) => {
           return api.createObject({
             object,
-            model: this.modelName,
-            axiosConfig: { headers: { ...rootGetters[getterTypes.AUTH_HEADER] }}
+            model: this.modelName
           }, returnedObject => {
             commit(this.mutationTypes.SET, {
               object: new modelConstructor(returnedObject)
             })
           })
         },
-        [this.actionTypes.UPDATE]: ({ state, commit, rootGetters }, object) => {
+        [this.actionTypes.UPDATE]: ({ state, commit }, object) => {
           return api.updateObject({
             object,
-            model: this.modelName,
-            axiosConfig: { headers: { ...rootGetters[getterTypes.AUTH_HEADER] }}
+            model: this.modelName
           }, returnedObject => {
             commit(this.mutationTypes.SET, {
               object: new modelConstructor(returnedObject)

@@ -33,8 +33,12 @@ export const store = {
     [stateKeys.USER]: new User()
   },
   getters: {
-    [getterTypes.AUTH_HEADER]: () => {
-      const token = Cookies.get(stateKeys.TOKEN);
+    [getterTypes.AUTH_HEADER]: state => {
+      let token = state[stateKeys.TOKEN];
+      if (!token) {
+        token = Cookies.get(stateKeys.TOKEN);
+        if (token) state[stateKeys.TOKEN] = token;
+      }
       if (token) {
         return { Authorization: 'Token ' + token }
       } else {
@@ -57,6 +61,7 @@ export const store = {
     [actionTypes.LOGOUT]: ({ commit }) => {
       commit(mutationTypes.REMOVE_TOKEN);
       commit(mutationTypes.SET_USER, {user: new User()})
+      // todo - clear basically all other data out of vuex
     }
   },
   mutations: {

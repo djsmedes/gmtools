@@ -47,7 +47,7 @@ export default {
   },
   retrieveObject ({ uuid, model, axiosConfig={} }, resolve, reject = consoleWarnError) {
     return axios.get(
-      generateUrl(model, uuid), {...axiosConfig}
+      generateUrl(model, uuid), axiosConfig
     ).then(r => {
       resolve(r.data)
     }).catch(e => {
@@ -56,7 +56,7 @@ export default {
   },
   updateObject ({ object, model, axiosConfig={} }, resolve, reject = consoleWarnError) {
     return axios.put(
-      generateUrl(model, object.uuid), object, {...axiosConfig}
+      generateUrl(model, object.uuid), object, axiosConfig
     ).then(r => {
       resolve(r.data)
     }).catch(e => {
@@ -65,7 +65,7 @@ export default {
   },
   destroyObject ({ uuid, model, axiosConfig={} }, resolve, reject = consoleWarnError) {
     return axios.delete(
-      generateUrl(model, uuid), {...axiosConfig}
+      generateUrl(model, uuid), axiosConfig
     ).then(() => {
       resolve()
     }).catch(e => {
@@ -74,7 +74,7 @@ export default {
   },
   optionsObject ({ model, axiosConfig={} }, resolve, reject = consoleWarnError) {
     return axios.options(
-      generateUrl(model), {...axiosConfig}
+      generateUrl(model), axiosConfig
     ).then(r => {
       resolve(r.data)
     }).catch(e => {
