@@ -16,6 +16,13 @@ export class Combatant {
     this.hp = hp;
     this.effects = typeof effects === 'string' ? JSON.parse(effects) : effects;
   }
+
+  get initiative () { return this._initiative }
+  set initiative (val) { this._initiative = Number(val) }
+
+  get hp () { return this._hp }
+  set hp (val) { this._hp = Number(val) }
+
 }
 
 export const effectTypes = {

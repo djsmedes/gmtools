@@ -35,11 +35,6 @@
                  placeholder="Initiative"
                  type="number"
                  v-model="localCombatant.initiative"/>
-          <div class="input-group-append">
-            <button class="btn btn-primary" type="submit">
-              <span class="oi oi-check"></span>
-            </button>
-          </div>
         </div>
       </form>
     </div>
@@ -75,8 +70,16 @@
       }
     },
     watch: {
-      combatant (newCombatant) {
-        console.log('combatant changed', newCombatant)
+      localCombatant: {
+        handler (newCombatant) {
+          if (this.editMode) this.$emit('combatant-change', newCombatant)
+        },
+        deep: true
+      },
+      editMode (newBool) {
+        if (newBool === false) {
+          this.localCombatant = new Combatant(this.combatant)
+        }
       }
     },
     computed: {},

@@ -35,7 +35,7 @@
           </div>
         </form>
       </div>
-      <div class="btn-group ml-auto">
+      <div class="btn-group ml-auto" v-if="!editMode">
         <button class="btn btn-outline-success">
           <small><span class="oi oi-plus" aria-hidden="true"></span></small>
           <span class="oi oi-person" aria-hidden="true"></span>
@@ -44,11 +44,18 @@
           <small><span class="oi oi-minus" aria-hidden="true"></span></small>
           <span class="oi oi-person" aria-hidden="true"></span>
         </button>
-        <button class="btn"
-                :class="[editMode ? 'btn-secondary' : 'btn-outline-secondary']"
-                @click="toggleEditMode">
+        <button class="btn btn-outline-primary"
+                @click="enterEditMode">
           <small><span class="oi oi-pencil" aria-hidden="true"></span></small>
           <span class="oi oi-person" aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="btn-group ml-auto" v-else>
+        <button class="btn btn-primary" @click="saveAppliedEdits">
+          <span class="oi oi-check"></span>
+        </button>
+        <button class="btn btn-outline-dark" @click="exitEditMode">
+          <span class="oi oi-x"></span>
         </button>
       </div>
     </div>
@@ -58,7 +65,8 @@
                         :effect-mode="applyingEffectType"
                         :active="combatantsToApply.includes(combatant.uuid)"
                         :edit-mode="editMode"
-                        @click="toggleCombatantWillApply($event)"/>
+                        @click="toggleCombatantWillApply($event)"
+                        @combatant-change="updateEditedCombatants($event)"/>
       </template>
     </div>
   </div>
@@ -68,6 +76,7 @@
   import { mapGetters, mapActions } from 'vuex'
   import CombatantCard from '../components/CombatantCard'
   import combatant from '../models/combatant'
+  import _ from 'lodash'
 
   export default {
     name: "Combat",
@@ -77,7 +86,8 @@
         effectToApply: '',
         combatantsToApply: [],
         effectTypes: combatant.effectTypes,
-        editMode: false
+        editMode: false,
+        editedCombatants: {}
       }
     },
     components: {
@@ -85,7 +95,8 @@
     },
     computed: {
       ...mapGetters(combatant.namespace, {
-        combatants: combatant.getterTypes.LIST
+        combatants: combatant.getterTypes.LIST,
+        getCombatant: combatant.getterTypes.BY_ID
       }),
       combatantsByInitiative () {
         return [...this.combatants].sort((a, b) => b.initiative - a.initiative)
@@ -93,10 +104,15 @@
     },
     methods: {
       ...mapActions(combatant.namespace, {
-        loadCombatants: combatant.actionTypes.LIST
+        loadCombatants: combatant.actionTypes.LIST,
+        updateCombatant: combatant.actionTypes.UPDATE
       }),
-      toggleEditMode () {
-        this.editMode ? this.exitEditMode() : this.enterEditMode()
+      updateEditedCombatants (editedCombatant) {
+        if (_.isEqual(editedCombatant, this.getCombatant(editedCombatant.uuid))) {
+          delete this.editedCombatants[editedCombatant.uuid]
+        } else {
+          this.editedCombatants[editedCombatant.uuid] = editedCombatant
+        }
       },
       enterEditMode () {
         this.exitApplyEffectMode();
@@ -104,6 +120,13 @@
       },
       exitEditMode () {
         this.editMode = false;
+      },
+      saveAppliedEdits () {
+        Promise.all(
+          Object.keys(this.editedCombatants).map(uuid => this.updateCombatant(this.editedCombatants[uuid]))
+        ).then(() => {
+          this.exitEditMode()
+        })
       },
       toggleCombatantWillApply (uuid) {
         if (!this.applyingEffectType) return;

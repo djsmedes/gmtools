@@ -78,6 +78,9 @@ export class ApiVuexModel {
           })
         },
         [this.actionTypes.UPDATE]: ({ state, commit }, object) => {
+
+          console.log(JSON.stringify(object));
+
           return api.updateObject({
             object,
             model: this.modelName
