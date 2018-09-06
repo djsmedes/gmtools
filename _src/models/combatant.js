@@ -23,6 +23,16 @@ export class Combatant {
   get hp () { return this._hp }
   set hp (val) { this._hp = Number(val) }
 
+  toJSON() {
+    return {
+      uuid: this.uuid,
+      name: this.name,
+      initiative: this.initiative,
+      hp: this.hp,
+      effects: JSON.stringify(this.effects)
+    }
+  }
+
 }
 
 export const effectTypes = {
