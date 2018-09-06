@@ -23,7 +23,8 @@
                       :class="[
                         {'btn-success': applyingEffectType === effectTypes.BUFF},
                         {'btn-danger': applyingEffectType === effectTypes.DEBUFF},
-                        {'btn-secondary': applyingEffectType === effectTypes.OTHER}
+                        {'btn-secondary': applyingEffectType === effectTypes.OTHER},
+                        {disabled: !effectToApply.length || !combatantsToApply.length }
                       ]"
                       class="btn">
                 <span class="oi oi-check" title="save"></span>
