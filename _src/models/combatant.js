@@ -14,7 +14,7 @@ export class Combatant {
     this.name = name;
     this.initiative = initiative;
     this.hp = hp;
-    this.effects = typeof effects === 'string' ? JSON.parse(effects) : effects;
+    this.effects = effects;
   }
 
   get initiative () { return this._initiative }
@@ -22,6 +22,19 @@ export class Combatant {
 
   get hp () { return this._hp }
   set hp (val) { this._hp = Number(val) }
+
+  get effects () { return this._effects }
+  set effects (val) {
+    if (typeof val === 'string') {
+      this._effects = JSON.parse(val)
+    } else {
+      this._effects = val
+    }
+    if (this._effects === null) this._effects = {};
+    if (typeof this._effects.buffs === 'undefined') this._effects.buffs = [];
+    if (typeof this._effects.debuffs === 'undefined') this._effects.debuffs = [];
+    if (typeof this._effects.others === 'undefined') this._effects.others = [];
+  }
 
   toJSON() {
     return {

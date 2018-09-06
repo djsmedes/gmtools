@@ -123,7 +123,7 @@
       },
       saveAppliedEdits () {
         Promise.all(
-          Object.keys(this.editedCombatants).map(uuid => this.updateCombatant(this.editedCombatants[uuid]))
+            Object.keys(this.editedCombatants).map(uuid => this.updateCombatant(this.editedCombatants[uuid]))
         ).then(() => {
           this.exitEditMode()
         })
@@ -156,8 +156,28 @@
         this.effectToApply = '';
         this.combatantsToApply = [];
       },
-      saveAppliedEffects () {
-        // todo - actually save it
+      async saveAppliedEffects () {
+        const effectType2apiName = {
+          [combatant.effectTypes.BUFF]: 'buffs',
+          [combatant.effectTypes.DEBUFF]: 'debuffs',
+          [combatant.effectTypes.OTHER]: 'others'
+        };
+
+
+        let combatantObjs = [];
+        if (this.effectToApply.length) {
+          for (let uuid of this.combatantsToApply) {
+            combatantObjs.push(_.cloneDeep(this.getCombatant(uuid)));
+            combatantObjs[
+            combatantObjs.length - 1
+                ].effects[
+                effectType2apiName[this.applyingEffectType]
+                ].push(this.effectToApply)
+          }
+          await Promise.all(
+              combatantObjs.map(combatant => this.updateCombatant(combatant))
+          )
+        }
         this.exitApplyEffectMode()
       },
       log (something) {

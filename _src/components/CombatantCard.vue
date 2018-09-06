@@ -13,11 +13,10 @@
       {{ localCombatant.name }}
     </h5>
     <div class="card-body">
-      <template v-if="localCombatant.effects">
-        <p v-for="buff in localCombatant.effects.buffs">
-          {{ buff }}
-        </p>
-      </template>
+      <p v-for="buff in localCombatant.effects.buffs">
+        {{ buff }}
+      </p>
+
     </div>
     <div class="card-footer" v-if="!editMode">
       <span class="oi oi-timer" title="initiative" aria-hidden="true"></span>
@@ -79,6 +78,11 @@
       editMode (newBool) {
         if (newBool === false) {
           this.localCombatant = new Combatant(this.combatant)
+        }
+      },
+      combatant: {
+        handler (newCombatant) {
+          if (!this.editMode) this.localCombatant = new Combatant(newCombatant);
         }
       }
     },
