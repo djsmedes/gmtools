@@ -2,9 +2,17 @@
   <div>
     <div class="mb-2 d-flex">
       <div class="btn-group" v-if="!applyingEffectType">
-        <button class="btn btn-success" @click="enterApplyBuffMode">New Buff</button>
-        <button class="btn btn-danger" @click="enterApplyDebuffMode">New Debuff</button>
-        <button class="btn btn-secondary" @click="enterApplyOtherMode">New Effect</button>
+        <button class="btn btn-success" @click="enterApplyBuffMode">
+          <small><span class="oi oi-arrow-top" aria-hidden="true"></span></small>
+          <span class="oi oi-arrow-top" aria-hidden="true"></span>
+        </button>
+        <button class="btn btn-danger" @click="enterApplyDebuffMode">
+          <span class="oi oi-arrow-bottom" aria-hidden="true"></span>
+          <small><span class="oi oi-arrow-bottom" aria-hidden="true"></span></small>
+        </button>
+        <button class="btn btn-secondary" @click="enterApplyOtherMode">
+          <span class="oi oi-ellipses" aria-hidden="true"></span>
+        </button>
       </div>
       <div v-else>
         <form novalidate class="form-inline" @submit.prevent="saveAppliedEffects">
@@ -18,10 +26,10 @@
                         {'btn-secondary': applyingEffectType === effectTypes.OTHER}
                       ]"
                       class="btn">
-                Apply
+                <span class="oi oi-check" title="save"></span>
               </button>
               <button type="button" class="btn btn-outline-dark" @click="exitApplyEffectMode">
-                Cancel
+                <span class="oi oi-x" title="cancel"></span>
               </button>
             </div>
           </div>
