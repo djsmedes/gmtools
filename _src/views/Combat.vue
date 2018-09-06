@@ -36,8 +36,14 @@
         </form>
       </div>
       <div class="btn-group ml-auto">
-        <button class="btn btn-outline-success">Add Combatant</button>
-        <button class="btn btn-outline-danger">Remove Combatant</button>
+        <button class="btn btn-outline-success">
+          <small><span class="oi oi-plus" aria-hidden="true"></span></small>
+          <span class="oi oi-person" aria-hidden="true"></span>
+        </button>
+        <button class="btn btn-outline-danger">
+          <small><span class="oi oi-minus" aria-hidden="true"></span></small>
+          <span class="oi oi-person" aria-hidden="true"></span>
+        </button>
       </div>
     </div>
     <div class="card-deck">
