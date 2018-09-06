@@ -7,12 +7,14 @@ export class Combatant {
                  uuid = '',
                  name = '',
                  initiative = 0,
-                 hp = 0
-               } = { uuid: '', name: '', initiative: 0, hp: 0 }) {
+                 hp = 0,
+                 effects = '{}',
+               }={}) {
     this.uuid = uuid;
     this.name = name;
     this.initiative = initiative;
     this.hp = hp;
+    this.effects = typeof effects === 'string' ? JSON.parse(effects) : effects;
   }
 }
 

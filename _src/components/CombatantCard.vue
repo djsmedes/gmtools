@@ -13,9 +13,11 @@
       {{ localCombatant.name }}
     </h5>
     <div class="card-body">
-      <p class="card-text">
-        buffs, debuffs, and effects go here
-      </p>
+      <template v-if="localCombatant.effects">
+        <p v-for="buff in localCombatant.effects.buffs">
+          {{ buff }}
+        </p>
+      </template>
     </div>
     <div class="card-footer">
       <span class="oi oi-timer" title="initiative" aria-hidden="true"></span>
@@ -46,6 +48,11 @@
       return {
         localCombatant: new Combatant(this.combatant),
         effectTypes
+      }
+    },
+    watch: {
+      combatant (newCombatant) {
+        console.log('combatant changed', newCombatant)
       }
     },
     computed: {},

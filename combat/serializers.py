@@ -12,7 +12,7 @@ class CombatantSerializer(BaseModelSerializer):
 
     class Meta:
         model = Combatant
-        fields = ('name', 'initiative', 'hp', 'loot',
+        fields = ('name', 'initiative', 'hp', 'loot', 'effects',
                   'uuid', 'url')
 
 
