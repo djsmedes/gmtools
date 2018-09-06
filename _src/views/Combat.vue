@@ -11,10 +11,16 @@
           <div class="input-group">
             <input type="text" class="form-control" placeholder="Enter effect..." v-model="effectToApply">
             <div class="input-group-append">
-              <button type="submit" class="btn btn-primary">
+              <button type="submit"
+                      :class="[
+                        {'btn-success': applyingEffectType === effectTypes.BUFF},
+                        {'btn-danger': applyingEffectType === effectTypes.DEBUFF},
+                        {'btn-secondary': applyingEffectType === effectTypes.OTHER}
+                      ]"
+                      class="btn">
                 Apply
               </button>
-              <button type="button" class="btn btn-outline-primary" @click="exitApplyEffectMode">
+              <button type="button" class="btn btn-outline-dark" @click="exitApplyEffectMode">
                 Cancel
               </button>
             </div>
@@ -28,7 +34,10 @@
     </div>
     <div class="card-deck">
       <template v-for="combatant in combatantsByInitiative">
-        <combatant-card :combatant="combatant"/>
+        <combatant-card :combatant="combatant"
+                        :effect-mode="applyingEffectType"
+                        :active="combatantsToApply.includes(combatant.uuid)"
+                        @click="toggleCombatantWillApply($event)"/>
       </template>
     </div>
   </div>
@@ -44,7 +53,9 @@
     data () {
       return {
         applyingEffectType: combatant.effectTypes.NONE,
-        effectToApply: ''
+        effectToApply: '',
+        combatantsToApply: [],
+        effectTypes: combatant.effectTypes
       }
     },
     components: {
@@ -62,6 +73,14 @@
       ...mapActions(combatant.namespace, {
         loadCombatants: combatant.actionTypes.LIST
       }),
+      toggleCombatantWillApply (uuid) {
+        if (!this.applyingEffectType) return;
+        if (this.combatantsToApply.includes(uuid)) {
+          this.combatantsToApply = this.combatantsToApply.filter(item => item !== uuid)
+        } else {
+          this.combatantsToApply.push(uuid)
+        }
+      },
       enterApplyBuffMode () {
         this.applyingEffectType = combatant.effectTypes.BUFF;
       },
@@ -74,6 +93,7 @@
       exitApplyEffectMode () {
         this.applyingEffectType = combatant.effectTypes.NONE;
         this.effectToApply = '';
+        this.combatantsToApply = [];
       },
       saveAppliedEffects () {
         // todo - actually save it
