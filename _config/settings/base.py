@@ -175,3 +175,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
+
+# custom settings
+TESTING = False
