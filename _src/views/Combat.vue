@@ -6,7 +6,7 @@
       <button class="btn btn-danger">Red</button>
     </div>
     <div class="card-deck">
-      <template v-for="combatant in combatants">
+      <template v-for="combatant in combatantsByInitiative">
         <combatant-card :combatant="combatant"/>
       </template>
     </div>
@@ -26,7 +26,10 @@
     computed: {
       ...mapGetters(combatant.namespace, {
         combatants: combatant.getterTypes.LIST
-      })
+      }),
+      combatantsByInitiative () {
+        return [...this.combatants].sort((a, b) => b.initiative - a.initiative)
+      }
     },
     methods: {
       ...mapActions(combatant.namespace, {
