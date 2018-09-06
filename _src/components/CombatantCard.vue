@@ -19,9 +19,29 @@
         </p>
       </template>
     </div>
-    <div class="card-footer">
+    <div class="card-footer" v-if="!editMode">
       <span class="oi oi-timer" title="initiative" aria-hidden="true"></span>
       {{ localCombatant.initiative }}
+    </div>
+    <div class="card-footer" v-else>
+      <form class="form-inline" novalidate @submit.prevent>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">
+              <small><span class="oi oi-timer"></span></small>
+            </span>
+          </div>
+          <input class="form-control"
+                 placeholder="Initiative"
+                 type="number"
+                 v-model="localCombatant.initiative"/>
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="submit">
+              <span class="oi oi-check"></span>
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   </a>
 </template>
@@ -40,6 +60,10 @@
         default: effectTypes.NONE
       },
       active: {
+        type: Boolean,
+        default: false
+      },
+      editMode: {
         type: Boolean,
         default: false
       }

@@ -44,7 +44,9 @@
           <small><span class="oi oi-minus" aria-hidden="true"></span></small>
           <span class="oi oi-person" aria-hidden="true"></span>
         </button>
-        <button class="btn btn-outline-secondary">
+        <button class="btn"
+                :class="[editMode ? 'btn-secondary' : 'btn-outline-secondary']"
+                @click="toggleEditMode">
           <small><span class="oi oi-pencil" aria-hidden="true"></span></small>
           <span class="oi oi-person" aria-hidden="true"></span>
         </button>
@@ -55,6 +57,7 @@
         <combatant-card :combatant="combatant"
                         :effect-mode="applyingEffectType"
                         :active="combatantsToApply.includes(combatant.uuid)"
+                        :edit-mode="editMode"
                         @click="toggleCombatantWillApply($event)"/>
       </template>
     </div>
@@ -73,7 +76,8 @@
         applyingEffectType: combatant.effectTypes.NONE,
         effectToApply: '',
         combatantsToApply: [],
-        effectTypes: combatant.effectTypes
+        effectTypes: combatant.effectTypes,
+        editMode: false
       }
     },
     components: {
@@ -91,6 +95,16 @@
       ...mapActions(combatant.namespace, {
         loadCombatants: combatant.actionTypes.LIST
       }),
+      toggleEditMode () {
+        this.editMode ? this.exitEditMode() : this.enterEditMode()
+      },
+      enterEditMode () {
+        this.exitApplyEffectMode();
+        this.editMode = true;
+      },
+      exitEditMode () {
+        this.editMode = false;
+      },
       toggleCombatantWillApply (uuid) {
         if (!this.applyingEffectType) return;
         if (this.combatantsToApply.includes(uuid)) {
@@ -99,13 +113,19 @@
           this.combatantsToApply.push(uuid)
         }
       },
+      enterApplyEffectMode () {
+        this.exitEditMode()
+      },
       enterApplyBuffMode () {
+        this.enterApplyEffectMode();
         this.applyingEffectType = combatant.effectTypes.BUFF;
       },
       enterApplyDebuffMode () {
+        this.enterApplyEffectMode();
         this.applyingEffectType = combatant.effectTypes.DEBUFF;
       },
       enterApplyOtherMode () {
+        this.enterApplyEffectMode();
         this.applyingEffectType = combatant.effectTypes.OTHER;
       },
       exitApplyEffectMode () {
