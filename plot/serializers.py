@@ -5,6 +5,11 @@ from .models import Campaign
 
 
 class CampaignSerializer(BaseModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name='campaign-detail',
+        lookup_field='uuid'
+    )
+
     class Meta:
         model = Campaign
         fields = (
