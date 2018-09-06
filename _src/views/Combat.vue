@@ -7,9 +7,9 @@
         <button class="btn btn-secondary" @click="enterApplyOtherMode">New Effect</button>
       </div>
       <div v-else>
-        <form novalidate class="form-inline" @submit.prevent>
+        <form novalidate class="form-inline" @submit.prevent="saveAppliedEffects">
           <div class="input-group">
-            <input type="text" class="form-control" placeholder="Enter effect...">
+            <input type="text" class="form-control" placeholder="Enter effect..." v-model="effectToApply">
             <div class="input-group-append">
               <button type="submit" class="btn btn-primary">
                 Apply
@@ -43,7 +43,8 @@
     name: "Combat",
     data () {
       return {
-        applyingEffectType: combatant.effectTypes.NONE
+        applyingEffectType: combatant.effectTypes.NONE,
+        effectToApply: ''
       }
     },
     components: {
@@ -62,16 +63,24 @@
         loadCombatants: combatant.actionTypes.LIST
       }),
       enterApplyBuffMode () {
-        this.applyingEffectType = combatant.effectTypes.BUFF
+        this.applyingEffectType = combatant.effectTypes.BUFF;
       },
       enterApplyDebuffMode () {
-        this.applyingEffectType = combatant.effectTypes.DEBUFF
+        this.applyingEffectType = combatant.effectTypes.DEBUFF;
       },
       enterApplyOtherMode () {
-        this.applyingEffectType = combatant.effectTypes.OTHER
+        this.applyingEffectType = combatant.effectTypes.OTHER;
       },
       exitApplyEffectMode () {
-        this.applyingEffectType = combatant.effectTypes.NONE
+        this.applyingEffectType = combatant.effectTypes.NONE;
+        this.effectToApply = '';
+      },
+      saveAppliedEffects () {
+        // todo - actually save it
+        this.exitApplyEffectMode()
+      },
+      log (something) {
+        console.log(something)
       }
     },
     created () {
