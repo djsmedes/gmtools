@@ -18,10 +18,8 @@
       </p>
     </div>
     <div class="card-footer">
-      <small>
-        <span class="oi oi-timer" title="initiative" aria-hidden="true"></span>
-        {{ localCombatant.initiative }}
-      </small>
+      <span class="oi oi-timer" title="initiative" aria-hidden="true"></span>
+      {{ localCombatant.initiative }}
     </div>
   </a>
 </template>

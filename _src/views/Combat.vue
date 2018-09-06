@@ -44,6 +44,10 @@
           <small><span class="oi oi-minus" aria-hidden="true"></span></small>
           <span class="oi oi-person" aria-hidden="true"></span>
         </button>
+        <button class="btn btn-outline-secondary">
+          <small><span class="oi oi-pencil" aria-hidden="true"></span></small>
+          <span class="oi oi-person" aria-hidden="true"></span>
+        </button>
       </div>
     </div>
     <div class="card-deck">
