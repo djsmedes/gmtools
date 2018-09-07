@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="mb-2 d-flex">
-      <div class="btn-group" v-if="!applyingEffectType">
+      <div class="btn-group" v-if="!applyingEffectType && !Object.keys(selectedEffects).length">
         <button class="btn btn-success" @click="enterApplyBuffMode">
           <small><span class="oi oi-arrow-top" aria-hidden="true"></span></small>
           <span class="oi oi-arrow-top" aria-hidden="true"></span>
@@ -14,7 +14,7 @@
           <span class="oi oi-ellipses" aria-hidden="true"></span>
         </button>
       </div>
-      <div v-else>
+      <div v-else-if="!!applyingEffectType">
         <form novalidate class="form-inline" @submit.prevent="saveAppliedEffects">
           <div class="input-group">
             <input type="text" class="form-control" placeholder="Enter effect..." v-model="effectToApply">
@@ -35,6 +35,14 @@
             </div>
           </div>
         </form>
+      </div>
+      <div v-else-if="!!Object.keys(selectedEffects).length" class="btn-group">
+        <button class="btn btn-dark" @click="deleteSelectedEffects">
+          <span class="oi oi-trash" aria-hidden="true"></span>
+        </button>
+        <button class="btn btn-outline-dark" @click="clearSelectedEffects">
+          <span class="oi oi-x" aria-hidden="true"></span>
+        </button>
       </div>
       <div class="btn-group ml-auto" v-if="!editMode">
         <button class="btn btn-outline-success">
@@ -66,14 +74,17 @@
                         :effect-mode="applyingEffectType"
                         :active="combatantsToApply.includes(combatant.uuid)"
                         :edit-mode="editMode"
+                        :selected-effects="selectedEffects"
                         @click="toggleCombatantWillApply($event)"
-                        @combatant-change="updateEditedCombatants($event)"/>
+                        @combatant-change="updateEditedCombatants($event)"
+                        @effect-clicked="updateSelectedEffects($event)"/>
       </template>
     </div>
   </div>
 </template>
 
 <script>
+  import Vue from 'vue'
   import { mapGetters, mapActions } from 'vuex'
   import CombatantCard from '../components/CombatantCard'
   import combatant from '../models/combatant'
@@ -88,7 +99,8 @@
         combatantsToApply: [],
         effectTypes: combatant.effectTypes,
         editMode: false,
-        editedCombatants: {}
+        editedCombatants: {},
+        selectedEffects: {}
       }
     },
     components: {
@@ -180,6 +192,50 @@
           )
         }
         this.exitApplyEffectMode()
+      },
+      updateSelectedEffects (domIdClicked) {
+        if (this.applyingEffectType) return;
+        if (!this.selectedEffects[domIdClicked]) {
+          Vue.set(this.selectedEffects, domIdClicked, true)
+        } else {
+          Vue.delete(this.selectedEffects, domIdClicked)
+        }
+      },
+      async deleteSelectedEffects () {
+        const type2name = {
+          [combatant.effectTypes.BUFF]: 'buffs',
+          [combatant.effectTypes.DEBUFF]: 'debuffs',
+          [combatant.effectTypes.OTHER]: 'others',
+        };
+
+        let effectsToRemove = Object.keys(this.selectedEffects).reduce((acc, cur) => {
+          let parts = cur.split('_');
+          let uuid = parts[0];
+          let type = parts[1];
+          let index = parts[2];
+          if (!acc[uuid]) acc[uuid] = {};
+          if (!acc[uuid][type2name[type]]) acc[uuid][type2name[type]] = [];
+          acc[uuid][type2name[type]].push(Number(index));
+          return acc;
+        }, {});
+        let combatantsToUpdate = [];
+        for (let uuid in effectsToRemove) {
+          let c = _.cloneDeep(this.getCombatant(uuid));
+          for (let type in effectsToRemove[uuid]) {
+            effectsToRemove[uuid][type].sort();
+            for (let i = effectsToRemove[uuid][type].length - 1; i >= 0; i--) {
+              c.effects[type].splice(effectsToRemove[uuid][type][i], 1)
+            }
+          }
+          combatantsToUpdate.push(c)
+        }
+        await Promise.all(
+            combatantsToUpdate.map(combatant => this.updateCombatant(combatant))
+        );
+        this.clearSelectedEffects()
+      },
+      clearSelectedEffects () {
+        Object.keys(this.selectedEffects).map(key => Vue.delete(this.selectedEffects, key))
       },
       log (something) {
         console.log(something)

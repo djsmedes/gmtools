@@ -13,9 +13,40 @@
       {{ localCombatant.name }}
     </h5>
     <div class="card-body">
-      <p v-for="buff in localCombatant.effects.buffs">
-        {{ buff }}
-      </p>
+      <div v-if="!!localCombatant.effects.buffs">
+        <a v-for="(buff, index) in localCombatant.effects.buffs"
+           href="#"
+           @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.BUFF, index))"
+           class="btn btn-sm btn-success mr-1 mb-1 status-effect-success"
+           :id="makeEffectId(localCombatant.uuid, effectTypes.BUFF, index)"
+           :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.BUFF, index)]},
+                    {disabled: !!effectMode}]">
+          {{ buff }}
+        </a>
+      </div>
+      <div v-if="!!localCombatant.effects.debuffs">
+        <a v-for="(debuff, index) in localCombatant.effects.debuffs"
+           href="#"
+           @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.DEBUFF, index))"
+           class="btn btn-sm btn-danger mr-1 mb-1 status-effect-danger"
+           :id="makeEffectId(localCombatant, effectTypes.DEBUFF, index)"
+           :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.DEBUFF, index)]},
+                    {disabled: !!effectMode}]">
+          {{ debuff }}
+        </a>
+      </div>
+      <div v-if="!!localCombatant.effects.others">
+        <a v-for="(other, index) in localCombatant.effects.others"
+           href="#"
+           @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.OTHER, index))"
+           class="btn btn-sm btn-secondary mr-1 mb-1 status-effect-secondary"
+           :id="makeEffectId(localCombatant, effectTypes.OTHER, index)"
+           :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.OTHER, index)]},
+                    {disabled: !!effectMode}]">
+          {{ other }}
+        </a>
+      </div>
+
 
     </div>
     <div class="card-footer" v-if="!editMode">
@@ -60,6 +91,9 @@
       editMode: {
         type: Boolean,
         default: false
+      },
+      selectedEffects: {
+        type: Object
       }
     },
     data () {
@@ -87,7 +121,11 @@
       }
     },
     computed: {},
-    methods: {},
+    methods: {
+      makeEffectId (uuid, type, index) {
+        return uuid + '_' + String(type) + '_' + String(index)
+      },
+    },
     created () {
     }
   }
@@ -114,6 +152,35 @@
           }
           &:focus, &:active {
             outline: 0;
+          }
+        }
+      }
+    }
+    @each $theme-color-name, $color in $theme-colors {
+      &.status-effect-#{$theme-color-name} {
+        outline: 0;
+
+        &:not(.active) {
+          &:focus, &:active {
+            box-shadow: 0 0 0 0;
+          }
+        }
+
+        &:not(:hover) {
+          background-color: $color !important;
+          border-color: $color !important;
+        }
+
+        &.active {
+          box-shadow: 0 0 0 0.2rem rgba(map_get($theme-colors, 'primary'), 1) !important;
+          color: $color !important;
+          border-color: transparent !important;
+          background-color: transparent !important;
+
+          &:hover {
+            color: white !important;
+            background-color: $color !important;
+            border-color: $color !important;
           }
         }
       }
