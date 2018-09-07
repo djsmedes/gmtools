@@ -3,25 +3,26 @@ from django.contrib.auth.views import FormView
 from django.urls import reverse
 from authtools.forms import UserCreationForm
 from rest_framework.response import Response
-from rest_framework.status import HTTP_401_UNAUTHORIZED
 from rest_framework.views import APIView
+from rest_framework.authentication import TokenAuthentication
 
 from .models import User
 
 
 class UserView(APIView):
+    authentication_classes = [TokenAuthentication]
 
     def get(self, request, format=None):
+        user = {
+            'first_name': '',
+            'last_name': '',
+            'email': ''
+        }
         if request.user.is_authenticated:
-            return Response({
-                'first_name': request.user.first_name,
-                'last_name': request.user.last_name,
-                'email': request.user.email
-            })
-        else:
-            return Response({
-                'detail': 'Authentication credentials were not provided.'
-            }, status=HTTP_401_UNAUTHORIZED)
+            user['first_name'] = request.user.first_name
+            user['last_name'] = request.user.last_name
+            user['email'] = request.user.email
+        return Response(user)
 
 
 class SignupView(FormView):

@@ -6,7 +6,7 @@ import * as Cookies from 'js-cookie'
 export const namespace = 'auth';
 
 export const stateKeys = {
-  TOKEN: 'token',
+  TOKEN: 'authToken',
   USER: 'user'
 };
 

@@ -30,13 +30,18 @@
 </template>
 
 <script>
-  import { mapActions } from 'vuex'
+  import { mapActions, mapState } from 'vuex'
   import auth from '../auth'
   import $ from 'jquery'
   import { routeNames } from '../router'
 
   export default {
     name: "Login",
+    props: {
+      loginRedirect: {
+        default: () => ({ name: routeNames.HOME })
+      }
+    },
     data () {
       return {
         nonFieldErrors: [],
@@ -48,7 +53,13 @@
           value: '',
           errors: []
         },
+        // loginRedirect: { name: routeNames.HOME }
       }
+    },
+    computed: {
+      ...mapState({
+        user: state => state[auth.stateKeys.USER]
+      })
     },
     methods: {
       ...mapActions({
@@ -64,7 +75,7 @@
           form.addClass('was-validated')
         } else {
           this.login({ email: this.email.value, password: this.password.value }).then(() => {
-            this.$router.push({ name: routeNames.HOME })
+            this.$router.push(this.loginRedirect)
           }).catch(errors => {
             this.nonFieldErrors = errors.non_field_errors;
             this.email.errors = errors.email;
@@ -74,7 +85,18 @@
         }
       }
     },
+    beforeRouteEnter (to, from, next) {
+      next(vm => {
+        if (vm.user.isAuthenticated) {
+          next({ name: routeNames.HOME })
+        } else {
+          next()
+        }
+      });
+    },
     created () {
+      // if (this.$route.props.next) this.loginRedirect = this.$route.props.next;
+      console.log(this.loginRedirect)
     }
   }
 </script>
