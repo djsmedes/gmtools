@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="max-width: 400px;" class="mx-auto">
     <form id="login-form" novalidate @submit.prevent="submitCredentials">
       <div class="form-group">
         <label for="email">Email</label>
