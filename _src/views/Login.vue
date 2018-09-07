@@ -30,7 +30,7 @@
 </template>
 
 <script>
-  import { mapActions, mapState } from 'vuex'
+  import { mapActions } from 'vuex'
   import auth from '../auth'
   import $ from 'jquery'
   import { routeNames } from '../router'
@@ -52,14 +52,8 @@
         password: {
           value: '',
           errors: []
-        },
-        // loginRedirect: { name: routeNames.HOME }
+        }
       }
-    },
-    computed: {
-      ...mapState({
-        user: state => state[auth.stateKeys.USER]
-      })
     },
     methods: {
       ...mapActions({

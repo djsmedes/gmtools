@@ -18,7 +18,8 @@ export const getterTypes = {
 export const actionTypes = {
   GET_USER: 'getUser',
   LOGIN: 'getToken',
-  LOGOUT: 'removeToken'
+  LOGOUT: 'removeToken',
+  SIGNUP: 'signUp'
 };
 
 export const mutationTypes = {
@@ -64,6 +65,11 @@ export const store = {
       commit(mutationTypes.SET_USER, {user: new User({ requested: true })});
       return Promise.resolve()
       // todo - clear basically all other data out of vuex...?
+    },
+    [actionTypes.SIGNUP]: ({ commit }, { email, password1, password2 }) => {
+      return api.signUp({ email, password1, password2 }, rdata => {
+        console.log(rdata)
+      })
     }
   },
   mutations: {

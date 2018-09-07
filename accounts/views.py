@@ -12,7 +12,7 @@ from .models import User
 class UserView(APIView):
     authentication_classes = [TokenAuthentication]
 
-    def get(self, request, format=None):
+    def get(self, request, *args, **kwargs):
         user = {
             'first_name': '',
             'last_name': '',
@@ -24,6 +24,15 @@ class UserView(APIView):
             user['last_name'] = request.user.last_name
             user['email'] = request.user.email
         return Response(user)
+
+
+class SignupApiView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request, *args, **kwargs):
+        print(request.POST)
+        return Response({'verification': 'received'})
 
 
 class SignupView(FormView):

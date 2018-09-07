@@ -25,7 +25,20 @@ export function getUser (resolve, axiosConfig = {}) {
   })
 }
 
+export function signUp ({email, password1, password2}, resolve, axiosConfig = {}) {
+  return axios.post(
+      '/api/signup/', {
+        email,
+        password1,
+        password2
+      }, axiosConfig
+  ).then(r => {
+    resolve(r.data)
+  })
+}
+
 export default {
   getToken,
-  getUser
+  getUser,
+  signUp
 }
