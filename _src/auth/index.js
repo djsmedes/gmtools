@@ -48,11 +48,11 @@ export const store = {
     }
   },
   actions: {
-    [actionTypes.LOGIN]: ({ commit }, { email, password }) => {
-      return api.getToken({email, password}, token => {
+    [actionTypes.LOGIN]: async ({ commit, dispatch }, { email, password }) => {
+      await api.getToken({email, password}, token => {
         commit(mutationTypes.SET_TOKEN, { token });
-        commit(mutationTypes.SET_USER, { user: new User(email) })
-      })
+      });
+      return dispatch(actionTypes.GET_USER);
     },
     [actionTypes.GET_USER]: debounce(({ commit, getters }) => {
       return api.getUser(user => {
@@ -61,8 +61,9 @@ export const store = {
     }, 25),
     [actionTypes.LOGOUT]: ({ commit }) => {
       commit(mutationTypes.REMOVE_TOKEN);
-      commit(mutationTypes.SET_USER, {user: new User()})
-      // todo - clear basically all other data out of vuex
+      commit(mutationTypes.SET_USER, {user: new User({ requested: true })});
+      return Promise.resolve()
+      // todo - clear basically all other data out of vuex...?
     }
   },
   mutations: {

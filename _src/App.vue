@@ -71,10 +71,9 @@
         getUser: auth.actionTypes.GET_USER,
         logoutUser: auth.actionTypes.LOGOUT
       }),
-      logout () {
-        this.logoutUser().then(
-            this.$router.push({ name: routeNames.LOGIN })
-        )
+      async logout () {
+        await this.logoutUser();
+        this.$router.push({ name: routeNames.LOGIN });
       }
     },
     async created () {
