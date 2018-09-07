@@ -1,5 +1,6 @@
 from uuid import uuid4
 from django.db import models
+from django.conf import settings
 
 from .managers import TenantModelManager
 
@@ -9,7 +10,7 @@ class TenantModel(models.Model):
         abstract = True
 
     record_owner = models.ForeignKey(
-        'accounts.User',
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="%(app_label)s_%(class)s_owned_set",
         editable=False

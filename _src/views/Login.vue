@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="max-width: 400px;" class="mx-auto">
     <form id="login-form" novalidate @submit.prevent="submitCredentials">
       <div class="form-group">
         <label for="email">Email</label>
@@ -37,6 +37,11 @@
 
   export default {
     name: "Login",
+    props: {
+      loginRedirect: {
+        default: () => ({ name: routeNames.HOME })
+      }
+    },
     data () {
       return {
         nonFieldErrors: [],
@@ -47,7 +52,7 @@
         password: {
           value: '',
           errors: []
-        },
+        }
       }
     },
     methods: {
@@ -56,7 +61,9 @@
       }),
       submitCredentials () {
         const form = $('#login-form');
-        form.removeClass('was-validated');
+        form.removeClass('was-validated').removeClass('was-server-validated');
+        [this.email, this.password].map(item => item.errors = []);
+
         if (!form[0].checkValidity()) {
           form.find(':invalid').each((index, node) => {
             this[node.id].errors.push(node.validationMessage)
@@ -64,17 +71,16 @@
           form.addClass('was-validated')
         } else {
           this.login({ email: this.email.value, password: this.password.value }).then(() => {
-            this.$router.push({ name: routeNames.HOME })
+            this.$router.push(this.loginRedirect)
           }).catch(errors => {
+            console.log(errors.username);
             this.nonFieldErrors = errors.non_field_errors;
-            this.email.errors = errors.email;
+            this.email.errors = errors.username;
             this.password.errors = errors.password;
-            form.addClass('was-validated')
+            form.addClass('was-server-validated')
           })
         }
       }
-    },
-    created () {
     }
   }
 </script>

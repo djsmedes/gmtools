@@ -15,13 +15,13 @@
         </ul>
         <ul v-if="!user.isAuthenticated" class="navbar-nav">
           <li class="nav-item">
-            <router-link class="nav-link" :to="{name: routeNames.LOGIN}" >Sign in</router-link>
+            <router-link class="nav-link" :to="{name: routeNames.LOGIN}">Sign in</router-link>
           </li>
           <li class="navbar-text">
             or
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/account/signup/">Sign up</a>
+            <router-link class="nav-link" :to="{name: routeNames.SIGNUP}">Sign up</router-link>
           </li>
         </ul>
         <ul v-else class="navbar-nav">
@@ -44,7 +44,7 @@
     </nav>
 
     <div class="container">
-      <router-view/>
+      <router-view v-if="doneLoading"/>
     </div>
   </div>
 </template>
@@ -57,7 +57,8 @@
   export default {
     data () {
       return {
-        routeNames
+        routeNames,
+        doneLoading: false
       }
     },
     computed: {
@@ -70,14 +71,14 @@
         getUser: auth.actionTypes.GET_USER,
         logoutUser: auth.actionTypes.LOGOUT
       }),
-      logout() {
-        this.logoutUser().then(
-            this.$router.push({name: routeNames.LOGIN})
-        )
+      async logout () {
+        await this.logoutUser();
+        this.$router.push({ name: routeNames.LOGIN });
       }
     },
-    created() {
-      this.getUser()
+    async created () {
+      if (!this.user.requested) await this.getUser();
+      this.doneLoading = true
     }
   }
 </script>
