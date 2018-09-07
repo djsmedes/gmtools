@@ -2,6 +2,7 @@ import Vue from "vue";
 import api from './api'
 import { User } from './classes'
 import * as Cookies from 'js-cookie'
+import debounce from 'debounce-promise'
 
 export const namespace = 'auth';
 
@@ -53,11 +54,11 @@ export const store = {
         commit(mutationTypes.SET_USER, { user: new User(email) })
       })
     },
-    [actionTypes.GET_USER]: ({ commit, getters }) => {
+    [actionTypes.GET_USER]: debounce(({ commit, getters }) => {
       return api.getUser(user => {
-        commit(mutationTypes.SET_USER, {user: new User(user.email, user.first_name, user.last_name)})
+        commit(mutationTypes.SET_USER, {user: new User(user)})
       }, {headers: getters[getterTypes.AUTH_HEADER]})
-    },
+    }, 25),
     [actionTypes.LOGOUT]: ({ commit }) => {
       commit(mutationTypes.REMOVE_TOKEN);
       commit(mutationTypes.SET_USER, {user: new User()})

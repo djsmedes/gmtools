@@ -84,19 +84,6 @@
           })
         }
       }
-    },
-    beforeRouteEnter (to, from, next) {
-      next(vm => {
-        if (vm.user.isAuthenticated) {
-          next({ name: routeNames.HOME })
-        } else {
-          next()
-        }
-      });
-    },
-    created () {
-      // if (this.$route.props.next) this.loginRedirect = this.$route.props.next;
-      console.log(this.loginRedirect)
     }
   }
 </script>

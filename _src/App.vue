@@ -77,8 +77,9 @@
         )
       }
     },
-    created () {
-      this.getUser().then(() => this.doneLoading = true)
+    async created () {
+      if (!this.user.requested) await this.getUser();
+      this.doneLoading = true
     }
   }
 </script>

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Combat from './views/Combat'
 import store from './store'
+import auth from './auth'
 
 Vue.use(Router);
 
@@ -14,9 +15,23 @@ export const routeNames = {
   SIGNUP: 'signup',
 };
 
-function loginRequired (to, from, next) {
-  return store.state.user.isAuthenticated ? next() : next({ name: routeNames.LOGIN, query: {next: to.path} })
+async function loginRequired (to, from, next) {
+  if (!store.state[auth.stateKeys.USER].requested) {
+    await store.dispatch(auth.actionTypes.GET_USER);
+  }
+  return store.state[auth.stateKeys.USER].isAuthenticated ? next() : next({
+    name: routeNames.LOGIN,
+    query: { next: to.path }
+  })
 }
+
+async function loggedInExcluded (to, from, next) {
+  if (!store.state[auth.stateKeys.USER].requested) {
+    await store.dispatch(auth.actionTypes.GET_USER);
+  }
+  return store.state.user.isAuthenticated ? next({ name: routeNames.HOME }) : next()
+}
+
 
 export default new Router({
   mode: 'history',
@@ -49,12 +64,14 @@ export default new Router({
       path: '/login/',
       name: routeNames.LOGIN,
       component: () => import(/* webpackChunkName: "account" */ './views/Login'),
-      props: route => ({ loginRedirect: route.query.next })
+      props: route => ({ loginRedirect: route.query.next }),
+      beforeEnter: loggedInExcluded
     },
     {
       path: '/signup/',
       name: routeNames.SIGNUP,
-      component: () => import(/* webpackChunkName: "account" */ './views/SignUp')
+      component: () => import(/* webpackChunkName: "account" */ './views/SignUp'),
+      beforeEnter: loggedInExcluded
     }
   ]
 })

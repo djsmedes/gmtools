@@ -16,7 +16,8 @@ class UserView(APIView):
         user = {
             'first_name': '',
             'last_name': '',
-            'email': ''
+            'email': '',
+            'requested': True
         }
         if request.user.is_authenticated:
             user['first_name'] = request.user.first_name
