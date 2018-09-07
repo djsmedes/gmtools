@@ -18,3 +18,7 @@ p.hanging-indent {
   @extend .invalid-feedback;
   display: block;
 }
+
+.was-server-validated .invalid-feedback, .was-server-validated .invalid-feedback-force-show {
+  display: block;
+}

@@ -84,9 +84,3 @@
     }
   }
 </script>
-
-<style scoped lang="scss">
-  .was-server-validated .invalid-feedback, .was-server-validated .invalid-feedback-force-show {
-    display: block;
-  }
-</style>
