@@ -57,7 +57,7 @@ export const store = {
     },
     [actionTypes.GET_USER]: debounce(({ commit, getters }) => {
       return api.getUser(user => {
-        commit(mutationTypes.SET_USER, { user: new User(user) })
+        commit(mutationTypes.SET_USER, { user: new User({ ...user, requested: true }) })
       }, { headers: getters[getterTypes.AUTH_HEADER] })
     }, 25),
     [actionTypes.LOGOUT]: ({ commit }) => {
@@ -67,9 +67,9 @@ export const store = {
       // todo - clear basically all other data out of vuex...?
     },
     [actionTypes.SIGNUP]: ({ commit }, { email, password1, password2 }) => {
-      api.signUp({ email, password1, password2 }, ({ user, token }) => {
-        console.log(user);
-        console.log(token);
+      return api.signUp({ email, password1, password2 }, ({ user, token }) => {
+        commit(mutationTypes.SET_TOKEN, { token });
+        commit(mutationTypes.SET_USER, { user: new User({ ...user, requested: true }) });
       })
     }
   },

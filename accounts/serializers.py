@@ -10,6 +10,9 @@ class UserSerializer(BaseModelSerializer):
         view_name='user-detail',
     )
 
+    def transform_queryset(self, queryset):
+        return queryset
+
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email',

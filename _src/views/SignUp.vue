@@ -91,7 +91,7 @@
             this.email.errors = errors.email;
             this.password1.errors = errors.password1;
             this.password2.errors = errors.password2;
-            form.addClass('was-validated')
+            form.addClass('was-server-validated')
           })
         }
       }

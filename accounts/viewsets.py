@@ -1,23 +1,19 @@
-from django.http.response import HttpResponseForbidden
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, UpdateModelMixin
+from rest_framework.response import Response
+from rest_framework.status import HTTP_403_FORBIDDEN
 
 from .models import User
 from .serializers import UserSerializer
 
 
-class UserViewSet(ModelViewSet):
+class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericViewSet):
     model = User
     serializer_class = UserSerializer
     lookup_field = 'uuid'
     queryset = User.objects.all()
 
-    def create(self, request, *args, **kwargs):
-        return HttpResponseForbidden
-
-    def destroy(self, request, *args, **kwargs):
-        return HttpResponseForbidden
-
     def update(self, request, *args, **kwargs):
         if request.user == self.get_object():
             return super().update(request, *args, **kwargs)
-        return HttpResponseForbidden
+        return Response({'detail': 'Users can only edit themselves.'}, status=HTTP_403_FORBIDDEN)
