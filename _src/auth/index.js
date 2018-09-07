@@ -50,25 +50,26 @@ export const store = {
   },
   actions: {
     [actionTypes.LOGIN]: async ({ commit, dispatch }, { email, password }) => {
-      await api.getToken({email, password}, token => {
+      await api.getToken({ email, password }, token => {
         commit(mutationTypes.SET_TOKEN, { token });
       });
       return dispatch(actionTypes.GET_USER);
     },
     [actionTypes.GET_USER]: debounce(({ commit, getters }) => {
       return api.getUser(user => {
-        commit(mutationTypes.SET_USER, {user: new User(user)})
-      }, {headers: getters[getterTypes.AUTH_HEADER]})
+        commit(mutationTypes.SET_USER, { user: new User(user) })
+      }, { headers: getters[getterTypes.AUTH_HEADER] })
     }, 25),
     [actionTypes.LOGOUT]: ({ commit }) => {
       commit(mutationTypes.REMOVE_TOKEN);
-      commit(mutationTypes.SET_USER, {user: new User({ requested: true })});
+      commit(mutationTypes.SET_USER, { user: new User({ requested: true }) });
       return Promise.resolve()
       // todo - clear basically all other data out of vuex...?
     },
     [actionTypes.SIGNUP]: ({ commit }, { email, password1, password2 }) => {
-      return api.signUp({ email, password1, password2 }, rdata => {
-        console.log(rdata)
+      api.signUp({ email, password1, password2 }, ({ user, token }) => {
+        console.log(user);
+        console.log(token);
       })
     }
   },
@@ -78,7 +79,7 @@ export const store = {
     },
     [mutationTypes.SET_TOKEN] (state, { token }) {
       Vue.set(state, stateKeys.TOKEN, token);
-      Cookies.set(stateKeys.TOKEN, token, { expires: 7, secure: (process.env.NODE_ENV === 'production')})
+      Cookies.set(stateKeys.TOKEN, token, { expires: 7, secure: (process.env.NODE_ENV === 'production') })
     },
     [mutationTypes.REMOVE_TOKEN] (state) {
       Vue.delete(state, stateKeys.TOKEN);

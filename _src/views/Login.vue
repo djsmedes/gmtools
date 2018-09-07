@@ -61,7 +61,9 @@
       }),
       submitCredentials () {
         const form = $('#login-form');
-        form.removeClass('was-validated');
+        form.removeClass('was-validated').removeClass('was-server-validated');
+        [this.email, this.password].map(item => item.errors = []);
+
         if (!form[0].checkValidity()) {
           form.find(':invalid').each((index, node) => {
             this[node.id].errors.push(node.validationMessage)
@@ -71,13 +73,20 @@
           this.login({ email: this.email.value, password: this.password.value }).then(() => {
             this.$router.push(this.loginRedirect)
           }).catch(errors => {
+            console.log(errors.username);
             this.nonFieldErrors = errors.non_field_errors;
-            this.email.errors = errors.email;
+            this.email.errors = errors.username;
             this.password.errors = errors.password;
-            form.addClass('was-validated')
+            form.addClass('was-server-validated')
           })
         }
       }
     }
   }
 </script>
+
+<style scoped lang="scss">
+  .was-server-validated .invalid-feedback, .was-server-validated .invalid-feedback-force-show {
+    display: block;
+  }
+</style>

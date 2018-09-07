@@ -33,7 +33,7 @@ export function signUp ({email, password1, password2}, resolve, axiosConfig = {}
         password2
       }, axiosConfig
   ).then(r => {
-    resolve(r.data)
+    resolve({user: r.data.user, token: r.data.token})
   })
 }
 
