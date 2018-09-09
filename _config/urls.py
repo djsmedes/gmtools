@@ -21,9 +21,8 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import ObtainAuthToken
 
 from accounts.viewsets import UserViewSet, CampaignViewSet
-# from accounts.views import UserView, SignupApiView
-# from plot.viewsets import CampaignViewSet
-# from combat.viewsets import CombatantViewSet
+from accounts.views import UserView, SignupApiView
+from combat.viewsets import CombatantViewSet
 
 router = DefaultRouter()
 
@@ -37,17 +36,17 @@ router.register(
     viewset=CampaignViewSet,
     base_name='campaign'
 )
-# router.register(
-#     prefix='combatant',
-#     viewset=CombatantViewSet,
-#     base_name='combatant'
-# )
+router.register(
+    prefix='combatant',
+    viewset=CombatantViewSet,
+    base_name='combatant'
+)
 
 urlpatterns = [
     path('api/', include(router.urls)),
     path('api/token-auth/', ObtainAuthToken.as_view(), name='token-auth'),
-    # path('api/request-user/', UserView.as_view(), name='request-user-detail'),
-    # path('api/signup/', SignupApiView.as_view(), name='api-signup'),
+    path('api/request-user/', UserView.as_view(), name='request-user-detail'),
+    path('api/signup/', SignupApiView.as_view(), name='api-signup'),
     path('account/', include('authtools.urls')),
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
 ]
