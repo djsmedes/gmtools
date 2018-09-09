@@ -36,7 +36,13 @@
               </span>
               <div class="dropdown-divider"></div>
               <h6 class="dropdown-header">Campaigns</h6>
-              <a class="dropdown-item" href="#" @click.prevent.stop>{{ user.current_campaign }}</a>
+              <a v-for="campaign in user.all_campaigns"
+                 class="dropdown-item"
+                 :class="[{active: campaign === user.current_campaign}]"
+                 href="#"
+                 @click.prevent.stop>
+                {{ campaign }}
+              </a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="/account/">Account options</a>
               <a class="dropdown-item" href="#" @click.prevent="logout">Sign out</a>
@@ -66,13 +72,14 @@
     },
     computed: {
       ...mapState({
-        user: auth.stateKeys.USER
+        user: state => state[auth.stateKeys.USER]
       })
     },
     methods: {
       ...mapActions({
         getUser: auth.actionTypes.GET_USER,
-        logoutUser: auth.actionTypes.LOGOUT
+        logoutUser: auth.actionTypes.LOGOUT,
+        updateUser: auth.actionTypes.UPDATE_USER
       }),
       async logout () {
         await this.logoutUser();
@@ -90,11 +97,6 @@
 
 <style lang="scss">
   @import "scss/shared";
-
-  #app {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
 
   #nav {
     a {
