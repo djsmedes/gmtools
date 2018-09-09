@@ -40,7 +40,7 @@
                  class="dropdown-item"
                  :class="[{active: campaign === user.current_campaign}]"
                  href="#"
-                 @click.prevent.stop>
+                 @click.prevent.stop="setCurrentCampaign(campaign)">
                 {{ campaign }}
               </a>
               <div class="dropdown-divider"></div>
@@ -62,6 +62,7 @@
   import { mapState, mapActions } from 'vuex'
   import auth from './auth'
   import { routeNames } from "./router"
+  import { User } from './auth/classes'
 
   export default {
     data () {
@@ -84,6 +85,10 @@
       async logout () {
         await this.logoutUser();
         this.$router.push({ name: routeNames.LOGIN });
+      },
+      setCurrentCampaign (uuid) {
+        let tempUser = new User({ ...this.user, current_campaign: uuid });
+        this.updateUser(tempUser)
       }
     },
     async created () {

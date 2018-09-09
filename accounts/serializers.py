@@ -7,8 +7,8 @@ from .models import User, Campaign
 
 class UserSerializer(CampaignModelSerializer):
     def __init__(self, *args, **kwargs):
-        self.fields['current_campaign']._kwargs['queryset'] = self.allowed_campaigns(kwargs.get('instance'))
         super().__init__(*args, **kwargs)
+        self.fields['current_campaign']._kwargs['queryset'] = self.allowed_campaigns(self.root.instance)
 
     url = serializers.HyperlinkedIdentityField(
         lookup_field='slug',
