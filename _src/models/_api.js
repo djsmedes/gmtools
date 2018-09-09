@@ -1,12 +1,8 @@
 import axios from 'axios'
 
-function generateUrl (model, uuid = null) {
-  const baseStr = '/api/' + model + '/';
-  if (uuid) {
-    return baseStr + uuid + '/'
-  } else {
-    return baseStr
-  }
+function generateUrl (modelName, uuid = null) {
+  const baseStr = '/api/' + modelName + '/';
+  return uuid ? baseStr + uuid + '/' : baseStr
 }
 
 function consoleWarnError (error) {
@@ -27,54 +23,54 @@ function consoleWarnError (error) {
 }
 
 export default {
-  listObjects ({ model, axiosConfig={} }, resolve, reject = consoleWarnError) {
+  listObjects ({ modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
     return axios.get(
-      generateUrl(model), axiosConfig
+      generateUrl(modelName), axiosConfig
     ).then(r => {
       resolve(r.data)
     }).catch(e => {
       reject(e)
     })
   },
-  createObject ({ object, model, axiosConfig={} }, resolve, reject = consoleWarnError) {
+  createObject ({ object, modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
     return axios.post(
-      generateUrl(model), object, axiosConfig
+      generateUrl(modelName), object, axiosConfig
     ).then(r => {
       resolve(r.data)
     }).catch(e => {
       reject(e)
     })
   },
-  retrieveObject ({ uuid, model, axiosConfig={} }, resolve, reject = consoleWarnError) {
+  retrieveObject ({ uuid, modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
     return axios.get(
-      generateUrl(model, uuid), axiosConfig
+      generateUrl(modelName, uuid), axiosConfig
     ).then(r => {
       resolve(r.data)
     }).catch(e => {
       reject(e)
     })
   },
-  updateObject ({ object, model, axiosConfig={} }, resolve, reject = consoleWarnError) {
+  updateObject ({ object, modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
     return axios.put(
-      generateUrl(model, object.uuid), object, axiosConfig
+      generateUrl(modelName, object.uuid), object, axiosConfig
     ).then(r => {
       resolve(r.data)
     }).catch(e => {
       reject(e)
     })
   },
-  destroyObject ({ uuid, model, axiosConfig={} }, resolve, reject = consoleWarnError) {
+  destroyObject ({ uuid, modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
     return axios.delete(
-      generateUrl(model, uuid), axiosConfig
+      generateUrl(modelName, uuid), axiosConfig
     ).then(() => {
       resolve()
     }).catch(e => {
       reject(e)
     })
   },
-  optionsObject ({ model, axiosConfig={} }, resolve, reject = consoleWarnError) {
+  optionsObject ({ modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
     return axios.options(
-      generateUrl(model), axiosConfig
+      generateUrl(modelName), axiosConfig
     ).then(r => {
       resolve(r.data)
     }).catch(e => {
