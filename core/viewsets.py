@@ -20,21 +20,25 @@ class TenantMetaData(SimpleMetadata):
         return field_info
 
 
-class BaseModelViewSet(ModelViewSet):
+class CampaignModelViewSet(ModelViewSet):
     """An ABSTRACT class, which other model viewsets should inherit from"""
     model = None  # model should inherit from CampaignOwnedModel
-    lookup_field = 'uuid'
+    lookup_field = 'slug'
     metadata_class = TenantMetaData
 
     def get_queryset(self):
         return self.model.objects.of_requester(self.request)
 
     def perform_create(self, serializer):
-        record_owner = self.request.user
-        assert record_owner.is_authenticated, (
+        assert self.request.user.is_authenticated, (
             'Log in to create objects.'
         )
-        serializer.save(record_owner=record_owner)
+        campaign = self.request.user.current_campaign
+        assert campaign, (
+            'Choose a campaign to create objects.'
+        )
+
+        serializer.save(campaign=campaign)
 
     # object-level permissions
     create_permission = None

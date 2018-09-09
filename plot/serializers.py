@@ -1,3 +1,3 @@
 from rest_framework import serializers
 
-from core.serializers import BaseModelSerializer
+from core.serializers import CampaignModelSerializer

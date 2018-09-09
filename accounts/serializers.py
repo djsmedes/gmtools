@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from core.serializers import BaseModelSerializer
+from core.serializers import CampaignModelSerializer
 from .models import User, Campaign
 
 
-class UserSerializer(BaseModelSerializer):
+class UserSerializer(CampaignModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         lookup_field='slug',
         view_name='user-detail',
@@ -20,7 +20,7 @@ class UserSerializer(BaseModelSerializer):
                   'slug', 'url')
 
 
-class CampaignSerializer(BaseModelSerializer):
+class CampaignSerializer(CampaignModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='campaign-detail',
         lookup_field='slug'

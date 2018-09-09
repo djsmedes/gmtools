@@ -1,10 +1,11 @@
-from rest_framework.viewsets import GenericViewSet
+from django.db.models import Q
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.status import HTTP_403_FORBIDDEN
 
-from .models import User
-from .serializers import UserSerializer
+from .models import User, Campaign
+from .serializers import UserSerializer, CampaignSerializer
 
 
 class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericViewSet):
@@ -17,3 +18,15 @@ class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericV
         if request.user == self.get_object():
             return super().update(request, *args, **kwargs)
         return Response({'detail': 'Users can only edit themselves.'}, status=HTTP_403_FORBIDDEN)
+
+
+class CampaignViewSet(ModelViewSet):
+    model = Campaign
+    serializer_class = CampaignSerializer
+    lookup_field = 'slug'
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            Campaign.objects.filter(Q(gm_set=self.request.user) | Q(player_set=self.request.user))
+        else:
+            Campaign.objects.none()

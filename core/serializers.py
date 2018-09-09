@@ -4,8 +4,8 @@ from rest_framework.relations import PrimaryKeyRelatedField
 from .managers import CampaignModelManager
 
 
-class BaseModelSerializer(serializers.ModelSerializer):
-    record_owner = serializers.SlugRelatedField(
+class CampaignModelSerializer(serializers.ModelSerializer):
+    campaign = serializers.SlugRelatedField(
         read_only=True,
         slug_field='slug'
     )

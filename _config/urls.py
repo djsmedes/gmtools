@@ -20,7 +20,7 @@ from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import ObtainAuthToken
 
-from accounts.viewsets import UserViewSet
+from accounts.viewsets import UserViewSet, CampaignViewSet
 # from accounts.views import UserView, SignupApiView
 # from plot.viewsets import CampaignViewSet
 # from combat.viewsets import CombatantViewSet
@@ -32,11 +32,11 @@ router.register(
     viewset=UserViewSet,
     base_name='user'
 )
-# router.register(
-#     prefix='campaign',
-#     viewset=CampaignViewSet,
-#     base_name='campaign'
-# )
+router.register(
+    prefix='campaign',
+    viewset=CampaignViewSet,
+    base_name='campaign'
+)
 # router.register(
 #     prefix='combatant',
 #     viewset=CombatantViewSet,

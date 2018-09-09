@@ -7,7 +7,7 @@ from core.utils import make_slug
 
 class User(AbstractEmailUser):
     slug = models.SlugField(
-        max_length=25, allow_unicode=True, default=make_slug, unique=True
+        max_length=25, allow_unicode=True, default=make_slug, unique=True, editable=False
     )
 
     first_name = models.CharField(max_length=31, null=True, blank=True)
@@ -40,7 +40,10 @@ class User(AbstractEmailUser):
 
 class Campaign(models.Model):
     slug = models.SlugField(
-        max_length=25, allow_unicode=True, default=make_slug, unique=True
+        max_length=25, allow_unicode=True, default=make_slug, unique=True, editable=False
+    )
+    name = models.CharField(
+        max_length=63
     )
     creation_date = models.DateField(auto_now_add=True)
     gm_set = models.ManyToManyField(

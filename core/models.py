@@ -15,6 +15,6 @@ class CampaignOwnedModel(models.Model):
         editable=False
     )
     slug = models.SlugField(
-        max_length=25, allow_unicode=True, default=make_slug, unique=True
+        max_length=25, allow_unicode=True, default=make_slug, unique=True, editable=False
     )
     objects = CampaignModelManager()
