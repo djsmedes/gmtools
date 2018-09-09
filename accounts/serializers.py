@@ -9,6 +9,12 @@ class UserSerializer(CampaignModelSerializer):
         lookup_field='slug',
         view_name='user-detail',
     )
+    all_campaigns = serializers.SerializerMethodField()
+
+    def get_all_campaigns(self, instance):
+        ret = set([campaign.slug for campaign in instance.campaigns_gm_of.all()])
+        ret.update([campaign.slug for campaign in instance.campaigns_player_of.all()])
+        return ret
 
     def transform_queryset(self, queryset):
         return queryset
@@ -16,7 +22,7 @@ class UserSerializer(CampaignModelSerializer):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email',
-                  'current_campaign',
+                  'current_campaign', 'all_campaigns',
                   'slug', 'url')
 
     def validate_current_campaign(self, value):
