@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
 
-from .managers import TenantModelManager
+from .managers import CampaignModelManager
 
 
 class BaseModelSerializer(serializers.ModelSerializer):
@@ -21,7 +21,7 @@ class BaseModelSerializer(serializers.ModelSerializer):
                 self.fields[field_name] = type(field)(**kwargs)
 
     def transform_queryset(self, queryset):
-        if isinstance(queryset, TenantModelManager):
+        if isinstance(queryset, CampaignModelManager):
             return queryset.of_requester(self.root.context.get('request'))
         else:
             return queryset

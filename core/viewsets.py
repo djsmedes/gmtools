@@ -22,7 +22,7 @@ class TenantMetaData(SimpleMetadata):
 
 class BaseModelViewSet(ModelViewSet):
     """An ABSTRACT class, which other model viewsets should inherit from"""
-    model = None  # model should inherit from TenantModel
+    model = None  # model should inherit from CampaignOwnedModel
     lookup_field = 'uuid'
     metadata_class = TenantMetaData
 
