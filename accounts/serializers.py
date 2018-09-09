@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import serializers
 
 from core.serializers import CampaignModelSerializer
@@ -5,6 +6,10 @@ from .models import User, Campaign
 
 
 class UserSerializer(CampaignModelSerializer):
+    def __init__(self, *args, **kwargs):
+        self.fields['current_campaign']._kwargs['queryset'] = self.allowed_campaigns(kwargs.get('instance'))
+        super().__init__(*args, **kwargs)
+
     url = serializers.HyperlinkedIdentityField(
         lookup_field='slug',
         view_name='user-detail',
@@ -12,9 +17,12 @@ class UserSerializer(CampaignModelSerializer):
     all_campaigns = serializers.SerializerMethodField()
 
     def get_all_campaigns(self, instance):
-        ret = set([campaign.slug for campaign in instance.campaigns_gm_of.all()])
-        ret.update([campaign.slug for campaign in instance.campaigns_player_of.all()])
-        return ret
+        return [campaign.slug for campaign in self.allowed_campaigns(instance)]
+
+    def allowed_campaigns(self, instance):
+        if instance is None:
+            return Campaign.objects.none()
+        return Campaign.objects.filter(Q(gm_set=instance) | Q(player_set=instance))
 
     def transform_queryset(self, queryset):
         return queryset
