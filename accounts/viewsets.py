@@ -10,7 +10,7 @@ from .serializers import UserSerializer
 class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericViewSet):
     model = User
     serializer_class = UserSerializer
-    lookup_field = 'uuid'
+    lookup_field = 'slug'
     queryset = User.objects.all()
 
     def update(self, request, *args, **kwargs):

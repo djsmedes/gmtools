@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
 from core.serializers import BaseModelSerializer
-from .models import User
+from .models import User, Campaign
 
 
 class UserSerializer(BaseModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        lookup_field='uuid',
+        lookup_field='slug',
         view_name='user-detail',
     )
 
@@ -17,4 +17,23 @@ class UserSerializer(BaseModelSerializer):
         model = User
         fields = ('first_name', 'last_name', 'email',
                   'current_campaign',
-                  'uuid', 'url')
+                  'slug', 'url')
+
+
+class CampaignSerializer(BaseModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name='campaign-detail',
+        lookup_field='slug'
+    )
+
+    class Meta:
+        model = Campaign
+        fields = (
+            'gm_set', 'player_set',
+            'slug', 'url'
+        )
+
+    def validate_gm_set(self, value):
+        if not value:
+            raise serializers.ValidationError('The last GM cannot be removed. Add another GM first.')
+        return value

@@ -1,16 +1,20 @@
-from uuid import uuid4
 from django.db import models
+from django.conf import settings
 from authtools.models import AbstractEmailUser
+
+from core.utils import make_slug
 
 
 class User(AbstractEmailUser):
-    uuid = models.UUIDField(db_index=True, default=uuid4, unique=True, editable=False)
+    slug = models.SlugField(
+        max_length=25, allow_unicode=True, default=make_slug, unique=True
+    )
 
     first_name = models.CharField(max_length=31, null=True, blank=True)
     last_name = models.CharField(max_length=31, null=True, blank=True)
 
     current_campaign = models.ForeignKey(
-        'plot.Campaign',
+        'accounts.Campaign',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -32,3 +36,20 @@ class User(AbstractEmailUser):
 
     def get_short_name(self):
         return self.name
+
+
+class Campaign(models.Model):
+    slug = models.SlugField(
+        max_length=25, allow_unicode=True, default=make_slug, unique=True
+    )
+    creation_date = models.DateField(auto_now_add=True)
+    gm_set = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        related_name='campaigns_gm_of',
+    )
+    player_set = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='campaigns_player_of',
+        editable=False
+    )
