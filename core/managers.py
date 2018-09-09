@@ -18,6 +18,6 @@ class CampaignModelManager(models.Manager):
         :rtype: Queryset
         """
         if request.user.is_authenticated and request.user.current_campaign:
-            return self.owned_by(request.user.current_campaign)
+            return self.of_campaign(request.user.current_campaign)
         else:
             return self.none()
