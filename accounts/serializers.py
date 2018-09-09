@@ -19,6 +19,13 @@ class UserSerializer(CampaignModelSerializer):
                   'current_campaign',
                   'slug', 'url')
 
+    def validate_current_campaign(self, value):
+        ok_choices = list(self.root.instance.campaigns_player_of.all())
+        ok_choices.extend(self.root.instance.campaigns_gm_of.all())
+        if value not in ok_choices:
+            raise serializers.ValidationError('Cannot set current campaign to one of which you are not a member.')
+        return value
+
 
 class CampaignSerializer(CampaignModelSerializer):
     url = serializers.HyperlinkedIdentityField(
