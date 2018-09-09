@@ -40,7 +40,7 @@ export class Combatant {
 
   set effects (val) {
     if (typeof val === 'string') {
-      this._effects = JSON.parse(val)
+      this._effects = !val.length ? null : JSON.parse(val)
     } else {
       this._effects = val
     }

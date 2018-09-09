@@ -6,6 +6,11 @@ function generateUrl (modelName, uuid = null) {
 }
 
 function consoleWarnError (error) {
+  if (!error.response) {
+    console.warn(error);
+    return
+  }
+
   let errString = String(error.response.status) + ' ' + String(error.response.statusText)
 
   if (error.response.data) {
