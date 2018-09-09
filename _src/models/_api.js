@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-function generateUrl (modelName, uuid = null) {
+export function generateUrl (modelName, uuid = null) {
   const baseStr = '/api/' + modelName + '/';
   return uuid ? baseStr + uuid + '/' : baseStr
 }
@@ -27,54 +27,8 @@ function consoleWarnError (error) {
   console.warn(errString)
 }
 
-export default {
-  listObjects ({ modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
+export function listObjects ({ modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
     return axios.get(
-      generateUrl(modelName), axiosConfig
-    ).then(r => {
-      resolve(r.data)
-    }).catch(e => {
-      reject(e)
-    })
-  },
-  createObject ({ object, modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
-    return axios.post(
-      generateUrl(modelName), object, axiosConfig
-    ).then(r => {
-      resolve(r.data)
-    }).catch(e => {
-      reject(e)
-    })
-  },
-  retrieveObject ({ uuid, modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
-    return axios.get(
-      generateUrl(modelName, uuid), axiosConfig
-    ).then(r => {
-      resolve(r.data)
-    }).catch(e => {
-      reject(e)
-    })
-  },
-  updateObject ({ object, modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
-    return axios.put(
-      generateUrl(modelName, object.uuid), object, axiosConfig
-    ).then(r => {
-      resolve(r.data)
-    }).catch(e => {
-      reject(e)
-    })
-  },
-  destroyObject ({ uuid, modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
-    return axios.delete(
-      generateUrl(modelName, uuid), axiosConfig
-    ).then(() => {
-      resolve()
-    }).catch(e => {
-      reject(e)
-    })
-  },
-  optionsObject ({ modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
-    return axios.options(
       generateUrl(modelName), axiosConfig
     ).then(r => {
       resolve(r.data)
@@ -82,4 +36,62 @@ export default {
       reject(e)
     })
   }
+
+export function createObject ({ object, modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
+    return axios.post(
+      generateUrl(modelName), object, axiosConfig
+    ).then(r => {
+      resolve(r.data)
+    }).catch(e => {
+      reject(e)
+    })
+  }
+
+export function retrieveObject ({ uuid, modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
+    return axios.get(
+      generateUrl(modelName, uuid), axiosConfig
+    ).then(r => {
+      resolve(r.data)
+    }).catch(e => {
+      reject(e)
+    })
+  }
+
+export function updateObject ({ object, modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
+    return axios.put(
+      generateUrl(modelName, object.uuid), object, axiosConfig
+    ).then(r => {
+      resolve(r.data)
+    }).catch(e => {
+      reject(e)
+    })
+  }
+
+export function destroyObject ({ uuid, modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
+    return axios.delete(
+      generateUrl(modelName, uuid), axiosConfig
+    ).then(() => {
+      resolve()
+    }).catch(e => {
+      reject(e)
+    })
+  }
+
+export function optionsObject ({ modelName, axiosConfig={} }, resolve, reject = consoleWarnError) {
+    return axios.options(
+      generateUrl(modelName), axiosConfig
+    ).then(r => {
+      resolve(r.data)
+    }).catch(e => {
+      reject(e)
+    })
+}
+
+export default {
+  listObjects,
+  createObject,
+  retrieveObject,
+  updateObject,
+  destroyObject,
+  optionsObject
 }

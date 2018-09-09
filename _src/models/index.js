@@ -1,5 +1,5 @@
 import combatant from './combatant'
 
 export default {
-  COMBATANT: combatant.modelName
+  COMBATANT: User.modelName
 }

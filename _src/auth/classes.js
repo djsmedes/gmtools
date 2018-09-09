@@ -1,9 +1,11 @@
 export class User {
   constructor({
+                uuid='', slug='',
                 email='', first_name='', last_name='',
                 requested=false,
                 current_campaign='', all_campaigns=[]
   }={}) {
+    this.uuid = slug ? slug : uuid;
     this.email = email;
     this.first_name = first_name;
     this.last_name = last_name;
@@ -18,6 +20,16 @@ export class User {
 
   get isAuthenticated() {
     return this.email.length > 0;
+  }
+
+  static get modelName() { return 'user' }
+
+  toJSON () {
+    return {
+      slug: this.uuid,
+      email: this.email,
+      current_campaign: this.current_campaign
+    }
   }
 }
 

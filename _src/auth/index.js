@@ -1,5 +1,6 @@
-import Vue from "vue";
+import Vue from 'vue'
 import api from './api'
+import { updateObject } from '../models/_api'
 import { User } from './classes'
 import * as Cookies from 'js-cookie'
 import debounce from 'debounce-promise'
@@ -19,7 +20,8 @@ export const actionTypes = {
   GET_USER: 'getUser',
   LOGIN: 'getToken',
   LOGOUT: 'removeToken',
-  SIGNUP: 'signUp'
+  SIGNUP: 'signUp',
+  UPDATE_USER: 'updateUser'
 };
 
 export const mutationTypes = {
@@ -70,6 +72,11 @@ export const store = {
       return api.signUp({ email, password1, password2 }, ({ user, token }) => {
         commit(mutationTypes.SET_TOKEN, { token });
         commit(mutationTypes.SET_USER, { user: new User({ ...user, requested: true }) });
+      })
+    },
+    [actionTypes.UPDATE_USER]: ({ commit }, object) => {
+      return updateObject({ modelName: User.modelName, object }, returnedData => {
+        commit(mutationTypes.SET_USER, { user: new User({ ...returnedData, requested: true })})
       })
     }
   },

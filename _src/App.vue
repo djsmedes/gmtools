@@ -35,6 +35,9 @@
                 Signed in as <strong>{{ user.repr }}</strong>
               </span>
               <div class="dropdown-divider"></div>
+              <h6 class="dropdown-header">Campaigns</h6>
+              <a class="dropdown-item" href="#" @click.prevent.stop>{{ user.current_campaign }}</a>
+              <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="/account/">Account options</a>
               <a class="dropdown-item" href="#" @click.prevent="logout">Sign out</a>
             </div>
@@ -77,7 +80,9 @@
       }
     },
     async created () {
-      if (!this.user.requested) await this.getUser();
+      if (!this.user.requested) {
+        await this.getUser();
+      }
       this.doneLoading = true
     }
   }

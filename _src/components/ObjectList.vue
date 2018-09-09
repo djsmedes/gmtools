@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="card-header">
-      {{ model.modelName }}
+      {{ User.modelName }}
     </div>
     <div class="list-group list-group-flush">
       <router-link v-for="object in objectList"
@@ -12,7 +12,7 @@
       <router-link v-if="createViewName"
                    :to="{ name: createViewName }"
                    class="list-group-item" key="new">
-        Create new {{ model.modelName }}
+        Create new {{ User.modelName }}
       </router-link>
     </div>
   </div>
