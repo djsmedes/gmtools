@@ -6,6 +6,10 @@ if get_env_variable('LOCAL', False):
         'localhost'
     ]
 else:
+    ALLOWED_HOSTS += [
+        '.gmtools-test.herokuapp.com'
+    ]
+    ALLOWED_HOSTS += ['.gmtools-test-pr-{}.herokuapp.com'.format(num) for num in range(1, 51)]
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
