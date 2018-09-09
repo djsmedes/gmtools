@@ -15,6 +15,10 @@ export class ApiVuexModel {
   constructor (modelName, modelConstructor) {
     this.namespace = modelName;
     this.modelName = modelName;
+    this.stateKeys = {
+      OBJECTS: 'objects',
+      NEEDS_RELOAD: 'needsReload'
+    };
     this.getterTypes = {
       IDS: this.modelName + 'IDs',
       LIST: this.modelName + 'List',
@@ -39,22 +43,23 @@ export class ApiVuexModel {
     this.store = {
       namespaced: true,
       state: {
-        [this.modelName]: {}
+        [this.stateKeys.OBJECTS]: {},
+        [this.stateKeys.NEEDS_RELOAD]: true
       },
       getters: {
         [this.getterTypes.IDS]: state => {
-          return Object.keys(state[modelName])
+          return Object.keys(state[this.stateKeys.OBJECTS])
         },
         [this.getterTypes.LIST]: (state, getters) => {
           return getters[this.getterTypes.IDS].map(
-              uuid => Object.assign(state[modelName][uuid], { uuid: uuid })
+              uuid => Object.assign(state[this.stateKeys.OBJECTS][uuid], { uuid: uuid })
           )
         },
-        [this.getterTypes.BY_ID]: state => uuid => state[modelName][uuid]
+        [this.getterTypes.BY_ID]: state => uuid => state[this.stateKeys.OBJECTS][uuid]
       },
       actions: {
         [this.actionTypes.LIST]: debounce(({ state, commit }) => {
-          if (typeof state[modelName] === 'undefined' || _.isEmpty(state[modelName])) {
+          if (state[this.stateKeys.NEEDS_RELOAD] || typeof state[this.stateKeys.OBJECTS] === 'undefined' || _.isEmpty(state[this.stateKeys.OBJECTS])) {
             return api.listObjects({
               modelName: this.modelName
             }, objList => {
@@ -89,10 +94,11 @@ export class ApiVuexModel {
       },
       mutations: {
         [this.mutationTypes.SET_LIST]: (state, { objList }) => {
-          Vue.set(state, this.modelName, objList)
+          Vue.set(state, this.stateKeys.OBJECTS, objList);
+          Vue.set(state, this.stateKeys.NEEDS_RELOAD, false);
         },
         [this.mutationTypes.SET]: (state, { object }) => {
-          Vue.set(state[this.modelName], object.uuid, object)
+          Vue.set(state[this.stateKeys.OBJECTS], object.uuid, object)
         }
       }
     };

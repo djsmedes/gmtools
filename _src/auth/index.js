@@ -82,7 +82,9 @@ export const store = {
   },
   mutations: {
     [mutationTypes.SET_USER] (state, { user }) {
-      Vue.set(state, stateKeys.USER, user)
+      Vue.set(state, stateKeys.USER, user);
+      Vue.set(state['combatant'], 'needsReload', true)
+      // todo - generalize this out so I can say the everything needs reloading
     },
     [mutationTypes.SET_TOKEN] (state, { token }) {
       Vue.set(state, stateKeys.TOKEN, token);
