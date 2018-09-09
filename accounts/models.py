@@ -56,3 +56,6 @@ class Campaign(models.Model):
         related_name='campaigns_player_of',
         editable=False
     )
+
+    def __str__(self):
+        return self.name

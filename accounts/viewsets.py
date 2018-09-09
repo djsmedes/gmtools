@@ -27,6 +27,13 @@ class CampaignViewSet(ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            Campaign.objects.filter(Q(gm_set=self.request.user) | Q(player_set=self.request.user))
+            return Campaign.objects.filter(Q(gm_set=self.request.user) | Q(player_set=self.request.user))
         else:
-            Campaign.objects.none()
+            return Campaign.objects.none()
+
+    def perform_create(self, serializer):
+        assert self.request.user.is_authenticated, (
+            'Log in to create campaigns.'
+        )
+
+        serializer.save(gm_set=[self.request.user])

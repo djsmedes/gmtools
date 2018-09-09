@@ -36,7 +36,7 @@ class CampaignSerializer(CampaignModelSerializer):
     class Meta:
         model = Campaign
         fields = (
-            'gm_set', 'player_set',
+            'name', 'gm_set', 'player_set',
             'slug', 'url'
         )
 
