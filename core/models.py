@@ -1,24 +1,20 @@
-from uuid import uuid4
 from django.db import models
-from django.conf import settings
 
-from .managers import TenantModelManager
+from .utils import make_slug
+from .managers import CampaignModelManager
 
 
-class TenantModel(models.Model):
+class CampaignOwnedModel(models.Model):
     class Meta:
         abstract = True
 
-    record_owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+    campaign = models.ForeignKey(
+        'accounts.Campaign',
         on_delete=models.CASCADE,
         related_name="%(app_label)s_%(class)s_owned_set",
         editable=False
     )
-    uuid = models.UUIDField(
-        db_index=True,
-        default=uuid4,
-        unique=True,
-        editable=False
+    slug = models.SlugField(
+        max_length=25, allow_unicode=True, default=make_slug, unique=True, editable=False
     )
-    objects = TenantModelManager()
+    objects = CampaignModelManager()

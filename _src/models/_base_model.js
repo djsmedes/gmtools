@@ -1,13 +1,12 @@
 import api from './_api'
 import Vue from 'vue'
 import _ from 'lodash'
-import { getterTypes } from '../auth'
 import debounce from 'debounce-promise'
 
 
 function array2ObjByUUID (array, objConstructor) {
   return array.reduce((accumulator, currentVal) => {
-    accumulator[currentVal.uuid] = new objConstructor(currentVal);
+    accumulator[currentVal.slug] = new objConstructor(currentVal);
     return accumulator
   }, {})
 }
@@ -57,7 +56,7 @@ export class ApiVuexModel {
         [this.actionTypes.LIST]: debounce(({ state, commit }) => {
           if (typeof state[modelName] === 'undefined' || _.isEmpty(state[modelName])) {
             return api.listObjects({
-              model: this.modelName
+              modelName: this.modelName
             }, objList => {
               commit(this.mutationTypes.SET_LIST, {
                 objList: array2ObjByUUID(objList, modelConstructor)
@@ -66,11 +65,11 @@ export class ApiVuexModel {
           } else {
             return Promise.resolve()
           }
-        }, 100, { leading: true }),
+        }, 50),
         [this.actionTypes.CREATE]: ({ state, commit }, object) => {
           return api.createObject({
             object,
-            model: this.modelName
+            modelName: this.modelName
           }, returnedObject => {
             commit(this.mutationTypes.SET, {
               object: new modelConstructor(returnedObject)
@@ -80,7 +79,7 @@ export class ApiVuexModel {
         [this.actionTypes.UPDATE]: ({ state, commit }, object) => {
           return api.updateObject({
             object,
-            model: this.modelName
+            modelName: this.modelName
           }, returnedObject => {
             commit(this.mutationTypes.SET, {
               object: new modelConstructor(returnedObject)

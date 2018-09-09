@@ -5,7 +5,7 @@ from rest_framework.metadata import SimpleMetadata
 from rest_framework.relations import RelatedField, ManyRelatedField
 
 
-class TenantMetaData(SimpleMetadata):
+class ChoicesMetaData(SimpleMetadata):
 
     def get_field_info(self, field):
         field_info = super().get_field_info(field)
@@ -20,21 +20,25 @@ class TenantMetaData(SimpleMetadata):
         return field_info
 
 
-class BaseModelViewSet(ModelViewSet):
+class CampaignModelViewSet(ModelViewSet):
     """An ABSTRACT class, which other model viewsets should inherit from"""
-    model = None  # model should inherit from TenantModel
-    lookup_field = 'uuid'
-    metadata_class = TenantMetaData
+    model = None  # model should inherit from CampaignOwnedModel
+    lookup_field = 'slug'
+    metadata_class = ChoicesMetaData
 
     def get_queryset(self):
         return self.model.objects.of_requester(self.request)
 
     def perform_create(self, serializer):
-        record_owner = self.request.user
-        assert record_owner.is_authenticated, (
+        assert self.request.user.is_authenticated, (
             'Log in to create objects.'
         )
-        serializer.save(record_owner=record_owner)
+        campaign = self.request.user.current_campaign
+        assert campaign, (
+            'Choose a campaign to create objects.'
+        )
+
+        serializer.save(campaign=campaign)
 
     # object-level permissions
     create_permission = None
@@ -42,19 +46,19 @@ class BaseModelViewSet(ModelViewSet):
     update_permission = None
     destroy_permission = None
 
-    def _has_permission(self, which_permission, request, uuid):
+    def _has_permission(self, which_permission, request, slug):
         if not which_permission:
             return True
-        if not uuid:
+        if not slug:
             return False
         user = request.user
-        obj = self.model.objects.of_requester(request).get(uuid=uuid)
+        obj = self.model.objects.of_requester(request).get(slug=slug)
         if user.has_perm(which_permission, obj):
             return True
         return False
 
     def _permission_wrapper_function(self, success_function, which_permission, request, *args, **kwargs):
-        if self._has_permission(which_permission, request, kwargs.get('uuid', None)):
+        if self._has_permission(which_permission, request, kwargs.get('slug', None)):
             return success_function(request, *args, **kwargs)
         else:
             return HttpResponseForbidden()

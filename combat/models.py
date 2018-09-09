@@ -1,9 +1,9 @@
 from django.db import models
 
-from core.models import TenantModel
+from core.models import CampaignOwnedModel
 
 
-class Combatant(TenantModel):
+class Combatant(CampaignOwnedModel):
     name = models.CharField(max_length=31)
     initiative = models.IntegerField(null=True, blank=True)
     hp = models.IntegerField(null=True, blank=True)

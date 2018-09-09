@@ -1,23 +1,23 @@
 from django.db import models
 
 
-class TenantModelManager(models.Manager):
+class CampaignModelManager(models.Manager):
 
-    def owned_by(self, owner):
-        """Get records owned by specific owner
+    def of_campaign(self, campaign):
+        """Get records for a specific campaign
 
-        :param: owner -- the record owner, an accounts.User object
+        :param: campaign -- the campaign the record belongs to, an accounts.Campaign object
         :rtype: Queryset
         """
-        return super().get_queryset().filter(record_owner=owner)
+        return super().get_queryset().filter(campaign=campaign)
 
     def of_requester(self, request):
-        """Get records owned by the requester
+        """Get records from the requester's current campaign
 
         :param: request -- django request
         :rtype: Queryset
         """
-        if request.user.is_authenticated:
-            return self.owned_by(request.user)
+        if request.user.is_authenticated and request.user.current_campaign:
+            return self.of_campaign(request.user.current_campaign)
         else:
             return self.none()

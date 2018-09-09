@@ -1,5 +1,6 @@
 from django.contrib import admin
 
-from .models import Campaign
-
-admin.site.register(Campaign, admin.ModelAdmin)
+# from .models import Encounter
+#
+# admin.site.register(Encounter, admin.ModelAdmin)
+#

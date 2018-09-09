@@ -1,18 +1,18 @@
 from rest_framework import serializers
 
-from core.serializers import BaseModelSerializer
+from core.serializers import CampaignModelSerializer
 from .models import Combatant
 
 
-class CombatantSerializer(BaseModelSerializer):
+class CombatantSerializer(CampaignModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='combatant-detail',
-        lookup_field='uuid'
+        lookup_field='slug'
     )
 
     class Meta:
         model = Combatant
         fields = ('name', 'initiative', 'hp', 'loot', 'effects',
-                  'uuid', 'url')
+                  'slug', 'url')
 
 
