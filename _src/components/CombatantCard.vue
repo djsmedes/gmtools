@@ -13,8 +13,8 @@
       {{ localCombatant.name }}
     </h5>
     <div class="card-body">
-      <div v-if="!!localCombatant.effects.buffs">
-        <a v-for="(buff, index) in localCombatant.effects.buffs"
+      <div v-if="!!localCombatant.effects[effectTypes.BUFF]">
+        <a v-for="(buff, index) in localCombatant.effects[effectTypes.BUFF]"
            href="#"
            @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.BUFF, index))"
            class="btn btn-sm btn-success mr-1 mb-1 status-effect-success"
@@ -24,8 +24,8 @@
           {{ buff }}
         </a>
       </div>
-      <div v-if="!!localCombatant.effects.debuffs">
-        <a v-for="(debuff, index) in localCombatant.effects.debuffs"
+      <div v-if="!!localCombatant.effects[effectTypes.DEBUFF]">
+        <a v-for="(debuff, index) in localCombatant.effects[effectTypes.DEBUFF]"
            href="#"
            @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.DEBUFF, index))"
            class="btn btn-sm btn-danger mr-1 mb-1 status-effect-danger"
@@ -35,8 +35,8 @@
           {{ debuff }}
         </a>
       </div>
-      <div v-if="!!localCombatant.effects.others">
-        <a v-for="(other, index) in localCombatant.effects.others"
+      <div v-if="!!localCombatant.effects[effectTypes.OTHER]">
+        <a v-for="(other, index) in localCombatant.effects[effectTypes.OTHER]"
            href="#"
            @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.OTHER, index))"
            class="btn btn-sm btn-secondary mr-1 mb-1 status-effect-secondary"
@@ -72,7 +72,7 @@
 </template>
 
 <script>
-  import { Combatant, effectTypes } from '../models/combatant'
+  import { Combatant } from '../models/combatant'
 
   export default {
     name: "Combatant",
@@ -82,7 +82,7 @@
         default: () => new Combatant()
       },
       effectMode: {
-        default: effectTypes.NONE
+        default: Combatant.effectTypes.NONE
       },
       active: {
         type: Boolean,
@@ -99,7 +99,7 @@
     data () {
       return {
         localCombatant: new Combatant(this.combatant),
-        effectTypes
+        effectTypes: Combatant.effectTypes
       }
     },
     watch: {

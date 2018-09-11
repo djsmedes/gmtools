@@ -94,10 +94,10 @@
     name: "Combat",
     data () {
       return {
-        applyingEffectType: combatant.effectTypes.NONE,
+        applyingEffectType: combatant.Combatant.effectTypes.NONE,
         effectToApply: '',
         combatantsToApply: [],
-        effectTypes: combatant.effectTypes,
+        effectTypes: combatant.Combatant.effectTypes,
         editMode: false,
         editedCombatants: {},
         selectedEffects: {}
@@ -165,26 +165,26 @@
       },
       enterApplyBuffMode () {
         this.enterApplyEffectMode();
-        this.applyingEffectType = combatant.effectTypes.BUFF;
+        this.applyingEffectType = combatant.Combatant.effectTypes.BUFF;
       },
       enterApplyDebuffMode () {
         this.enterApplyEffectMode();
-        this.applyingEffectType = combatant.effectTypes.DEBUFF;
+        this.applyingEffectType = combatant.Combatant.effectTypes.DEBUFF;
       },
       enterApplyOtherMode () {
         this.enterApplyEffectMode();
-        this.applyingEffectType = combatant.effectTypes.OTHER;
+        this.applyingEffectType = combatant.Combatant.effectTypes.OTHER;
       },
       exitApplyEffectMode () {
-        this.applyingEffectType = combatant.effectTypes.NONE;
+        this.applyingEffectType = combatant.Combatant.effectTypes.NONE;
         this.effectToApply = '';
         this.combatantsToApply = [];
       },
       type2name (number) {
         const translateDict = {
-          [combatant.effectTypes.BUFF]: combatant.Combatant.effectTypes.BUFF,
-          [combatant.effectTypes.DEBUFF]: combatant.Combatant.effectTypes.DEBUFF,
-          [combatant.effectTypes.OTHER]: combatant.Combatant.effectTypes.OTHER,
+          buffs: combatant.Combatant.effectTypes.BUFF,
+          debuffs: combatant.Combatant.effectTypes.DEBUFF,
+          others: combatant.Combatant.effectTypes.OTHER,
         };
 
         return translateDict[number];
