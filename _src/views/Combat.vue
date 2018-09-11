@@ -180,14 +180,16 @@
         this.effectToApply = '';
         this.combatantsToApply = [];
       },
-      async saveAppliedEffects () {
-        const effectType2apiName = {
-          [combatant.effectTypes.BUFF]: 'buffs',
-          [combatant.effectTypes.DEBUFF]: 'debuffs',
-          [combatant.effectTypes.OTHER]: 'others'
+      type2name (number) {
+        const translateDict = {
+          [combatant.effectTypes.BUFF]: combatant.Combatant.effectTypes.BUFF,
+          [combatant.effectTypes.DEBUFF]: combatant.Combatant.effectTypes.DEBUFF,
+          [combatant.effectTypes.OTHER]: combatant.Combatant.effectTypes.OTHER,
         };
 
-
+        return translateDict[number];
+      },
+      async saveAppliedEffects () {
         let combatantObjs = [];
         if (this.effectToApply.length) {
           for (let uuid of this.combatantsToApply) {
@@ -195,7 +197,7 @@
             combatantObjs[
             combatantObjs.length - 1
                 ].effects[
-                effectType2apiName[this.applyingEffectType]
+                this.type2name(this.applyingEffectType)
                 ].push(this.effectToApply)
           }
           await Promise.all(
@@ -213,20 +215,14 @@
         }
       },
       async deleteSelectedEffects () {
-        const type2name = {
-          [combatant.effectTypes.BUFF]: 'buffs',
-          [combatant.effectTypes.DEBUFF]: 'debuffs',
-          [combatant.effectTypes.OTHER]: 'others',
-        };
-
         let effectsToRemove = Object.keys(this.selectedEffects).reduce((acc, cur) => {
           let parts = cur.split('_');
           let uuid = parts[0];
           let type = parts[1];
           let index = parts[2];
           if (!acc[uuid]) acc[uuid] = {};
-          if (!acc[uuid][type2name[type]]) acc[uuid][type2name[type]] = [];
-          acc[uuid][type2name[type]].push(Number(index));
+          if (!acc[uuid][this.type2name(type)]) acc[uuid][this.type2name(type)] = [];
+          acc[uuid][this.type2name(type)].push(Number(index));
           return acc;
         }, {});
         let combatantsToUpdate = [];
