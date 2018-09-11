@@ -45,9 +45,15 @@ export class Combatant {
       this._effects = val
     }
     if (this._effects === null) this._effects = {};
-    if (typeof this._effects.buffs === 'undefined') this._effects.buffs = [];
-    if (typeof this._effects.debuffs === 'undefined') this._effects.debuffs = [];
-    if (typeof this._effects.others === 'undefined') this._effects.others = [];
+    if (typeof this._effects[Combatant.effectTypes.BUFF] === 'undefined') {
+      this._effects[Combatant.effectTypes.BUFF] = [];
+    }
+    if (typeof this._effects[Combatant.effectTypes.DEBUFF] === 'undefined') {
+      this._effects[Combatant.effectTypes.DEBUFF] = [];
+    }
+    if (typeof this._effects[Combatant.effectTypes.OTHER] === 'undefined') {
+      this._effects[Combatant.effectTypes.OTHER] = [];
+    }
   }
 
   toJSON () {
@@ -57,6 +63,15 @@ export class Combatant {
       initiative: this.initiative,
       hp: this.hp,
       effects: JSON.stringify(this.effects)
+    }
+  }
+
+  static get effectTypes () {
+    return {
+      NONE: '',
+      BUFF: 'buffs',
+      DEBUFF: 'debuffs',
+      OTHER: 'others'
     }
   }
 
