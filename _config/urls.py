@@ -47,13 +47,13 @@ urlpatterns = [
     path('api/token-auth/', ObtainAuthToken.as_view(), name='token-auth'),
     path('api/request-user/', UserView.as_view(), name='request-user-detail'),
     path('api/signup/', SignupApiView.as_view(), name='api-signup'),
-    path('account/', include('authtools.urls')),
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
 ]
 
 if settings.DEBUG:
     urlpatterns += [
         path('admin/', admin.site.urls),
+        path('dev/', include('authtools.urls')),
     ]
 
 urlpatterns += [

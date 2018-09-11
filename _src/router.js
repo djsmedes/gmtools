@@ -13,6 +13,7 @@ export const routeNames = {
   COMBATANT_CREATE: 'combatantCreate',
   LOGIN: 'login',
   SIGNUP: 'signup',
+  NOT_FOUND: 'notFound',
 };
 
 async function loginRequired (to, from, next) {
@@ -72,6 +73,18 @@ export default new Router({
       name: routeNames.SIGNUP,
       component: () => import(/* webpackChunkName: "account" */ './views/SignUp'),
       beforeEnter: loggedInExcluded
+    },
+    {
+      path: '/404/',
+      name: routeNames.NOT_FOUND,
+      component: () => import(/* webpackChunkName: "404" */ './views/NotFound'),
+    },
+    {
+      /* THIS SHOULD ALWAYS BE AT THE END
+       * it will match any route not already matched and send it to the 404 page
+       */
+      path: '*',
+      redirect: {name: routeNames.NOT_FOUND}
     }
   ]
 })
