@@ -77,13 +77,6 @@ export class Combatant {
 
 }
 
-export const effectTypes = {
-  NONE: 0,
-  BUFF: 1,
-  DEBUFF: 2,
-  OTHER: 3
-};
-
 class ApiVuexCombatant extends ApiVuexModel {
   constructor () {
     super(modelName, Combatant);
@@ -92,6 +85,5 @@ class ApiVuexCombatant extends ApiVuexModel {
 
 export default {
   Combatant,
-  effectTypes,
   ...(new ApiVuexCombatant())
 }

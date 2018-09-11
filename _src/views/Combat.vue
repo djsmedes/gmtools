@@ -180,15 +180,6 @@
         this.effectToApply = '';
         this.combatantsToApply = [];
       },
-      type2name (number) {
-        const translateDict = {
-          buffs: combatant.Combatant.effectTypes.BUFF,
-          debuffs: combatant.Combatant.effectTypes.DEBUFF,
-          others: combatant.Combatant.effectTypes.OTHER,
-        };
-
-        return translateDict[number];
-      },
       async saveAppliedEffects () {
         let combatantObjs = [];
         if (this.effectToApply.length) {
@@ -197,7 +188,7 @@
             combatantObjs[
             combatantObjs.length - 1
                 ].effects[
-                this.type2name(this.applyingEffectType)
+                  this.applyingEffectType
                 ].push(this.effectToApply)
           }
           await Promise.all(
@@ -221,8 +212,8 @@
           let type = parts[1];
           let index = parts[2];
           if (!acc[uuid]) acc[uuid] = {};
-          if (!acc[uuid][this.type2name(type)]) acc[uuid][this.type2name(type)] = [];
-          acc[uuid][this.type2name(type)].push(Number(index));
+          if (!acc[uuid][type]) acc[uuid][type] = [];
+          acc[uuid][type].push(Number(index));
           return acc;
         }, {});
         let combatantsToUpdate = [];
