@@ -7,12 +7,12 @@ from .models import Combatant
 class CombatantSerializer(CampaignModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='combatant-detail',
-        lookup_field='slug'
+        lookup_field='uuid'
     )
 
     class Meta:
         model = Combatant
         fields = ('name', 'initiative', 'hp', 'loot', 'effects',
-                  'slug', 'url')
+                  'uuid', 'url')
 
 

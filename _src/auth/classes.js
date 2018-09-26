@@ -1,11 +1,11 @@
 export class User {
   constructor({
-                uuid='', slug='',
+                uuid='',
                 email='', first_name='', last_name='',
                 requested=false,
                 current_campaign='', all_campaigns=[]
   }={}) {
-    this.uuid = slug ? slug : uuid;
+    this.uuid = uuid;
     this.email = email;
     this.first_name = first_name;
     this.last_name = last_name;
@@ -26,7 +26,7 @@ export class User {
 
   toJSON () {
     return {
-      slug: this.uuid,
+      uuid: this.uuid,
       email: this.email,
       current_campaign: this.current_campaign
     }

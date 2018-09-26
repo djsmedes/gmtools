@@ -11,13 +11,13 @@ class UserSerializer(CampaignModelSerializer):
         self.fields['current_campaign']._kwargs['queryset'] = self.allowed_campaigns(self.root.instance)
 
     url = serializers.HyperlinkedIdentityField(
-        lookup_field='slug',
+        lookup_field='uuid',
         view_name='user-detail',
     )
     all_campaigns = serializers.SerializerMethodField()
 
     def get_all_campaigns(self, instance):
-        return [campaign.slug for campaign in self.allowed_campaigns(instance)]
+        return [campaign.uuid for campaign in self.allowed_campaigns(instance)]
 
     def allowed_campaigns(self, instance):
         if instance is None:
@@ -31,7 +31,7 @@ class UserSerializer(CampaignModelSerializer):
         model = User
         fields = ('first_name', 'last_name', 'email',
                   'current_campaign', 'all_campaigns',
-                  'slug', 'url')
+                  'uuid', 'url')
 
     def validate_current_campaign(self, value):
         ok_choices = [None]
@@ -45,14 +45,14 @@ class UserSerializer(CampaignModelSerializer):
 class CampaignSerializer(CampaignModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='campaign-detail',
-        lookup_field='slug'
+        lookup_field='uuid'
     )
 
     class Meta:
         model = Campaign
         fields = (
             'name', 'gm_set', 'player_set',
-            'slug', 'url'
+            'uuid', 'url'
         )
 
     def validate_gm_set(self, value):

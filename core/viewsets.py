@@ -23,7 +23,7 @@ class ChoicesMetaData(SimpleMetadata):
 class CampaignModelViewSet(ModelViewSet):
     """An ABSTRACT class, which other model viewsets should inherit from"""
     model = None  # model should inherit from CampaignOwnedModel
-    lookup_field = 'slug'
+    lookup_field = 'uuid'
     metadata_class = ChoicesMetaData
 
     def get_queryset(self):
@@ -46,19 +46,19 @@ class CampaignModelViewSet(ModelViewSet):
     update_permission = None
     destroy_permission = None
 
-    def _has_permission(self, which_permission, request, slug):
+    def _has_permission(self, which_permission, request, uuid):
         if not which_permission:
             return True
-        if not slug:
+        if not uuid:
             return False
         user = request.user
-        obj = self.model.objects.of_requester(request).get(slug=slug)
+        obj = self.model.objects.of_requester(request).get(uuid=uuid)
         if user.has_perm(which_permission, obj):
             return True
         return False
 
     def _permission_wrapper_function(self, success_function, which_permission, request, *args, **kwargs):
-        if self._has_permission(which_permission, request, kwargs.get('slug', None)):
+        if self._has_permission(which_permission, request, kwargs.get('uuid', None)):
             return success_function(request, *args, **kwargs)
         else:
             return HttpResponseForbidden()

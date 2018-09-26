@@ -6,7 +6,7 @@ import debounce from 'debounce-promise'
 
 function array2ObjByUUID (array, objConstructor) {
   return array.reduce((accumulator, currentVal) => {
-    accumulator[currentVal.slug] = new objConstructor(currentVal);
+    accumulator[currentVal.uuid] = new objConstructor(currentVal);
     return accumulator
   }, {})
 }

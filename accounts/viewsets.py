@@ -11,7 +11,7 @@ from .serializers import UserSerializer, CampaignSerializer
 class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericViewSet):
     model = User
     serializer_class = UserSerializer
-    lookup_field = 'slug'
+    lookup_field = 'uuid'
     queryset = User.objects.all()
 
     def update(self, request, *args, **kwargs):
@@ -23,7 +23,7 @@ class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericV
 class CampaignViewSet(ModelViewSet):
     model = Campaign
     serializer_class = CampaignSerializer
-    lookup_field = 'slug'
+    lookup_field = 'uuid'
 
     def get_queryset(self):
         if self.request.user.is_authenticated:

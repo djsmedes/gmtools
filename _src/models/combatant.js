@@ -5,13 +5,12 @@ const modelName = 'combatant';
 export class Combatant {
   constructor ({
                  uuid = '',
-                 slug = '',
                  name = '',
                  initiative = 0,
                  hp = 0,
                  effects = '{}',
                } = {}) {
-    this.uuid = slug ? slug : uuid;
+    this.uuid = uuid;
     this.name = name;
     this.initiative = initiative;
     this.hp = hp;
@@ -58,7 +57,7 @@ export class Combatant {
 
   toJSON () {
     return {
-      slug: this.uuid,
+      uuid: this.uuid,
       name: this.name,
       initiative: this.initiative,
       hp: this.hp,
