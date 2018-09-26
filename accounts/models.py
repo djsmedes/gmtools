@@ -18,6 +18,12 @@ class User(AbstractEmailUser):
         related_name='current_users',
     )
 
+    campaigns = models.ManyToManyField(
+        'accounts.Campaign',
+        blank=True,
+        through='accounts.CampaignRole'
+    )
+
     class Meta:
         ordering = ['last_name', 'first_name']
 
@@ -42,5 +48,39 @@ class Campaign(models.Model):
     )
     creation_date = models.DateField(auto_now_add=True)
 
+    def set_as_player(self, player: settings.AUTH_USER_MODEL):
+        match_qs = CampaignRole.objects.filter(user=player, campaign=self)
+        if match_qs.exists():
+            match_qs.update(is_gm=False)
+        else:
+            CampaignRole.objects.create(user=player, campaign=self)
+
+    def set_as_gm(self, gm: settings.AUTH_USER_MODEL):
+        match_qs = CampaignRole.objects.filter(user=gm, campaign=self)
+        if match_qs.exists():
+            match_qs.update(is_gm=True)
+        else:
+            CampaignRole.objects.create(user=gm, campaign=self, is_gm=True)
+
+    @property
+    def player_set(self):
+        return User.objects.filter(campaigns=self, campaignrole__is_gm=False)
+
+    @property
+    def gm_set(self):
+        return User.objects.filter(campaigns=self, campaignrole__is_gm=True)
+
     def __str__(self):
         return self.name
+
+
+class CampaignRole(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    campaign = models.ForeignKey(
+        'accounts.Campaign',
+        on_delete=models.CASCADE
+    )
+    is_gm = models.BooleanField(default=False)
