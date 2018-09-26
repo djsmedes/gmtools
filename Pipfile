@@ -15,5 +15,6 @@ whitenoise = "==3.2"
 djangorestframework = "*"
 rules = "*"
 django-authtools = "*"
+django-smalluuid = "*"
 
 [dev-packages]

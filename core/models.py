@@ -1,4 +1,5 @@
 from django.db import models
+from django_smalluuid.models import SmallUUIDField, uuid_default
 
 from .utils import make_slug
 from .managers import CampaignModelManager
@@ -14,6 +15,7 @@ class CampaignOwnedModel(models.Model):
         related_name="%(app_label)s_%(class)s_owned_set",
         editable=False
     )
+    uuid = SmallUUIDField(editable=False, default=uuid_default())
     slug = models.SlugField(
         max_length=25, allow_unicode=True, default=make_slug, unique=True, editable=False
     )
