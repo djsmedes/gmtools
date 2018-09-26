@@ -41,16 +41,6 @@ class Campaign(models.Model):
         max_length=63
     )
     creation_date = models.DateField(auto_now_add=True)
-    gm_set = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        editable=False,
-        related_name='campaigns_gm_of',
-    )
-    player_set = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name='campaigns_player_of',
-        editable=False
-    )
 
     def __str__(self):
         return self.name
