@@ -3,13 +3,8 @@ from django.conf import settings
 from authtools.models import AbstractEmailUser
 from django_smalluuid.models import SmallUUIDField, uuid_default
 
-from core.utils import make_slug
-
 
 class User(AbstractEmailUser):
-    slug = models.SlugField(
-        max_length=25, allow_unicode=True, default=make_slug, unique=True, editable=False
-    )
     uuid = SmallUUIDField(editable=False, default=uuid_default())
 
     first_name = models.CharField(max_length=31, null=True, blank=True)
@@ -42,9 +37,6 @@ class User(AbstractEmailUser):
 
 class Campaign(models.Model):
     uuid = SmallUUIDField(editable=False, default=uuid_default())
-    slug = models.SlugField(
-        max_length=25, allow_unicode=True, default=make_slug, unique=True, editable=False
-    )
     name = models.CharField(
         max_length=63
     )
