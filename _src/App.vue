@@ -95,7 +95,7 @@
       if (!this.user.requested) {
         await this.getUser();
       }
-      this.doneLoading = true
+      this.doneLoading = true;
     }
   }
 </script>

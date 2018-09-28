@@ -1,5 +1,5 @@
-import combatant from './combatant'
+import combatant from './combatant';
+import campaign from './campaign';
 
-export default {
-  COMBATANT: User.modelName
-}
+export const Combatant = combatant.Combatant;
+export const Campaign = campaign.Campaign;

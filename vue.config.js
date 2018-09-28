@@ -1,10 +1,10 @@
 module.exports = {
-  assetsDir: 'static',
+  assetsDir: "static",
 
   devServer: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
+      "/api": {
+        target: "http://localhost:8000",
         changeOrigin: true,
         ws: true
       }
@@ -15,21 +15,19 @@ module.exports = {
     return {
       resolve: {
         alias: {
-          '@': __dirname + '/_src'
+          "@": __dirname + "/_src"
         }
       },
       entry: {
-        app: './_src/main.js'
+        app: "./_src/main.js"
       }
-    }
+    };
   },
 
   chainWebpack: config => {
-    config
-        .plugin('html')
-        .tap(args => {
-          args[0].template = '_public/index.html';
-          return args
-        })
+    config.plugin("html").tap(args => {
+      args[0].template = "_public/index.html";
+      return args;
+    });
   }
 };
