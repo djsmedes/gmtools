@@ -59,56 +59,56 @@
 </template>
 
 <script>
-  import { mapState, mapActions } from 'vuex'
-  import auth from './auth'
-  import { routeNames } from "./router"
-  import { User } from './auth/classes'
+import { mapState, mapActions } from "vuex";
+import auth from "@/auth";
+import { routeNames } from "@/router";
+import { User } from "@/models";
 
-  export default {
-    data () {
-      return {
-        routeNames,
-        doneLoading: false
-      }
+export default {
+  data() {
+    return {
+      routeNames,
+      doneLoading: false
+    };
+  },
+  computed: {
+    ...mapState({
+      user: state => state[auth.stateKeys.USER]
+    })
+  },
+  methods: {
+    ...mapActions({
+      getUser: auth.actionTypes.GET_USER,
+      logoutUser: auth.actionTypes.LOGOUT,
+      updateUser: auth.actionTypes.UPDATE_USER
+    }),
+    async logout() {
+      await this.logoutUser();
+      this.$router.push({ name: routeNames.LOGIN });
     },
-    computed: {
-      ...mapState({
-        user: state => state[auth.stateKeys.USER]
-      })
-    },
-    methods: {
-      ...mapActions({
-        getUser: auth.actionTypes.GET_USER,
-        logoutUser: auth.actionTypes.LOGOUT,
-        updateUser: auth.actionTypes.UPDATE_USER
-      }),
-      async logout () {
-        await this.logoutUser();
-        this.$router.push({ name: routeNames.LOGIN });
-      },
-      setCurrentCampaign (uuid) {
-        let tempUser = new User({ ...this.user, current_campaign: uuid });
-        this.updateUser(tempUser)
-      }
-    },
-    async created () {
-      if (!this.user.requested) {
-        await this.getUser();
-      }
-      this.doneLoading = true;
+    setCurrentCampaign(uuid) {
+      let tempUser = new User({ ...this.user, current_campaign: uuid });
+      this.updateUser(tempUser);
     }
+  },
+  async created() {
+    if (!this.user.requested) {
+      await this.getUser();
+    }
+    this.doneLoading = true;
   }
+};
 </script>
 
 <style lang="scss">
-  @import "scss/shared";
+@import "scss/shared";
 
-  #nav {
-    a {
-      font-weight: bold;
-      &.router-link-active {
-        color: map_get($theme-colors, 'primary');
-      }
+#nav {
+  a {
+    font-weight: bold;
+    &.router-link-active {
+      color: map_get($theme-colors, "primary");
     }
   }
+}
 </style>
