@@ -3,6 +3,7 @@ import api from "./api";
 import { updateObject } from "../models/_api";
 import { User } from "@/models";
 import * as Cookies from "js-cookie";
+import axios from "axios";
 import debounce from "debounce-promise";
 
 export const namespace = "auth";
@@ -52,20 +53,15 @@ export const store = {
   },
   actions: {
     [actionTypes.LOGIN]: async ({ commit, dispatch }, { email, password }) => {
-      await api.getToken({ email, password }, token => {
-        commit(mutationTypes.SET_TOKEN, { token });
-      });
+      let token = await api.getToken({ email, password });
+      commit(mutationTypes.SET_TOKEN, { token });
       return dispatch(actionTypes.GET_USER);
     },
-    [actionTypes.GET_USER]: debounce(({ commit, getters }) => {
-      return api.getUser(
-        user => {
-          commit(mutationTypes.SET_USER, {
-            user: new User({ ...user, requested: true })
-          });
-        },
-        { headers: getters[getterTypes.AUTH_HEADER] }
-      );
+    [actionTypes.GET_USER]: debounce(async ({ commit }) => {
+      let user = await api.getUser();
+      commit(mutationTypes.SET_USER, {
+        user: new User({ ...user, requested: true })
+      });
     }, 25),
     [actionTypes.LOGOUT]: ({ commit }) => {
       commit(mutationTypes.REMOVE_TOKEN);
@@ -105,10 +101,16 @@ export const store = {
         expires: 7,
         secure: process.env.NODE_ENV === "production"
       });
+      axios.defaults.headers["common"] = {
+        Authorization: "Token " + token
+      };
     },
     [mutationTypes.REMOVE_TOKEN](state) {
       Vue.delete(state, stateKeys.TOKEN);
       Cookies.remove(stateKeys.TOKEN);
+      axios.defaults.headers["common"] = {
+        Authorization: ""
+      };
     }
   }
 };

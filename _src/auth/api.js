@@ -1,31 +1,16 @@
 import axios from "axios";
 
-export function getToken({ email, password }, resolve, axiosConfig = {}) {
-  return axios
-    .post(
-      "/api/token-auth/",
-      {
-        username: email,
-        password: password
-      },
-      axiosConfig
-    )
-    .then(r => {
-      resolve(r.data.token);
-    })
-    .catch(e => {
-      if (String(e.response.status) === "400") {
-        return Promise.reject(e.response.data);
-      } else {
-        return e;
-      }
-    });
+export async function getToken({ email, password }) {
+  let reply = await axios.post("/api/token-auth/", {
+    username: email,
+    password: password
+  });
+  return reply.data.token;
 }
 
-export function getUser(resolve, axiosConfig = {}) {
-  return axios.get("/api/request-user/", axiosConfig).then(r => {
-    resolve(r.data);
-  });
+export async function getUser() {
+  let reply = await axios.get("/api/request-user/");
+  return reply.data;
 }
 
 export function signUp(
