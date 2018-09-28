@@ -4,7 +4,7 @@ from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, UpdateMode
 from rest_framework.response import Response
 from rest_framework.status import HTTP_403_FORBIDDEN
 
-from .models import User, Campaign
+from .models import User, Campaign, CampaignRole
 from .serializers import UserSerializer, CampaignSerializer
 
 
@@ -27,7 +27,7 @@ class CampaignViewSet(ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Campaign.objects.filter(Q(gm_set=self.request.user) | Q(player_set=self.request.user))
+            return Campaign.objects.filter(user=self.request.user)
         else:
             return Campaign.objects.none()
 
@@ -36,4 +36,5 @@ class CampaignViewSet(ModelViewSet):
             'Log in to create campaigns.'
         )
 
-        serializer.save(gm_set=[self.request.user])
+        instance = serializer.save()
+        CampaignRole.objects.create(user=self.request.user, campaign=instance, is_gm=True)

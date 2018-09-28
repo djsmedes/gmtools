@@ -3,7 +3,7 @@ export class User {
                 uuid='',
                 email='', first_name='', last_name='',
                 requested=false,
-                current_campaign='', all_campaigns=[]
+                current_campaign='', campaigns=[]
   }={}) {
     this.uuid = uuid;
     this.email = email;
@@ -11,7 +11,7 @@ export class User {
     this.last_name = last_name;
     this.requested = requested;
     this.current_campaign = current_campaign;
-    this.all_campaigns = all_campaigns;
+    this.campaigns = campaigns;
   }
 
   get repr() {

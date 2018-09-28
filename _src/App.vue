@@ -36,7 +36,7 @@
               </span>
               <div class="dropdown-divider"></div>
               <h6 class="dropdown-header">Campaigns</h6>
-              <a v-for="campaign in user.all_campaigns"
+              <a v-for="campaign in user.campaigns"
                  class="dropdown-item"
                  :class="[{active: campaign === user.current_campaign}]"
                  href="#"

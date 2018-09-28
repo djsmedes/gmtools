@@ -6,23 +6,14 @@ from .models import User, Campaign
 
 
 class UserSerializer(CampaignModelSerializer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['current_campaign']._kwargs['queryset'] = self.allowed_campaigns(self.root.instance)
+    def __init__(self, instance, *args, **kwargs):
+        super().__init__(instance, *args, **kwargs)
+        self.fields['current_campaign']._kwargs['queryset'] = Campaign.objects.filter(user=instance)
 
     url = serializers.HyperlinkedIdentityField(
         lookup_field='uuid',
         view_name='user-detail',
     )
-    all_campaigns = serializers.SerializerMethodField()
-
-    def get_all_campaigns(self, instance):
-        return [campaign.uuid for campaign in self.allowed_campaigns(instance)]
-
-    def allowed_campaigns(self, instance):
-        if instance is None:
-            return Campaign.objects.none()
-        return Campaign.objects.filter(Q(gm_set=instance) | Q(player_set=instance))
 
     def transform_queryset(self, queryset):
         return queryset
@@ -30,14 +21,11 @@ class UserSerializer(CampaignModelSerializer):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email',
-                  'current_campaign', 'all_campaigns',
+                  'current_campaign', 'campaigns',
                   'uuid', 'url')
 
     def validate_current_campaign(self, value):
-        ok_choices = [None]
-        ok_choices.extend(self.root.instance.campaigns_player_of.all())
-        ok_choices.extend(self.root.instance.campaigns_gm_of.all())
-        if value not in ok_choices:
+        if value not in self.root.instance.campaigns.all():
             raise serializers.ValidationError('Cannot set current campaign to one of which you are not a member.')
         return value
 
@@ -47,6 +35,14 @@ class CampaignSerializer(CampaignModelSerializer):
         view_name='campaign-detail',
         lookup_field='uuid'
     )
+    gm_set = serializers.SerializerMethodField()
+    player_set = serializers.SerializerMethodField()
+
+    def get_gm_set(self, instance):
+        return [user.uuid for user in instance.gm_set]
+
+    def get_player_set(self, instance):
+        return [user.uuid for user in instance.player_set]
 
     class Meta:
         model = Campaign
@@ -54,8 +50,3 @@ class CampaignSerializer(CampaignModelSerializer):
             'name', 'gm_set', 'player_set',
             'uuid', 'url'
         )
-
-    def validate_gm_set(self, value):
-        if not value:
-            raise serializers.ValidationError('The last GM cannot be removed. Add another GM first.')
-        return value
