@@ -34,16 +34,11 @@ export const mutationTypes = {
 export const store = {
   namespaced: true,
   state: {
-    [stateKeys.TOKEN]: "",
     [stateKeys.USER]: new User()
   },
   getters: {
-    [getterTypes.AUTH_HEADER]: state => {
-      let token = state[stateKeys.TOKEN];
-      if (!token) {
-        token = Cookies.get(stateKeys.TOKEN);
-        if (token) state[stateKeys.TOKEN] = token;
-      }
+    [getterTypes.AUTH_HEADER]: () => {
+      let token = Cookies.get(stateKeys.TOKEN);
       if (token) {
         return { Authorization: "Token " + token };
       } else {
@@ -96,7 +91,6 @@ export const store = {
       // maybe some kind of mapping between changed values and what needs reloading?
     },
     [mutationTypes.SET_TOKEN](state, { token }) {
-      Vue.set(state, stateKeys.TOKEN, token);
       Cookies.set(stateKeys.TOKEN, token, {
         expires: 7,
         secure: process.env.NODE_ENV === "production"
@@ -105,8 +99,7 @@ export const store = {
         Authorization: "Token " + token
       };
     },
-    [mutationTypes.REMOVE_TOKEN](state) {
-      Vue.delete(state, stateKeys.TOKEN);
+    [mutationTypes.REMOVE_TOKEN]() {
       Cookies.remove(stateKeys.TOKEN);
       axios.defaults.headers["common"] = {
         Authorization: ""
