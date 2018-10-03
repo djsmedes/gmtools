@@ -13,7 +13,7 @@
             <router-link to="/combatants/" class="nav-link">Combatants</router-link>
           </li>
         </ul>
-        <ul v-if="!user.isAuthenticated" class="navbar-nav">
+        <ul v-if="!isAuthenticated" class="navbar-nav">
           <li class="nav-item">
             <router-link class="nav-link" :to="{name: routeNames.LOGIN}">Sign in</router-link>
           </li>
@@ -32,7 +32,7 @@
             </a>
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="UserDropdown">
               <span class="dropdown-item-text text-muted">
-                Signed in as <strong>{{ user.repr }}</strong>
+                Signed in as <strong>{{ user.name }}</strong>
               </span>
               <div class="dropdown-divider"></div>
               <h6 class="dropdown-header">Campaigns</h6>
@@ -40,7 +40,8 @@
                  class="dropdown-item"
                  :class="[{active: campaign === user.current_campaign}]"
                  href="#"
-                 @click.prevent.stop="setCurrentCampaign(campaign)">
+                 @click.prevent.stop="setCurrentCampaign(campaign)"
+                 :key="campaign.uuid">
                 {{ campaign }}
               </a>
               <div class="dropdown-divider"></div>
@@ -53,34 +54,35 @@
     </nav>
 
     <div class="container">
-      <router-view v-if="doneLoading"/>
+      <router-view v-if="isAuthenticated"/>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import auth from "@/auth";
 import { routeNames } from "@/router";
-import { User } from "@/models";
+import userModule, { User } from "@/models/user";
 
 export default {
   data() {
     return {
-      routeNames,
-      doneLoading: false
+      routeNames
     };
   },
   computed: {
-    ...mapState({
-      user: state => state[auth.stateKeys.USER]
+    ...mapGetters(auth.namespace, {
+      user: auth.getterTypes.AUTH_USER,
+      isAuthenticated: auth.getterTypes.IS_USER_AUTHENTICATED
     })
   },
   methods: {
-    ...mapActions({
-      getUser: auth.actionTypes.GET_USER,
-      logoutUser: auth.actionTypes.LOGOUT,
-      updateUser: auth.actionTypes.UPDATE_USER
+    ...mapActions(auth.namespace, {
+      logoutUser: auth.actionTypes.LOGOUT
+    }),
+    ...mapActions(userModule.namespace, {
+      updateUser: userModule.actionTypes.UPDATE
     }),
     async logout() {
       await this.logoutUser();
@@ -90,12 +92,6 @@ export default {
       let tempUser = new User({ ...this.user, current_campaign: uuid });
       this.updateUser(tempUser);
     }
-  },
-  async created() {
-    if (!this.user.requested) {
-      await this.getUser();
-    }
-    this.doneLoading = true;
   }
 };
 </script>

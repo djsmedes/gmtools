@@ -1,18 +1,20 @@
-import { ApiVuexModel } from "./_base_model";
-
-const modelName = "campaign";
+import { ModelVuexModule } from "./_base_model";
 
 export class Campaign {
+  static get modelName() {
+    return "campaign";
+  }
+
   constructor() {}
 }
 
-class ApiVuexCombatant extends ApiVuexModel {
+class CampaignVuexModule extends ModelVuexModule {
   constructor() {
-    super(modelName, Campaign);
+    super(Campaign);
   }
 }
 
 export default {
   Campaign,
-  ...new ApiVuexCombatant()
+  ...new CampaignVuexModule()
 };

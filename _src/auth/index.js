@@ -1,41 +1,46 @@
 import Vue from "vue";
 import api from "./api";
-import { updateObject } from "../models/_api";
-import { User } from "@/models";
+import userModule, { User } from "@/models/user";
 import * as Cookies from "js-cookie";
 import axios from "axios";
-import debounce from "debounce-promise";
 
 export const namespace = "auth";
 
 export const stateKeys = {
   TOKEN: "authToken",
-  USER: "user"
+  AUTH_USER: "authUser",
+  PASS_RESET_USER_KEY: "passResetUserKey",
+  PASS_RESET_TOKEN: "passResetToken"
 };
 
 export const getterTypes = {
-  AUTH_HEADER: "authHeader"
+  AUTH_HEADER: "authHeader",
+  AUTH_USER: "authUser",
+  WAS_AUTH_USER_REQUESTED: "wasAuthUserRequested",
+  IS_USER_AUTHENTICATED: "isUserAuthenticated"
 };
 
 export const actionTypes = {
   GET_USER: "getUser",
-  LOGIN: "getToken",
-  LOGOUT: "removeToken",
+  SET_AUTH_USER: "setAuthUser",
   SIGNUP: "signUp",
-  UPDATE_USER: "updateUser"
+  LOGIN: "getToken",
+  LOGOUT: "removeToken"
 };
 
 export const mutationTypes = {
   SET_USER: "setUser",
+  SET_AUTH_USER: "setAuthUser",
+  CLEAR_AUTH_USER: "clearAuthUser",
   SET_TOKEN: "setAuth",
-  REMOVE_TOKEN: "removeAuth"
+  REMOVE_TOKEN: "removeAuth",
+  SET_PASS_RESET_DATA: "setPassResetData",
+  CLEAR_PASS_RESET_DATA: "clearPassResetData"
 };
 
 export const store = {
   namespaced: true,
-  state: {
-    [stateKeys.USER]: new User()
-  },
+  state: {},
   getters: {
     [getterTypes.AUTH_HEADER]: () => {
       let token = Cookies.get(stateKeys.TOKEN);
@@ -44,6 +49,22 @@ export const store = {
       } else {
         return {};
       }
+    },
+    [getterTypes.AUTH_USER]: (state, getters, rootState, rootGetters) => {
+      if (!getters[getterTypes.WAS_AUTH_USER_REQUESTED]) {
+        return;
+      }
+      let userByIdGetterName =
+        userModule.namespace + "/" + userModule.getterTypes.BY_ID;
+      return rootGetters[userByIdGetterName](state[stateKeys.AUTH_USER]);
+    },
+    [getterTypes.WAS_AUTH_USER_REQUESTED]: state => {
+      return typeof state[stateKeys.AUTH_USER] !== "undefined";
+    },
+    [getterTypes.IS_USER_AUTHENTICATED]: (state, getters) => {
+      let user = getters[getterTypes.AUTH_USER];
+      if (typeof user === "undefined") return false;
+      return user.email.length !== 0;
     }
   },
   actions: {
@@ -52,43 +73,51 @@ export const store = {
       commit(mutationTypes.SET_TOKEN, { token });
       return dispatch(actionTypes.GET_USER);
     },
-    [actionTypes.GET_USER]: debounce(async ({ commit }) => {
-      let user = await api.getUser();
-      commit(mutationTypes.SET_USER, {
-        user: new User({ ...user, requested: true })
-      });
-    }, 25),
+    [actionTypes.GET_USER]: async ({ commit, dispatch }) => {
+      try {
+        let user = await api.getUser();
+        dispatch(actionTypes.SET_AUTH_USER, user);
+      } catch (err) {
+        if (process.env.NODE_ENV !== "production") console.warn(err);
+        commit(mutationTypes.CLEAR_AUTH_USER);
+      }
+    },
+    [actionTypes.SET_AUTH_USER]: ({ commit }, user) => {
+      if (!user.uuid) {
+        commit(mutationTypes.CLEAR_AUTH_USER);
+      } else {
+        commit(mutationTypes.SET_AUTH_USER, user.uuid);
+        commit(
+          userModule.namespace + "/" + userModule.mutationTypes.SET,
+          { object: new User(user) },
+          {
+            root: true
+          }
+        );
+      }
+    },
     [actionTypes.LOGOUT]: ({ commit }) => {
       commit(mutationTypes.REMOVE_TOKEN);
-      commit(mutationTypes.SET_USER, { user: new User({ requested: true }) });
+      commit(mutationTypes.CLEAR_AUTH_USER);
       return Promise.resolve();
-      // todo - clear basically all other data out of vuex...?
+      // todo - clear basically all other data out of vuex
     },
-    [actionTypes.SIGNUP]: ({ commit }, { email, password1, password2 }) => {
+    [actionTypes.SIGNUP]: (
+      { commit, dispatch },
+      { email, password1, password2 }
+    ) => {
       return api.signUp({ email, password1, password2 }, ({ user, token }) => {
         commit(mutationTypes.SET_TOKEN, { token });
-        commit(mutationTypes.SET_USER, {
-          user: new User({ ...user, requested: true })
-        });
+        dispatch(actionTypes.SET_AUTH_USER, user);
       });
-    },
-    [actionTypes.UPDATE_USER]: ({ commit }, object) => {
-      return updateObject(
-        { modelName: User.modelName, object },
-        returnedData => {
-          commit(mutationTypes.SET_USER, {
-            user: new User({ ...returnedData, requested: true })
-          });
-        }
-      );
     }
   },
   mutations: {
-    [mutationTypes.SET_USER](state, { user }) {
-      Vue.set(state, stateKeys.USER, user);
-      Vue.set(state["combatant"], "needsReload", true);
-      // todo - generalize this out so I can say which things need reloading
-      // maybe some kind of mapping between changed values and what needs reloading?
+    [mutationTypes.SET_AUTH_USER](state, uuid) {
+      Vue.set(state, stateKeys.AUTH_USER, uuid);
+    },
+    [mutationTypes.CLEAR_AUTH_USER](state) {
+      Vue.set(state, stateKeys.AUTH_USER, "");
     },
     [mutationTypes.SET_TOKEN](state, { token }) {
       Cookies.set(stateKeys.TOKEN, token, {

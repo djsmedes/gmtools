@@ -4,14 +4,14 @@ import router from "@/router";
 import store from "@/store";
 import "bootstrap";
 import axios from "axios";
-import { getterTypes } from "./auth";
+import { namespace, getterTypes } from "@/auth";
 
 Vue.config.productionTip = false;
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 axios.defaults.headers["common"] = {
-  ...store.getters[getterTypes.AUTH_HEADER]
+  ...store.getters[namespace + "/" + getterTypes.AUTH_HEADER]
 };
 
 new Vue({

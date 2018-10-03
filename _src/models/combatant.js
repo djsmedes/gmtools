@@ -1,8 +1,10 @@
-import { ApiVuexModel } from "./_base_model";
-
-const modelName = "combatant";
+import { ModelVuexModule } from "./_base_model";
 
 export class Combatant {
+  static get modelName() {
+    return "combatant";
+  }
+
   constructor({
     uuid = "",
     name = "",
@@ -75,13 +77,13 @@ export class Combatant {
   }
 }
 
-class ApiVuexCombatant extends ApiVuexModel {
+class CombatantVuexModule extends ModelVuexModule {
   constructor() {
-    super(modelName, Combatant);
+    super(Combatant);
   }
 }
 
 export default {
   Combatant,
-  ...new ApiVuexCombatant()
+  ...new CombatantVuexModule()
 };

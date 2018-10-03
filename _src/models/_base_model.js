@@ -10,10 +10,10 @@ function array2ObjByUUID(array, objConstructor) {
   }, {});
 }
 
-export class ApiVuexModel {
-  constructor(modelName, modelConstructor) {
-    this.namespace = modelName;
-    this.modelName = modelName;
+export class ModelVuexModule {
+  constructor(modelClass) {
+    this.namespace = modelClass.modelName;
+    this.modelName = modelClass.modelName;
     this.stateKeys = {
       OBJECTS: "objects",
       NEEDS_RELOAD: "needsReload"
@@ -70,7 +70,7 @@ export class ApiVuexModel {
               },
               objList => {
                 commit(this.mutationTypes.SET_LIST, {
-                  objList: array2ObjByUUID(objList, modelConstructor)
+                  objList: array2ObjByUUID(objList, modelClass)
                 });
               }
             );
@@ -78,7 +78,7 @@ export class ApiVuexModel {
             return Promise.resolve();
           }
         }, 50),
-        [this.actionTypes.CREATE]: ({ state, commit }, object) => {
+        [this.actionTypes.CREATE]: ({ commit }, object) => {
           return api.createObject(
             {
               object,
@@ -86,7 +86,7 @@ export class ApiVuexModel {
             },
             returnedObject => {
               commit(this.mutationTypes.SET, {
-                object: new modelConstructor(returnedObject)
+                object: new modelClass(returnedObject)
               });
             }
           );
@@ -99,7 +99,7 @@ export class ApiVuexModel {
             },
             returnedObject => {
               commit(this.mutationTypes.SET, {
-                object: new modelConstructor(returnedObject)
+                object: new modelClass(returnedObject)
               });
             }
           );

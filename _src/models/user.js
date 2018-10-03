@@ -1,3 +1,5 @@
+import { ModelVuexModule } from "@/models/_base_model";
+
 export class User {
   static get modelName() {
     return "user";
@@ -21,6 +23,10 @@ export class User {
     this.campaigns = campaigns;
   }
 
+  get name() {
+    return this.first_name + " " + this.last_name;
+  }
+
   get isAuthenticated() {
     return this.email.length > 0;
   }
@@ -34,6 +40,13 @@ export class User {
   }
 }
 
+class UserVuexModule extends ModelVuexModule {
+  constructor() {
+    super(User);
+  }
+}
+
 export default {
-  User
+  User,
+  ...new UserVuexModule()
 };
