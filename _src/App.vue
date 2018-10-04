@@ -85,8 +85,8 @@ export default {
     ...mapActions(userModule.namespace, {
       updateUser: userModule.actionTypes.UPDATE
     }),
-    async logout() {
-      await this.logoutUser();
+    logout() {
+      this.logoutUser();
       this.$router.push({ name: routeNames.LOGIN });
     },
     async setCurrentCampaign(uuid) {

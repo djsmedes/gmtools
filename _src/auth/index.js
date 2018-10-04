@@ -108,7 +108,6 @@ export const store = {
     [actionTypes.LOGOUT]: ({ commit }) => {
       commit(mutationTypes.REMOVE_TOKEN);
       commit(mutationTypes.CLEAR_AUTH_USER);
-      return Promise.resolve();
       // todo - clear basically all other data out of vuex
     },
     [actionTypes.SIGNUP]: async (
