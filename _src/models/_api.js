@@ -15,10 +15,9 @@ export async function createObject({ object, modelName }) {
   return reply.data;
 }
 
-export function retrieveObject({ uuid, modelName, axiosConfig = {} }, resolve) {
-  return axios.get(generateUrl(modelName, uuid), axiosConfig).then(r => {
-    resolve(r.data);
-  });
+export async function retrieveObject({ uuid, modelName }) {
+  let reply = await axios.get(generateUrl(modelName, uuid));
+  return reply.data;
 }
 
 export async function updateObject({ object, modelName }) {
@@ -26,16 +25,13 @@ export async function updateObject({ object, modelName }) {
   return reply.data;
 }
 
-export function destroyObject({ uuid, modelName, axiosConfig = {} }, resolve) {
-  return axios.delete(generateUrl(modelName, uuid), axiosConfig).then(() => {
-    resolve();
-  });
+export async function destroyObject({ uuid, modelName }) {
+  await axios.delete(generateUrl(modelName, uuid));
 }
 
-export function optionsObject({ modelName, axiosConfig = {} }, resolve) {
-  return axios.options(generateUrl(modelName), axiosConfig).then(r => {
-    resolve(r.data);
-  });
+export async function optionsObject({ modelName }) {
+  let reply = await axios.options(generateUrl(modelName));
+  return reply.data;
 }
 
 export default {
