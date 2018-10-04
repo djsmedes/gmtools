@@ -111,14 +111,21 @@ export const store = {
       return Promise.resolve();
       // todo - clear basically all other data out of vuex
     },
-    [actionTypes.SIGNUP]: (
+    [actionTypes.SIGNUP]: async (
       { commit, dispatch },
       { email, password1, password2 }
     ) => {
-      return api.signUp({ email, password1, password2 }, ({ user, token }) => {
+      try {
+        let { user, token } = await api.signUp({ email, password1, password2 });
         commit(mutationTypes.SET_TOKEN, { token });
         dispatch(actionTypes.SET_AUTH_USER, user);
-      });
+      } catch (err) {
+        if (err.response && err.response.status === 400) {
+          return err.response.data;
+        } else {
+          throw err;
+        }
+      }
     }
   },
   mutations: {

@@ -13,24 +13,13 @@ export async function getUser() {
   return reply.data;
 }
 
-export function signUp(
-  { email, password1, password2 },
-  resolve,
-  axiosConfig = {}
-) {
-  return axios
-    .post(
-      "/api/signup/",
-      {
-        email,
-        password1,
-        password2
-      },
-      axiosConfig
-    )
-    .then(r => {
-      resolve({ user: r.data.user, token: r.data.token });
-    });
+export async function signUp({ email, password1, password2 }) {
+  let reply = await axios.post("/api/signup/", {
+    email,
+    password1,
+    password2
+  });
+  return { user: reply.data.user, token: reply.data.token };
 }
 
 export default {
