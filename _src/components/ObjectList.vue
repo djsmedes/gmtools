@@ -19,21 +19,15 @@
 </template>
 
 <script>
-  export default {
-    name: "ObjectList",
-    props: {
-      model: Object,
-      detailViewName: String,
-      createViewName: String
-    },
-    data() {
-      return {}
-    },
-    computed: {
-      objectList() {
-        return this.$store.getters[this.model.namespace + '/' + this.model.getterTypes.LIST]
-      }
-    },
-    created() {}
+export default {
+  name: "ObjectList",
+  props: {
+    model: Object,
+    detailViewName: String,
+    createViewName: String,
+    objectList: {
+      default: () => []
+    }
   }
+};
 </script>

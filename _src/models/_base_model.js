@@ -1,7 +1,6 @@
 import api from "./_api";
 import Vue from "vue";
 import _ from "lodash";
-import debounce from "debounce-promise";
 
 function array2ObjByUUID(array, objConstructor) {
   return array.reduce((accumulator, currentVal) => {
@@ -19,9 +18,9 @@ export class ModelVuexModule {
       NEEDS_RELOAD: "needsReload"
     };
     this.getterTypes = {
-      IDS: this.modelName + "IDs",
-      LIST: this.modelName + "List",
-      BY_ID: this.modelName + "ByID"
+      IDS: "ids",
+      LIST: "list",
+      BY_ID: "byID"
     };
     this.actionTypes = {
       CREATE: "create",
@@ -35,6 +34,7 @@ export class ModelVuexModule {
     };
     this.mutationTypes = {
       SET_LIST: "setList",
+      SET_RELOAD_NEEDED: "setReloadNeeded",
       SET: "set",
       REMOVE: "remove",
       SET_OPTIONS: "setOptions"
@@ -58,26 +58,35 @@ export class ModelVuexModule {
           state[this.stateKeys.OBJECTS][uuid]
       },
       actions: {
-        [this.actionTypes.LIST]: debounce(({ state, commit }) => {
+        [this.actionTypes.LIST]: async ({ state, commit }) => {
+          if (state[this.stateKeys.NEEDS_RELOAD]) {
+            // assume success until failure is apparent -
+            //   further requests here before the first has completed
+            //   get us nothing
+            commit(this.mutationTypes.SET_RELOAD_NEEDED, false);
+          } else {
+            return;
+          }
+
           if (
-            state[this.stateKeys.NEEDS_RELOAD] ||
             typeof state[this.stateKeys.OBJECTS] === "undefined" ||
             _.isEmpty(state[this.stateKeys.OBJECTS])
           ) {
-            return api.listObjects(
-              {
+            try {
+              let objList = await api.listObjects({
                 modelName: this.modelName
-              },
-              objList => {
-                commit(this.mutationTypes.SET_LIST, {
-                  objList: array2ObjByUUID(objList, modelClass)
-                });
-              }
-            );
-          } else {
-            return Promise.resolve();
+              });
+              commit(this.mutationTypes.SET_LIST, {
+                objList: array2ObjByUUID(objList, modelClass)
+              });
+            } catch (err) {
+              // ok, we have failed - allow further requests
+              //   and escalate the failure
+              commit(this.mutationTypes.SET_RELOAD_NEEDED, true);
+              throw err;
+            }
           }
-        }, 50),
+        },
         [this.actionTypes.CREATE]: ({ commit }, object) => {
           return api.createObject(
             {
@@ -109,6 +118,9 @@ export class ModelVuexModule {
         [this.mutationTypes.SET_LIST]: (state, { objList }) => {
           Vue.set(state, this.stateKeys.OBJECTS, objList);
           Vue.set(state, this.stateKeys.NEEDS_RELOAD, false);
+        },
+        [this.mutationTypes.SET_RELOAD_NEEDED]: (state, val) => {
+          Vue.set(state, this.stateKeys.NEEDS_RELOAD, val);
         },
         [this.mutationTypes.SET]: (state, { object }) => {
           Vue.set(state[this.stateKeys.OBJECTS], object.uuid, object);

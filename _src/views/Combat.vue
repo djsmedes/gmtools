@@ -75,6 +75,7 @@
                         :active="combatantsToApply.includes(combatant.uuid)"
                         :edit-mode="editMode"
                         :selected-effects="selectedEffects"
+                        :key="combatant.uuid"
                         @click="toggleCombatantWillApply($event)"
                         @combatant-change="updateEditedCombatants($event)"
                         @effect-clicked="updateSelectedEffects($event)"/>
@@ -84,130 +85,133 @@
 </template>
 
 <script>
-  import Vue from 'vue'
-  import { mapState, mapGetters, mapActions } from 'vuex'
-  import CombatantCard from '../components/CombatantCard'
-  import combatant from '../models/combatant'
-  import _ from 'lodash'
+import Vue from "vue";
+import { mapState, mapGetters, mapActions } from "vuex";
+import CombatantCard from "../components/CombatantCard";
+import combatant from "../models/combatant";
+import _ from "lodash";
 
-  export default {
-    name: "Combat",
-    data () {
-      return {
-        applyingEffectType: combatant.Combatant.effectTypes.NONE,
-        effectToApply: '',
-        combatantsToApply: [],
-        effectTypes: combatant.Combatant.effectTypes,
-        editMode: false,
-        editedCombatants: {},
-        selectedEffects: {}
+export default {
+  name: "Combat",
+  data() {
+    return {
+      applyingEffectType: combatant.Combatant.effectTypes.NONE,
+      effectToApply: "",
+      combatantsToApply: [],
+      effectTypes: combatant.Combatant.effectTypes,
+      editMode: false,
+      editedCombatants: {},
+      selectedEffects: {}
+    };
+  },
+  components: {
+    CombatantCard
+  },
+  computed: {
+    ...mapState(combatant.namespace, {
+      combatantsNeedReload: state => state[combatant.stateKeys.NEEDS_RELOAD]
+    }),
+    ...mapGetters(combatant.namespace, {
+      combatants: combatant.getterTypes.LIST,
+      getCombatant: combatant.getterTypes.BY_ID
+    }),
+    combatantsByInitiative() {
+      return [...this.combatants].sort((a, b) => b.initiative - a.initiative);
+    }
+  },
+  watch: {
+    combatantsNeedReload: {
+      handler(newCombatantObj) {
+        if (newCombatantObj === true) this.loadCombatants();
+      },
+      immediate: true
+    }
+  },
+  methods: {
+    ...mapActions(combatant.namespace, {
+      loadCombatants: combatant.actionTypes.LIST,
+      updateCombatant: combatant.actionTypes.UPDATE
+    }),
+    updateEditedCombatants(editedCombatant) {
+      if (_.isEqual(editedCombatant, this.getCombatant(editedCombatant.uuid))) {
+        delete this.editedCombatants[editedCombatant.uuid];
+      } else {
+        this.editedCombatants[editedCombatant.uuid] = editedCombatant;
       }
     },
-    components: {
-      CombatantCard
+    enterEditMode() {
+      this.exitApplyEffectMode();
+      this.editMode = true;
     },
-    computed: {
-      ...mapState(combatant.namespace, {
-         combatantsNeedReload: state => state[combatant.stateKeys.NEEDS_RELOAD]
-      }),
-      ...mapGetters(combatant.namespace, {
-        combatants: combatant.getterTypes.LIST,
-        getCombatant: combatant.getterTypes.BY_ID
-      }),
-      combatantsByInitiative () {
-        return [...this.combatants].sort((a, b) => b.initiative - a.initiative)
+    exitEditMode() {
+      this.editMode = false;
+    },
+    saveAppliedEdits() {
+      Promise.all(
+        Object.keys(this.editedCombatants).map(uuid =>
+          this.updateCombatant(this.editedCombatants[uuid])
+        )
+      ).then(() => {
+        this.exitEditMode();
+      });
+    },
+    toggleCombatantWillApply(uuid) {
+      if (!this.applyingEffectType) return;
+      if (this.combatantsToApply.includes(uuid)) {
+        this.combatantsToApply = this.combatantsToApply.filter(
+          item => item !== uuid
+        );
+      } else {
+        this.combatantsToApply.push(uuid);
       }
     },
-    watch: {
-      combatantsNeedReload: {
-        handler (newCombatantObj) {
-          if (newCombatantObj === true) this.loadCombatants()
-        },
-        immediate: true
+    enterApplyEffectMode() {
+      this.exitEditMode();
+    },
+    enterApplyBuffMode() {
+      this.enterApplyEffectMode();
+      this.applyingEffectType = combatant.Combatant.effectTypes.BUFF;
+    },
+    enterApplyDebuffMode() {
+      this.enterApplyEffectMode();
+      this.applyingEffectType = combatant.Combatant.effectTypes.DEBUFF;
+    },
+    enterApplyOtherMode() {
+      this.enterApplyEffectMode();
+      this.applyingEffectType = combatant.Combatant.effectTypes.OTHER;
+    },
+    exitApplyEffectMode() {
+      this.applyingEffectType = combatant.Combatant.effectTypes.NONE;
+      this.effectToApply = "";
+      this.combatantsToApply = [];
+    },
+    async saveAppliedEffects() {
+      let combatantObjs = [];
+      if (this.effectToApply.length) {
+        for (let uuid of this.combatantsToApply) {
+          combatantObjs.push(_.cloneDeep(this.getCombatant(uuid)));
+          combatantObjs[combatantObjs.length - 1].effects[
+            this.applyingEffectType
+          ].push(this.effectToApply);
+        }
+        await Promise.all(
+          combatantObjs.map(combatant => this.updateCombatant(combatant))
+        );
+      }
+      this.exitApplyEffectMode();
+    },
+    updateSelectedEffects(domIdClicked) {
+      if (this.applyingEffectType) return;
+      if (!this.selectedEffects[domIdClicked]) {
+        Vue.set(this.selectedEffects, domIdClicked, true);
+      } else {
+        Vue.delete(this.selectedEffects, domIdClicked);
       }
     },
-    methods: {
-      ...mapActions(combatant.namespace, {
-        loadCombatants: combatant.actionTypes.LIST,
-        updateCombatant: combatant.actionTypes.UPDATE
-      }),
-      updateEditedCombatants (editedCombatant) {
-        if (_.isEqual(editedCombatant, this.getCombatant(editedCombatant.uuid))) {
-          delete this.editedCombatants[editedCombatant.uuid]
-        } else {
-          this.editedCombatants[editedCombatant.uuid] = editedCombatant
-        }
-      },
-      enterEditMode () {
-        this.exitApplyEffectMode();
-        this.editMode = true;
-      },
-      exitEditMode () {
-        this.editMode = false;
-      },
-      saveAppliedEdits () {
-        Promise.all(
-            Object.keys(this.editedCombatants).map(uuid => this.updateCombatant(this.editedCombatants[uuid]))
-        ).then(() => {
-          this.exitEditMode()
-        })
-      },
-      toggleCombatantWillApply (uuid) {
-        if (!this.applyingEffectType) return;
-        if (this.combatantsToApply.includes(uuid)) {
-          this.combatantsToApply = this.combatantsToApply.filter(item => item !== uuid)
-        } else {
-          this.combatantsToApply.push(uuid)
-        }
-      },
-      enterApplyEffectMode () {
-        this.exitEditMode()
-      },
-      enterApplyBuffMode () {
-        this.enterApplyEffectMode();
-        this.applyingEffectType = combatant.Combatant.effectTypes.BUFF;
-      },
-      enterApplyDebuffMode () {
-        this.enterApplyEffectMode();
-        this.applyingEffectType = combatant.Combatant.effectTypes.DEBUFF;
-      },
-      enterApplyOtherMode () {
-        this.enterApplyEffectMode();
-        this.applyingEffectType = combatant.Combatant.effectTypes.OTHER;
-      },
-      exitApplyEffectMode () {
-        this.applyingEffectType = combatant.Combatant.effectTypes.NONE;
-        this.effectToApply = '';
-        this.combatantsToApply = [];
-      },
-      async saveAppliedEffects () {
-        let combatantObjs = [];
-        if (this.effectToApply.length) {
-          for (let uuid of this.combatantsToApply) {
-            combatantObjs.push(_.cloneDeep(this.getCombatant(uuid)));
-            combatantObjs[
-            combatantObjs.length - 1
-                ].effects[
-                  this.applyingEffectType
-                ].push(this.effectToApply)
-          }
-          await Promise.all(
-              combatantObjs.map(combatant => this.updateCombatant(combatant))
-          )
-        }
-        this.exitApplyEffectMode()
-      },
-      updateSelectedEffects (domIdClicked) {
-        if (this.applyingEffectType) return;
-        if (!this.selectedEffects[domIdClicked]) {
-          Vue.set(this.selectedEffects, domIdClicked, true)
-        } else {
-          Vue.delete(this.selectedEffects, domIdClicked)
-        }
-      },
-      async deleteSelectedEffects () {
-        let effectsToRemove = Object.keys(this.selectedEffects).reduce((acc, cur) => {
-          let parts = cur.split('_');
+    async deleteSelectedEffects() {
+      let effectsToRemove = Object.keys(this.selectedEffects).reduce(
+        (acc, cur) => {
+          let parts = cur.split("_");
           let uuid = parts[0];
           let type = parts[1];
           let index = parts[2];
@@ -215,32 +219,30 @@
           if (!acc[uuid][type]) acc[uuid][type] = [];
           acc[uuid][type].push(Number(index));
           return acc;
-        }, {});
-        let combatantsToUpdate = [];
-        for (let uuid in effectsToRemove) {
-          let c = _.cloneDeep(this.getCombatant(uuid));
-          for (let type in effectsToRemove[uuid]) {
-            effectsToRemove[uuid][type].sort();
-            for (let i = effectsToRemove[uuid][type].length - 1; i >= 0; i--) {
-              c.effects[type].splice(effectsToRemove[uuid][type][i], 1)
-            }
+        },
+        {}
+      );
+      let combatantsToUpdate = [];
+      for (let uuid in effectsToRemove) {
+        let c = _.cloneDeep(this.getCombatant(uuid));
+        for (let type in effectsToRemove[uuid]) {
+          effectsToRemove[uuid][type].sort();
+          for (let i = effectsToRemove[uuid][type].length - 1; i >= 0; i--) {
+            c.effects[type].splice(effectsToRemove[uuid][type][i], 1);
           }
-          combatantsToUpdate.push(c)
         }
-        await Promise.all(
-            combatantsToUpdate.map(combatant => this.updateCombatant(combatant))
-        );
-        this.clearSelectedEffects()
-      },
-      clearSelectedEffects () {
-        Object.keys(this.selectedEffects).map(key => Vue.delete(this.selectedEffects, key))
-      },
-      log (something) {
-        console.log(something)
+        combatantsToUpdate.push(c);
       }
+      await Promise.all(
+        combatantsToUpdate.map(combatant => this.updateCombatant(combatant))
+      );
+      this.clearSelectedEffects();
     },
-    created () {
-      // this.loadCombatants()
+    clearSelectedEffects() {
+      Object.keys(this.selectedEffects).map(key =>
+        Vue.delete(this.selectedEffects, key)
+      );
     }
   }
+};
 </script>
