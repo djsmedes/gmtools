@@ -89,6 +89,14 @@ export const store = {
         // eslint-disable-next-line
         if (process.env.NODE_ENV !== "production") console.warn(err);
         commit(mutationTypes.CLEAR_AUTH_USER);
+        if (
+          err.response &&
+          err.response.status === 401 &&
+          err.response.data &&
+          err.response.data.detail === "Invalid token."
+        ) {
+          commit(mutationTypes.REMOVE_TOKEN);
+        }
       }
     },
     [actionTypes.SET_AUTH_USER]: ({ commit }, user) => {
