@@ -146,14 +146,13 @@ export default {
     exitEditMode() {
       this.editMode = false;
     },
-    saveAppliedEdits() {
-      Promise.all(
+    async saveAppliedEdits() {
+      await Promise.all(
         Object.keys(this.editedCombatants).map(uuid =>
           this.updateCombatant(this.editedCombatants[uuid])
         )
-      ).then(() => {
-        this.exitEditMode();
-      });
+      );
+      this.exitEditMode();
     },
     toggleCombatantWillApply(uuid) {
       if (!this.applyingEffectType) return;

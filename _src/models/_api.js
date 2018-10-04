@@ -21,12 +21,9 @@ export function retrieveObject({ uuid, modelName, axiosConfig = {} }, resolve) {
   });
 }
 
-export function updateObject({ object, modelName, axiosConfig = {} }, resolve) {
-  return axios
-    .put(generateUrl(modelName, object.uuid), object, axiosConfig)
-    .then(r => {
-      resolve(r.data);
-    });
+export async function updateObject({ object, modelName }) {
+  let reply = await axios.put(generateUrl(modelName, object.uuid), object);
+  return reply.data;
 }
 
 export function destroyObject({ uuid, modelName, axiosConfig = {} }, resolve) {
