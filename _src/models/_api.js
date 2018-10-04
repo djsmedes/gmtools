@@ -10,10 +10,9 @@ export async function listObjects({ modelName }) {
   return reply.data;
 }
 
-export function createObject({ object, modelName, axiosConfig = {} }, resolve) {
-  return axios.post(generateUrl(modelName), object, axiosConfig).then(r => {
-    resolve(r.data);
-  });
+export async function createObject({ object, modelName }) {
+  let reply = await axios.post(generateUrl(modelName), object);
+  return reply.data;
 }
 
 export function retrieveObject({ uuid, modelName, axiosConfig = {} }, resolve) {

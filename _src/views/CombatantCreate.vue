@@ -14,26 +14,25 @@
 </template>
 
 <script>
-  import { mapActions } from 'vuex'
-  import combatant from '../models/combatant'
-  import { routeNames } from '../router'
+import { mapActions } from "vuex";
+import combatant from "../models/combatant";
+import { routeNames } from "../router";
 
-  export default {
-    name: "CombatantCreate",
-    data () {
-      return {
-        combatant: new combatant.Combatant()
-      }
-    },
-    methods: {
-      ...mapActions(combatant.namespace, {
-        createCombatant: combatant.actionTypes.CREATE
-      }),
-      doCreateCombatant () {
-        this.createCombatant(this.combatant).then(() => {
-          this.$router.push({name: routeNames.COMBATANTS})
-        })
-      }
+export default {
+  name: "CombatantCreate",
+  data() {
+    return {
+      combatant: new combatant.Combatant()
+    };
+  },
+  methods: {
+    ...mapActions(combatant.namespace, {
+      createCombatant: combatant.actionTypes.CREATE
+    }),
+    async doCreateCombatant() {
+      await this.createCombatant(this.combatant);
+      this.$router.push({ name: routeNames.COMBATANTS });
     }
   }
+};
 </script>

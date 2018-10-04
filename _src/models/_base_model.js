@@ -87,18 +87,14 @@ export class ModelVuexModule {
             }
           }
         },
-        [this.actionTypes.CREATE]: ({ commit }, object) => {
-          return api.createObject(
-            {
-              object,
-              modelName: this.modelName
-            },
-            returnedObject => {
-              commit(this.mutationTypes.SET, {
-                object: new modelClass(returnedObject)
-              });
-            }
-          );
+        [this.actionTypes.CREATE]: async ({ commit }, object) => {
+          let returnedObject = await api.createObject({
+            object,
+            modelName: this.modelName
+          });
+          commit(this.mutationTypes.SET, {
+            object: new modelClass(returnedObject)
+          });
         },
         [this.actionTypes.UPDATE]: ({ commit }, object) => {
           return api.updateObject(
