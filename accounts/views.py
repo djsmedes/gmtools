@@ -12,16 +12,12 @@ class UserView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            user = UserSerializer(instance=request.user, context={'request': request}).data
-        else:
-            user = {
-                'first_name': '',
-                'last_name': '',
-                'email': '',
-                'requested': True
-            }
-        return Response(user)
+        return Response(
+            UserSerializer(
+                instance=request.user,
+                context={'request': request}
+            ).data
+        ) if request.user.is_authenticated else Response({})
 
 
 class SignupApiView(APIView):

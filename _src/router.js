@@ -32,42 +32,42 @@ const router = new Router({
       path: "/combatants/",
       name: routeNames.COMBATANTS,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "./views/CombatantList"),
+        import(/* webpackChunkName: "combatants" */ "@/views/CombatantList"),
       beforeEnter: loginRequired
     },
     {
       path: "/combatants/:uuid/",
       name: routeNames.COMBATANT,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "./views/CombatantDetail"),
+        import(/* webpackChunkName: "combatants" */ "@/views/CombatantDetail"),
       beforeEnter: loginRequired
     },
     {
       path: "/combatants/new/",
       name: routeNames.COMBATANT_CREATE,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "./views/CombatantCreate"),
+        import(/* webpackChunkName: "combatants" */ "@/views/CombatantCreate"),
       beforeEnter: loginRequired
     },
     {
       path: "/login/",
       name: routeNames.LOGIN,
       component: () =>
-        import(/* webpackChunkName: "account" */ "./views/Login"),
-      props: route => ({ loginRedirect: route.query.next }),
+        import(/* webpackChunkName: "account" */ "@/views/Login"),
+      props: true,
       beforeEnter: loggedInExcluded
     },
     {
       path: "/signup/",
       name: routeNames.SIGNUP,
       component: () =>
-        import(/* webpackChunkName: "account" */ "./views/SignUp"),
+        import(/* webpackChunkName: "account" */ "@/views/SignUp"),
       beforeEnter: loggedInExcluded
     },
     {
       path: "/404/",
       name: routeNames.NOT_FOUND,
-      component: () => import(/* webpackChunkName: "404" */ "./views/NotFound")
+      component: () => import(/* webpackChunkName: "404" */ "@/views/NotFound")
     },
     {
       /* THIS SHOULD ALWAYS BE AT THE END

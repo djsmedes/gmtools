@@ -22,12 +22,5 @@ module.exports = {
         app: "./_src/main.js"
       }
     };
-  },
-
-  chainWebpack: config => {
-    config.plugin("html").tap(args => {
-      args[0].template = "_public/index.html";
-      return args;
-    });
   }
 };

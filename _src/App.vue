@@ -54,7 +54,7 @@
     </nav>
 
     <div class="container">
-      <router-view v-if="isAuthenticated"/>
+      <router-view v-if="isRequested"/>
     </div>
   </div>
 </template>
@@ -74,7 +74,8 @@ export default {
   computed: {
     ...mapGetters(auth.namespace, {
       user: auth.getterTypes.AUTH_USER,
-      isAuthenticated: auth.getterTypes.IS_USER_AUTHENTICATED
+      isAuthenticated: auth.getterTypes.IS_USER_AUTHENTICATED,
+      isRequested: auth.getterTypes.WAS_AUTH_USER_REQUESTED
     })
   },
   methods: {
@@ -88,9 +89,8 @@ export default {
       await this.logoutUser();
       this.$router.push({ name: routeNames.LOGIN });
     },
-    setCurrentCampaign(uuid) {
-      let tempUser = new User({ ...this.user, current_campaign: uuid });
-      this.updateUser(tempUser);
+    async setCurrentCampaign(uuid) {
+      await this.updateUser(new User({ ...this.user, current_campaign: uuid }));
     }
   }
 };

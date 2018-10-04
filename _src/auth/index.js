@@ -69,15 +69,24 @@ export const store = {
   },
   actions: {
     [actionTypes.LOGIN]: async ({ commit, dispatch }, { email, password }) => {
-      let token = await api.getToken({ email, password });
-      commit(mutationTypes.SET_TOKEN, { token });
-      return dispatch(actionTypes.GET_USER);
+      try {
+        let token = await api.getToken({ email, password });
+        commit(mutationTypes.SET_TOKEN, { token });
+        await dispatch(actionTypes.GET_USER);
+      } catch (err) {
+        if (err.response && err.response.status === 400) {
+          return err.response.data;
+        } else {
+          throw err;
+        }
+      }
     },
     [actionTypes.GET_USER]: async ({ commit, dispatch }) => {
       try {
         let user = await api.getUser();
         dispatch(actionTypes.SET_AUTH_USER, user);
       } catch (err) {
+        // eslint-disable-next-line
         if (process.env.NODE_ENV !== "production") console.warn(err);
         commit(mutationTypes.CLEAR_AUTH_USER);
       }
