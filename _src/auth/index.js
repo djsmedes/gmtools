@@ -76,6 +76,13 @@ export const store = {
       } catch (err) {
         if (err.response && err.response.status === 400) {
           return err.response.data;
+        } else if (
+          err.response &&
+          err.response.status === 401 &&
+          err.response.data &&
+          err.response.data.detail === "Invalid token."
+        ) {
+          commit(mutationTypes.REMOVE_TOKEN);
         } else {
           throw err;
         }
