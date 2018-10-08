@@ -12,7 +12,7 @@ class UserView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, *args, **kwargs):
-        resp_data = {'user': {}, 'campaigns': {}}
+        resp_data = {'user': {}, 'campaigns': []}
 
         if request.user.is_authenticated:
             resp_data['user'] = UserSerializer(
