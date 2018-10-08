@@ -41,10 +41,11 @@
                  :class="[{active: campaign === user.current_campaign}]"
                  href="#"
                  @click.prevent.stop="setCurrentCampaign(campaign)"
-                 :key="campaign.uuid">
-                {{ campaign }}
+                 :key="campaign">
+                {{ campaignById(campaign) ? campaignById(campaign).name : campaign }}
               </a>
               <div class="dropdown-divider"></div>
+              <!-- todo - make account settings page -->
               <a class="dropdown-item" href="/account/">Account options</a>
               <a class="dropdown-item" href="#" @click.prevent="logout">Sign out</a>
             </div>
@@ -64,6 +65,7 @@ import { mapGetters, mapActions } from "vuex";
 import auth from "@/auth";
 import { routeNames } from "@/router";
 import userModule, { User } from "@/models/user";
+import campaignModule from "@/models/campaign";
 
 export default {
   data() {
@@ -76,6 +78,9 @@ export default {
       user: auth.getterTypes.AUTH_USER,
       isAuthenticated: auth.getterTypes.IS_USER_AUTHENTICATED,
       isRequested: auth.getterTypes.WAS_AUTH_USER_REQUESTED
+    }),
+    ...mapGetters(campaignModule.namespace, {
+      campaignById: campaignModule.getterTypes.BY_ID
     })
   },
   methods: {
@@ -85,6 +90,9 @@ export default {
     ...mapActions(userModule.namespace, {
       updateUser: userModule.actionTypes.UPDATE
     }),
+    ...mapActions(campaignModule.namespace, {
+      loadCampaigns: campaignModule.actionTypes.LIST
+    }),
     logout() {
       this.logoutUser();
       this.$router.push({ name: routeNames.LOGIN });
@@ -92,6 +100,10 @@ export default {
     async setCurrentCampaign(uuid) {
       await this.updateUser(new User({ ...this.user, current_campaign: uuid }));
     }
+  },
+  async created() {
+    // todo - consolidate this into getUser call
+    await this.loadCampaigns();
   }
 };
 </script>
