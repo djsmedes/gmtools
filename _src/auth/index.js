@@ -2,7 +2,7 @@ import Vue from "vue";
 import api from "./api";
 import userModule, { User } from "@/models/user";
 import campaignModule, { Campaign } from "@/models/campaign";
-import { array2ObjByUUID } from "@/models/_base_model";
+import { array2ObjByUUID } from "@/models/_baseModule";
 import * as Cookies from "js-cookie";
 import axios from "axios";
 

@@ -1,4 +1,4 @@
-import { ModelVuexModule } from "./_base_model";
+import { ModelVuexModule } from "./_baseModule";
 
 export class Combatant {
   static get modelName() {
