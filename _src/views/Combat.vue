@@ -86,7 +86,7 @@
 
 <script>
 import Vue from "vue";
-import { mapState, mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import CombatantCard from "../components/CombatantCard";
 import combatant from "../models/combatant";
 import _ from "lodash";
@@ -108,23 +108,12 @@ export default {
     CombatantCard
   },
   computed: {
-    ...mapState(combatant.namespace, {
-      combatantsNeedReload: state => state[combatant.stateKeys.NEEDS_RELOAD]
-    }),
     ...mapGetters(combatant.namespace, {
       combatants: combatant.getterTypes.LIST,
       getCombatant: combatant.getterTypes.BY_ID
     }),
     combatantsByInitiative() {
       return [...this.combatants].sort((a, b) => b.initiative - a.initiative);
-    }
-  },
-  watch: {
-    combatantsNeedReload: {
-      handler(newCombatantObj) {
-        if (newCombatantObj === true) this.loadCombatants();
-      },
-      immediate: true
     }
   },
   methods: {
@@ -241,6 +230,9 @@ export default {
       Object.keys(this.selectedEffects).map(key =>
         Vue.delete(this.selectedEffects, key)
       );
+    },
+    created() {
+      this.loadCombatants();
     }
   }
 };
