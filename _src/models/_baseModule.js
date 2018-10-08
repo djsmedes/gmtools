@@ -18,6 +18,7 @@ export class ModelVuexModule {
       NEEDS_RELOAD: "needsReload"
     };
     this.getterTypes = {
+      OBJECTS: "map",
       IDS: "ids",
       LIST: "list",
       BY_ID: "byID"
@@ -46,16 +47,17 @@ export class ModelVuexModule {
         [this.stateKeys.NEEDS_RELOAD]: true
       },
       getters: {
-        [this.getterTypes.IDS]: state => {
-          return Object.keys(state[this.stateKeys.OBJECTS]);
+        [this.getterTypes.OBJECTS]: state => {
+          return state[this.stateKeys.OBJECTS];
+        },
+        [this.getterTypes.IDS]: (state, getters) => {
+          return Object.keys(getters[this.getterTypes.OBJECTS]);
         },
         [this.getterTypes.LIST]: (state, getters) => {
-          return getters[this.getterTypes.IDS].map(uuid =>
-            Object.assign(state[this.stateKeys.OBJECTS][uuid], { uuid: uuid })
-          );
+          return Object.values(getters[this.getterTypes.OBJECTS]);
         },
-        [this.getterTypes.BY_ID]: state => uuid =>
-          state[this.stateKeys.OBJECTS][uuid]
+        [this.getterTypes.BY_ID]: (state, getters) => uuid =>
+          getters[this.getterTypes.OBJECTS][uuid]
       },
       actions: {
         [this.actionTypes.LIST]: async ({ state, commit }) => {
