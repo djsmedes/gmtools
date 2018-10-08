@@ -4,20 +4,29 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_201_CREATED
 from rest_framework.authtoken.models import Token
 
-from .models import User
-from .serializers import UserSerializer
+from .models import User, Campaign
+from .serializers import UserSerializer, CampaignSerializer
 
 
 class UserView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, *args, **kwargs):
-        return Response(
-            UserSerializer(
+        resp_data = {'user': {}, 'campaigns': {}}
+
+        if request.user.is_authenticated:
+            resp_data['user'] = UserSerializer(
                 instance=request.user,
                 context={'request': request}
             ).data
-        ) if request.user.is_authenticated else Response({})
+            campaigns = Campaign.objects.filter(user=request.user)
+            resp_data['campaigns'] = CampaignSerializer(
+                many=True,
+                instance=campaigns,
+                context={'request': request}
+            ).data
+
+        return Response(resp_data)
 
 
 class SignupApiView(APIView):

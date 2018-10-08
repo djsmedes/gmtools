@@ -1,7 +1,8 @@
 import Vue from "vue";
 import api from "./api";
 import userModule, { User } from "@/models/user";
-import campaignModule from "@/models/campaign";
+import campaignModule, { Campaign } from "@/models/campaign";
+import { array2ObjByUUID } from "@/models/_base_model";
 import * as Cookies from "js-cookie";
 import axios from "axios";
 
@@ -106,8 +107,19 @@ export const store = {
     },
     [actionTypes.GET_USER]: async ({ commit, dispatch }) => {
       try {
-        let user = await api.getUser();
+        let { user, campaigns } = await api.getUser();
         dispatch(actionTypes.SET_AUTH_USER, user);
+        let campaignSetListKey =
+          campaignModule.namespace +
+          "/" +
+          campaignModule.mutationTypes.SET_LIST;
+        commit(
+          campaignSetListKey,
+          {
+            objList: array2ObjByUUID(campaigns, Campaign)
+          },
+          { root: true }
+        );
       } catch (err) {
         // eslint-disable-next-line
         if (process.env.NODE_ENV !== "production") console.warn(err);

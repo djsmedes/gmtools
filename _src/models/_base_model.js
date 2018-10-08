@@ -2,7 +2,7 @@ import api from "./_api";
 import Vue from "vue";
 import _ from "lodash";
 
-function array2ObjByUUID(array, objConstructor) {
+export function array2ObjByUUID(array, objConstructor) {
   return array.reduce((accumulator, currentVal) => {
     accumulator[currentVal.uuid] = new objConstructor(currentVal);
     return accumulator;

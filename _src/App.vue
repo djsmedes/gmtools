@@ -100,10 +100,6 @@ export default {
     async setCurrentCampaign(uuid) {
       await this.updateUser(new User({ ...this.user, current_campaign: uuid }));
     }
-  },
-  async created() {
-    // todo - consolidate this into getUser call
-    await this.loadCampaigns();
   }
 };
 </script>
