@@ -13,6 +13,4 @@ class CombatantSerializer(CampaignModelSerializer):
     class Meta:
         model = Combatant
         fields = ('name', 'initiative', 'hp', 'loot', 'effects',
-                  'uuid', 'url')
-
-
+                  'campaign', 'uuid', 'url')

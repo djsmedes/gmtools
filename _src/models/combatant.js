@@ -1,4 +1,4 @@
-import { ModelVuexModule } from "./_baseModule";
+import { CampaignDependentVuexModule } from "./_needsCampaignModule";
 
 export class Combatant {
   static get modelName() {
@@ -7,6 +7,7 @@ export class Combatant {
 
   constructor({
     uuid = "",
+    campaign = "",
     name = "",
     initiative = 0,
     hp = 0,
@@ -14,6 +15,7 @@ export class Combatant {
   } = {}) {
     this.uuid = uuid;
     this.name = name;
+    this.campaign = campaign;
     this.initiative = initiative;
     this.hp = hp;
     this.effects = effects;
@@ -77,7 +79,7 @@ export class Combatant {
   }
 }
 
-class CombatantVuexModule extends ModelVuexModule {
+class CombatantVuexModule extends CampaignDependentVuexModule {
   constructor() {
     super(Combatant);
   }

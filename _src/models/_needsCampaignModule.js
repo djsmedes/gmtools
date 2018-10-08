@@ -1,7 +1,7 @@
 import { ModelVuexModule } from "./_baseModule";
 import auth from "@/auth";
 
-export class CampaignDependentModelVuexModule extends ModelVuexModule {
+export class CampaignDependentVuexModule extends ModelVuexModule {
   constructor(modelClass) {
     super(modelClass);
     this.store.getters = {
@@ -9,7 +9,7 @@ export class CampaignDependentModelVuexModule extends ModelVuexModule {
       [this.getterTypes.OBJECTS]: (state, getters, rootState, rootGetters) => {
         let authUserGetterKey =
           auth.namespace + "/" + auth.getterTypes.AUTH_USER;
-        let user = rootGetters(authUserGetterKey);
+        let user = rootGetters[authUserGetterKey];
         if (!user) return {};
         let campaignUuid = user.current_campaign;
         if (!campaignUuid) return {};
