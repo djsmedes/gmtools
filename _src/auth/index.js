@@ -1,6 +1,7 @@
 import Vue from "vue";
 import api from "./api";
 import userModule, { User } from "@/models/user";
+import campaignModule from "@/models/campaign";
 import * as Cookies from "js-cookie";
 import axios from "axios";
 
@@ -17,7 +18,8 @@ export const getterTypes = {
   AUTH_HEADER: "authHeader",
   AUTH_USER: "authUser",
   WAS_AUTH_USER_REQUESTED: "wasAuthUserRequested",
-  IS_USER_AUTHENTICATED: "isUserAuthenticated"
+  IS_USER_AUTHENTICATED: "isUserAuthenticated",
+  CURRENT_CAMPAIGN: "currentCampaign"
 };
 
 export const actionTypes = {
@@ -57,6 +59,20 @@ export const store = {
       let userByIdGetterName =
         userModule.namespace + "/" + userModule.getterTypes.BY_ID;
       return rootGetters[userByIdGetterName](state[stateKeys.AUTH_USER]);
+    },
+    [getterTypes.CURRENT_CAMPAIGN]: (
+      state,
+      getters,
+      rootState,
+      rootGetters
+    ) => {
+      let user = getters[getterTypes.AUTH_USER];
+      if (!user) return;
+      let campaignUuid = user.current_campaign;
+      if (!campaignUuid) return;
+      let campaignByIdGetterName =
+        campaignModule.namespace + "/" + campaignModule.getterTypes.BY_ID;
+      return rootGetters[campaignByIdGetterName](campaignUuid);
     },
     [getterTypes.WAS_AUTH_USER_REQUESTED]: state => {
       return typeof state[stateKeys.AUTH_USER] !== "undefined";
