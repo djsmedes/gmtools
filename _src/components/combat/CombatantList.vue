@@ -8,7 +8,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import ObjectList from "@/components/ObjectList";
+import ObjectList from "@/components/generic/ObjectList";
 import { routeNames } from "@/router";
 import combatant from "@/models/combatant";
 

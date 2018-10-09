@@ -72,7 +72,7 @@
 </template>
 
 <script>
-  import { Combatant } from '../models/combatant'
+  import { Combatant } from '../../models/combatant'
 
   export default {
     name: "Combatant",
@@ -132,7 +132,7 @@
 </script>
 
 <style scoped lang="scss">
-  @import '../scss/shared';
+  @import '../../scss/shared';
 
   a {
     @each $theme-color-name, $color in $theme-colors {

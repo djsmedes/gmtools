@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Combat from "@/views/Combat";
+import Combat from "@/components/combat/Combat";
 import {
   userRequired,
   loginRequired,
@@ -32,28 +32,28 @@ const router = new Router({
       path: "/combatants/",
       name: routeNames.COMBATANTS,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "@/views/CombatantList"),
+        import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantList"),
       beforeEnter: loginRequired
     },
     {
       path: "/combatants/:uuid/",
       name: routeNames.COMBATANT,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "@/views/CombatantDetail"),
+        import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantDetail"),
       beforeEnter: loginRequired
     },
     {
       path: "/combatants/new/",
       name: routeNames.COMBATANT_CREATE,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "@/views/CombatantCreate"),
+        import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantCreate"),
       beforeEnter: loginRequired
     },
     {
       path: "/login/",
       name: routeNames.LOGIN,
       component: () =>
-        import(/* webpackChunkName: "account" */ "@/views/Login"),
+        import(/* webpackChunkName: "account" */ "@/components/auth/Login"),
       props: true,
       beforeEnter: loggedInExcluded
     },
@@ -61,13 +61,14 @@ const router = new Router({
       path: "/signup/",
       name: routeNames.SIGNUP,
       component: () =>
-        import(/* webpackChunkName: "account" */ "@/views/SignUp"),
+        import(/* webpackChunkName: "account" */ "@/components/auth/SignUp"),
       beforeEnter: loggedInExcluded
     },
     {
       path: "/404/",
       name: routeNames.NOT_FOUND,
-      component: () => import(/* webpackChunkName: "404" */ "@/views/NotFound")
+      component: () =>
+        import(/* webpackChunkName: "404" */ "@/components/generic/NotFound")
     },
     {
       /* THIS SHOULD ALWAYS BE AT THE END

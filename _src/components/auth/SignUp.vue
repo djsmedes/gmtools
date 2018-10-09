@@ -40,7 +40,7 @@
 
 <script>
 import { mapActions } from "vuex";
-import auth from "@/auth";
+import auth from "@/auth/index";
 import $ from "jquery";
 import { routeNames } from "@/router";
 

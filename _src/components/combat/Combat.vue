@@ -87,8 +87,8 @@
 <script>
 import Vue from "vue";
 import { mapGetters, mapActions } from "vuex";
-import CombatantCard from "../components/CombatantCard";
-import combatant from "../models/combatant";
+import CombatantCard from "./CombatantCard";
+import combatant from "../../models/combatant";
 import _ from "lodash";
 
 export default {
