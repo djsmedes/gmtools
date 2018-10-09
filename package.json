@@ -4,8 +4,8 @@
   "author": "Daniel Smedema",
   "private": true,
   "engines": {
-    "node": "9.11.2",
-    "npm": "6.4.0"
+    "node": "8.12.0",
+    "npm": "6.4.1"
   },
   "scripts": {
     "serve": "vue-cli-service serve",
