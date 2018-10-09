@@ -230,10 +230,10 @@ export default {
       Object.keys(this.selectedEffects).map(key =>
         Vue.delete(this.selectedEffects, key)
       );
-    },
-    created() {
-      this.loadCombatants();
     }
+  },
+  created() {
+    this.loadCombatants();
   }
 };
 </script>

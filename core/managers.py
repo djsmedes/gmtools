@@ -17,7 +17,7 @@ class CampaignModelManager(models.Manager):
         :param: request -- django request
         :rtype: Queryset
         """
-        if request.user.is_authenticated and request.user.current_campaign:
-            return self.of_campaign(request.user.current_campaign)
+        if request.user.is_authenticated:
+            return super().get_queryset().filter(campaign__in=request.user.campaigns.all())
         else:
             return self.none()
