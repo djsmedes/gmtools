@@ -16,5 +16,6 @@ djangorestframework = "*"
 rules = "*"
 django-authtools = "*"
 django-smalluuid = "*"
+channels = "*"
 
 [dev-packages]
