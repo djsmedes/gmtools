@@ -7,6 +7,11 @@ module.exports = {
         target: "http://localhost:8000",
         changeOrigin: true,
         ws: true
+      },
+      "/ws": {
+        target: "ws://localhost:8000",
+        secure: false,
+        ws: true
       }
     }
   },

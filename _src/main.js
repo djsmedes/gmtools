@@ -19,3 +19,17 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount("#app");
+
+let sockUrl = "ws://" + window.location.host + "/ws/combat/";
+console.log(sockUrl);
+let sock = new WebSocket(sockUrl);
+
+sock.onmessage = e => {
+  const data = JSON.parse(e.data);
+  let message = data["message"];
+  console.log(message);
+};
+
+sock.onclose = e => {
+  console.error("Socket closed.");
+};
