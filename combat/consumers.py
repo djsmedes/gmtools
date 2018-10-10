@@ -2,7 +2,7 @@ from channels.generic.websocket import WebsocketConsumer
 import json
 
 
-class CombatantConsumer(WebsocketConsumer):
+class CombatConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
 
