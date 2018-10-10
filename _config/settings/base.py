@@ -34,6 +34,7 @@ SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY')
 
 # Application definition
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,7 +52,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rules.apps.AutodiscoverRulesConfig',
     'authtools',
-    'channels',
 
     # local apps
     'core.apps.CoreConfig',
