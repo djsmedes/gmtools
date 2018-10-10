@@ -30,6 +30,10 @@ sock.onmessage = e => {
   console.log(message);
 };
 
+sock.onopen = () => {
+  sock.send(JSON.stringify({ message: "this is the message" }));
+};
+
 sock.onclose = e => {
   console.error("Socket closed.");
 };
