@@ -155,7 +155,7 @@ STATICFILES_DIRS = [
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = '_config.storage.WhiteNoiseStaticFilesStorage'
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/api/'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
