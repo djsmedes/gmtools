@@ -22,6 +22,7 @@
     "lodash": "^4.17.11",
     "popper.js": "^1.14.4",
     "vue": "^2.5.17",
+    "vue-native-websocket": "^2.0.12",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
   },
