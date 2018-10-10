@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rules.apps.AutodiscoverRulesConfig',
     'authtools',
+    'channels',
 
     # local apps
     'core.apps.CoreConfig',
@@ -175,6 +176,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
+
+# django channels
+ASGI_APPLICATION = "_config.routing.application"
 
 # custom settings
 TESTING = False
