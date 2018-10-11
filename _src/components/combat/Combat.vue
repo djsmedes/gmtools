@@ -86,7 +86,7 @@
 
 <script>
 import Vue from "vue";
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions, mapMutations } from "vuex";
 import CombatantCard from "./CombatantCard";
 import combatant from "../../models/combatant";
 import _ from "lodash";
@@ -117,6 +117,9 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(combatant.namespace, {
+      setCombatant: combatant.mutationTypes.SET
+    }),
     ...mapActions(combatant.namespace, {
       loadCombatants: combatant.actionTypes.LIST,
       updateCombatant: combatant.actionTypes.UPDATE
@@ -234,6 +237,11 @@ export default {
   },
   created() {
     this.loadCombatants();
+    this.$connect("ws://localhost:8080/ws/combat/", { format: "json" });
+    this.$options.sockets.onmessage = msg => console.log(JSON.parse(msg.data));
+  },
+  beforeDestroy() {
+    this.$disconnect();
   }
 };
 </script>

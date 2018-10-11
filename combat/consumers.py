@@ -5,6 +5,10 @@ import json
 class CombatConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
+        print(self.scope['user'])
+        self.send(text_data=json.dumps({
+            'message': 'Connection established.'
+        }))
 
     def disconnect(self, code):
         pass
