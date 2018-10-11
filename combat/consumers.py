@@ -27,8 +27,10 @@ class CombatConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
-        message = text_data_json['message']
+        combatants = text_data_json['combatants']
 
-        self.send(text_data=json.dumps({
-            'message': message + '\nThis is the reply.'
-        }))
+        for combatant in combatants:
+            instance = Combatant.objects.get(uuid=combatant.get('uuid'))
+            ser = CombatantNoRequestSerializer(instance=instance, data=combatant, partial=True)
+            if ser.is_valid():
+                ser.save()

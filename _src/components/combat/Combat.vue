@@ -121,9 +121,12 @@ export default {
       setCombatant: combatant.mutationTypes.SET
     }),
     ...mapActions(combatant.namespace, {
-      loadCombatants: combatant.actionTypes.LIST,
-      updateCombatant: combatant.actionTypes.UPDATE
+      updateCombatant: combatant.actionTypes.UPDATE,
+      loadCombatants: combatant.actionTypes.LIST
     }),
+    updateCombatants(combatants) {
+      this.$socket.sendObj({ combatants });
+    },
     updateEditedCombatants(editedCombatant) {
       if (_.isEqual(editedCombatant, this.getCombatant(editedCombatant.uuid))) {
         delete this.editedCombatants[editedCombatant.uuid];
@@ -224,9 +227,10 @@ export default {
         }
         combatantsToUpdate.push(c);
       }
-      await Promise.all(
-        combatantsToUpdate.map(combatant => this.updateCombatant(combatant))
-      );
+      // await Promise.all(
+      //   combatantsToUpdate.map(combatant => this.updateCombatant(combatant))
+      // );
+      this.updateCombatants(combatantsToUpdate);
       this.clearSelectedEffects();
     },
     clearSelectedEffects() {
