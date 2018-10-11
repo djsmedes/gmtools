@@ -1,13 +1,26 @@
 from channels.generic.websocket import WebsocketConsumer
 import json
+from rest_framework.renderers import JSONRenderer
+
+from .models import Combatant
+from .serializers import CombatantNoRequestSerializer
 
 
 class CombatConsumer(WebsocketConsumer):
     def connect(self):
+        user = self.scope.get('user')
+        if user is None or not user.is_authenticated:
+            return
+
         self.accept()
-        self.send(text_data=json.dumps({
-            'message': 'Connection established.'
-        }))
+        combatants_pre_json = CombatantNoRequestSerializer(
+            many=True,
+            instance=Combatant.objects.of_user(user)
+        ).data
+
+        self.send(text_data=JSONRenderer().render({
+            'combatants': combatants_pre_json
+        }).decode())
 
     def disconnect(self, code):
         pass

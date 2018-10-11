@@ -233,12 +233,21 @@ export default {
       Object.keys(this.selectedEffects).map(key =>
         Vue.delete(this.selectedEffects, key)
       );
+    },
+    handleWebsocket(msg) {
+      try {
+        let objAry = JSON.parse(msg.data).combatants;
+        this.setCombatant({ objAry });
+      } catch (err) {
+        // todo - figure out what to do with errors
+        // eslint-disable-next-line
+        console.warn(err);
+      }
     }
   },
   created() {
-    this.loadCombatants();
     this.$connect("ws://localhost:8080/ws/combat/", { format: "json" });
-    this.$options.sockets.onmessage = msg => console.log(JSON.parse(msg.data));
+    this.$options.sockets.onmessage = this.handleWebsocket;
   },
   beforeDestroy() {
     this.$disconnect();

@@ -14,3 +14,13 @@ class CombatantSerializer(CampaignModelSerializer):
         model = Combatant
         fields = ('name', 'initiative', 'hp', 'loot', 'effects',
                   'campaign', 'uuid', 'url')
+
+
+class CombatantNoRequestSerializer(CampaignModelSerializer):
+    class Meta:
+        model = Combatant
+        fields = ('name', 'initiative', 'hp', 'loot', 'effects',
+                  'campaign', 'uuid')
+
+    def transform_queryset(self, queryset):
+        return queryset

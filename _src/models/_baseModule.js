@@ -116,8 +116,18 @@ export class ModelVuexModule {
         [this.mutationTypes.SET_RELOAD_NEEDED]: (state, val) => {
           Vue.set(state, this.stateKeys.NEEDS_RELOAD, val);
         },
-        [this.mutationTypes.SET]: (state, { object }) => {
-          Vue.set(state[this.stateKeys.OBJECTS], object.uuid, object);
+        [this.mutationTypes.SET]: (state, { object, objAry }) => {
+          if (object) {
+            Vue.set(state[this.stateKeys.OBJECTS], object.uuid, object);
+          } else if (objAry) {
+            objAry.map(obj =>
+              Vue.set(
+                state[this.stateKeys.OBJECTS],
+                obj.uuid,
+                new modelClass(obj)
+              )
+            );
+          }
         }
       }
     };
