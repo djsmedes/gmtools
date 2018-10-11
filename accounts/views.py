@@ -33,6 +33,7 @@ class SignupApiView(APIView):
     authentication_classes = []
     permission_classes = []
 
+    # todo - add decorators like django's built in login view dispath method
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         password1 = request.data.get('password1')
