@@ -3,7 +3,7 @@
     <div class="card-header d-flex">
       <h4>{{ title }}</h4>
 
-      <div v-if="allowEditing" class="ml-auto">
+      <div v-if="saveFunc" class="ml-auto">
         <button type="button"
                 v-if="isViewMode"
                 class="btn btn-primary"
@@ -25,9 +25,9 @@
         </div>
       </div>
       <button type="button"
-              v-if="allowDelete"
+              v-if="deleteFunc"
               class="btn btn-outline-danger"
-              :class="allowEditing ? 'ml-2' : 'ml-auto'"
+              :class="saveFunc ? 'ml-2' : 'ml-auto'"
               data-toggle="modal"
               data-target="#areYouSureDelete">
         Delete
@@ -49,7 +49,7 @@
               <button type="button"
                       class="btn btn-danger"
                       data-dismiss="modal"
-                      @click="$emit('delete-obj')">
+                      @click="deleteFunc">
                 Yes, delete {{ title }}
               </button>
               <button type="button"
@@ -81,21 +81,17 @@ export default {
       type: Boolean,
       default: false
     },
-    allowEditing: {
-      type: Boolean,
-      default: true
-    },
-    allowDelete: {
-      type: Boolean,
-      default: true
-    },
     saveFunc: {
       type: Function,
-      default: async () => {}
+      default: null
     },
     clearFunc: {
       type: Function,
       default: () => {}
+    },
+    deleteFunc: {
+      type: Function,
+      default: null
     }
   },
   data() {

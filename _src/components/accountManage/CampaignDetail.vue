@@ -2,7 +2,7 @@
   <object-detail :title="campaign.name"
                  :save-func="save"
                  :clear-func="reset"
-                 @delete-obj="deleteSelf">
+                 :delete-func="deleteSelf">
     <template slot="view">
       <div class="card-body">
         <h5>Name:</h5>
