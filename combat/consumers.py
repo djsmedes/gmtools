@@ -1,5 +1,6 @@
-from channels.generic.websocket import WebsocketConsumer
 import json
+from channels.generic.websocket import WebsocketConsumer
+from asgiref.sync import async_to_sync
 from rest_framework.renderers import JSONRenderer
 
 from .models import Combatant
@@ -12,16 +13,27 @@ class CombatConsumer(WebsocketConsumer):
         if user is None or not user.is_authenticated:
             return
 
-        self.accept()
+        self.channel_group_name = f'{user.current_campaign.uuid}_combat'
+
+        # Join room group
+        async_to_sync(self.channel_layer.group_add)(
+            self.channel_group_name,
+            self.channel_name
+        )
+
         ser = CombatantNoRequestSerializer(
             many=True,
             instance=Combatant.objects.of_user(user)
         )
 
+        self.accept()
         self.respond(type='update', data={'combatants': ser.data})
 
     def disconnect(self, code):
-        pass
+        async_to_sync(self.channel_layer.group_discard)(
+            self.channel_group_name,
+            self.channel_name
+        )
 
     def receive(self, text_data=None, bytes_data=None):
         msg = json.loads(text_data)
@@ -58,6 +70,22 @@ class CombatConsumer(WebsocketConsumer):
                 })
                 return
 
-        self.respond(type='update', reply_to=msg_id, data={
-            'combatants': updated_combatants
-        })
+        async_to_sync(self.channel_layer.group_send)(
+            self.channel_group_name,
+            {
+                'type': 'combatants_update',
+                'message': JSONRenderer().render({
+                    'type': 'update',
+                    'replyTo': msg_id,
+                    'status': 200,
+                    'data': {'combatants': updated_combatants}
+                }).decode()
+            }
+        )
+
+    def combatants_update(self, event):
+        message = event.get('message')
+        if message is None:
+            return
+
+        self.send(text_data=message)
