@@ -2,26 +2,28 @@
   <v-app>
     <v-toolbar color="grey darken-3" dark dense>
       <v-toolbar-items>
-        <v-btn flat exact class="title"
+        <v-btn flat exact class="title no-text-dec"
                :to="{name: routeNames.HOME}">
           GMTOOLS
         </v-btn>
         <v-btn flat v-if="isAuthenticated"
+               class="no-text-dec"
                :to="{name: routeNames.CAMPAIGNS}">
           Campaigns
         </v-btn>
         <v-btn flat v-if="isAuthenticated"
+               class="no-text-dec"
                :to="{name: routeNames.COMBATANTS}">
           Combatants
         </v-btn>
       </v-toolbar-items>
       <v-spacer></v-spacer>
       <v-toolbar-items v-if="!isAuthenticated">
-        <v-btn flat
+        <v-btn flat class="no-text-dec"
                :to="{name: routeNames.LOGIN}">
           Sign in
         </v-btn>
-        <v-btn flat
+        <v-btn flat class="no-text-dec"
                :to="{name: routeNames.SIGNUP}">
           Sign up
         </v-btn>
@@ -121,4 +123,8 @@ export default {
 
 <style lang="scss">
 @import "./scss/shared";
+
+.no-text-dec {
+  text-decoration: none !important;
+}
 </style>
