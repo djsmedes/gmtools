@@ -23,7 +23,10 @@ class WebSocketReply {
 export class ModuleSocket {
   constructor(vm, url, msgType2FunctionMap) {
     this.vm = vm;
-    this.url = "ws://" + "localhost:8080" + "/ws/" + url + "/";
+
+    let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+    this.url = ws_scheme + "://" + window.location.host + "/ws/" + url + "/";
+
     this.counter = 0;
     this.replyCallbackMap = {};
     this.msgType2FunctionMap = msgType2FunctionMap;
