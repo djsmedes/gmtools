@@ -20,7 +20,7 @@ class UserSerializer(CampaignModelSerializer):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email',
-                  'current_campaign', 'campaigns',
+                  'current_campaign',
                   'uuid', 'url')
 
     def validate_current_campaign(self, value):

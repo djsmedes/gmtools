@@ -11,7 +11,6 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import campaign from "@/models/campaign";
-import userModule from "@/models/user";
 import auth from "@/auth";
 import { routeNames } from "@/router";
 
@@ -31,12 +30,8 @@ export default {
     ...mapActions(campaign.namespace, {
       createCampaign: campaign.actionTypes.CREATE
     }),
-    ...mapActions(userModule.namespace, {
-      refreshUser: userModule.actionTypes.REFRESH
-    }),
     async doCreateCampaign() {
       await this.createCampaign(this.campaign);
-      await this.refreshUser(this.authUser);
       this.$router.push({ name: routeNames.CAMPAIGNS });
     }
   }

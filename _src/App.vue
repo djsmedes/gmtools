@@ -39,13 +39,13 @@
               </span>
               <div class="dropdown-divider"></div>
               <h6 class="dropdown-header">Campaigns</h6>
-              <a v-for="campaign in user.campaigns"
+              <a v-for="campaign in campaignsByUser(user.uuid)"
                  class="dropdown-item"
-                 :class="[{active: campaign === user.current_campaign}]"
+                 :class="[{active: campaign.uuid === user.current_campaign}]"
                  href="#"
-                 @click.prevent.stop="setCurrentCampaign(campaign)"
+                 @click.prevent.stop="setCurrentCampaign(campaign.uuid)"
                  :key="campaign">
-                {{ campaignById(campaign) ? campaignById(campaign).name : campaign }}
+                {{ campaign.name }}
               </a>
               <div class="dropdown-divider"></div>
               <router-link class="dropdown-item" :to="{name: routeNames.ACCOUNT_SETTINGS}">Account options</router-link>
@@ -82,7 +82,8 @@ export default {
       isRequested: auth.getterTypes.WAS_AUTH_USER_REQUESTED
     }),
     ...mapGetters(campaignModule.namespace, {
-      campaignById: campaignModule.getterTypes.BY_ID
+      campaignById: campaignModule.getterTypes.BY_ID,
+      campaignsByUser: campaignModule.getterTypes.BY_USER
     })
   },
   methods: {
