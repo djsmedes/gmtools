@@ -68,19 +68,23 @@
         </button>
       </div>
     </div>
-    <div class="card-deck">
-      <template v-for="combatant in combatantsByInitiative">
-        <combatant-card :combatant="combatant"
-                        :effect-mode="applyingEffectType"
-                        :active="combatantsToApply.includes(combatant.uuid)"
-                        :edit-mode="editMode"
-                        :selected-effects="selectedEffects"
-                        :key="combatant.uuid"
-                        @click="toggleCombatantWillApply($event)"
-                        @combatant-change="updateEditedCombatants($event)"
-                        @effect-clicked="updateSelectedEffects($event)"/>
-      </template>
-    </div>
+    <v-container fluid grid-list-xl>
+      <v-layout row wrap>
+        <v-flex
+            v-for="combatant in combatantsByInitiative"
+            :key="combatant.uuid">
+        <combatant-card
+            :combatant="combatant"
+            :effect-mode="applyingEffectType"
+            :active="combatantsToApply.includes(combatant.uuid)"
+            :edit-mode="editMode"
+            :selected-effects="selectedEffects"
+            @click="toggleCombatantWillApply($event)"
+            @combatant-change="updateEditedCombatants($event)"
+            @effect-clicked="updateSelectedEffects($event)"/>
+        </v-flex>
+      </v-layout>
+    </v-container>
   </div>
 </template>
 

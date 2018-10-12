@@ -68,9 +68,9 @@
       </v-toolbar-items>
     </v-toolbar>
 
-    <div class="container">
+    <v-container fluid>
       <router-view v-if="isRequested"/>
-    </div>
+    </v-container>
   </v-app>
 </template>
 
@@ -121,13 +121,4 @@ export default {
 
 <style lang="scss">
 @import "./scss/shared";
-
-#nav {
-  a {
-    font-weight: bold;
-    &.router-link-active {
-      color: #30a92e;
-    }
-  }
-}
 </style>

@@ -1,74 +1,75 @@
 <template>
-  <a class="card"
-     :class="[
+  <v-card @click.native="$emit('click', combatant.uuid)"
+          :raised="active"
+          :class="[
        { disabled: !effectMode },
        { active: active },
        { 'selectable-success': effectMode === effectTypes.BUFF },
        { 'selectable-danger': effectMode === effectTypes.DEBUFF },
        { 'selectable-secondary': effectMode === effectTypes.OTHER }
      ]"
-     :href="!!effectMode ? '#' : false"
-     @click.prevent="$emit('click', combatant.uuid)">
-    <h5 class="card-header">
-      {{ localCombatant.name }}
-    </h5>
-    <div class="card-body">
-      <div v-if="!!localCombatant.effects[effectTypes.BUFF]">
-        <a v-for="(buff, index) in localCombatant.effects[effectTypes.BUFF]"
-           :key="index" href="#"
-           @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.BUFF, index))"
-           class="btn btn-sm btn-success mr-1 mb-1 status-effect-success"
-           :id="makeEffectId(localCombatant.uuid, effectTypes.BUFF, index)"
-           :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.BUFF, index)]},
+  >
+    <v-card-title>
+      <h3 class="headline mb-0">
+        {{ localCombatant.name }}
+      </h3>
+      <v-spacer></v-spacer>
+      <v-icon v-if="active">check_circle</v-icon>
+    </v-card-title>
+    <v-divider class="mb-0 mt-0"></v-divider>
+    <v-card-text>
+        <div v-if="!!localCombatant.effects[effectTypes.BUFF]">
+          <a v-for="(buff, index) in localCombatant.effects[effectTypes.BUFF]"
+             :key="index" href="#"
+             @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.BUFF, index))"
+             class="btn btn-sm btn-success mr-1 mb-1 status-effect-success"
+             :id="makeEffectId(localCombatant.uuid, effectTypes.BUFF, index)"
+             :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.BUFF, index)]},
                     {disabled: !!effectMode}]">
-          {{ buff }}
-        </a>
-      </div>
-      <div v-if="!!localCombatant.effects[effectTypes.DEBUFF]">
-        <a v-for="(debuff, index) in localCombatant.effects[effectTypes.DEBUFF]"
-           :key="index" href="#"
-           @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.DEBUFF, index))"
-           class="btn btn-sm btn-danger mr-1 mb-1 status-effect-danger"
-           :id="makeEffectId(localCombatant, effectTypes.DEBUFF, index)"
-           :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.DEBUFF, index)]},
-                    {disabled: !!effectMode}]">
-          {{ debuff }}
-        </a>
-      </div>
-      <div v-if="!!localCombatant.effects[effectTypes.OTHER]">
-        <a v-for="(other, index) in localCombatant.effects[effectTypes.OTHER]"
-           :key="index" href="#"
-           @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.OTHER, index))"
-           class="btn btn-sm btn-secondary mr-1 mb-1 status-effect-secondary"
-           :id="makeEffectId(localCombatant, effectTypes.OTHER, index)"
-           :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.OTHER, index)]},
-                    {disabled: !!effectMode}]">
-          {{ other }}
-        </a>
-      </div>
-
-
-    </div>
-    <div class="card-footer" v-if="!editMode">
-      <span class="oi oi-timer" title="initiative" aria-hidden="true"></span>
-      {{ localCombatant.initiative }}
-    </div>
-    <div class="card-footer" v-else>
-      <form class="form-inline" novalidate @submit.prevent>
-        <div class="input-group">
-          <div class="input-group-prepend">
-            <span class="input-group-text">
-              <small><span class="oi oi-timer"></span></small>
-            </span>
-          </div>
-          <input class="form-control"
-                 placeholder="Initiative"
-                 type="number"
-                 v-model="localCombatant.initiative"/>
+            {{ buff }}
+          </a>
         </div>
-      </form>
-    </div>
-  </a>
+        <div v-if="!!localCombatant.effects[effectTypes.DEBUFF]">
+          <a v-for="(debuff, index) in localCombatant.effects[effectTypes.DEBUFF]"
+             :key="index" href="#"
+             @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.DEBUFF, index))"
+             class="btn btn-sm btn-danger mr-1 mb-1 status-effect-danger"
+             :id="makeEffectId(localCombatant, effectTypes.DEBUFF, index)"
+             :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.DEBUFF, index)]},
+                    {disabled: !!effectMode}]">
+            {{ debuff }}
+          </a>
+        </div>
+        <div v-if="!!localCombatant.effects[effectTypes.OTHER]">
+          <a v-for="(other, index) in localCombatant.effects[effectTypes.OTHER]"
+             :key="index" href="#"
+             @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.OTHER, index))"
+             class="btn btn-sm btn-secondary mr-1 mb-1 status-effect-secondary"
+             :id="makeEffectId(localCombatant, effectTypes.OTHER, index)"
+             :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.OTHER, index)]},
+                    {disabled: !!effectMode}]">
+            {{ other }}
+          </a>
+        </div>
+    </v-card-text>
+    <v-divider class="mb-0 mt-0"></v-divider>
+    <v-card-actions>
+      <v-btn flat icon
+             :disabled="!!effectMode"
+             @click.stop="localCombatant.initiative += 1">
+        <v-icon>add</v-icon>
+      </v-btn>
+      <v-spacer></v-spacer>
+      <v-icon>directions_run</v-icon>
+      {{ localCombatant.initiative }}
+      <v-spacer></v-spacer>
+      <v-btn flat icon
+             :disabled="!!effectMode"
+             @click.stop="localCombatant.initiative -= 1">
+        <v-icon>remove</v-icon>
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
