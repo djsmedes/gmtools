@@ -103,8 +103,8 @@ export default {
       editMode: false,
       editedCombatants: {},
       selectedEffects: {},
-      socket: new ModuleSocket(this, "/ws/combat/", {
-        updateCombatants: this.updateCombatantsFromWs
+      socket: new ModuleSocket(this, "combat", {
+        update: obj => this.setCombatant({ objAry: obj.combatants })
       })
     };
   },
@@ -128,9 +128,6 @@ export default {
       updateCombatant: combatant.actionTypes.UPDATE,
       loadCombatants: combatant.actionTypes.LIST
     }),
-    updateCombatants(combatants) {
-      this.socket.send({ combatants });
-    },
     updateEditedCombatants(editedCombatant) {
       if (_.isEqual(editedCombatant, this.getCombatant(editedCombatant.uuid))) {
         delete this.editedCombatants[editedCombatant.uuid];
@@ -231,33 +228,17 @@ export default {
         }
         combatantsToUpdate.push(c);
       }
-      // await Promise.all(
-      //   combatantsToUpdate.map(combatant => this.updateCombatant(combatant))
-      // );
-      this.updateCombatants(combatantsToUpdate);
+      await this.socket.update({ combatants: combatantsToUpdate });
       this.clearSelectedEffects();
     },
     clearSelectedEffects() {
       Object.keys(this.selectedEffects).map(key =>
         Vue.delete(this.selectedEffects, key)
       );
-    },
-    handleWebsocket(msg) {
-      try {
-        let objAry = JSON.parse(msg.data).combatants;
-        this.setCombatant({ objAry });
-      } catch (err) {
-        // todo - figure out what to do with errors
-        // eslint-disable-next-line
-        console.warn(err);
-      }
-    },
-    updateCombatantsFromWs(obj) {
-      this.setCombatant({ objAry: obj.combatants });
     }
   },
-  created() {
-    this.socket.connect();
+  async created() {
+    await this.socket.connect();
   },
   beforeDestroy() {
     this.socket.disconnect();
