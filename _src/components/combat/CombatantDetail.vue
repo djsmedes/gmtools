@@ -8,12 +8,10 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import CombatantCard from "./CombatantCard";
-import combatant from "../../models/combatant";
+import combatant from "@/models/combatant";
 
 export default {
   name: "CombatantDetail",
-  components: { CombatantCard },
   data() {
     return {};
   },
