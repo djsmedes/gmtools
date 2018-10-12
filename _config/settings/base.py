@@ -179,6 +179,14 @@ AUTH_USER_MODEL = 'accounts.User'
 
 # django channels
 ASGI_APPLICATION = "_config.routing.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [get_env_variable('REDIS_URL', 'redis://localhost:6379')],
+        },
+    },
+}
 
 # custom settings
 TESTING = False
