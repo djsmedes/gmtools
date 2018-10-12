@@ -15,8 +15,8 @@
 
 <script>
 import { mapActions } from "vuex";
-import combatant from "../../models/combatant";
-import { routeNames } from "../../router";
+import combatant from "@/models/combatant";
+import { routeNames } from "@/router";
 
 export default {
   name: "CombatantCreate",

@@ -14,6 +14,10 @@ export const routeNames = {
   COMBATANTS: "combatants",
   COMBATANT: "combatant",
   COMBATANT_CREATE: "combatantCreate",
+  CAMPAIGNS: "campaigns",
+  CAMPAIGN: "campaign",
+  CAMPAIGN_CREATE: "campaignCreate",
+  ACCOUNT_SETTINGS: "accountSettings",
   LOGIN: "login",
   SIGNUP: "signup",
   NOT_FOUND: "notFound"
@@ -28,18 +32,12 @@ const router = new Router({
       component: Combat,
       beforeEnter: loginRequired
     },
+
     {
       path: "/combatants/",
       name: routeNames.COMBATANTS,
       component: () =>
         import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantList"),
-      beforeEnter: loginRequired
-    },
-    {
-      path: "/combatants/:uuid/",
-      name: routeNames.COMBATANT,
-      component: () =>
-        import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantDetail"),
       beforeEnter: loginRequired
     },
     {
@@ -50,10 +48,40 @@ const router = new Router({
       beforeEnter: loginRequired
     },
     {
+      path: "/combatants/:uuid/",
+      name: routeNames.COMBATANT,
+      component: () =>
+        import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantDetail"),
+      beforeEnter: loginRequired
+    },
+
+    {
+      path: "/campaigns/",
+      name: routeNames.CAMPAIGNS,
+      component: () =>
+        import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignList"),
+      beforeEnter: loginRequired
+    },
+    {
+      path: "/campaigns/new/",
+      name: routeNames.CAMPAIGN_CREATE,
+      component: () =>
+        import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignCreate"),
+      beforeEnter: loginRequired
+    },
+    {
+      path: "/campaigns/:uuid/",
+      name: routeNames.CAMPAIGN,
+      component: () =>
+        import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignDetail"),
+      beforeEnter: loginRequired
+    },
+
+    {
       path: "/login/",
       name: routeNames.LOGIN,
       component: () =>
-        import(/* webpackChunkName: "account" */ "@/components/auth/Login"),
+        import(/* webpackChunkName: "nonAuth" */ "@/components/auth/Login"),
       props: true,
       beforeEnter: loggedInExcluded
     },
@@ -61,9 +89,17 @@ const router = new Router({
       path: "/signup/",
       name: routeNames.SIGNUP,
       component: () =>
-        import(/* webpackChunkName: "account" */ "@/components/auth/SignUp"),
+        import(/* webpackChunkName: "nonAuth" */ "@/components/auth/SignUp"),
       beforeEnter: loggedInExcluded
     },
+    {
+      path: "/account/",
+      name: routeNames.ACCOUNT_SETTINGS,
+      component: () =>
+        import(/* webpackChunkName: "account" */ "@/components/auth/AccountSettings"),
+      beforeEnter: loginRequired
+    },
+
     {
       path: "/404/",
       name: routeNames.NOT_FOUND,
