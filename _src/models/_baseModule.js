@@ -106,6 +106,15 @@ export class ModelVuexModule {
           commit(this.mutationTypes.SET, {
             object: new modelClass(returnedObject)
           });
+        },
+        [this.actionTypes.REFRESH]: async ({ commit }, object) => {
+          let returnedObject = await api.retrieveObject({
+            uuid: object.uuid,
+            modelName: this.modelName
+          });
+          commit(this.mutationTypes.SET, {
+            object: new modelClass(returnedObject)
+          });
         }
       },
       mutations: {
