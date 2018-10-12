@@ -50,7 +50,7 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
 ]
 
-if settings.DEBUG:
+if settings.TESTING:
     urlpatterns += [
         path('admin/', admin.site.urls),
         path('dev/', include('authtools.urls')),

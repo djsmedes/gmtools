@@ -9,10 +9,16 @@ else:
     ALLOWED_HOSTS += [
         '.gmtools-test.herokuapp.com'
     ]
-    ALLOWED_HOSTS += ['.gmtools-test-pr-{}.herokuapp.com'.format(num) for num in range(1, 51)]
+    ALLOWED_HOSTS += [
+        f'.gmtools-test-pr-{num}.herokuapp.com' for num in range(
+            1, 51
+        )
+    ]
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
 if get_env_variable('FORCE_DEBUG', False):
     DEBUG = True
+
+TESTING = True
