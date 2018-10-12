@@ -123,7 +123,7 @@ export default {
   computed: {},
   methods: {
     makeEffectId(uuid, type, index) {
-      return uuid + "_" + String(type) + "_" + String(index);
+      return uuid + "/" + String(type) + "/" + String(index);
     }
   },
   created() {}

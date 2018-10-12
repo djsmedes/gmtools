@@ -87,8 +87,8 @@
 <script>
 import Vue from "vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
-import CombatantCard from "./CombatantCard";
-import combatant from "../../models/combatant";
+import CombatantCard from "@/components/combat/CombatantCard";
+import combatant from "@/models/combatant";
 import _ from "lodash";
 import { ModuleSocket } from "@/websockets";
 
@@ -189,9 +189,7 @@ export default {
             this.applyingEffectType
           ].push(this.effectToApply);
         }
-        await Promise.all(
-          combatantObjs.map(combatant => this.updateCombatant(combatant))
-        );
+        await this.socket.update({ combatants: combatantObjs });
       }
       this.exitApplyEffectMode();
     },
@@ -206,7 +204,7 @@ export default {
     async deleteSelectedEffects() {
       let effectsToRemove = Object.keys(this.selectedEffects).reduce(
         (acc, cur) => {
-          let parts = cur.split("_");
+          let parts = cur.split("/");
           let uuid = parts[0];
           let type = parts[1];
           let index = parts[2];
