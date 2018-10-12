@@ -1,6 +1,5 @@
 import api from "./_api";
 import Vue from "vue";
-import _ from "lodash";
 
 export function array2ObjByUUID(array, objConstructor) {
   return array.reduce((accumulator, currentVal) => {
@@ -96,6 +95,15 @@ export class ModelVuexModule {
             object: new modelClass(returnedObject)
           });
         },
+        [this.actionTypes.REFRESH]: async ({ commit }, object) => {
+          let returnedObject = await api.retrieveObject({
+            uuid: object.uuid,
+            modelName: this.modelName
+          });
+          commit(this.mutationTypes.SET, {
+            object: new modelClass(returnedObject)
+          });
+        },
         [this.actionTypes.UPDATE]: async ({ commit }, object) => {
           let returnedObject = await api.updateObject({
             object,
@@ -105,13 +113,13 @@ export class ModelVuexModule {
             object: new modelClass(returnedObject)
           });
         },
-        [this.actionTypes.REFRESH]: async ({ commit }, object) => {
-          let returnedObject = await api.retrieveObject({
-            uuid: object.uuid,
+        [this.actionTypes.DESTROY]: async ({ commit }, objectUuid) => {
+          await api.destroyObject({
+            uuid: objectUuid,
             modelName: this.modelName
           });
-          commit(this.mutationTypes.SET, {
-            object: new modelClass(returnedObject)
+          commit(this.mutationTypes.REMOVE, {
+            objUuid: objectUuid
           });
         }
       },
@@ -135,6 +143,9 @@ export class ModelVuexModule {
               )
             );
           }
+        },
+        [this.mutationTypes.REMOVE]: (state, { objUuid }) => {
+          Vue.delete(state[this.stateKeys.OBJECTS], objUuid);
         }
       }
     };
