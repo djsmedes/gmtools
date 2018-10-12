@@ -4,7 +4,7 @@
       <h4>{{ model.namespace.charAt(0).toUpperCase() + model.namespace.slice(1)}} List</h4>
       <router-link v-if="createViewName"
                    :to="{ name: createViewName }"
-                   class="btn btn-outline-primary ml-auto" key="new">
+                   class="btn btn-outline-primary ml-auto">
         <span class="oi oi-plus" aria-hidden="true"></span>
       </router-link>
     </div>
