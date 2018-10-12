@@ -19,7 +19,8 @@ class CombatConsumer(WebsocketConsumer):
         ).data
 
         self.send(text_data=JSONRenderer().render({
-            'combatants': combatants_pre_json
+            'type': 'updateCombatants',
+            'data': {'combatants': combatants_pre_json}
         }).decode())
 
     def disconnect(self, code):

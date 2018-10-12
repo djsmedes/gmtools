@@ -90,6 +90,7 @@ import { mapGetters, mapActions, mapMutations } from "vuex";
 import CombatantCard from "./CombatantCard";
 import combatant from "../../models/combatant";
 import _ from "lodash";
+import { ModuleSocket } from "@/websockets";
 
 export default {
   name: "Combat",
@@ -101,7 +102,10 @@ export default {
       effectTypes: combatant.Combatant.effectTypes,
       editMode: false,
       editedCombatants: {},
-      selectedEffects: {}
+      selectedEffects: {},
+      socket: new ModuleSocket(this, "/ws/combat/", {
+        updateCombatants: this.updateCombatantsFromWs
+      })
     };
   },
   components: {
@@ -125,7 +129,7 @@ export default {
       loadCombatants: combatant.actionTypes.LIST
     }),
     updateCombatants(combatants) {
-      this.$socket.sendObj({ combatants });
+      this.socket.send({ combatants });
     },
     updateEditedCombatants(editedCombatant) {
       if (_.isEqual(editedCombatant, this.getCombatant(editedCombatant.uuid))) {
@@ -247,14 +251,16 @@ export default {
         // eslint-disable-next-line
         console.warn(err);
       }
+    },
+    updateCombatantsFromWs(obj) {
+      this.setCombatant({ objAry: obj.combatants });
     }
   },
   created() {
-    this.$connect("ws://localhost:8080/ws/combat/", { format: "json" });
-    this.$options.sockets.onmessage = this.handleWebsocket;
+    this.socket.connect();
   },
   beforeDestroy() {
-    this.$disconnect();
+    this.socket.disconnect();
   }
 };
 </script>
