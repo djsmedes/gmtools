@@ -73,7 +73,7 @@ class CombatConsumer(WebsocketConsumer):
             self.channel_group_name,
             {
                 'type': 'combatants_update',
-                'message': JSONRenderer().render({
+                'text_data': JSONRenderer().render({
                     'type': 'update',
                     'replyTo': msg_id,
                     'status': 200,
@@ -83,8 +83,8 @@ class CombatConsumer(WebsocketConsumer):
         )
 
     def combatants_update(self, event):
-        message = event.get('message')
-        if message is None:
+        text_data = event.get('text_data')
+        if text_data is None:
             return
 
-        self.send(text_data=message)
+        self.send(text_data=text_data)
