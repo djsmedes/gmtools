@@ -56,8 +56,11 @@ export class ModelVuexModule {
         [this.getterTypes.LIST]: (state, getters) => {
           return Object.values(getters[this.getterTypes.OBJECTS]);
         },
-        [this.getterTypes.BY_ID]: (state, getters) => uuid =>
-          getters[this.getterTypes.OBJECTS][uuid]
+        [this.getterTypes.BY_ID]: (state, getters) => uuid => {
+          let obj = getters[this.getterTypes.OBJECTS][uuid];
+          if (typeof obj === "undefined") return new modelClass();
+          return obj;
+        }
       },
       actions: {
         [this.actionTypes.LIST]: async ({ state, commit }) => {
@@ -70,23 +73,18 @@ export class ModelVuexModule {
             return;
           }
 
-          if (
-            typeof state[this.stateKeys.OBJECTS] === "undefined" ||
-            _.isEmpty(state[this.stateKeys.OBJECTS])
-          ) {
-            try {
-              let objList = await api.listObjects({
-                modelName: this.modelName
-              });
-              commit(this.mutationTypes.SET_LIST, {
-                objList: array2ObjByUUID(objList, modelClass)
-              });
-            } catch (err) {
-              // ok, we have failed - allow further requests
-              //   and escalate the failure
-              commit(this.mutationTypes.SET_RELOAD_NEEDED, true);
-              throw err;
-            }
+          try {
+            let objList = await api.listObjects({
+              modelName: this.modelName
+            });
+            commit(this.mutationTypes.SET_LIST, {
+              objList: array2ObjByUUID(objList, modelClass)
+            });
+          } catch (err) {
+            // ok, we have failed - allow further requests
+            //   and escalate the failure
+            commit(this.mutationTypes.SET_RELOAD_NEEDED, true);
+            throw err;
           }
         },
         [this.actionTypes.CREATE]: async ({ commit }, object) => {
