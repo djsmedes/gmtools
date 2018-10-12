@@ -41,17 +41,17 @@ const router = new Router({
       beforeEnter: loginRequired
     },
     {
-      path: "/combatants/:uuid/",
-      name: routeNames.COMBATANT,
-      component: () =>
-        import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantDetail"),
-      beforeEnter: loginRequired
-    },
-    {
       path: "/combatants/new/",
       name: routeNames.COMBATANT_CREATE,
       component: () =>
         import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantCreate"),
+      beforeEnter: loginRequired
+    },
+    {
+      path: "/combatants/:uuid/",
+      name: routeNames.COMBATANT,
+      component: () =>
+        import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantDetail"),
       beforeEnter: loginRequired
     },
 
@@ -63,17 +63,17 @@ const router = new Router({
       beforeEnter: loginRequired
     },
     {
-      path: "/campaigns/:uuid/",
-      name: routeNames.CAMPAIGN,
-      component: () =>
-        import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignDetail"),
-      beforeEnter: loginRequired
-    },
-    {
       path: "/campaigns/new/",
       name: routeNames.CAMPAIGN_CREATE,
       component: () =>
         import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignCreate"),
+      beforeEnter: loginRequired
+    },
+    {
+      path: "/campaigns/:uuid/",
+      name: routeNames.CAMPAIGN,
+      component: () =>
+        import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignDetail"),
       beforeEnter: loginRequired
     },
 
