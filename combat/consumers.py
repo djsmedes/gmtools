@@ -15,7 +15,6 @@ class CombatConsumer(WebsocketConsumer):
 
         self.channel_group_name = f'{user.current_campaign.uuid}_combat'
 
-        # Join room group
         async_to_sync(self.channel_layer.group_add)(
             self.channel_group_name,
             self.channel_name

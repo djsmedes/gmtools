@@ -1,3 +1,5 @@
+import uuid from "uuid/v4";
+
 class WebSocketRequest {
   constructor({ type = null, id = null, data = null } = {}) {
     this.type = type;
@@ -28,6 +30,7 @@ export class ModuleSocket {
     this.url = ws_scheme + "://" + window.location.host + "/ws/" + url + "/";
 
     this.counter = 0;
+    this.uuid = uuid();
     this.replyCallbackMap = {};
     this.msgType2FunctionMap = msgType2FunctionMap;
   }
@@ -68,8 +71,9 @@ export class ModuleSocket {
   request(type, data) {
     return new Promise(resolve => {
       this.counter += 1;
-      this.replyCallbackMap[this.counter] = obj => resolve(obj);
-      this.send(new WebSocketRequest({ id: this.counter, type, data }));
+      let id = this.uuid + "-" + this.counter;
+      this.replyCallbackMap[id] = obj => resolve(obj);
+      this.send(new WebSocketRequest({ id, type, data }));
     });
   }
 
