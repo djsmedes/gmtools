@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import { Combatant } from "../../models/combatant";
+import { Combatant } from "@/models/combatant";
 
 export default {
   name: "Combatant",

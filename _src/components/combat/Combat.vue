@@ -86,7 +86,7 @@
 
 <script>
 import Vue from "vue";
-import { mapGetters, mapActions, mapMutations } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import CombatantCard from "@/components/combat/CombatantCard";
 import combatant from "@/models/combatant";
 import _ from "lodash";
@@ -124,10 +124,6 @@ export default {
     ...mapMutations(combatant.namespace, {
       setCombatant: combatant.mutationTypes.SET
     }),
-    ...mapActions(combatant.namespace, {
-      updateCombatant: combatant.actionTypes.UPDATE,
-      loadCombatants: combatant.actionTypes.LIST
-    }),
     updateEditedCombatants(editedCombatant) {
       if (_.isEqual(editedCombatant, this.getCombatant(editedCombatant.uuid))) {
         delete this.editedCombatants[editedCombatant.uuid];
@@ -143,11 +139,9 @@ export default {
       this.editMode = false;
     },
     async saveAppliedEdits() {
-      await Promise.all(
-        Object.keys(this.editedCombatants).map(uuid =>
-          this.updateCombatant(this.editedCombatants[uuid])
-        )
-      );
+      await this.socket.update({
+        combatants: Object.values(this.editedCombatants)
+      });
       this.exitEditMode();
     },
     toggleCombatantWillApply(uuid) {
