@@ -9,8 +9,11 @@
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <router-link to="/combatants/" class="nav-link">Combatants</router-link>
+          <li v-if="isAuthenticated" class="nav-item">
+            <router-link :to="{name: routeNames.CAMPAIGNS}" class="nav-link">Campaigns</router-link>
+          </li>
+          <li v-if="isAuthenticated" class="nav-item">
+            <router-link :to="{name: routeNames.COMBATANTS}" class="nav-link">Combatants</router-link>
           </li>
         </ul>
         <ul v-if="!isAuthenticated" class="navbar-nav">
@@ -45,8 +48,7 @@
                 {{ campaignById(campaign) ? campaignById(campaign).name : campaign }}
               </a>
               <div class="dropdown-divider"></div>
-              <!-- todo - make account settings page -->
-              <a class="dropdown-item" href="/account/">Account options</a>
+              <router-link class="dropdown-item" :to="{name: routeNames.ACCOUNT_SETTINGS}">Account options</router-link>
               <a class="dropdown-item" href="#" @click.prevent="logout">Sign out</a>
             </div>
           </li>
