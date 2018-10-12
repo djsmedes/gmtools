@@ -1,4 +1,3 @@
-from django.db.models import Q
 from rest_framework import serializers
 
 from core.serializers import CampaignModelSerializer
@@ -43,6 +42,9 @@ class CampaignSerializer(CampaignModelSerializer):
 
     def get_player_set(self, instance):
         return [user.uuid for user in instance.player_set]
+
+    def transform_queryset(self, queryset):
+        return queryset
 
     class Meta:
         model = Campaign

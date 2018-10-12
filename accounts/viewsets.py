@@ -12,7 +12,14 @@ class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericV
     model = User
     serializer_class = UserSerializer
     lookup_field = 'uuid'
-    queryset = User.objects.all()
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            q = Q(id=self.request.user.id)
+            q |= Q(campaigns__in=self.request.user.campaigns.all())
+            return User.objects.filter(q).distinct()
+        else:
+            return User.objects.none()
 
     def update(self, request, *args, **kwargs):
         if request.user == self.get_object():
