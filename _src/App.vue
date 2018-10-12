@@ -1,65 +1,77 @@
 <template>
-  <div id="app">
-    <nav id="nav" class="navbar navbar-expand-lg navbar-dark bg-dark mb-2">
-      <router-link to="/" class="navbar-brand" exact>GMTOOLS</router-link>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+  <v-app>
+    <v-toolbar color="grey darken-3" dark dense>
+      <v-toolbar-items>
+        <v-btn flat exact class="title"
+               :to="{name: routeNames.HOME}">
+          GMTOOLS
+        </v-btn>
+        <v-btn flat v-if="isAuthenticated"
+               :to="{name: routeNames.CAMPAIGNS}">
+          Campaigns
+        </v-btn>
+        <v-btn flat v-if="isAuthenticated"
+               :to="{name: routeNames.COMBATANTS}">
+          Combatants
+        </v-btn>
+      </v-toolbar-items>
+      <v-spacer></v-spacer>
+      <v-toolbar-items v-if="!isAuthenticated">
+        <v-btn flat
+               :to="{name: routeNames.LOGIN}">
+          Sign in
+        </v-btn>
+        <v-btn flat
+               :to="{name: routeNames.SIGNUP}">
+          Sign up
+        </v-btn>
+      </v-toolbar-items>
+      <v-toolbar-items v-else>
+        <v-menu>
+          <v-btn slot="activator" flat>
+            <span>{{ user.email }}</span>
+            <v-icon dark>arrow_drop_down</v-icon>
+          </v-btn>
 
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          <li v-if="isAuthenticated" class="nav-item">
-            <router-link :to="{name: routeNames.CAMPAIGNS}" class="nav-link">Campaigns</router-link>
-          </li>
-          <li v-if="isAuthenticated" class="nav-item">
-            <router-link :to="{name: routeNames.COMBATANTS}" class="nav-link">Combatants</router-link>
-          </li>
-        </ul>
-        <ul v-if="!isAuthenticated" class="navbar-nav">
-          <li class="nav-item">
-            <router-link class="nav-link" :to="{name: routeNames.LOGIN}">Sign in</router-link>
-          </li>
-          <li class="navbar-text">
-            or
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link" :to="{name: routeNames.SIGNUP}">Sign up</router-link>
-          </li>
-        </ul>
-        <ul v-else class="navbar-nav">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="UserDropdown" role="button" data-toggle="dropdown"
-               aria-haspopup="true" aria-expanded="false">
-              {{ user.email }}
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="UserDropdown">
-              <span class="dropdown-item-text text-muted">
-                Signed in as <strong>{{ user.name }}</strong>
-              </span>
-              <div class="dropdown-divider"></div>
-              <h6 class="dropdown-header">Campaigns</h6>
-              <a v-for="campaign in campaignsByUser(user.uuid)"
-                 class="dropdown-item"
-                 :class="[{active: campaign.uuid === user.current_campaign}]"
-                 href="#"
-                 @click.prevent.stop="setCurrentCampaign(campaign.uuid)"
-                 :key="campaign.uuid">
-                {{ campaign.name }}
-              </a>
-              <div class="dropdown-divider"></div>
-              <router-link class="dropdown-item" :to="{name: routeNames.ACCOUNT_SETTINGS}">Account options</router-link>
-              <a class="dropdown-item" href="#" @click.prevent="logout">Sign out</a>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </nav>
+          <v-list dense subheader>
+            <v-list-tile class="grey--text">
+              <span>Signed in as <strong>{{ user.name }}</strong></span>
+            </v-list-tile>
+            <v-divider class="mt-1 mb-1"></v-divider>
+            <v-subheader>
+              Campaigns
+            </v-subheader>
+            <v-list-tile @click.stop
+                         v-for="campaign in campaignsByUser(user.uuid)"
+                         :key="campaign.uuid">
+
+
+              <v-list-tile-content @click="setCurrentCampaign(campaign.uuid)">
+                <v-list-tile-title>{{ campaign.name }}</v-list-tile-title>
+              </v-list-tile-content>
+
+              <v-list-tile-action>
+                <v-icon v-if="campaign.uuid === user.current_campaign">
+                  location_on
+                </v-icon>
+              </v-list-tile-action>
+            </v-list-tile>
+            <v-divider class="mt-1 mb-1"></v-divider>
+            <v-list-tile @click="$router.push({name: routeNames.ACCOUNT_SETTINGS})">
+              Account
+            </v-list-tile>
+            <v-list-tile @click="logout">
+              Sign out
+            </v-list-tile>
+          </v-list>
+        </v-menu>
+      </v-toolbar-items>
+    </v-toolbar>
 
     <div class="container">
       <router-view v-if="isRequested"/>
     </div>
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -108,13 +120,13 @@ export default {
 </script>
 
 <style lang="scss">
-@import "scss/shared";
+@import "./scss/shared";
 
 #nav {
   a {
     font-weight: bold;
     &.router-link-active {
-      color: map_get($theme-colors, "primary");
+      color: #30a92e;
     }
   }
 }
