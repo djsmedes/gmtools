@@ -86,10 +86,11 @@
 
 <script>
 import Vue from "vue";
-import { mapGetters, mapActions } from "vuex";
-import CombatantCard from "./CombatantCard";
-import combatant from "../../models/combatant";
+import { mapGetters, mapMutations } from "vuex";
+import CombatantCard from "@/components/combat/CombatantCard";
+import combatant from "@/models/combatant";
 import _ from "lodash";
+import { ModuleSocket } from "@/websockets";
 
 export default {
   name: "Combat",
@@ -101,7 +102,10 @@ export default {
       effectTypes: combatant.Combatant.effectTypes,
       editMode: false,
       editedCombatants: {},
-      selectedEffects: {}
+      selectedEffects: {},
+      socket: new ModuleSocket(this, "combat", {
+        update: obj => this.setCombatant({ objAry: obj.combatants })
+      })
     };
   },
   components: {
@@ -117,9 +121,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(combatant.namespace, {
-      loadCombatants: combatant.actionTypes.LIST,
-      updateCombatant: combatant.actionTypes.UPDATE
+    ...mapMutations(combatant.namespace, {
+      setCombatant: combatant.mutationTypes.SET
     }),
     updateEditedCombatants(editedCombatant) {
       if (_.isEqual(editedCombatant, this.getCombatant(editedCombatant.uuid))) {
@@ -136,11 +139,9 @@ export default {
       this.editMode = false;
     },
     async saveAppliedEdits() {
-      await Promise.all(
-        Object.keys(this.editedCombatants).map(uuid =>
-          this.updateCombatant(this.editedCombatants[uuid])
-        )
-      );
+      await this.socket.update({
+        combatants: Object.values(this.editedCombatants)
+      });
       this.exitEditMode();
     },
     toggleCombatantWillApply(uuid) {
@@ -182,9 +183,7 @@ export default {
             this.applyingEffectType
           ].push(this.effectToApply);
         }
-        await Promise.all(
-          combatantObjs.map(combatant => this.updateCombatant(combatant))
-        );
+        await this.socket.update({ combatants: combatantObjs });
       }
       this.exitApplyEffectMode();
     },
@@ -199,7 +198,7 @@ export default {
     async deleteSelectedEffects() {
       let effectsToRemove = Object.keys(this.selectedEffects).reduce(
         (acc, cur) => {
-          let parts = cur.split("_");
+          let parts = cur.split("/");
           let uuid = parts[0];
           let type = parts[1];
           let index = parts[2];
@@ -221,9 +220,7 @@ export default {
         }
         combatantsToUpdate.push(c);
       }
-      await Promise.all(
-        combatantsToUpdate.map(combatant => this.updateCombatant(combatant))
-      );
+      await this.socket.update({ combatants: combatantsToUpdate });
       this.clearSelectedEffects();
     },
     clearSelectedEffects() {
@@ -232,8 +229,11 @@ export default {
       );
     }
   },
-  created() {
-    this.loadCombatants();
+  async created() {
+    await this.socket.connect();
+  },
+  beforeDestroy() {
+    this.socket.disconnect();
   }
 };
 </script>

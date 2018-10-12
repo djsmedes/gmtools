@@ -65,7 +65,8 @@ export class Combatant {
       name: this.name,
       initiative: this.initiative,
       hp: this.hp,
-      effects: JSON.stringify(this.effects)
+      effects: JSON.stringify(this.effects),
+      campaign: this.campaign
     };
   }
 

@@ -1,4 +1,5 @@
 import Vue from "vue";
+import VueNativeSock from "vue-native-websocket";
 import App from "@/App";
 import router from "@/router";
 import store from "@/store";
@@ -7,6 +8,9 @@ import axios from "axios";
 import { namespace, getterTypes } from "@/auth";
 
 Vue.config.productionTip = false;
+Vue.use(VueNativeSock, "not-implemented", {
+  connectManually: true
+});
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
