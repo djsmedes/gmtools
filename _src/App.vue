@@ -44,7 +44,7 @@
                  :class="[{active: campaign.uuid === user.current_campaign}]"
                  href="#"
                  @click.prevent.stop="setCurrentCampaign(campaign.uuid)"
-                 :key="campaign">
+                 :key="campaign.uuid">
                 {{ campaign.name }}
               </a>
               <div class="dropdown-divider"></div>
