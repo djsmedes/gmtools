@@ -4,15 +4,16 @@
       <v-toolbar-items>
         <v-btn flat exact class="title no-text-dec"
                :to="{name: routeNames.HOME}">
-          GMTOOLS
+          <span class="hidden-xs-only">GMTOOLS</span>
+          <v-icon dark class="hidden-sm-and-up">home</v-icon>
         </v-btn>
         <v-btn flat v-if="isAuthenticated"
-               class="no-text-dec"
+               class="no-text-dec hidden-xs-only"
                :to="{name: routeNames.CAMPAIGNS}">
           Campaigns
         </v-btn>
         <v-btn flat v-if="isAuthenticated"
-               class="no-text-dec"
+               class="no-text-dec hidden-xs-only"
                :to="{name: routeNames.COMBATANTS}">
           Combatants
         </v-btn>
@@ -31,7 +32,8 @@
       <v-toolbar-items v-else>
         <v-menu offset-y left>
           <v-btn slot="activator" flat>
-            <span>{{ user.email }}</span>
+            <span class="hidden-xs-only">{{ user.email }}</span>
+            <v-icon dark class="hidden-sm-and-up">person</v-icon>
             <v-icon dark>arrow_drop_down</v-icon>
           </v-btn>
 
