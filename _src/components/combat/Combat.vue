@@ -44,29 +44,6 @@
           <span class="oi oi-x" aria-hidden="true"></span>
         </button>
       </div>
-      <div class="btn-group ml-auto" v-if="!editMode">
-        <button class="btn btn-outline-success">
-          <small><span class="oi oi-plus" aria-hidden="true"></span></small>
-          <span class="oi oi-person" aria-hidden="true"></span>
-        </button>
-        <button class="btn btn-outline-danger">
-          <small><span class="oi oi-minus" aria-hidden="true"></span></small>
-          <span class="oi oi-person" aria-hidden="true"></span>
-        </button>
-        <button class="btn btn-outline-primary"
-                @click="enterEditMode">
-          <small><span class="oi oi-pencil" aria-hidden="true"></span></small>
-          <span class="oi oi-person" aria-hidden="true"></span>
-        </button>
-      </div>
-      <div class="btn-group ml-auto" v-else>
-        <button class="btn btn-primary" @click="saveAppliedEdits">
-          <span class="oi oi-check"></span>
-        </button>
-        <button class="btn btn-outline-dark" @click="exitEditMode">
-          <span class="oi oi-x"></span>
-        </button>
-      </div>
     </div>
     <v-container fluid grid-list-xl>
       <v-layout row wrap>
@@ -77,10 +54,9 @@
             :combatant="combatant"
             :effect-mode="applyingEffectType"
             :active="combatantsToApply.includes(combatant.uuid)"
-            :edit-mode="editMode"
             :selected-effects="selectedEffects"
+            :update-func="updateOneCombatant"
             @click="toggleCombatantWillApply($event)"
-            @combatant-change="updateEditedCombatants($event)"
             @effect-clicked="updateSelectedEffects($event)"/>
         </v-flex>
       </v-layout>
@@ -104,8 +80,6 @@ export default {
       effectToApply: "",
       combatantsToApply: [],
       effectTypes: combatant.Combatant.effectTypes,
-      editMode: false,
-      editedCombatants: {},
       selectedEffects: {},
       socket: new ModuleSocket(this, "combat", {
         update: obj => this.setCombatant({ objAry: obj.combatants })
@@ -128,26 +102,6 @@ export default {
     ...mapMutations(combatant.namespace, {
       setCombatant: combatant.mutationTypes.SET
     }),
-    updateEditedCombatants(editedCombatant) {
-      if (_.isEqual(editedCombatant, this.getCombatant(editedCombatant.uuid))) {
-        delete this.editedCombatants[editedCombatant.uuid];
-      } else {
-        this.editedCombatants[editedCombatant.uuid] = editedCombatant;
-      }
-    },
-    enterEditMode() {
-      this.exitApplyEffectMode();
-      this.editMode = true;
-    },
-    exitEditMode() {
-      this.editMode = false;
-    },
-    async saveAppliedEdits() {
-      await this.socket.update({
-        combatants: Object.values(this.editedCombatants)
-      });
-      this.exitEditMode();
-    },
     toggleCombatantWillApply(uuid) {
       if (!this.applyingEffectType) return;
       if (this.combatantsToApply.includes(uuid)) {
@@ -158,19 +112,13 @@ export default {
         this.combatantsToApply.push(uuid);
       }
     },
-    enterApplyEffectMode() {
-      this.exitEditMode();
-    },
     enterApplyBuffMode() {
-      this.enterApplyEffectMode();
       this.applyingEffectType = combatant.Combatant.effectTypes.BUFF;
     },
     enterApplyDebuffMode() {
-      this.enterApplyEffectMode();
       this.applyingEffectType = combatant.Combatant.effectTypes.DEBUFF;
     },
     enterApplyOtherMode() {
-      this.enterApplyEffectMode();
       this.applyingEffectType = combatant.Combatant.effectTypes.OTHER;
     },
     exitApplyEffectMode() {
@@ -231,7 +179,10 @@ export default {
       Object.keys(this.selectedEffects).map(key =>
         Vue.delete(this.selectedEffects, key)
       );
-    }
+    },
+    updateOneCombatant: _.debounce(function(combatant) {
+      this.socket.update({ combatants: [combatant] });
+    }, 500)
   },
   async created() {
     await this.socket.connect();

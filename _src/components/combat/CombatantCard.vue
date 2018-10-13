@@ -55,17 +55,19 @@
     <v-divider class="mb-0 mt-0"></v-divider>
     <v-card-actions>
       <v-btn flat icon
+             v-if="updateFunc"
              :disabled="!!effectMode"
-             @click.stop="localCombatant.initiative += 1">
+             @click.stop="updateInitiative(1)">
         <v-icon>add</v-icon>
       </v-btn>
       <v-spacer></v-spacer>
       <v-icon>directions_run</v-icon>
-      {{ localCombatant.initiative }}
+      <span class="font-weight-medium">{{ localCombatant.initiative }}</span>
       <v-spacer></v-spacer>
       <v-btn flat icon
+             v-if="updateFunc"
              :disabled="!!effectMode"
-             @click.stop="localCombatant.initiative -= 1">
+             @click.stop="updateInitiative(-1)">
         <v-icon>remove</v-icon>
       </v-btn>
     </v-card-actions>
@@ -89,12 +91,12 @@ export default {
       type: Boolean,
       default: false
     },
-    editMode: {
-      type: Boolean,
-      default: false
-    },
     selectedEffects: {
       type: Object
+    },
+    updateFunc: {
+      type: Function,
+      default: null
     }
   },
   data() {
@@ -104,27 +106,19 @@ export default {
     };
   },
   watch: {
-    localCombatant: {
-      handler(newCombatant) {
-        if (this.editMode) this.$emit("combatant-change", newCombatant);
-      },
-      deep: true
-    },
-    editMode(newBool) {
-      if (newBool === false) {
-        this.localCombatant = new Combatant(this.combatant);
-      }
-    },
     combatant: {
       handler(newCombatant) {
-        if (!this.editMode) this.localCombatant = new Combatant(newCombatant);
+        this.localCombatant = new Combatant(newCombatant);
       }
     }
   },
-  computed: {},
   methods: {
     makeEffectId(uuid, type, index) {
       return uuid + "/" + String(type) + "/" + String(index);
+    },
+    updateInitiative(increment) {
+      this.localCombatant.initiative += increment;
+      this.updateFunc(this.localCombatant);
     }
   },
   created() {}
