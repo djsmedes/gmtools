@@ -1,57 +1,81 @@
 <template>
   <div>
-    <div class="mb-2 d-flex">
-      <div class="btn-group" v-if="!applyingEffectType">
-        <button class="btn btn-success" @click="enterApplyBuffMode">
-          <small><span class="oi oi-arrow-top" aria-hidden="true"></span></small>
-          <span class="oi oi-arrow-top" aria-hidden="true"></span>
-        </button>
-        <button class="btn btn-danger" @click="enterApplyDebuffMode">
-          <span class="oi oi-arrow-bottom" aria-hidden="true"></span>
-          <small><span class="oi oi-arrow-bottom" aria-hidden="true"></span></small>
-        </button>
-        <button class="btn btn-secondary" @click="enterApplyOtherMode">
-          <span class="oi oi-ellipses" aria-hidden="true"></span>
-        </button>
-      </div>
-      <div v-else-if="!!applyingEffectType">
-        <form novalidate class="form-inline" @submit.prevent="saveAppliedEffects">
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Enter effect..." v-model="effectToApply">
-            <div class="input-group-append">
-              <button type="submit"
-                      :class="[
-                        {'btn-success': applyingEffectType === effectTypes.BUFF},
-                        {'btn-danger': applyingEffectType === effectTypes.DEBUFF},
-                        {'btn-secondary': applyingEffectType === effectTypes.OTHER},
-                        {disabled: !effectToApply.length || !combatantsToApply.length }
-                      ]"
-                      class="btn">
-                <span class="oi oi-check" title="save"></span>
-              </button>
-              <button type="button" class="btn btn-outline-dark" @click="exitApplyEffectMode">
-                <span class="oi oi-x" title="cancel"></span>
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+
+    <v-speed-dial
+        v-model="fab"
+        fixed bottom right
+        v-if="!applyingEffectType"
+        direction="left">
+      <v-btn
+          slot="activator"
+          v-model="fab"
+          fab dark color="blue">
+        <v-icon>more_vert</v-icon>
+        <v-icon>close</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="grey" @click="enterApplyOtherMode">
+        <v-icon>trending_flat</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="red" @click="enterApplyDebuffMode">
+        <v-icon>trending_down</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="green" @click="enterApplyBuffMode">
+        <v-icon>trending_up</v-icon>
+      </v-btn>
+    </v-speed-dial>
+
+    <v-toolbar
+        v-if="!!applyingEffectType"
+        floating fixed
+        style="bottom: 16px; right: 16px; left: unset; top: unset;">
+      <v-btn icon dark class="green" :ripple="false"
+             v-if="applyingEffectType === effectTypes.BUFF"
+             @click="applyingEffectType = effectTypes.DEBUFF">
+        <v-icon>trending_up</v-icon>
+      </v-btn>
+      <v-btn icon dark class="red" :ripple="false"
+             v-if="applyingEffectType === effectTypes.DEBUFF"
+             @click="applyingEffectType = effectTypes.OTHER">
+        <v-icon>trending_down</v-icon>
+      </v-btn>
+      <v-btn icon dark class="grey" :ripple="false"
+             v-if="applyingEffectType === effectTypes.OTHER"
+             @click="applyingEffectType = effectTypes.BUFF">
+        <v-icon>trending_flat</v-icon>
+      </v-btn>
+
+      <v-text-field
+          :autofocus="!!applyingEffectType"
+          hide-details single-line box
+          v-model="effectToApply">
+      </v-text-field>
+
+      <v-btn icon @click="saveAppliedEffects">
+        <v-icon>check</v-icon>
+      </v-btn>
+
+      <v-btn icon @click="exitApplyEffectMode">
+        <v-icon>clear</v-icon>
+      </v-btn>
+    </v-toolbar>
+
     <v-container grid-list-lg>
-    <v-layout row wrap>
-      <v-flex
-          d-flex xs12 sm6 md4 lg3 xl2
-          v-for="combatant in combatantsByInitiative"
-          :key="combatant.uuid">
-        <combatant-card
-            :combatant="combatant"
-            :effect-mode="applyingEffectType"
-            :active="combatantsToApply.includes(combatant.uuid)"
-            :update-func="updateOneCombatant"
-            @click="toggleCombatantWillApply($event)"/>
+      <v-layout row wrap>
+        <v-flex
+            d-flex xs12 sm6 md4 lg3 xl2
+            v-for="combatant in combatantsByInitiative"
+            :key="combatant.uuid">
+          <combatant-card
+              :combatant="combatant"
+              :effect-mode="applyingEffectType"
+              :active="combatantsToApply.includes(combatant.uuid)"
+              :update-func="updateOneCombatant"
+              @click="toggleCombatantWillApply($event)"/>
         </v-flex>
-    </v-layout>
-      </v-container>
+      </v-layout>
+    </v-container>
+
+    <div style="height: 88px;"></div>
   </div>
 </template>
 
@@ -72,7 +96,8 @@ export default {
       effectTypes: combatant.Combatant.effectTypes,
       socket: new ModuleSocket(this, "combat", {
         update: obj => this.setCombatant({ objAry: obj.combatants })
-      })
+      }),
+      fab: false
     };
   },
   components: {
