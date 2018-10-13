@@ -1,24 +1,24 @@
 <template>
   <v-card @click.native="$emit('click', combatant.uuid)"
           :raised="active"
-          :width="300">
+          class="combatant-card">
     <v-card-title>
-      <h3 class="headline mb-0">
+      <h3 class="headline mb-0 text-truncate">
         {{ localCombatant.name }}
       </h3>
       <v-spacer></v-spacer>
       <v-icon
           v-if="active"
-          :color="effectMode === effectTypes.BUFF ? 'green' : effectMode === effectTypes.DEBUFF ? 'red' : false">
+          :color="effectMode === effectTypes.BUFF ? 'green' : effectMode === effectTypes.DEBUFF ? 'red' : ''">
         check_circle
       </v-icon>
     </v-card-title>
 
 
-    <v-divider class="mb-0 mt-0"></v-divider>
+    <v-divider></v-divider>
 
 
-    <v-card-text>
+    <v-card-text class="combatant-card-body">
       <v-container fluid class="pa-0">
         <v-layout row wrap>
           <v-chip
@@ -26,7 +26,7 @@
             :key="index" :close="!!updateFunc" @input="updateEffects"
             v-model="buffs[index]">
             <v-avatar class="green"></v-avatar>
-            <span class="text-truncate font-weight-medium" style="max-width: 200px">
+            <span class="text-truncate font-weight-medium effect-text">
               {{ buff }}
             </span>
           </v-chip>
@@ -37,7 +37,7 @@
             :key="index" :close="!!updateFunc" @input="updateEffects"
             v-model="debuffs[index]">
             <v-avatar class="red"></v-avatar>
-            <span class="text-truncate font-weight-medium" style="max-width: 200px">
+            <span class="text-truncate font-weight-medium effect-text">
               {{ debuff }}
             </span>
           </v-chip>
@@ -47,7 +47,7 @@
             v-for="(other, index) in localCombatant.effects[effectTypes.OTHER]"
             :key="index" :close="!!updateFunc" @input="updateEffects"
             v-model="others[index]">
-            <span class="text-truncate font-weight-medium" style="max-width: 200px">
+            <span class="text-truncate font-weight-medium effect-text">
               {{ other }}
             </span>
           </v-chip>
@@ -56,7 +56,7 @@
     </v-card-text>
 
 
-    <v-divider class="mb-0 mt-0"></v-divider>
+    <v-divider></v-divider>
 
 
     <v-card-actions>
@@ -68,7 +68,7 @@
       </v-btn>
       <v-spacer></v-spacer>
       <v-icon>directions_run</v-icon>
-      <span class="font-weight-medium">{{ localCombatant.initiative }}</span>
+      <span class="font-weight-medium title">{{ localCombatant.initiative }}</span>
       <v-spacer></v-spacer>
       <v-btn flat icon
              v-if="updateFunc"
@@ -172,3 +172,21 @@ export default {
   created() {}
 };
 </script>
+
+<style scoped lang="scss">
+$card-width: 275px;
+
+.combatant-card {
+  width: $card-width;
+  display: flex;
+  flex-direction: column;
+}
+
+.combatant-card-body {
+  flex-grow: 1;
+}
+
+.effect-text {
+  max-width: $card-width - 120px;
+}
+</style>

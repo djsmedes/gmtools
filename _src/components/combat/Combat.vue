@@ -37,11 +37,12 @@
         </form>
       </div>
     </div>
-    <v-container fluid grid-list-xl>
-      <v-layout row wrap>
-        <v-flex
-            v-for="combatant in combatantsByInitiative"
-            :key="combatant.uuid">
+    <v-container grid-list-lg>
+    <v-layout row wrap>
+      <v-flex
+          d-flex xs12 sm6 md4 lg3 xl2
+          v-for="combatant in combatantsByInitiative"
+          :key="combatant.uuid">
         <combatant-card
             :combatant="combatant"
             :effect-mode="applyingEffectType"
@@ -49,8 +50,8 @@
             :update-func="updateOneCombatant"
             @click="toggleCombatantWillApply($event)"/>
         </v-flex>
-      </v-layout>
-    </v-container>
+    </v-layout>
+      </v-container>
   </div>
 </template>
 

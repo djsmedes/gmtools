@@ -29,7 +29,7 @@
         </v-btn>
       </v-toolbar-items>
       <v-toolbar-items v-else>
-        <v-menu>
+        <v-menu offset-y left>
           <v-btn slot="activator" flat>
             <span>{{ user.email }}</span>
             <v-icon dark>arrow_drop_down</v-icon>
@@ -122,7 +122,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "./scss/shared";
+/*@import "./scss/shared";*/
 
 .no-text-dec {
   text-decoration: none !important;
