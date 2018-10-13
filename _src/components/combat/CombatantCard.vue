@@ -1,14 +1,7 @@
 <template>
   <v-card @click.native="$emit('click', combatant.uuid)"
           :raised="active"
-          :class="[
-       { disabled: !effectMode },
-       { active: active },
-       { 'selectable-success': effectMode === effectTypes.BUFF },
-       { 'selectable-danger': effectMode === effectTypes.DEBUFF },
-       { 'selectable-secondary': effectMode === effectTypes.OTHER }
-     ]"
-  >
+          :width="300">
     <v-card-title>
       <h3 class="headline mb-0">
         {{ localCombatant.name }}
@@ -16,43 +9,52 @@
       <v-spacer></v-spacer>
       <v-icon v-if="active">check_circle</v-icon>
     </v-card-title>
+
+
     <v-divider class="mb-0 mt-0"></v-divider>
+
+
     <v-card-text>
-        <div v-if="!!localCombatant.effects[effectTypes.BUFF]">
-          <a v-for="(buff, index) in localCombatant.effects[effectTypes.BUFF]"
-             :key="index" href="#"
-             @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.BUFF, index))"
-             class="btn btn-sm btn-success mr-1 mb-1 status-effect-success"
-             :id="makeEffectId(localCombatant.uuid, effectTypes.BUFF, index)"
-             :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.BUFF, index)]},
-                    {disabled: !!effectMode}]">
-            {{ buff }}
-          </a>
-        </div>
-        <div v-if="!!localCombatant.effects[effectTypes.DEBUFF]">
-          <a v-for="(debuff, index) in localCombatant.effects[effectTypes.DEBUFF]"
-             :key="index" href="#"
-             @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.DEBUFF, index))"
-             class="btn btn-sm btn-danger mr-1 mb-1 status-effect-danger"
-             :id="makeEffectId(localCombatant, effectTypes.DEBUFF, index)"
-             :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.DEBUFF, index)]},
-                    {disabled: !!effectMode}]">
-            {{ debuff }}
-          </a>
-        </div>
-        <div v-if="!!localCombatant.effects[effectTypes.OTHER]">
-          <a v-for="(other, index) in localCombatant.effects[effectTypes.OTHER]"
-             :key="index" href="#"
-             @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.OTHER, index))"
-             class="btn btn-sm btn-secondary mr-1 mb-1 status-effect-secondary"
-             :id="makeEffectId(localCombatant, effectTypes.OTHER, index)"
-             :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.OTHER, index)]},
-                    {disabled: !!effectMode}]">
-            {{ other }}
-          </a>
-        </div>
+      <v-container fluid class="pa-0">
+        <v-layout row wrap>
+          <v-chip
+            v-for="(buff, index) in localCombatant.effects[effectTypes.BUFF]"
+            :key="index" :close="!!updateFunc" @input="updateEffects"
+            v-model="buffs[index]">
+            <v-avatar class="green"></v-avatar>
+            <span class="text-truncate font-weight-medium" style="max-width: 200px">
+              {{ buff }}
+            </span>
+          </v-chip>
+        </v-layout>
+        <v-layout row wrap>
+          <v-chip
+            v-for="(debuff, index) in localCombatant.effects[effectTypes.DEBUFF]"
+            :key="index" :close="!!updateFunc" @input="updateEffects"
+            v-model="debuffs[index]">
+            <v-avatar class="red"></v-avatar>
+            <span class="text-truncate font-weight-medium" style="max-width: 200px">
+              {{ debuff }}
+            </span>
+          </v-chip>
+        </v-layout>
+        <v-layout row wrap>
+          <v-chip
+            v-for="(other, index) in localCombatant.effects[effectTypes.OTHER]"
+            :key="index" :close="!!updateFunc" @input="updateEffects"
+            v-model="others[index]">
+            <span class="text-truncate font-weight-medium" style="max-width: 200px">
+              {{ other }}
+            </span>
+          </v-chip>
+        </v-layout>
+      </v-container>
     </v-card-text>
+
+
     <v-divider class="mb-0 mt-0"></v-divider>
+
+
     <v-card-actions>
       <v-btn flat icon
              v-if="updateFunc"
@@ -105,6 +107,23 @@ export default {
       effectTypes: Combatant.effectTypes
     };
   },
+  computed: {
+    buffs() {
+      return this.localCombatant.effects[Combatant.effectTypes.BUFF].map(
+        () => true
+      );
+    },
+    debuffs() {
+      return this.localCombatant.effects[Combatant.effectTypes.DEBUFF].map(
+        () => true
+      );
+    },
+    others() {
+      return this.localCombatant.effects[Combatant.effectTypes.OTHER].map(
+        () => true
+      );
+    }
+  },
   watch: {
     combatant: {
       handler(newCombatant) {
@@ -118,6 +137,37 @@ export default {
     },
     updateInitiative(increment) {
       this.localCombatant.initiative += increment;
+      this.updateFunc(this.localCombatant);
+    },
+    updateEffects() {
+      this.buffs.reduce((acc, cur) => {
+        if (!cur) {
+          this.localCombatant.effects[Combatant.effectTypes.BUFF].splice(
+            acc,
+            1
+          );
+        }
+        return acc + 1;
+      }, 0);
+      this.debuffs.reduce((acc, cur) => {
+        if (!cur) {
+          this.localCombatant.effects[Combatant.effectTypes.DEBUFF].splice(
+            acc,
+            1
+          );
+        }
+        return acc + 1;
+      }, 0);
+      this.others.reduce((acc, cur) => {
+        if (!cur) {
+          this.localCombatant.effects[Combatant.effectTypes.OTHER].splice(
+            acc,
+            1
+          );
+        }
+        return acc + 1;
+      }, 0);
+
       this.updateFunc(this.localCombatant);
     }
   },
