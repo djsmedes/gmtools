@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="mb-2 d-flex">
-      <div class="btn-group" v-if="!applyingEffectType && !Object.keys(selectedEffects).length">
+      <div class="btn-group" v-if="!applyingEffectType">
         <button class="btn btn-success" @click="enterApplyBuffMode">
           <small><span class="oi oi-arrow-top" aria-hidden="true"></span></small>
           <span class="oi oi-arrow-top" aria-hidden="true"></span>
@@ -36,14 +36,6 @@
           </div>
         </form>
       </div>
-      <div v-else-if="!!Object.keys(selectedEffects).length" class="btn-group">
-        <button class="btn btn-dark" @click="deleteSelectedEffects">
-          <span class="oi oi-trash" aria-hidden="true"></span>
-        </button>
-        <button class="btn btn-outline-dark" @click="clearSelectedEffects">
-          <span class="oi oi-x" aria-hidden="true"></span>
-        </button>
-      </div>
     </div>
     <v-container fluid grid-list-xl>
       <v-layout row wrap>
@@ -54,10 +46,8 @@
             :combatant="combatant"
             :effect-mode="applyingEffectType"
             :active="combatantsToApply.includes(combatant.uuid)"
-            :selected-effects="selectedEffects"
             :update-func="updateOneCombatant"
-            @click="toggleCombatantWillApply($event)"
-            @effect-clicked="updateSelectedEffects($event)"/>
+            @click="toggleCombatantWillApply($event)"/>
         </v-flex>
       </v-layout>
     </v-container>
@@ -65,7 +55,6 @@
 </template>
 
 <script>
-import Vue from "vue";
 import { mapGetters, mapMutations } from "vuex";
 import CombatantCard from "@/components/combat/CombatantCard";
 import combatant from "@/models/combatant";
@@ -80,7 +69,6 @@ export default {
       effectToApply: "",
       combatantsToApply: [],
       effectTypes: combatant.Combatant.effectTypes,
-      selectedEffects: {},
       socket: new ModuleSocket(this, "combat", {
         update: obj => this.setCombatant({ objAry: obj.combatants })
       })
@@ -138,47 +126,6 @@ export default {
         await this.socket.update({ combatants: combatantObjs });
       }
       this.exitApplyEffectMode();
-    },
-    updateSelectedEffects(domIdClicked) {
-      if (this.applyingEffectType) return;
-      if (!this.selectedEffects[domIdClicked]) {
-        Vue.set(this.selectedEffects, domIdClicked, true);
-      } else {
-        Vue.delete(this.selectedEffects, domIdClicked);
-      }
-    },
-    async deleteSelectedEffects() {
-      let effectsToRemove = Object.keys(this.selectedEffects).reduce(
-        (acc, cur) => {
-          let parts = cur.split("/");
-          let uuid = parts[0];
-          let type = parts[1];
-          let index = parts[2];
-          if (!acc[uuid]) acc[uuid] = {};
-          if (!acc[uuid][type]) acc[uuid][type] = [];
-          acc[uuid][type].push(Number(index));
-          return acc;
-        },
-        {}
-      );
-      let combatantsToUpdate = [];
-      for (let uuid in effectsToRemove) {
-        let c = _.cloneDeep(this.getCombatant(uuid));
-        for (let type in effectsToRemove[uuid]) {
-          effectsToRemove[uuid][type].sort();
-          for (let i = effectsToRemove[uuid][type].length - 1; i >= 0; i--) {
-            c.effects[type].splice(effectsToRemove[uuid][type][i], 1);
-          }
-        }
-        combatantsToUpdate.push(c);
-      }
-      await this.socket.update({ combatants: combatantsToUpdate });
-      this.clearSelectedEffects();
-    },
-    clearSelectedEffects() {
-      Object.keys(this.selectedEffects).map(key =>
-        Vue.delete(this.selectedEffects, key)
-      );
     },
     updateOneCombatant: _.debounce(function(combatant) {
       this.socket.update({ combatants: [combatant] });

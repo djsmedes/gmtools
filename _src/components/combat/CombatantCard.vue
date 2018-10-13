@@ -7,7 +7,11 @@
         {{ localCombatant.name }}
       </h3>
       <v-spacer></v-spacer>
-      <v-icon v-if="active">check_circle</v-icon>
+      <v-icon
+          v-if="active"
+          :color="effectMode === effectTypes.BUFF ? 'green' : effectMode === effectTypes.DEBUFF ? 'red' : false">
+        check_circle
+      </v-icon>
     </v-card-title>
 
 
@@ -93,9 +97,6 @@ export default {
       type: Boolean,
       default: false
     },
-    selectedEffects: {
-      type: Object
-    },
     updateFunc: {
       type: Function,
       default: null
@@ -132,9 +133,6 @@ export default {
     }
   },
   methods: {
-    makeEffectId(uuid, type, index) {
-      return uuid + "/" + String(type) + "/" + String(index);
-    },
     updateInitiative(increment) {
       this.localCombatant.initiative += increment;
       this.updateFunc(this.localCombatant);
@@ -174,66 +172,3 @@ export default {
   created() {}
 };
 </script>
-
-<style scoped lang="scss">
-@import "../../scss/shared";
-
-a {
-  @each $theme-color-name, $color in $theme-colors {
-    &.selectable-#{$theme-color-name} {
-      color: inherit;
-      text-decoration: none;
-
-      &:hover {
-        color: inherit;
-        text-decoration: none;
-      }
-
-      &:not(.disabled) {
-        &.active {
-          outline: 0;
-          box-shadow: 0 0 0 0.4rem rgba($color, 0.5);
-        }
-        &:focus,
-        &:active {
-          outline: 0;
-        }
-      }
-    }
-  }
-  @each $theme-color-name, $color in $theme-colors {
-    &.status-effect-#{$theme-color-name} {
-      outline: 0;
-
-      &:not(.active) {
-        &:focus,
-        &:active {
-          box-shadow: 0 0 0 0;
-        }
-      }
-
-      &:not(:hover) {
-        background-color: $color !important;
-        border-color: $color !important;
-      }
-
-      &.active {
-        box-shadow: 0
-          0
-          0
-          0.2rem
-          rgba(map_get($theme-colors, "primary"), 1) !important;
-        color: $color !important;
-        border-color: transparent !important;
-        background-color: transparent !important;
-
-        &:hover {
-          color: white !important;
-          background-color: $color !important;
-          border-color: $color !important;
-        }
-      }
-    }
-  }
-}
-</style>
