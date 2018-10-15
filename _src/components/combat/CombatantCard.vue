@@ -9,7 +9,7 @@
       <v-spacer></v-spacer>
       <v-icon
           v-if="active"
-          :color="effectMode === effectTypes.BUFF ? 'green' : effectMode === effectTypes.DEBUFF ? 'red' : ''">
+          :color="effectColorString()">
         check_circle
       </v-icon>
     </v-card-title>
@@ -23,8 +23,8 @@
         <v-layout row wrap>
           <v-chip
             v-for="(buff, index) in localCombatant.effects[effectTypes.BUFF]"
-            :key="index" :close="!!updateFunc" @input="updateEffects"
-            v-model="buffs[index]">
+            :key="index" :close="!!updateFunc"
+            @input="removeEffect(effectTypes.BUFF, index)">
             <v-avatar class="green"></v-avatar>
             <span class="text-truncate font-weight-medium effect-text">
               {{ buff }}
@@ -34,8 +34,8 @@
         <v-layout row wrap>
           <v-chip
             v-for="(debuff, index) in localCombatant.effects[effectTypes.DEBUFF]"
-            :key="index" :close="!!updateFunc" @input="updateEffects"
-            v-model="debuffs[index]">
+            :key="index" :close="!!updateFunc"
+            @input="removeEffect(effectTypes.DEBUFF, index)">
             <v-avatar class="red"></v-avatar>
             <span class="text-truncate font-weight-medium effect-text">
               {{ debuff }}
@@ -45,8 +45,8 @@
         <v-layout row wrap>
           <v-chip
             v-for="(other, index) in localCombatant.effects[effectTypes.OTHER]"
-            :key="index" :close="!!updateFunc" @input="updateEffects"
-            v-model="others[index]">
+            :key="index" :close="!!updateFunc"
+            @input="removeEffect(effectTypes.OTHER, index)">
             <span class="text-truncate font-weight-medium effect-text">
               {{ other }}
             </span>
@@ -108,23 +108,6 @@ export default {
       effectTypes: Combatant.effectTypes
     };
   },
-  computed: {
-    buffs() {
-      return this.localCombatant.effects[Combatant.effectTypes.BUFF].map(
-        () => true
-      );
-    },
-    debuffs() {
-      return this.localCombatant.effects[Combatant.effectTypes.DEBUFF].map(
-        () => true
-      );
-    },
-    others() {
-      return this.localCombatant.effects[Combatant.effectTypes.OTHER].map(
-        () => true
-      );
-    }
-  },
   watch: {
     combatant: {
       handler(newCombatant) {
@@ -137,36 +120,18 @@ export default {
       this.localCombatant.initiative += increment;
       this.updateFunc(this.localCombatant);
     },
-    updateEffects() {
-      this.buffs.reduce((acc, cur) => {
-        if (!cur) {
-          this.localCombatant.effects[Combatant.effectTypes.BUFF].splice(
-            acc,
-            1
-          );
-        }
-        return acc + 1;
-      }, 0);
-      this.debuffs.reduce((acc, cur) => {
-        if (!cur) {
-          this.localCombatant.effects[Combatant.effectTypes.DEBUFF].splice(
-            acc,
-            1
-          );
-        }
-        return acc + 1;
-      }, 0);
-      this.others.reduce((acc, cur) => {
-        if (!cur) {
-          this.localCombatant.effects[Combatant.effectTypes.OTHER].splice(
-            acc,
-            1
-          );
-        }
-        return acc + 1;
-      }, 0);
-
+    removeEffect(effectType, index) {
+      this.localCombatant.effects[effectType].splice(index, 1);
       this.updateFunc(this.localCombatant);
+    },
+    effectColorString() {
+      if (this.effectMode === Combatant.effectTypes.BUFF) {
+        return "green";
+      } else if (this.effectMode === Combatant.effectTypes.DEBUFF) {
+        return "red";
+      } else {
+        return "";
+      }
     }
   },
   created() {}
