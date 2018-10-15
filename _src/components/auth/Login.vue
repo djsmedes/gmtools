@@ -1,5 +1,25 @@
 <template>
   <div style="max-width: 400px;" class="mx-auto">
+    <v-card>
+      <v-card-text>
+        <v-form>
+          <v-text-field
+              v-model="email.value"
+              :error-messages="email.errors"
+              :rules="email.rules"
+              label="Email"
+          ></v-text-field>
+          <v-text-field
+              v-model="password.value"
+              :error-messages="password.errors"
+              :rules="password.rules"
+              label="Password"
+          ></v-text-field>
+        </v-form>
+      </v-card-text>
+    </v-card>
+
+
     <form id="login-form" novalidate @submit.prevent="submitCredentials">
       <div class="form-group">
         <label for="email">Email</label>
@@ -31,9 +51,9 @@
 
 <script>
 import { mapActions } from "vuex";
-import auth from "../../auth/index";
+import auth from "@/auth";
 import $ from "jquery";
-import { routeNames } from "../../router";
+import { routeNames } from "@/router";
 
 export default {
   name: "Login",
@@ -47,11 +67,13 @@ export default {
       nonFieldErrors: [],
       email: {
         value: "",
-        errors: []
+        errors: [],
+        rules: [v => !!v || "This field is required."]
       },
       password: {
         value: "",
-        errors: []
+        errors: [],
+        rules: [v => !!v || "This field is required."]
       }
     };
   },
