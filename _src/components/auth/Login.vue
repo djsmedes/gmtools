@@ -1,58 +1,36 @@
 <template>
-  <div style="max-width: 400px;" class="mx-auto">
-    <v-card>
-      <v-card-text>
-        <v-form>
-          <v-text-field
-              v-model="email.value"
-              :error-messages="email.errors"
-              :rules="email.rules"
-              label="Email"
-          ></v-text-field>
-          <v-text-field
-              v-model="password.value"
-              :error-messages="password.errors"
-              :rules="password.rules"
-              label="Password"
-          ></v-text-field>
-        </v-form>
-      </v-card-text>
-    </v-card>
-
-
-    <form id="login-form" novalidate @submit.prevent="submitCredentials">
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input id="email" type="email" class="form-control" v-model="email.value" required>
-        <div class="invalid-feedback">
-          <p v-for="err in email.errors" :key="err">
-            {{ err }}
-          </p>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input id="password" type="password" class="form-control" v-model="password.value" required>
-        <div class="invalid-feedback">
-          <p v-for="err in password.errors" :key="err">
-            {{ err }}
-          </p>
-        </div>
-      </div>
-      <button class="btn btn-primary" type="submit">Log in</button>
-      <div class="invalid-feedback-force-show">
-        <p v-for="err in nonFieldErrors" :key="err">
-          {{ err }}
-        </p>
-      </div>
-    </form>
-  </div>
+  <v-card :width="400" class="mx-auto">
+    <v-card-text>
+      <v-alert v-for="(err, index) in nonFieldErrors" :key="index" :value="true" type="error">
+        {{ err }}
+      </v-alert>
+      <v-form ref="form">
+        <v-text-field
+            v-model="email.value"
+            :error-messages="email.errors"
+            :rules="email.rules"
+            label="Email"
+        ></v-text-field>
+        <v-text-field
+            v-model="password.value"
+            :error-messages="password.errors"
+            :rules="password.rules"
+            label="Password"
+            type="password"
+        ></v-text-field>
+      </v-form>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn flat @click="submit">
+        Sign in
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
 import { mapActions } from "vuex";
 import auth from "@/auth";
-import $ from "jquery";
 import { routeNames } from "@/router";
 
 export default {
@@ -81,17 +59,8 @@ export default {
     ...mapActions(auth.namespace, {
       login: auth.actionTypes.LOGIN
     }),
-    async submitCredentials() {
-      const form = $("#login-form");
-      form.removeClass("was-validated").removeClass("was-server-validated");
-      [this.email, this.password].map(item => (item.errors = []));
-
-      if (!form[0].checkValidity()) {
-        form.find(":invalid").each((index, node) => {
-          this[node.id].errors.push(node.validationMessage);
-        });
-        form.addClass("was-validated");
-      } else {
+    async submit() {
+      if (this.$refs.form.validate()) {
         let errors = await this.login({
           email: this.email.value,
           password: this.password.value
@@ -100,7 +69,6 @@ export default {
           this.nonFieldErrors = errors.non_field_errors;
           this.email.errors = errors.username;
           this.password.errors = errors.password;
-          form.addClass("was-server-validated");
         } else {
           this.$router.push(this.successRoute);
         }
