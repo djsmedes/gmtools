@@ -39,6 +39,7 @@
 import { mapActions } from "vuex";
 import auth from "@/auth/index";
 import { routeNames } from "@/router";
+import { FIELD_REQUIRED } from "@/strings/errors";
 
 export default {
   name: "SignUp",
@@ -48,12 +49,12 @@ export default {
       email: {
         value: "",
         errors: [],
-        rules: [v => !!v || "This field is required."]
+        rules: [v => !!v || FIELD_REQUIRED]
       },
       password1: {
         value: "",
         errors: [],
-        rules: [v => !!v || "This field is required."]
+        rules: [v => !!v || FIELD_REQUIRED]
       },
       password2: {
         value: "",
