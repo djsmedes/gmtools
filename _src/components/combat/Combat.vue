@@ -1,91 +1,85 @@
 <template>
   <div>
-    <div class="mb-2 d-flex">
-      <div class="btn-group" v-if="!applyingEffectType && !Object.keys(selectedEffects).length">
-        <button class="btn btn-success" @click="enterApplyBuffMode">
-          <small><span class="oi oi-arrow-top" aria-hidden="true"></span></small>
-          <span class="oi oi-arrow-top" aria-hidden="true"></span>
-        </button>
-        <button class="btn btn-danger" @click="enterApplyDebuffMode">
-          <span class="oi oi-arrow-bottom" aria-hidden="true"></span>
-          <small><span class="oi oi-arrow-bottom" aria-hidden="true"></span></small>
-        </button>
-        <button class="btn btn-secondary" @click="enterApplyOtherMode">
-          <span class="oi oi-ellipses" aria-hidden="true"></span>
-        </button>
-      </div>
-      <div v-else-if="!!applyingEffectType">
-        <form novalidate class="form-inline" @submit.prevent="saveAppliedEffects">
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Enter effect..." v-model="effectToApply">
-            <div class="input-group-append">
-              <button type="submit"
-                      :class="[
-                        {'btn-success': applyingEffectType === effectTypes.BUFF},
-                        {'btn-danger': applyingEffectType === effectTypes.DEBUFF},
-                        {'btn-secondary': applyingEffectType === effectTypes.OTHER},
-                        {disabled: !effectToApply.length || !combatantsToApply.length }
-                      ]"
-                      class="btn">
-                <span class="oi oi-check" title="save"></span>
-              </button>
-              <button type="button" class="btn btn-outline-dark" @click="exitApplyEffectMode">
-                <span class="oi oi-x" title="cancel"></span>
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div v-else-if="!!Object.keys(selectedEffects).length" class="btn-group">
-        <button class="btn btn-dark" @click="deleteSelectedEffects">
-          <span class="oi oi-trash" aria-hidden="true"></span>
-        </button>
-        <button class="btn btn-outline-dark" @click="clearSelectedEffects">
-          <span class="oi oi-x" aria-hidden="true"></span>
-        </button>
-      </div>
-      <div class="btn-group ml-auto" v-if="!editMode">
-        <button class="btn btn-outline-success">
-          <small><span class="oi oi-plus" aria-hidden="true"></span></small>
-          <span class="oi oi-person" aria-hidden="true"></span>
-        </button>
-        <button class="btn btn-outline-danger">
-          <small><span class="oi oi-minus" aria-hidden="true"></span></small>
-          <span class="oi oi-person" aria-hidden="true"></span>
-        </button>
-        <button class="btn btn-outline-primary"
-                @click="enterEditMode">
-          <small><span class="oi oi-pencil" aria-hidden="true"></span></small>
-          <span class="oi oi-person" aria-hidden="true"></span>
-        </button>
-      </div>
-      <div class="btn-group ml-auto" v-else>
-        <button class="btn btn-primary" @click="saveAppliedEdits">
-          <span class="oi oi-check"></span>
-        </button>
-        <button class="btn btn-outline-dark" @click="exitEditMode">
-          <span class="oi oi-x"></span>
-        </button>
-      </div>
-    </div>
-    <div class="card-deck">
-      <template v-for="combatant in combatantsByInitiative">
-        <combatant-card :combatant="combatant"
-                        :effect-mode="applyingEffectType"
-                        :active="combatantsToApply.includes(combatant.uuid)"
-                        :edit-mode="editMode"
-                        :selected-effects="selectedEffects"
-                        :key="combatant.uuid"
-                        @click="toggleCombatantWillApply($event)"
-                        @combatant-change="updateEditedCombatants($event)"
-                        @effect-clicked="updateSelectedEffects($event)"/>
-      </template>
-    </div>
+
+    <v-speed-dial
+        v-model="fab"
+        fixed bottom right
+        v-if="!applyingEffectType"
+        direction="left">
+      <v-btn
+          slot="activator"
+          v-model="fab"
+          fab dark color="blue">
+        <v-icon>more_vert</v-icon>
+        <v-icon>close</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="grey" @click="enterApplyOtherMode">
+        <v-icon>trending_flat</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="red" @click="enterApplyDebuffMode">
+        <v-icon>trending_down</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="green" @click="enterApplyBuffMode">
+        <v-icon>trending_up</v-icon>
+      </v-btn>
+    </v-speed-dial>
+
+    <v-toolbar
+        v-if="!!applyingEffectType"
+        floating fixed
+        style="bottom: 16px; right: 16px; left: unset; top: unset;">
+      <v-btn icon dark class="green" :ripple="false"
+             v-if="applyingEffectType === effectTypes.BUFF"
+             @click="applyingEffectType = effectTypes.DEBUFF">
+        <v-icon>trending_up</v-icon>
+      </v-btn>
+      <v-btn icon dark class="red" :ripple="false"
+             v-if="applyingEffectType === effectTypes.DEBUFF"
+             @click="applyingEffectType = effectTypes.OTHER">
+        <v-icon>trending_down</v-icon>
+      </v-btn>
+      <v-btn icon dark class="grey" :ripple="false"
+             v-if="applyingEffectType === effectTypes.OTHER"
+             @click="applyingEffectType = effectTypes.BUFF">
+        <v-icon>trending_flat</v-icon>
+      </v-btn>
+
+      <v-text-field
+          :autofocus="!!applyingEffectType"
+          hide-details single-line box
+          v-model="effectToApply">
+      </v-text-field>
+
+      <v-btn icon @click="saveAppliedEffects">
+        <v-icon>check</v-icon>
+      </v-btn>
+
+      <v-btn icon @click="exitApplyEffectMode">
+        <v-icon>clear</v-icon>
+      </v-btn>
+    </v-toolbar>
+
+    <v-container grid-list-lg>
+      <v-layout row wrap>
+        <v-flex
+            d-flex xs12 sm6 md4 lg3 xl2
+            v-for="combatant in combatantsByInitiative"
+            :key="combatant.uuid">
+          <combatant-card
+              :combatant="combatant"
+              :effect-mode="applyingEffectType"
+              :active="combatantsToApply.includes(combatant.uuid)"
+              :update-func="updateOneCombatant"
+              @click="toggleCombatantWillApply($event)"/>
+        </v-flex>
+      </v-layout>
+    </v-container>
+
+    <div style="height: 88px;"></div>
   </div>
 </template>
 
 <script>
-import Vue from "vue";
 import { mapGetters, mapMutations } from "vuex";
 import CombatantCard from "@/components/combat/CombatantCard";
 import combatant from "@/models/combatant";
@@ -100,12 +94,10 @@ export default {
       effectToApply: "",
       combatantsToApply: [],
       effectTypes: combatant.Combatant.effectTypes,
-      editMode: false,
-      editedCombatants: {},
-      selectedEffects: {},
       socket: new ModuleSocket(this, "combat", {
         update: obj => this.setCombatant({ objAry: obj.combatants })
-      })
+      }),
+      fab: false
     };
   },
   components: {
@@ -124,26 +116,6 @@ export default {
     ...mapMutations(combatant.namespace, {
       setCombatant: combatant.mutationTypes.SET
     }),
-    updateEditedCombatants(editedCombatant) {
-      if (_.isEqual(editedCombatant, this.getCombatant(editedCombatant.uuid))) {
-        delete this.editedCombatants[editedCombatant.uuid];
-      } else {
-        this.editedCombatants[editedCombatant.uuid] = editedCombatant;
-      }
-    },
-    enterEditMode() {
-      this.exitApplyEffectMode();
-      this.editMode = true;
-    },
-    exitEditMode() {
-      this.editMode = false;
-    },
-    async saveAppliedEdits() {
-      await this.socket.update({
-        combatants: Object.values(this.editedCombatants)
-      });
-      this.exitEditMode();
-    },
     toggleCombatantWillApply(uuid) {
       if (!this.applyingEffectType) return;
       if (this.combatantsToApply.includes(uuid)) {
@@ -154,19 +126,13 @@ export default {
         this.combatantsToApply.push(uuid);
       }
     },
-    enterApplyEffectMode() {
-      this.exitEditMode();
-    },
     enterApplyBuffMode() {
-      this.enterApplyEffectMode();
       this.applyingEffectType = combatant.Combatant.effectTypes.BUFF;
     },
     enterApplyDebuffMode() {
-      this.enterApplyEffectMode();
       this.applyingEffectType = combatant.Combatant.effectTypes.DEBUFF;
     },
     enterApplyOtherMode() {
-      this.enterApplyEffectMode();
       this.applyingEffectType = combatant.Combatant.effectTypes.OTHER;
     },
     exitApplyEffectMode() {
@@ -187,47 +153,9 @@ export default {
       }
       this.exitApplyEffectMode();
     },
-    updateSelectedEffects(domIdClicked) {
-      if (this.applyingEffectType) return;
-      if (!this.selectedEffects[domIdClicked]) {
-        Vue.set(this.selectedEffects, domIdClicked, true);
-      } else {
-        Vue.delete(this.selectedEffects, domIdClicked);
-      }
-    },
-    async deleteSelectedEffects() {
-      let effectsToRemove = Object.keys(this.selectedEffects).reduce(
-        (acc, cur) => {
-          let parts = cur.split("/");
-          let uuid = parts[0];
-          let type = parts[1];
-          let index = parts[2];
-          if (!acc[uuid]) acc[uuid] = {};
-          if (!acc[uuid][type]) acc[uuid][type] = [];
-          acc[uuid][type].push(Number(index));
-          return acc;
-        },
-        {}
-      );
-      let combatantsToUpdate = [];
-      for (let uuid in effectsToRemove) {
-        let c = _.cloneDeep(this.getCombatant(uuid));
-        for (let type in effectsToRemove[uuid]) {
-          effectsToRemove[uuid][type].sort();
-          for (let i = effectsToRemove[uuid][type].length - 1; i >= 0; i--) {
-            c.effects[type].splice(effectsToRemove[uuid][type][i], 1);
-          }
-        }
-        combatantsToUpdate.push(c);
-      }
-      await this.socket.update({ combatants: combatantsToUpdate });
-      this.clearSelectedEffects();
-    },
-    clearSelectedEffects() {
-      Object.keys(this.selectedEffects).map(key =>
-        Vue.delete(this.selectedEffects, key)
-      );
-    }
+    updateOneCombatant: _.debounce(function(combatant) {
+      this.socket.update({ combatants: [combatant] });
+    }, 500)
   },
   async created() {
     await this.socket.connect();

@@ -1,48 +1,45 @@
 <template>
-  <div style="max-width: 400px;" class="mx-auto">
-    <form id="signup-form" novalidate @submit.prevent="submitCredentials">
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input id="email" type="email" class="form-control" v-model="email.value" required>
-        <div class="invalid-feedback">
-          <p v-for="err in email.errors" :key="err">
-            {{ err }}
-          </p>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="password1">Password</label>
-        <input id="password1" type="password" class="form-control" v-model="password1.value" required>
-        <div class="invalid-feedback">
-          <p v-for="err in password1.errors" :key="err">
-            {{ err }}
-          </p>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="password2">Password (again)</label>
-        <input id="password2" type="password" class="form-control" v-model="password2.value" required>
-        <div class="invalid-feedback">
-          <p v-for="err in password2.errors" :key="err">
-            {{ err }}
-          </p>
-        </div>
-      </div>
-      <button class="btn btn-primary" type="submit">Sign up</button>
-      <div class="invalid-feedback-force-show">
-        <p v-for="err in nonFieldErrors" :key="err">
-          {{ err }}
-        </p>
-      </div>
-    </form>
-  </div>
+  <v-card :width="400" class="mx-auto">
+    <v-card-text>
+      <v-alert v-for="(err, index) in nonFieldErrors" :key="index" :value="true" type="error">
+        {{ err }}
+      </v-alert>
+      <v-form ref="form">
+        <v-text-field
+            v-model="email.value"
+            :error-messages="email.errors"
+            :rules="email.rules"
+            label="Email"
+        ></v-text-field>
+        <v-text-field
+            v-model="password1.value"
+            :error-messages="password1.errors"
+            :rules="password1.rules"
+            label="Password"
+            type="password"
+        ></v-text-field>
+        <v-text-field
+            v-model="password2.value"
+            :error-messages="password2.errors"
+            :rules="password2.rules"
+            label="Confirm password"
+            type="password"
+        ></v-text-field>
+      </v-form>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn flat @click="submit">
+        Sign up
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
 import { mapActions } from "vuex";
 import auth from "@/auth/index";
-import $ from "jquery";
 import { routeNames } from "@/router";
+import { FIELD_REQUIRED } from "@/strings/errors";
 
 export default {
   name: "SignUp",
@@ -51,15 +48,21 @@ export default {
       nonFieldErrors: [],
       email: {
         value: "",
-        errors: []
+        errors: [],
+        rules: [v => !!v || FIELD_REQUIRED]
       },
       password1: {
         value: "",
-        errors: []
+        errors: [],
+        rules: [v => !!v || FIELD_REQUIRED]
       },
       password2: {
         value: "",
-        errors: []
+        errors: [],
+        rules: [
+          v => !!v || "This field is required.",
+          v => v === this.password1.value || "Passwords do not match."
+        ]
       }
     };
   },
@@ -67,29 +70,8 @@ export default {
     ...mapActions(auth.namespace, {
       signup: auth.actionTypes.SIGNUP
     }),
-    async submitCredentials() {
-      const form = $("#signup-form");
-      form.removeClass("was-validated");
-      [this.email, this.password1, this.password2].map(
-        item => (item.errors = [])
-      );
-
-      if (!this.password2.value.length) {
-        $("#password2")
-          .get(0)
-          .setCustomValidity("Please fill out this field.");
-      } else if (this.password1.value !== this.password2.value) {
-        $("#password2")
-          .get(0)
-          .setCustomValidity("Passwords must match.");
-      }
-
-      if (!form[0].checkValidity()) {
-        form.find(":invalid").each((index, node) => {
-          this[node.id].errors.push(node.validationMessage);
-        });
-        form.addClass("was-validated");
-      } else {
+    async submit() {
+      if (this.$refs.form.validate()) {
         let errors = await this.signup({
           email: this.email.value,
           password1: this.password1.value,
@@ -102,7 +84,6 @@ export default {
           this.email.errors = errors.email;
           this.password1.errors = errors.password1;
           this.password2.errors = errors.password2;
-          form.addClass("was-server-validated");
         }
       }
     }

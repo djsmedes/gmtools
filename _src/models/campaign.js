@@ -5,7 +5,7 @@ export class Campaign {
     return "campaign";
   }
 
-  constructor({ uuid = "", name = "", gm_set = [], player_set = [] } = {}) {
+  constructor({ uuid = null, name = "", gm_set = [], player_set = [] } = {}) {
     this.uuid = uuid;
     this.name = name;
     this.gm_set = gm_set;

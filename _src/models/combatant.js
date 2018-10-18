@@ -6,12 +6,13 @@ export class Combatant {
   }
 
   constructor({
-    uuid = "",
+    uuid = null,
     campaign = "",
     name = "",
     initiative = 0,
     hp = 0,
-    effects = "{}"
+    effects = "{}",
+    loot = ""
   } = {}) {
     this.uuid = uuid;
     this.name = name;
@@ -19,6 +20,7 @@ export class Combatant {
     this.initiative = initiative;
     this.hp = hp;
     this.effects = effects;
+    this.loot = loot;
   }
 
   get initiative() {
@@ -66,7 +68,8 @@ export class Combatant {
       initiative: this.initiative,
       hp: this.hp,
       effects: JSON.stringify(this.effects),
-      campaign: this.campaign
+      campaign: this.campaign,
+      loot: this.loot
     };
   }
 

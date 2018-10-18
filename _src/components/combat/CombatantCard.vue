@@ -1,74 +1,83 @@
 <template>
-  <a class="card"
-     :class="[
-       { disabled: !effectMode },
-       { active: active },
-       { 'selectable-success': effectMode === effectTypes.BUFF },
-       { 'selectable-danger': effectMode === effectTypes.DEBUFF },
-       { 'selectable-secondary': effectMode === effectTypes.OTHER }
-     ]"
-     :href="!!effectMode ? '#' : false"
-     @click.prevent="$emit('click', combatant.uuid)">
-    <h5 class="card-header">
-      {{ localCombatant.name }}
-    </h5>
-    <div class="card-body">
-      <div v-if="!!localCombatant.effects[effectTypes.BUFF]">
-        <a v-for="(buff, index) in localCombatant.effects[effectTypes.BUFF]"
-           :key="index" href="#"
-           @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.BUFF, index))"
-           class="btn btn-sm btn-success mr-1 mb-1 status-effect-success"
-           :id="makeEffectId(localCombatant.uuid, effectTypes.BUFF, index)"
-           :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.BUFF, index)]},
-                    {disabled: !!effectMode}]">
-          {{ buff }}
-        </a>
-      </div>
-      <div v-if="!!localCombatant.effects[effectTypes.DEBUFF]">
-        <a v-for="(debuff, index) in localCombatant.effects[effectTypes.DEBUFF]"
-           :key="index" href="#"
-           @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.DEBUFF, index))"
-           class="btn btn-sm btn-danger mr-1 mb-1 status-effect-danger"
-           :id="makeEffectId(localCombatant, effectTypes.DEBUFF, index)"
-           :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.DEBUFF, index)]},
-                    {disabled: !!effectMode}]">
-          {{ debuff }}
-        </a>
-      </div>
-      <div v-if="!!localCombatant.effects[effectTypes.OTHER]">
-        <a v-for="(other, index) in localCombatant.effects[effectTypes.OTHER]"
-           :key="index" href="#"
-           @click.prevent.stop="$emit('effect-clicked', makeEffectId(localCombatant.uuid, effectTypes.OTHER, index))"
-           class="btn btn-sm btn-secondary mr-1 mb-1 status-effect-secondary"
-           :id="makeEffectId(localCombatant, effectTypes.OTHER, index)"
-           :class="[{active: !!selectedEffects[makeEffectId(localCombatant.uuid, effectTypes.OTHER, index)]},
-                    {disabled: !!effectMode}]">
-          {{ other }}
-        </a>
-      </div>
+  <v-card @click.native="$emit('click', combatant.uuid)"
+          :raised="active"
+          class="combatant-card">
+    <v-card-title>
+      <h3 class="headline mb-0 text-truncate">
+        {{ localCombatant.name }}
+      </h3>
+      <v-spacer></v-spacer>
+      <v-icon
+          v-if="active"
+          :color="effectColorString()">
+        check_circle
+      </v-icon>
+    </v-card-title>
 
 
-    </div>
-    <div class="card-footer" v-if="!editMode">
-      <span class="oi oi-timer" title="initiative" aria-hidden="true"></span>
-      {{ localCombatant.initiative }}
-    </div>
-    <div class="card-footer" v-else>
-      <form class="form-inline" novalidate @submit.prevent>
-        <div class="input-group">
-          <div class="input-group-prepend">
-            <span class="input-group-text">
-              <small><span class="oi oi-timer"></span></small>
+    <v-divider></v-divider>
+
+
+    <v-card-text class="combatant-card-body">
+      <v-container fluid class="pa-0">
+        <v-layout row wrap>
+          <v-chip
+            v-for="(buff, index) in localCombatant.effects[effectTypes.BUFF]"
+            :key="index" :close="!!updateFunc"
+            @input="removeEffect(effectTypes.BUFF, index)">
+            <v-avatar class="green"></v-avatar>
+            <span class="text-truncate font-weight-medium effect-text">
+              {{ buff }}
             </span>
-          </div>
-          <input class="form-control"
-                 placeholder="Initiative"
-                 type="number"
-                 v-model="localCombatant.initiative"/>
-        </div>
-      </form>
-    </div>
-  </a>
+          </v-chip>
+        </v-layout>
+        <v-layout row wrap>
+          <v-chip
+            v-for="(debuff, index) in localCombatant.effects[effectTypes.DEBUFF]"
+            :key="index" :close="!!updateFunc"
+            @input="removeEffect(effectTypes.DEBUFF, index)">
+            <v-avatar class="red"></v-avatar>
+            <span class="text-truncate font-weight-medium effect-text">
+              {{ debuff }}
+            </span>
+          </v-chip>
+        </v-layout>
+        <v-layout row wrap>
+          <v-chip
+            v-for="(other, index) in localCombatant.effects[effectTypes.OTHER]"
+            :key="index" :close="!!updateFunc"
+            @input="removeEffect(effectTypes.OTHER, index)">
+            <span class="text-truncate font-weight-medium effect-text">
+              {{ other }}
+            </span>
+          </v-chip>
+        </v-layout>
+      </v-container>
+    </v-card-text>
+
+
+    <v-divider></v-divider>
+
+
+    <v-card-actions>
+      <v-btn flat icon
+             v-if="updateFunc"
+             :disabled="!!effectMode"
+             @click.stop="updateInitiative(1)">
+        <v-icon>add</v-icon>
+      </v-btn>
+      <v-spacer></v-spacer>
+      <v-icon>directions_run</v-icon>
+      <span class="font-weight-medium title">{{ localCombatant.initiative }}</span>
+      <v-spacer></v-spacer>
+      <v-btn flat icon
+             v-if="updateFunc"
+             :disabled="!!effectMode"
+             @click.stop="updateInitiative(-1)">
+        <v-icon>remove</v-icon>
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
@@ -88,12 +97,9 @@ export default {
       type: Boolean,
       default: false
     },
-    editMode: {
-      type: Boolean,
-      default: false
-    },
-    selectedEffects: {
-      type: Object
+    updateFunc: {
+      type: Function,
+      default: null
     }
   },
   data() {
@@ -103,27 +109,29 @@ export default {
     };
   },
   watch: {
-    localCombatant: {
-      handler(newCombatant) {
-        if (this.editMode) this.$emit("combatant-change", newCombatant);
-      },
-      deep: true
-    },
-    editMode(newBool) {
-      if (newBool === false) {
-        this.localCombatant = new Combatant(this.combatant);
-      }
-    },
     combatant: {
       handler(newCombatant) {
-        if (!this.editMode) this.localCombatant = new Combatant(newCombatant);
+        this.localCombatant = new Combatant(newCombatant);
       }
     }
   },
-  computed: {},
   methods: {
-    makeEffectId(uuid, type, index) {
-      return uuid + "/" + String(type) + "/" + String(index);
+    updateInitiative(increment) {
+      this.localCombatant.initiative += increment;
+      this.updateFunc(this.localCombatant);
+    },
+    removeEffect(effectType, index) {
+      this.localCombatant.effects[effectType].splice(index, 1);
+      this.updateFunc(this.localCombatant);
+    },
+    effectColorString() {
+      if (this.effectMode === Combatant.effectTypes.BUFF) {
+        return "green";
+      } else if (this.effectMode === Combatant.effectTypes.DEBUFF) {
+        return "red";
+      } else {
+        return "";
+      }
     }
   },
   created() {}
@@ -131,64 +139,19 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../../scss/shared";
+$card-width: 275px;
 
-a {
-  @each $theme-color-name, $color in $theme-colors {
-    &.selectable-#{$theme-color-name} {
-      color: inherit;
-      text-decoration: none;
+.combatant-card {
+  width: $card-width;
+  display: flex;
+  flex-direction: column;
+}
 
-      &:hover {
-        color: inherit;
-        text-decoration: none;
-      }
+.combatant-card-body {
+  flex-grow: 1;
+}
 
-      &:not(.disabled) {
-        &.active {
-          outline: 0;
-          box-shadow: 0 0 0 0.4rem rgba($color, 0.5);
-        }
-        &:focus,
-        &:active {
-          outline: 0;
-        }
-      }
-    }
-  }
-  @each $theme-color-name, $color in $theme-colors {
-    &.status-effect-#{$theme-color-name} {
-      outline: 0;
-
-      &:not(.active) {
-        &:focus,
-        &:active {
-          box-shadow: 0 0 0 0;
-        }
-      }
-
-      &:not(:hover) {
-        background-color: $color !important;
-        border-color: $color !important;
-      }
-
-      &.active {
-        box-shadow: 0
-          0
-          0
-          0.2rem
-          rgba(map_get($theme-colors, "primary"), 1) !important;
-        color: $color !important;
-        border-color: transparent !important;
-        background-color: transparent !important;
-
-        &:hover {
-          color: white !important;
-          background-color: $color !important;
-          border-color: $color !important;
-        }
-      }
-    }
-  }
+.effect-text {
+  max-width: $card-width - 120px;
 }
 </style>

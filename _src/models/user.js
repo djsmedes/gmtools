@@ -6,7 +6,7 @@ export class User {
   }
 
   constructor({
-    uuid = "",
+    uuid = null,
     email = "",
     first_name = "",
     last_name = "",

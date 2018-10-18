@@ -44,7 +44,7 @@ const router = new Router({
       path: "/combatants/new/",
       name: routeNames.COMBATANT_CREATE,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantCreate"),
+        import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantDetail"),
       beforeEnter: loginRequired
     },
     {
@@ -66,7 +66,7 @@ const router = new Router({
       path: "/campaigns/new/",
       name: routeNames.CAMPAIGN_CREATE,
       component: () =>
-        import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignCreate"),
+        import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignDetail"),
       beforeEnter: loginRequired
     },
     {
