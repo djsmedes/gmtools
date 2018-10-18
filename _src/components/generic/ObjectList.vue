@@ -1,21 +1,21 @@
 <template>
-  <div class="card">
-    <div class="card-header d-flex">
-      <h4>{{ model.namespace.charAt(0).toUpperCase() + model.namespace.slice(1)}} List</h4>
-      <router-link v-if="createViewName"
-                   :to="{ name: createViewName }"
-                   class="btn btn-outline-primary ml-auto">
-        <span class="oi oi-plus" aria-hidden="true"></span>
-      </router-link>
-    </div>
-    <div class="list-group list-group-flush">
-      <router-link v-for="object in objectList"
-                   :to="{ name: detailViewName, params: { uuid: object.uuid }}"
-                   class="list-group-item" :key="object.uuid">
-        {{ object.name }}
-      </router-link>
-    </div>
-  </div>
+  <v-card>
+    <v-data-table
+        :headers="headers"
+        :items="objectList"
+    >
+      <template slot="items" slot-scope="props">
+        <router-link tag="tr" :to="{ name: detailViewName, params: { uuid: props.item.uuid }}">
+          <td v-for="header in headers" :key="header.text">{{ props.item[header.value] }}</td>
+        </router-link>
+      </template>
+    </v-data-table>
+    <v-card-actions>
+      <v-btn v-if="!!createViewName" flat :to="{ name: createViewName }">
+        Create new
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
@@ -27,6 +27,17 @@ export default {
     createViewName: String,
     objectList: {
       default: () => []
+    },
+    headers: {
+      default() {
+        return [
+          {
+            text: "Name",
+            align: "left",
+            value: "name"
+          }
+        ];
+      }
     }
   }
 };
