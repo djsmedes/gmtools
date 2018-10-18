@@ -66,7 +66,7 @@ const router = new Router({
       path: "/campaigns/new/",
       name: routeNames.CAMPAIGN_CREATE,
       component: () =>
-        import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignCreate"),
+        import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignDetail"),
       beforeEnter: loginRequired
     },
     {

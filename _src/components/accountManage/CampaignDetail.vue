@@ -1,8 +1,9 @@
 <template>
   <object-detail :name="localCampaign.name"
+                 :start-editing="!campaign.uuid"
                  :save-func="save"
-                 :clear-func="reset"
-                 :delete-func="deleteSelf">
+                 :clear-func="campaign.uuid ? reset : () => $router.go(-1)"
+                 :delete-func="campaign.uuid ? deleteSelf : null">
     <v-list slot="view">
       <v-subheader>
         Name
@@ -112,7 +113,7 @@ export default {
         this.reset();
       } else {
         let rObj = await this.createCampaign(this.localCampaign);
-        this.$router.push({
+        this.$router.replace({
           name: routeNames.CAMPAIGN,
           params: { uuid: rObj.uuid }
         });
