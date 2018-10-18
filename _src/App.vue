@@ -72,7 +72,7 @@
       </v-toolbar-items>
     </v-toolbar>
 
-    <v-container fluid>
+    <v-container>
       <router-view v-if="isRequested"/>
     </v-container>
   </v-app>

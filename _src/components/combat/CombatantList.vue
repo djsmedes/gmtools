@@ -1,9 +1,9 @@
 <template>
-  <object-list :model="model"
-               :detail-view-name="routeNames.COMBATANT"
-               :create-view-name="routeNames.COMBATANT_CREATE"
-               :object-list="combatants"
-               :headers="headers">
+  <object-list
+      :detail-view-name="routeNames.COMBATANT"
+      :create-view-name="routeNames.COMBATANT_CREATE"
+      :object-list="combatants"
+      :headers="headers">
   </object-list>
 </template>
 
@@ -19,16 +19,17 @@ export default {
   data() {
     return {
       routeNames,
-      model: combatant,
       headers: [
         {
           text: "Name",
           align: "left",
-          value: "name"
+          value: "name",
+          func: item => item.name
         },
         {
           text: "Initiative",
-          value: "initiative"
+          value: "initiative",
+          func: item => item.initiative
         }
       ]
     };

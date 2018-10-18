@@ -3,12 +3,11 @@
     <v-data-table
         :headers="headers"
         :items="objectList">
-      <template slot="items" slot-scope="props">
-        <router-link tag="tr" :to="{ name: detailViewName, params: { uuid: props.item.uuid }}">
-          <!-- todo - change the header.value thing to a function, so we can do arbitrary actions on props.item -->
-          <td v-for="header in headers" :key="header.text">{{ props.item[header.value] }}</td>
-        </router-link>
-      </template>
+      <router-link
+          tag="tr" slot="items" slot-scope="props"
+          :to="{ name: detailViewName, params: { uuid: props.item.uuid }}">
+        <td v-for="header in headers" :key="header.text">{{ header.func(props.item) }}</td>
+      </router-link>
     </v-data-table>
     <v-card-actions>
       <v-btn v-if="!!createViewName" flat :to="{ name: createViewName }">
@@ -22,7 +21,6 @@
 export default {
   name: "ObjectList",
   props: {
-    model: Object,
     detailViewName: String,
     createViewName: String,
     objectList: {
@@ -34,7 +32,8 @@ export default {
           {
             text: "Name",
             align: "left",
-            value: "name"
+            value: "name",
+            func: item => item.name
           }
         ];
       }

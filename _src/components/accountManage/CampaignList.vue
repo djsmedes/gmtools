@@ -1,8 +1,8 @@
 <template>
-  <object-list :model="model"
-               :detail-view-name="routeNames.CAMPAIGN"
-               :create-view-name="routeNames.CAMPAIGN_CREATE"
-               :object-list="campaigns">
+  <object-list
+      :detail-view-name="routeNames.CAMPAIGN"
+      :create-view-name="routeNames.CAMPAIGN_CREATE"
+      :object-list="campaigns">
   </object-list>
 </template>
 
@@ -17,8 +17,7 @@ export default {
   components: { ObjectList },
   data() {
     return {
-      routeNames,
-      model: campaign
+      routeNames
     };
   },
   computed: {
