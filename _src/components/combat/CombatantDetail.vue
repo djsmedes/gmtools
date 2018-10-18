@@ -1,5 +1,5 @@
 <template>
-  <object-detail :title="combatant.name"
+  <object-detail :name="combatant.name"
                  :save-func="save"
                  :clear-func="reset"
                  :delete-func="deleteSelf">

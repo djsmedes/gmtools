@@ -1,70 +1,51 @@
 <template>
-  <div class="card">
-    <div class="card-header d-flex">
-      <h4>{{ title }}</h4>
-
-      <div v-if="saveFunc" class="ml-auto">
-        <button type="button"
-                v-if="isViewMode"
-                class="btn btn-primary"
-                @click="enterEditMode">
+  <v-container>
+    <v-card>
+      <slot></slot>
+      <slot name="view" v-if="isViewMode"></slot>
+      <slot name="edit" v-if="isEditMode"></slot>
+      <v-card-actions>
+        <v-layout justify-end>
+        <v-btn
+            v-if="saveFunc && isViewMode"
+            @click="enterEditMode"
+            flat>
           Edit
-        </button>
-        <div class="btn-group"
-             v-if="isEditMode">
-          <button type="button"
-                  class="btn btn-primary"
-                  @click="save">
-            Save
-          </button>
-          <button type="button"
-                  class="btn btn-secondary"
-                  @click="clear">
-            Cancel
-          </button>
-        </div>
-      </div>
-      <button type="button"
-              v-if="deleteFunc"
-              class="btn btn-outline-danger"
-              :class="saveFunc ? 'ml-2' : 'ml-auto'"
-              data-toggle="modal"
-              data-target="#areYouSureDelete">
-        Delete
-      </button>
-      <div class="modal" id="areYouSureDelete" tabindex="-1" role="dialog"
-           aria-labelledby="areYouSureDeleteTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="areYouSureDeleteTitle">Delete {{ title }}</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              Are you sure you want to delete {{ title }}? This cannot be undone.
-            </div>
-            <div class="modal-footer">
-              <button type="button"
-                      class="btn btn-danger"
-                      data-dismiss="modal"
-                      @click="deleteFunc">
-                Yes, delete {{ title }}
-              </button>
-              <button type="button"
-                      class="btn btn-secondary"
-                      data-dismiss="modal">
+        </v-btn>
+        <v-btn
+            v-if="saveFunc && isEditMode"
+            @click="save"
+            flat>
+          Save
+        </v-btn>
+        <v-btn
+            v-if="saveFunc && isEditMode"
+            @click="clear"
+            flat>
+          Cancel
+        </v-btn>
+        <v-dialog v-if="deleteFunc" v-model="deleteDialog" :width="500">
+          <v-btn flat slot="activator">
+            Delete
+          </v-btn>
+          <v-card>
+            <v-card-text>
+              Are you sure you want to delete {{ name }}? This cannot be undone.
+            </v-card-text>
+            <v-card-actions>
+              <v-btn flat @click="deleteFunc">
+                Yes, delete {{ name }}
+              </v-btn>
+              <v-btn flat @click="deleteDialog = false">
                 Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <slot name="view" v-if="isViewMode"></slot>
-    <slot name="edit" v-if="isEditMode"></slot>
-  </div>
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        </v-layout>
+      </v-card-actions>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
@@ -74,7 +55,7 @@ const EDIT_MODE = 1;
 export default {
   name: "ObjectDetail",
   props: {
-    title: {
+    name: {
       type: String
     },
     startEditing: {
@@ -96,7 +77,8 @@ export default {
   },
   data() {
     return {
-      mode: this.startEditing ? EDIT_MODE : VIEW_MODE
+      mode: this.startEditing && this.saveFunc ? EDIT_MODE : VIEW_MODE,
+      deleteDialog: false
     };
   },
   computed: {

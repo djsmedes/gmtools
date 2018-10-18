@@ -1,37 +1,67 @@
 <template>
-  <object-detail :title="campaign.name"
+  <object-detail :name="localCampaign.name"
                  :save-func="save"
                  :clear-func="reset"
                  :delete-func="deleteSelf">
-    <template slot="view">
-      <v-card-text>
-        <v-text-field
-            readonly
-            label="Name"
-            v-model="campaign.name"
-        ></v-text-field>
-        <h5>Name:</h5>
-        <p>{{ campaign.name }}</p>
-        <h5>GMs:</h5>
-        <p v-for="userUuid in campaign.gm_set" :key="userUuid">
-          {{ getUser(userUuid).name }}
-        </p>
-        <h5>Players:</h5>
-        <p v-for="userUuid in campaign.player_set" :key="userUuid">
-          {{ getUser(userUuid).name }}
-        </p>
-      </v-card-text>>
-    </template>
-    <template slot="edit">
-      <div class="card-body">
-        <form novalidate @submit.stop.prevent>
-          <div class="form-group">
-            <label for="editName">Name</label>
-            <input id="editName" class="form-control" v-model="localCampaign.name">
-          </div>
-        </form>
-      </div>
-    </template>
+    <v-list slot="view">
+      <v-subheader>
+        Name
+      </v-subheader>
+      <v-list-tile>
+        <v-list-tile-content>
+          <v-list-tile-title>
+            {{ campaign.name }}
+          </v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+      <v-divider></v-divider>
+      <v-subheader>
+        GMs
+      </v-subheader>
+      <v-list-tile v-for="userUuid in campaign.gm_set" :key="userUuid">
+        <v-list-tile-content>
+          <v-list-tile-title>
+            {{ getUser(userUuid).name }}
+          </v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+      <v-divider></v-divider>
+      <v-subheader>
+        Players
+      </v-subheader>
+      <v-list-tile v-for="userUuid in campaign.player_set" :key="userUuid">
+        <v-list-tile-content>
+          <v-list-tile-title>
+            {{ getUser(userUuid).name }}
+          </v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+      <v-divider></v-divider>
+    </v-list>
+    <v-card-text slot="edit">
+      <v-text-field
+          label="Name"
+          v-model="localCampaign.name"
+      ></v-text-field>
+      <v-select
+          readonly
+          label="GMs"
+          multiple chips
+          :items="localCampaign.gm_set.map(userUuid => getUser(userUuid))"
+          item-text="name"
+          item-value="uuid"
+          v-model="localCampaign.gm_set"
+      ></v-select>
+      <v-select
+          readonly
+          label="Players"
+          multiple chips
+          :items="localCampaign.player_set.map(userUuid => getUser(userUuid))"
+          item-text="name"
+          item-value="uuid"
+          v-model="localCampaign.player_set"
+      ></v-select>
+    </v-card-text>
   </object-detail>
 </template>
 
