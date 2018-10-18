@@ -44,7 +44,7 @@ const router = new Router({
       path: "/combatants/new/",
       name: routeNames.COMBATANT_CREATE,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantCreate"),
+        import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantDetail"),
       beforeEnter: loginRequired
     },
     {

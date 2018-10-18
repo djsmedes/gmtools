@@ -4,7 +4,12 @@
                  :clear-func="reset"
                  :delete-func="deleteSelf">
     <template slot="view">
-      <div class="card-body">
+      <v-card-text>
+        <v-text-field
+            readonly
+            label="Name"
+            v-model="campaign.name"
+        ></v-text-field>
         <h5>Name:</h5>
         <p>{{ campaign.name }}</p>
         <h5>GMs:</h5>
@@ -15,7 +20,7 @@
         <p v-for="userUuid in campaign.player_set" :key="userUuid">
           {{ getUser(userUuid).name }}
         </p>
-      </div>
+      </v-card-text>>
     </template>
     <template slot="edit">
       <div class="card-body">
@@ -47,7 +52,8 @@ export default {
   },
   computed: {
     campaign() {
-      return this.getCampaign(this.$route.params.uuid);
+      let uuid = this.$route.params.uuid;
+      return uuid ? this.getCampaign(uuid) : new Campaign();
     },
     ...mapGetters(campaign.namespace, {
       getCampaign: campaign.getterTypes.BY_ID
@@ -60,7 +66,8 @@ export default {
     ...mapActions(campaign.namespace, {
       loadCampaigns: campaign.actionTypes.LIST,
       deleteCampaign: campaign.actionTypes.DESTROY,
-      updateCampaign: campaign.actionTypes.UPDATE
+      updateCampaign: campaign.actionTypes.UPDATE,
+      createCampaign: campaign.actionTypes.CREATE
     }),
     ...mapActions(userModule.namespace, {
       loadUsers: userModule.actionTypes.LIST
@@ -70,15 +77,28 @@ export default {
       this.$router.push({ name: routeNames.CAMPAIGNS });
     },
     async save() {
-      await this.updateCampaign(this.localCampaign);
-      this.reset();
+      if (this.localCampaign.uuid) {
+        await this.updateCampaign(this.localCampaign);
+        this.reset();
+      } else {
+        let rObj = await this.createCampaign(this.localCampaign);
+        this.$router.push({
+          name: routeNames.CAMPAIGN,
+          params: { uuid: rObj.uuid }
+        });
+      }
     },
     reset() {
       this.localCampaign = new Campaign(this.campaign);
     }
   },
   created() {
-    this.loadCampaigns().then(() => this.reset());
+    this.loadCampaigns().then(() => {
+      this.reset();
+      if (this.$route.params.uuid && !this.campaign.uuid) {
+        this.$router.replace({ name: routeNames.NOT_FOUND });
+      }
+    });
     this.loadUsers();
   }
 };

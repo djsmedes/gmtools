@@ -6,7 +6,7 @@ export class Combatant {
   }
 
   constructor({
-    uuid = "",
+    uuid = null,
     campaign = "",
     name = "",
     initiative = 0,
