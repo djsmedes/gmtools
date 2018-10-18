@@ -1,24 +1,45 @@
 <template>
   <object-detail :name="combatant.name"
-                 :save-func="save"
-                 :clear-func="reset"
-                 :delete-func="deleteSelf">
-    <template slot="view">
-      <div class="card-body">
-        <h5>Name:</h5>
-        <p>{{ combatant.name }}</p>
-      </div>
-    </template>
-    <template slot="edit">
-      <div class="card-body">
-        <form novalidate @submit.stop.prevent>
-          <div class="form-group">
-            <label for="editName">Name</label>
-            <input id="editName" class="form-control" v-model="localCombatant.name">
-          </div>
-        </form>
-      </div>
-    </template>
+                 :start-editing="!combatant.uuid"
+                 :save-func="combatant.uuid ? save : create"
+                 :clear-func="combatant.uuid ? reset : () => $router.go(-1)"
+                 :delete-func="combatant.uuid ? deleteSelf : null">
+    <v-list slot="view">
+      <v-subheader>
+        Name
+      </v-subheader>
+      <v-list-tile>
+        <v-list-tile-content>
+          <v-list-tile-title>
+            {{ combatant.name }}
+          </v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+      <v-divider></v-divider>
+      <v-subheader>
+        Loot
+      </v-subheader>
+      <v-list-tile v-for="(line, index) in combatant.loot.split('\n')" :key="index">
+        <v-list-tile-contents>
+          <v-list-tile-title>
+            {{ line }}
+          </v-list-tile-title>
+        </v-list-tile-contents>
+      </v-list-tile>
+    </v-list>
+    <v-card-text slot="edit">
+      <v-form>
+        <v-text-field
+            label="Name"
+            v-model="localCombatant.name"
+        ></v-text-field>
+        <v-textarea
+            auto-grow :rows="1"
+            label="Loot"
+            v-model="localCombatant.loot"
+        ></v-textarea>
+      </v-form>
+    </v-card-text>
   </object-detail>
 </template>
 
@@ -38,7 +59,8 @@ export default {
   },
   computed: {
     combatant() {
-      return this.getCombatant(this.$route.params.uuid);
+      let uuid = this.$route.params.uuid;
+      return uuid ? this.getCombatant(uuid) : new Combatant();
     },
     ...mapGetters(combatant.namespace, {
       getCombatant: combatant.getterTypes.BY_ID
@@ -48,7 +70,8 @@ export default {
     ...mapActions(combatant.namespace, {
       loadCombatants: combatant.actionTypes.LIST,
       deleteCombatant: combatant.actionTypes.DESTROY,
-      updateCombatant: combatant.actionTypes.UPDATE
+      updateCombatant: combatant.actionTypes.UPDATE,
+      createCombatant: combatant.actionTypes.CREATE
     }),
     async deleteSelf() {
       await this.deleteCombatant(this.combatant.uuid);
@@ -57,6 +80,13 @@ export default {
     async save() {
       await this.updateCombatant(this.localCombatant);
       this.reset();
+    },
+    async create() {
+      let rObj = await this.createCombatant(this.localCombatant);
+      this.$router.replace({
+        name: routeNames.COMBATANT,
+        params: { uuid: rObj.uuid }
+      });
     },
     reset() {
       this.localCombatant = new Combatant(this.combatant);
