@@ -19,12 +19,12 @@
       <v-subheader>
         Loot
       </v-subheader>
-      <v-list-tile v-for="(line, index) in combatant.loot.split('\n')" :key="index">
-        <v-list-tile-contents>
-          <v-list-tile-title>
-            {{ line }}
+      <v-list-tile>
+        <v-list-tile-content>
+          <v-list-tile-title class="text-truncate">
+            {{ combatant.loot }}
           </v-list-tile-title>
-        </v-list-tile-contents>
+        </v-list-tile-content>
       </v-list-tile>
     </v-list>
     <v-card-text slot="edit">
