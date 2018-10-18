@@ -2,10 +2,10 @@
   <v-card>
     <v-data-table
         :headers="headers"
-        :items="objectList"
-    >
+        :items="objectList">
       <template slot="items" slot-scope="props">
         <router-link tag="tr" :to="{ name: detailViewName, params: { uuid: props.item.uuid }}">
+          <!-- todo - change the header.value thing to a function, so we can do arbitrary actions on props.item -->
           <td v-for="header in headers" :key="header.text">{{ props.item[header.value] }}</td>
         </router-link>
       </template>
