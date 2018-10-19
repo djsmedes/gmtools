@@ -23,6 +23,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from accounts.viewsets import UserViewSet, CampaignViewSet
 from accounts.views import UserView, SignupApiView
 from combat.viewsets import CombatantViewSet
+from plot.viewsets import EncounterViewSet
 
 router = DefaultRouter()
 
@@ -40,6 +41,11 @@ router.register(
     prefix='combatant',
     viewset=CombatantViewSet,
     base_name='combatant'
+)
+router.register(
+    prefix='encounter',
+    viewset=EncounterViewSet,
+    base_name='encounter'
 )
 
 urlpatterns = [
