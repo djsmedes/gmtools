@@ -13,22 +13,38 @@
         check_circle
       </v-icon>
     </v-card-title>
-    <v-card-title class="pt-0">
-      <v-btn icon flat class="ma-0" @click="updateHp(-10)">-10</v-btn>
+    <v-card-title class="py-0">
+      <v-btn icon flat class="ma-0"
+             @click="updateHp(-10)"
+             :disabled="!!effectMode">-10</v-btn>
       <v-spacer></v-spacer>
-      <v-btn icon flat class="ma-0" @click="updateHp(-1)">-1</v-btn>
+      <v-btn icon flat class="ma-0"
+             @click="updateHp(-1)"
+             :disabled="!!effectMode">-1</v-btn>
       <v-spacer></v-spacer>
-      <v-progress-circular
-        :value="localCombatant.hp"
-        color="red darken-2">
-        {{ localCombatant.hp }}
-      </v-progress-circular>
+      <v-avatar :size="36">
+        <span class="red--text text--darken-2 body-2">{{ localCombatant.hp }}</span>
+      </v-avatar>
       <v-spacer></v-spacer>
-      <v-btn icon flat class="ma-0" @click="updateHp(1)">+1</v-btn>
+      <v-btn icon flat class="ma-0"
+             @click="updateHp(1)"
+             :disabled="!!effectMode">+1</v-btn>
       <v-spacer></v-spacer>
-      <v-btn icon flat class="ma-0" @click="updateHp(10)">+10</v-btn>
+      <v-btn icon flat class="ma-0"
+             @click="updateHp(10)"
+             :disabled="!!effectMode">+10</v-btn>
     </v-card-title>
-
+    <v-card-title class="py-0">
+      <v-progress-linear
+          v-if="localCombatant.hp <= localCombatant.max_hp"
+          :value="100 * localCombatant.hp / localCombatant.max_hp"
+          color="red darken-2"></v-progress-linear>
+      <v-progress-linear
+          v-else
+          :value="100 * (localCombatant.hp - localCombatant.max_hp) / localCombatant.max_hp"
+          color="yellow darken-2"
+          background-color="red darken-2"></v-progress-linear>
+    </v-card-title>
     <v-divider></v-divider>
 
 
@@ -39,7 +55,7 @@
             v-for="(buff, index) in localCombatant.effects[effectTypes.BUFF]"
             :key="index" :close="!!updateFunc"
             @input="removeEffect(effectTypes.BUFF, index)">
-            <v-avatar class="green"></v-avatar>
+            <v-avatar color="green"><v-icon small style="color: #fff;">trending_up</v-icon></v-avatar>
             <span class="text-truncate font-weight-medium effect-text">
               {{ buff }}
             </span>
@@ -50,7 +66,7 @@
             v-for="(debuff, index) in localCombatant.effects[effectTypes.DEBUFF]"
             :key="index" :close="!!updateFunc"
             @input="removeEffect(effectTypes.DEBUFF, index)">
-            <v-avatar class="red"></v-avatar>
+            <v-avatar color="red"><v-icon small style="color: #fff;">trending_down</v-icon></v-avatar>
             <span class="text-truncate font-weight-medium effect-text">
               {{ debuff }}
             </span>
@@ -61,6 +77,7 @@
             v-for="(other, index) in localCombatant.effects[effectTypes.OTHER]"
             :key="index" :close="!!updateFunc"
             @input="removeEffect(effectTypes.OTHER, index)">
+            <v-avatar color="grey"><v-icon small style="color: #fff;">trending_flat</v-icon></v-avatar>
             <span class="text-truncate font-weight-medium effect-text">
               {{ other }}
             </span>
