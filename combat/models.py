@@ -11,5 +11,11 @@ class Combatant(CampaignOwnedModel):
     loot = models.TextField(null=True, blank=True)
     effects = models.TextField(null=True, blank=True)
 
+    encounter = models.ForeignKey(
+        'plot.Encounter',
+        on_delete=models.CASCADE,
+        null=True, blank=True,
+    )
+
     def __str__(self):
         return self.name
