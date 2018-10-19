@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Combat from "@/components/combat/Combat";
+import Combat from "@/components/encounters/Combat";
 import {
   userRequired,
   loginRequired,
@@ -17,6 +17,9 @@ export const routeNames = {
   CAMPAIGNS: "campaigns",
   CAMPAIGN: "campaign",
   CAMPAIGN_CREATE: "campaignCreate",
+  ENCOUNTERS: "encounters",
+  ENCOUNTER: "encounter",
+  ENCOUNTER_CREATE: "encounterCreate",
   ACCOUNT_SETTINGS: "accountSettings",
   LOGIN: "login",
   SIGNUP: "signup",
@@ -37,21 +40,21 @@ const router = new Router({
       path: "/combatants/",
       name: routeNames.COMBATANTS,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantList"),
+        import(/* webpackChunkName: "combatants" */ "@/components/encounters/CombatantList"),
       beforeEnter: loginRequired
     },
     {
       path: "/combatants/new/",
       name: routeNames.COMBATANT_CREATE,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantDetail"),
+        import(/* webpackChunkName: "combatants" */ "@/components/encounters/CombatantDetail"),
       beforeEnter: loginRequired
     },
     {
       path: "/combatants/:uuid/",
       name: routeNames.COMBATANT,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "@/components/combat/CombatantDetail"),
+        import(/* webpackChunkName: "combatants" */ "@/components/encounters/CombatantDetail"),
       beforeEnter: loginRequired
     },
 
@@ -74,6 +77,28 @@ const router = new Router({
       name: routeNames.CAMPAIGN,
       component: () =>
         import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignDetail"),
+      beforeEnter: loginRequired
+    },
+
+    {
+      path: "/encounters/",
+      name: routeNames.ENCOUNTERS,
+      component: () =>
+        import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterList"),
+      beforeEnter: loginRequired
+    },
+    {
+      path: "/encounters/new/",
+      name: routeNames.ENCOUNTER_CREATE,
+      component: () =>
+        import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
+      beforeEnter: loginRequired
+    },
+    {
+      path: "/encounters/:uuid/",
+      name: routeNames.ENCOUNTER,
+      component: () =>
+        import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
       beforeEnter: loginRequired
     },
 

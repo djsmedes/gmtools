@@ -81,7 +81,7 @@
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
-import CombatantCard from "@/components/combat/CombatantCard";
+import CombatantCard from "@/components/encounters/CombatantCard";
 import combatant from "@/models/combatant";
 import _ from "lodash";
 import { ModuleSocket } from "@/websockets";
