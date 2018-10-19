@@ -1,6 +1,7 @@
 <template>
   <v-card @click.native="$emit('click', combatant.uuid)"
           :raised="active"
+          :class="{ bloodied: localCombatant.hp < (localCombatant.max_hp / 2) }"
           class="combatant-card">
     <v-card-title class="pb-0">
       <h3 class="headline mb-0 text-truncate">
@@ -188,5 +189,13 @@ $card-width: 275px;
 
 .effect-text {
   max-width: $card-width - 120px;
+}
+
+.bloodied {
+  background-image: linear-gradient(
+    to bottom,
+    rgba(211, 47, 47, 0.33) 0%,
+    transparent 36px
+  );
 }
 </style>
