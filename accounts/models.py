@@ -48,6 +48,13 @@ class Campaign(models.Model):
     )
     creation_date = models.DateField(auto_now_add=True)
 
+    active_encounter = models.OneToOneField(
+        'plot.Encounter',
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='campaign_active_in'
+    )
+
     def set_as_player(self, player: settings.AUTH_USER_MODEL):
         match_qs = CampaignRole.objects.filter(user=player, campaign=self)
         if match_qs.exists():
