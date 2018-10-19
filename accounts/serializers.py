@@ -5,9 +5,13 @@ from .models import User, Campaign
 
 
 class UserSerializer(CampaignModelSerializer):
-    def __init__(self, instance, *args, **kwargs):
-        super().__init__(instance, *args, **kwargs)
-        self.fields['current_campaign']._kwargs['queryset'] = Campaign.objects.filter(user=instance)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if hasattr(self.instance, 'campaigns'):
+            qs = self.instance.campaigns.all()
+        else:
+            qs = []
+        self.fields['current_campaign'].queryset = qs
 
     url = serializers.HyperlinkedIdentityField(
         lookup_field='uuid',
@@ -37,6 +41,14 @@ class CampaignSerializer(CampaignModelSerializer):
     gm_set = serializers.SerializerMethodField()
     player_set = serializers.SerializerMethodField()
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if hasattr(self.instance, 'plot_encounter_owned_set'):
+            qs = self.instance.plot_encounter_owned_set.all()
+        else:
+            qs = []
+        self.fields['active_encounter'].queryset = qs
+
     def get_gm_set(self, instance):
         return [user.uuid for user in instance.gm_set]
 
@@ -50,5 +62,6 @@ class CampaignSerializer(CampaignModelSerializer):
         model = Campaign
         fields = (
             'name', 'gm_set', 'player_set',
+            'active_encounter',
             'uuid', 'url'
         )
