@@ -13,7 +13,8 @@ export class Combatant {
     hp = 0,
     max_hp = 0,
     effects = "{}",
-    loot = ""
+    loot = "",
+    encounter = null
   } = {}) {
     this.uuid = uuid;
     this.name = name;
@@ -23,6 +24,7 @@ export class Combatant {
     this.max_hp = max_hp;
     this.effects = effects;
     this.loot = loot;
+    this.encounter = encounter;
   }
 
   get initiative() {
@@ -80,7 +82,8 @@ export class Combatant {
       max_hp: this.max_hp,
       effects: JSON.stringify(this.effects),
       campaign: this.campaign,
-      loot: this.loot
+      loot: this.loot,
+      encounter: this.encounter
     };
   }
 

@@ -85,6 +85,7 @@ import CombatantCard from "@/components/encounters/CombatantCard";
 import combatant from "@/models/combatant";
 import _ from "lodash";
 import { ModuleSocket } from "@/websockets";
+import auth from "@/auth";
 
 export default {
   name: "Combat",
@@ -108,8 +109,17 @@ export default {
       combatants: combatant.getterTypes.LIST,
       getCombatant: combatant.getterTypes.BY_ID
     }),
+    ...mapGetters(auth.namespace, {
+      currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN
+    }),
     combatantsByInitiative() {
-      return [...this.combatants].sort((a, b) => b.initiative - a.initiative);
+      return [
+        ...this.combatants.filter(
+          c =>
+            c.encounter === null ||
+            c.encounter === this.currentCampaign.active_encounter
+        )
+      ].sort((a, b) => b.initiative - a.initiative);
     }
   },
   methods: {
