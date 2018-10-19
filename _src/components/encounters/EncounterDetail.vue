@@ -12,7 +12,7 @@
       <v-list-tile>
         <v-list-tile-content>
           <v-list-tile-title>
-            {{ campaign.name }}
+            {{ encounter.name }}
           </v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
