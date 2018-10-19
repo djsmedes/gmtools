@@ -2,7 +2,7 @@
   <v-card @click.native="$emit('click', combatant.uuid)"
           :raised="active"
           class="combatant-card">
-    <v-card-title>
+    <v-card-title class="pb-0">
       <h3 class="headline mb-0 text-truncate">
         {{ localCombatant.name }}
       </h3>
@@ -13,7 +13,21 @@
         check_circle
       </v-icon>
     </v-card-title>
-
+    <v-card-title class="pt-0">
+      <v-btn icon flat class="ma-0" @click="updateHp(-10)">-10</v-btn>
+      <v-spacer></v-spacer>
+      <v-btn icon flat class="ma-0" @click="updateHp(-1)">-1</v-btn>
+      <v-spacer></v-spacer>
+      <v-progress-circular
+        :value="localCombatant.hp"
+        color="red darken-2">
+        {{ localCombatant.hp }}
+      </v-progress-circular>
+      <v-spacer></v-spacer>
+      <v-btn icon flat class="ma-0" @click="updateHp(1)">+1</v-btn>
+      <v-spacer></v-spacer>
+      <v-btn icon flat class="ma-0" @click="updateHp(10)">+10</v-btn>
+    </v-card-title>
 
     <v-divider></v-divider>
 
@@ -118,6 +132,10 @@ export default {
   methods: {
     updateInitiative(increment) {
       this.localCombatant.initiative += increment;
+      this.updateFunc(this.localCombatant);
+    },
+    updateHp(increment) {
+      this.localCombatant.hp += increment;
       this.updateFunc(this.localCombatant);
     },
     removeEffect(effectType, index) {
