@@ -5,17 +5,25 @@ export class Campaign {
     return "campaign";
   }
 
-  constructor({ uuid = null, name = "", gm_set = [], player_set = [] } = {}) {
+  constructor({
+    uuid = null,
+    name = "",
+    gm_set = [],
+    player_set = [],
+    active_encounter = null
+  } = {}) {
     this.uuid = uuid;
     this.name = name;
     this.gm_set = gm_set;
     this.player_set = player_set;
+    this.active_encounter = active_encounter;
   }
 
   toJSON() {
     return {
       uuid: this.uuid,
-      name: this.name
+      name: this.name,
+      active_encounter: this.active_encounter
     };
   }
 }
