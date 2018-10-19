@@ -1,9 +1,10 @@
 <template>
-  <object-detail :name="localCampaign.name"
-                 :start-editing="!campaign.uuid"
-                 :save-func="campaign.uuid ? save : create"
-                 :clear-func="campaign.uuid ? reset : () => $router.go(-1)"
-                 :delete-func="campaign.uuid ? deleteSelf : null">
+  <object-detail
+      :name="localCampaign.name"
+      :start-editing="!campaign.uuid"
+      :save-func="campaign.uuid ? save : create"
+      :clear-func="campaign.uuid ? reset : () => $router.go(-1)"
+      :delete-func="campaign.uuid ? deleteSelf : null">
     <v-list slot="view">
       <v-subheader>
         Name

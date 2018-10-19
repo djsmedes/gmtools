@@ -17,6 +17,11 @@
                :to="{name: routeNames.COMBATANTS}">
           Combatants
         </v-btn>
+        <v-btn flat v-if="isAuthenticated"
+               class="no-text-dec hidden-xs-only"
+               :to="{name: routeNames.ENCOUNTERS}">
+          Encounters
+        </v-btn>
       </v-toolbar-items>
       <v-spacer></v-spacer>
       <v-toolbar-items v-if="!isAuthenticated">

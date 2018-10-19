@@ -1,7 +1,29 @@
 <template>
-  <div>
-
-  </div>
+  <object-detail
+      :name="localEncounter.name"
+      :start-editing="!encounter.uuid"
+      :save-func="encounter.uuid ? save : create"
+      :clear-func="encounter.uuid ? reset : () => $router.go(-1)"
+      :delete-func="encounter.uuid ? deleteSelf : null">
+    <v-list slot="view">
+      <v-subheader>
+        Name
+      </v-subheader>
+      <v-list-tile>
+        <v-list-tile-content>
+          <v-list-tile-title>
+            {{ campaign.name }}
+          </v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+    </v-list>
+    <v-card-text slot="edit">
+      <v-text-field
+          label="Name"
+          v-model="localEncounter.name"
+      ></v-text-field>
+    </v-card-text>
+  </object-detail>
 </template>
 
 <script>
