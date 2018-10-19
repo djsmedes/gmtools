@@ -7,4 +7,4 @@ from .models import Encounter
 class EncounterSerializer(CampaignModelSerializer):
     class Meta:
         model = Encounter
-        fields = ('uuid', 'name')
+        fields = ('uuid', 'name', 'campaign')

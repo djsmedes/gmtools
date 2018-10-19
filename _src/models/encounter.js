@@ -5,9 +5,10 @@ export class Encounter {
     return "encounter";
   }
 
-  constructor({ uuid = null, name = "" } = {}) {
+  constructor({ uuid = null, name = "", campaign = "" } = {}) {
     this.uuid = uuid;
     this.name = name;
+    this.campaign = campaign;
   }
 }
 
