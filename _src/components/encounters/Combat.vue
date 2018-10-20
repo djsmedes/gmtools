@@ -59,7 +59,7 @@
       </v-btn>
     </v-toolbar>
 
-    <v-container grid-list-lg>
+    <v-container grid-list-lg class="px-0">
       <v-layout row wrap>
         <v-flex
             d-flex xs12 sm6 md4 lg3 xl2
@@ -75,6 +75,29 @@
       </v-layout>
     </v-container>
 
+    <v-card class="hidden-sm-and-down">
+      <g-m-screen :items="items">
+        <template slot="title" slot-scope="{ item }">
+          <template v-if="item.key === 'settings'">
+            <v-icon>settings</v-icon>
+          </template>
+          <template v-else>{{ item.title }}</template>
+        </template>
+        <template slot-scope="{ item }">
+          <v-form v-if="item.key === 'settings'">
+            <v-container>
+              <v-layout>
+                <v-flex xs12>
+                  <v-slider></v-slider>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-form>
+          <v-card-text v-else>{{ item.content }}</v-card-text>
+        </template>
+      </g-m-screen>
+    </v-card>
+
     <div style="height: 88px;"></div>
   </div>
 </template>
@@ -82,6 +105,7 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import CombatantCard from "@/components/encounters/CombatantCard";
+import GMScreen from "@/components/encounters/GMScreen";
 import combatant from "@/models/combatant";
 import _ from "lodash";
 import { ModuleSocket } from "@/websockets";
@@ -89,6 +113,7 @@ import auth from "@/auth";
 
 export default {
   name: "Combat",
+  components: { CombatantCard, GMScreen },
   data() {
     return {
       applyingEffectType: combatant.Combatant.effectTypes.NONE,
@@ -98,11 +123,23 @@ export default {
       socket: new ModuleSocket(this, "combat", {
         update: obj => this.setCombatant({ objAry: obj.combatants })
       }),
-      fab: false
+      fab: false,
+
+      // todo - pass in
+      items: [
+        { key: "settings" },
+        {
+          uuid: "979f7e",
+          title: "Conditions",
+          content: "This is a list of conditions"
+        },
+        {
+          uuid: "79889ab89a",
+          title: "Items",
+          content: "This is a list of items"
+        }
+      ]
     };
-  },
-  components: {
-    CombatantCard
   },
   computed: {
     ...mapGetters(combatant.namespace, {
