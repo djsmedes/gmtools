@@ -3,8 +3,9 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from rest_framework.renderers import JSONRenderer
 
+from accounts.models import Campaign
 from .models import Combatant
-from .serializers import CombatantNoRequestSerializer
+from .serializers import CombatantSerializer
 
 
 class CombatConsumer(WebsocketConsumer):
@@ -20,13 +21,14 @@ class CombatConsumer(WebsocketConsumer):
             self.channel_name
         )
 
-        ser = CombatantNoRequestSerializer(
+        ser = CombatantSerializer(
             many=True,
-            instance=Combatant.objects.of_user(user)
+            instance=Combatant.objects.of_user(user),
+            user=user
         )
 
         self.accept()
-        self.respond(type='update_combatants', data={'combatants': ser.data})
+        self.respond(type='update', data={'combatants': ser.data})
 
     def disconnect(self, code):
         async_to_sync(self.channel_layer.group_discard)(
@@ -54,25 +56,18 @@ class CombatConsumer(WebsocketConsumer):
         }).decode())
 
     def update(self, msg_id, data_to_update):
-        combatants = data_to_update.get('combatants', [])
-        data = {'combatants': []}
+        data = {}
 
-        for combatant in combatants:
-            instance = Combatant.objects.get(uuid=combatant.get('uuid'))
-            ser = CombatantNoRequestSerializer(instance=instance, data=combatant, partial=True)
-            if ser.is_valid():
-                ser.save()
-                data['combatants'].append(ser.data)
-            else:
-                self.respond(type="err", reply_to=msg_id, status=400, data=data)
-                return
+        combatants = self.update_combatants(data_to_update)
+        if combatants:
+            data['combatants'] = combatants
 
         async_to_sync(self.channel_layer.group_send)(
             self.channel_group_name,
             {
                 'type': 'data_update',
                 'text_data': JSONRenderer().render({
-                    'type': 'update_combatants',
+                    'type': 'update',
                     'replyTo': msg_id,
                     'status': 200,
                     'data': data
@@ -86,3 +81,27 @@ class CombatConsumer(WebsocketConsumer):
             return
 
         self.send(text_data=text_data)
+
+    def update_combatants(self, data_to_update):
+        combatants = []
+        failed_combatants = []
+        for combatant in data_to_update.get('combatants', []):
+            instance = Combatant.objects.get(uuid=combatant.get('uuid'))
+            ser = CombatantSerializer(
+                instance=instance,
+                data=combatant,
+                partial=True,
+                user=self.scope.get('user')
+            )
+            if ser.is_valid():
+                ser.save()
+                combatants.append(ser.data)
+            else:
+                failed_combatants.append(instance.uuid)
+        return combatants
+
+    def update_campaign(self, data_to_update):
+        campaign = data_to_update.get('campaign')
+        if campaign:
+            instance = Campaign.objects.get(uuid=campaign.get('uuid'))
+            # ser =

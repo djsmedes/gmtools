@@ -5,26 +5,13 @@ from .models import Combatant
 
 
 class CombatantSerializer(CampaignModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name='combatant-detail',
-        lookup_field='uuid'
-    )
+    view_name = 'combatant-detail'
 
     class Meta:
         model = Combatant
-        fields = ('name', 'initiative', 'initiative_bonus',
-                  'hp', 'max_hp', 'temp_hp',
-                  'loot', 'effects',
-                  'encounter', 'campaign', 'uuid', 'url')
-
-
-class CombatantNoRequestSerializer(CampaignModelSerializer):
-    class Meta:
-        model = Combatant
-        fields = ('name', 'initiative', 'initiative_bonus',
-                  'hp', 'max_hp', 'temp_hp',
-                  'loot', 'effects',
-                  'encounter', 'campaign', 'uuid')
-
-    def transform_queryset(self, queryset):
-        return queryset
+        fields = (
+            'name', 'initiative', 'initiative_bonus',
+            'hp', 'max_hp', 'temp_hp',
+            'loot', 'effects',
+            'encounter', 'campaign', 'uuid'
+        )

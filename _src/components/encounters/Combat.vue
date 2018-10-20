@@ -121,7 +121,9 @@ export default {
       combatantsToApply: [],
       effectTypes: combatant.Combatant.effectTypes,
       socket: new ModuleSocket(this, "combat", {
-        update_combatants: obj => this.setCombatant({ objAry: obj.combatants })
+        update: obj => {
+          if (obj.combatants) this.setCombatant({ objAry: obj.combatants });
+        }
       }),
       fab: false,
 
