@@ -1,13 +1,18 @@
 from django.db import models
+from django.conf import settings
 
 from core.models import CampaignOwnedModel
 
 
 class Combatant(CampaignOwnedModel):
     name = models.CharField(max_length=31)
+
     initiative = models.IntegerField(null=True, blank=True)
+    initiative_bonus = models.IntegerField(default=0, blank=True)
     hp = models.IntegerField(null=True, blank=True)
     max_hp = models.IntegerField(null=True, blank=True)
+    temp_hp = models.IntegerField(default=0, blank=True)
+
     loot = models.TextField(null=True, blank=True)
     effects = models.TextField(null=True, blank=True)
 
@@ -15,6 +20,11 @@ class Combatant(CampaignOwnedModel):
         'plot.Encounter',
         on_delete=models.CASCADE,
         null=True, blank=True,
+    )
+
+    player_editors = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name="editable_combatants"
     )
 
     def __str__(self):
