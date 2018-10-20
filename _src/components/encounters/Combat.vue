@@ -79,7 +79,7 @@
       <g-m-screen :items="items">
         <template slot="title" slot-scope="{ item }">
           <template v-if="item.key === 'settings'">
-            <v-icon>settings</v-icon>
+            Combat
           </template>
           <template v-else>{{ item.title }}</template>
         </template>
@@ -121,7 +121,7 @@ export default {
       combatantsToApply: [],
       effectTypes: combatant.Combatant.effectTypes,
       socket: new ModuleSocket(this, "combat", {
-        update: obj => this.setCombatant({ objAry: obj.combatants })
+        update_combatants: obj => this.setCombatant({ objAry: obj.combatants })
       }),
       fab: false,
 

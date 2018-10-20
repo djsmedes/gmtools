@@ -26,7 +26,7 @@ class CombatConsumer(WebsocketConsumer):
         )
 
         self.accept()
-        self.respond(type='update', data={'combatants': ser.data})
+        self.respond(type='update_combatants', data={'combatants': ser.data})
 
     def disconnect(self, code):
         async_to_sync(self.channel_layer.group_discard)(
@@ -55,34 +55,32 @@ class CombatConsumer(WebsocketConsumer):
 
     def update(self, msg_id, data_to_update):
         combatants = data_to_update.get('combatants', [])
-        updated_combatants = []
+        data = {'combatants': []}
 
         for combatant in combatants:
             instance = Combatant.objects.get(uuid=combatant.get('uuid'))
             ser = CombatantNoRequestSerializer(instance=instance, data=combatant, partial=True)
             if ser.is_valid():
                 ser.save()
-                updated_combatants.append(ser.data)
+                data['combatants'].append(ser.data)
             else:
-                self.respond(type="err", reply_to=msg_id, status=400, data={
-                    'combatants': updated_combatants
-                })
+                self.respond(type="err", reply_to=msg_id, status=400, data=data)
                 return
 
         async_to_sync(self.channel_layer.group_send)(
             self.channel_group_name,
             {
-                'type': 'combatants_update',
+                'type': 'data_update',
                 'text_data': JSONRenderer().render({
-                    'type': 'update',
+                    'type': 'update_combatants',
                     'replyTo': msg_id,
                     'status': 200,
-                    'data': {'combatants': updated_combatants}
+                    'data': data
                 }).decode()
             }
         )
 
-    def combatants_update(self, event):
+    def data_update(self, event):
         text_data = event.get('text_data')
         if text_data is None:
             return
