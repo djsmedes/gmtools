@@ -84,11 +84,22 @@
           <template v-else>{{ item.title }}</template>
         </template>
         <template slot-scope="{ item }">
-          <v-form v-if="item.key === 'settings'">
+          <v-form v-if="item.key === 'settings'" @submit.prevent>
             <v-container>
               <v-layout>
-                <v-flex xs12>
-                  <v-slider></v-slider>
+                <v-flex md4 lg3 xl2>
+                  <!--<v-autocomplete-->
+                    <!--:items="encounters"-->
+                    <!--item-text="name"-->
+                    <!--item-value="uuid"-->
+                    <!--v-model="active_encounter"-->
+                    <!--@blur="saveEncounterUpdate">-->
+                  <!--</v-autocomplete>-->
+                  <v-text-field
+                    :readonly="true"
+                    label="Active encounter"
+                    :value="getEncounter(currentCampaign.active_encounter).name"
+                    append-icon="edit"></v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -103,10 +114,12 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
 import CombatantCard from "@/components/encounters/CombatantCard";
 import GMScreen from "@/components/encounters/GMScreen";
 import combatant from "@/models/combatant";
+import campaign from "@/models/campaign";
+import encounter from "@/models/encounter";
 import _ from "lodash";
 import { ModuleSocket } from "@/websockets";
 import auth from "@/auth";
@@ -123,6 +136,7 @@ export default {
       socket: new ModuleSocket(this, "combat", {
         update: obj => {
           if (obj.combatants) this.setCombatant({ objAry: obj.combatants });
+          if (obj.campaign) this.setCampaign({ object: obj.campaign });
         }
       }),
       fab: false,
@@ -140,8 +154,24 @@ export default {
           title: "Items",
           content: "This is a list of items"
         }
-      ]
+      ],
+
+      active_encounter: null
     };
+  },
+  watch: {
+    currentCampaign: {
+      handler(newVal, oldVal) {
+        if (
+          typeof oldVal === "undefined" ||
+          newVal.active_encounter !== oldVal.active_encounter
+        ) {
+          this.active_encounter = newVal.active_encounter;
+        }
+      },
+      deep: true,
+      immediate: true
+    }
   },
   computed: {
     ...mapGetters(combatant.namespace, {
@@ -150,6 +180,10 @@ export default {
     }),
     ...mapGetters(auth.namespace, {
       currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN
+    }),
+    ...mapGetters(encounter.namespace, {
+      getEncounter: encounter.getterTypes.BY_ID,
+      encounters: encounter.getterTypes.LIST
     }),
     combatantsByInitiative() {
       return [
@@ -164,6 +198,12 @@ export default {
   methods: {
     ...mapMutations(combatant.namespace, {
       setCombatant: combatant.mutationTypes.SET
+    }),
+    ...mapMutations(campaign.namespace, {
+      setCampaign: campaign.mutationTypes.SET
+    }),
+    ...mapActions(encounter.namespace, {
+      loadEncounters: encounter.actionTypes.LIST
     }),
     toggleCombatantWillApply(uuid) {
       if (!this.applyingEffectType) return;
@@ -202,12 +242,23 @@ export default {
       }
       this.exitApplyEffectMode();
     },
+    async saveEncounterUpdate() {
+      if (this.active_encounter !== this.currentCampaign.active_encounter) {
+        this.socket.update({
+          campaign: {
+            ...this.currentCampaign,
+            active_encounter: this.active_encounter
+          }
+        });
+      }
+    },
     updateOneCombatant: _.debounce(function(combatant) {
       this.socket.update({ combatants: [combatant] });
     }, 500)
   },
-  async created() {
-    await this.socket.connect();
+  created() {
+    this.socket.connect();
+    this.loadEncounters();
   },
   beforeDestroy() {
     this.socket.disconnect();

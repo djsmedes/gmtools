@@ -4,6 +4,7 @@ from asgiref.sync import async_to_sync
 from rest_framework.renderers import JSONRenderer
 
 from accounts.models import Campaign
+from accounts.serializers import CampaignSerializer
 from .models import Combatant
 from .serializers import CombatantSerializer
 
@@ -61,6 +62,9 @@ class CombatConsumer(WebsocketConsumer):
         combatants = self.update_combatants(data_to_update)
         if combatants:
             data['combatants'] = combatants
+        campaign = self.update_campaign(data_to_update)
+        if campaign:
+            data['campaign'] = campaign
 
         async_to_sync(self.channel_layer.group_send)(
             self.channel_group_name,
@@ -104,4 +108,12 @@ class CombatConsumer(WebsocketConsumer):
         campaign = data_to_update.get('campaign')
         if campaign:
             instance = Campaign.objects.get(uuid=campaign.get('uuid'))
-            # ser =
+            ser = CampaignSerializer(
+                instance=instance,
+                data=campaign,
+                partial=True,
+                user=self.scope.get('user')
+            )
+            if ser.is_valid():
+                ser.save()
+                return ser.data
