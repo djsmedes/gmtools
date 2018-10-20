@@ -10,8 +10,10 @@ export class Combatant {
     campaign = "",
     name = "",
     initiative = 0,
+    initiative_bonus = 0,
     hp = 0,
     max_hp = 0,
+    temp_hp = 0,
     effects = "{}",
     loot = "",
     encounter = null
@@ -20,8 +22,10 @@ export class Combatant {
     this.name = name;
     this.campaign = campaign;
     this.initiative = initiative;
+    this.initiative_bonus = initiative_bonus;
     this.hp = hp;
     this.max_hp = max_hp;
+    this.temp_hp = temp_hp;
     this.effects = effects;
     this.loot = loot;
     this.encounter = encounter;
@@ -33,6 +37,14 @@ export class Combatant {
 
   set initiative(val) {
     this._initiative = Number(val);
+  }
+
+  get initiative_bonus() {
+    return this._initiative_bonus;
+  }
+
+  set initiative_bonus(val) {
+    this._initiative_bonus = Number(val);
   }
 
   get hp() {
@@ -49,6 +61,14 @@ export class Combatant {
 
   set max_hp(val) {
     this._max_hp = Number(val);
+  }
+
+  get temp_hp() {
+    return this._temp_hp;
+  }
+
+  set temp_hp(val) {
+    this._temp_hp = Number(val);
   }
 
   get effects() {
@@ -78,8 +98,10 @@ export class Combatant {
       uuid: this.uuid,
       name: this.name,
       initiative: this.initiative,
+      initiative_bonus: this.initiative_bonus,
       hp: this.hp,
       max_hp: this.max_hp,
+      temp_hp: this.temp_hp,
       effects: JSON.stringify(this.effects),
       campaign: this.campaign,
       loot: this.loot,
