@@ -5,6 +5,8 @@ from .models import Encounter
 
 
 class EncounterSerializer(CampaignModelSerializer):
+    view_name = 'encounter-detail'
+
     class Meta:
         model = Encounter
         fields = ('uuid', 'name', 'campaign')

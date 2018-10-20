@@ -34,10 +34,6 @@ class UserSerializer(CampaignModelSerializer):
 
 
 class CampaignSerializer(CampaignModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name='campaign-detail',
-        lookup_field='uuid'
-    )
     gm_set = serializers.SerializerMethodField()
     player_set = serializers.SerializerMethodField()
 
@@ -48,6 +44,10 @@ class CampaignSerializer(CampaignModelSerializer):
         else:
             qs = []
         self.fields['active_encounter'].queryset = qs
+        if self.context.get('request'):
+            self.fields['url'] = serializers.HyperlinkedIdentityField(
+                view_name='campaign-detail', lookup_field='uuid'
+            )
 
     def get_gm_set(self, instance):
         return [user.uuid for user in instance.gm_set]
@@ -55,13 +55,10 @@ class CampaignSerializer(CampaignModelSerializer):
     def get_player_set(self, instance):
         return [user.uuid for user in instance.player_set]
 
-    def transform_queryset(self, queryset):
-        return queryset
-
     class Meta:
         model = Campaign
         fields = (
             'name', 'gm_set', 'player_set',
             'active_encounter',
-            'uuid', 'url'
+            'uuid'
         )
