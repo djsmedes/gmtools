@@ -18,7 +18,7 @@
             </h3>
           </v-flex>
           <v-flex xs3>
-            <v-btn icon @click.stop :disabled="!!effectMode">
+            <v-btn icon @click.stop="openInitDialog" :disabled="!!effectMode">
               <v-badge
                   overlap left color="transparent">
                 <v-avatar slot="badge" size="12">
@@ -182,6 +182,41 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="initDialog" width="400">
+      <v-card>
+        <v-card-title class="headline grey lighten-2" primary-title>
+          {{ localCombatant.name }}
+        </v-card-title>
+        <v-form>
+          <v-container fluid>
+            <v-layout row wrap>
+              <v-flex xs6>
+                <v-text-field
+                    type="number"
+                    v-model="initDialogBonus"
+                    label="Initiative Bonus"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs6>
+                <v-text-field
+                    type="number"
+                    v-model="initDialogInit"
+                    label="Initiative"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-form>
+        <v-card-actions>
+          <v-btn flat @click="saveInitDialog">
+            Save
+          </v-btn>
+          <v-btn flat @click="closeInitDialog">
+            Cancel
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -214,7 +249,10 @@ export default {
       hpDialog: false,
       hpDialogHp: 0,
       hpDialogMaxHp: 0,
-      hpDialogTempHp: 0
+      hpDialogTempHp: 0,
+      initDialog: false,
+      initDialogInit: 0,
+      initDialogBonus: 0
     };
   },
   watch: {
@@ -232,10 +270,6 @@ export default {
           ? boundedLower
           : this.localCombatant.max_hp;
       return (100 * boundedUpper) / this.localCombatant.max_hp;
-    },
-    updateInitiative(increment) {
-      this.localCombatant.initiative += increment;
-      this.updateFunc(this.localCombatant);
     },
     updateHp(increment) {
       this.localCombatant.hp += increment;
@@ -257,18 +291,23 @@ export default {
     closeHpDialog() {
       this.hpDialog = false;
     },
+    openInitDialog() {
+      this.initDialogInit = this.localCombatant.initiative;
+      this.initDialogBonus = this.localCombatant.initiative_bonus;
+      this.initDialog = true;
+    },
+    async saveInitDialog() {
+      this.localCombatant.initiative = this.initDialogInit;
+      this.localCombatant.initiative_bonus = this.initDialogBonus;
+      await this.updateFunc(this.localCombatant);
+      this.closeInitDialog();
+    },
+    closeInitDialog() {
+      this.initDialog = false;
+    },
     removeEffect(effectType, index) {
       this.localCombatant.effects[effectType].splice(index, 1);
       this.updateFunc(this.localCombatant);
-    },
-    effectColorString() {
-      if (this.effectMode === Combatant.effectTypes.BUFF) {
-        return "green";
-      } else if (this.effectMode === Combatant.effectTypes.DEBUFF) {
-        return "red";
-      } else {
-        return "";
-      }
     }
   },
   created() {}
@@ -311,9 +350,11 @@ $card-width: 275px;
 .selected-buff {
   background-color: rgba(76, 175, 80, 0.33);
 }
+
 .selected-debuff {
   background-color: rgba(244, 67, 54, 0.33);
 }
+
 .selected-other {
   background-color: rgba(158, 158, 158, 0.33);
 }
