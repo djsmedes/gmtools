@@ -2,64 +2,61 @@
   <v-card @click.native="$emit('click', combatant.uuid)"
           :raised="active"
           :class="[
-            { bloodied: localCombatant.hp < (localCombatant.max_hp / 2) && 0 < localCombatant.hp },
-            { unconscious: 0 >= localCombatant.hp }
+            { bloodied: !effectMode && localCombatant.hp < (localCombatant.max_hp / 2) && 0 < localCombatant.hp },
+            { unconscious: !effectMode && 0 >= localCombatant.hp },
+            { 'selected-buff': active && effectMode === effectTypes.BUFF },
+            { 'selected-debuff': active && effectMode === effectTypes.DEBUFF },
+            { 'selected-other': active && effectMode === effectTypes.OTHER }
           ]"
           class="combatant-card">
-    <v-card-title class="pb-0">
-      <h3 class="headline mb-0 text-truncate">
-        {{ localCombatant.name }}
-      </h3>
-      <v-spacer></v-spacer>
-      <v-icon
-          v-if="active"
-          :color="effectColorString()">
-        check_circle
-      </v-icon>
+    <v-card-title class="pb-0 pt-2">
+      <v-container fluid class="pa-0 ma-0">
+        <v-layout row align-center>
+          <v-flex xs9>
+            <h3 class="headline mb-0 text-truncate">
+              {{ localCombatant.name }}
+            </h3>
+          </v-flex>
+          <v-flex xs3>
+            <v-btn icon @click.stop :disabled="!!effectMode">
+              <v-badge
+                  overlap left color="transparent">
+                <v-avatar slot="badge" size="12">
+                  <span class="black--text">{{ localCombatant.initiative }}</span>
+                </v-avatar>
+                <v-icon large>directions_run</v-icon>
+              </v-badge>
+            </v-btn>
+          </v-flex>
+        </v-layout>
+      </v-container>
     </v-card-title>
-    <v-card-title class="py-0">
-      <v-btn icon flat class="ma-0"
-             @click="updateHp(-10)"
-             :disabled="!!effectMode">-10
-      </v-btn>
-      <v-spacer></v-spacer>
-      <v-btn icon flat class="ma-0"
-             @click="updateHp(-1)"
-             :disabled="!!effectMode">-1
-      </v-btn>
-      <v-spacer></v-spacer>
-      <v-btn icon flat class="ma-0"
-             @click="openHpDialog"
-             :disabled="!!effectMode">
-        <span class="red--text text--darken-2 body-2">{{ localCombatant.hp }}</span>
-      </v-btn>
-      <v-spacer></v-spacer>
-      <v-btn icon flat class="ma-0"
-             @click="updateHp(1)"
-             :disabled="!!effectMode">+1
-      </v-btn>
-      <v-spacer></v-spacer>
-      <v-btn icon flat class="ma-0"
-             @click="updateHp(10)"
-             :disabled="!!effectMode">+10
-      </v-btn>
-    </v-card-title>
-    <v-card-title class="py-0">
-      <v-progress-linear
-          v-if="localCombatant.hp <= localCombatant.max_hp"
-          :value="100 * localCombatant.hp / localCombatant.max_hp"
-          color="red darken-2"></v-progress-linear>
-      <v-progress-linear
-          v-else
-          :value="100 * (localCombatant.hp - localCombatant.max_hp) / localCombatant.max_hp"
-          color="yellow darken-2"
-          background-color="red darken-2"></v-progress-linear>
+    <v-card-title class="py-1">
+
     </v-card-title>
     <v-divider></v-divider>
 
 
     <v-card-text class="combatant-card-body">
       <v-container fluid class="pa-0">
+        <v-layout row wrap>
+          <v-chip
+              v-if="localCombatant.temp_hp > 0"
+              @click.stop="openHpDialog"
+              close @input="localCombatant.temp_hp = 0">
+            <v-avatar class="white">
+              <v-progress-circular
+                  :rotate="-90"
+                  :value="hpPercentage(localCombatant.temp_hp)"
+                  color="yellow darken-2">
+                <span class="body-2">{{ localCombatant.temp_hp }}</span>
+              </v-progress-circular>
+            </v-avatar>
+            <span class="text-truncate font-weight-medium effect-text">
+              Temp HP
+            </span>
+          </v-chip>
+        </v-layout>
         <v-layout row wrap>
           <v-chip
               v-for="(buff, index) in localCombatant.effects[effectTypes.BUFF]"
@@ -107,21 +104,35 @@
 
 
     <v-card-actions>
-      <v-btn flat icon
-             v-if="updateFunc"
-             :disabled="!!effectMode"
-             @click.stop="updateInitiative(1)">
-        <v-icon>add</v-icon>
+      <v-btn icon flat class="ma-0"
+             @click="updateHp(-10)"
+             :disabled="!!effectMode">-10
       </v-btn>
       <v-spacer></v-spacer>
-      <v-icon>directions_run</v-icon>
-      <span class="font-weight-medium title">{{ localCombatant.initiative }}</span>
+      <v-btn icon flat class="ma-0"
+             @click="updateHp(-1)"
+             :disabled="!!effectMode">-1
+      </v-btn>
       <v-spacer></v-spacer>
-      <v-btn flat icon
-             v-if="updateFunc"
-             :disabled="!!effectMode"
-             @click.stop="updateInitiative(-1)">
-        <v-icon>remove</v-icon>
+      <v-btn icon flat class="ma-0" color="red darken-2"
+             @click="openHpDialog"
+             :disabled="!!effectMode">
+        <v-progress-circular
+            :rotate="-90"
+            :value="hpPercentage(localCombatant.hp)"
+            color="red darken-2">
+          <span class="body-2">{{ localCombatant.hp }}</span>
+        </v-progress-circular>
+      </v-btn>
+      <v-spacer></v-spacer>
+      <v-btn icon flat class="ma-0"
+             @click="updateHp(1)"
+             :disabled="!!effectMode">+1
+      </v-btn>
+      <v-spacer></v-spacer>
+      <v-btn icon flat class="ma-0"
+             @click="updateHp(10)"
+             :disabled="!!effectMode">+10
       </v-btn>
     </v-card-actions>
 
@@ -133,18 +144,25 @@
         <v-form>
           <v-container fluid>
             <v-layout row wrap>
-              <v-flex xs6>
+              <v-flex xs4>
                 <v-text-field
                     type="number"
                     v-model="hpDialogHp"
                     label="Current HP"
                 ></v-text-field>
               </v-flex>
-              <v-flex xs6>
+              <v-flex xs4>
                 <v-text-field
                     type="number"
                     v-model="hpDialogMaxHp"
                     label="Max HP"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs4>
+                <v-text-field
+                    type="number"
+                    v-model="hpDialogTempHp"
+                    label="Temp HP"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -195,7 +213,8 @@ export default {
       effectTypes: Combatant.effectTypes,
       hpDialog: false,
       hpDialogHp: 0,
-      hpDialogMaxHp: 0
+      hpDialogMaxHp: 0,
+      hpDialogTempHp: 0
     };
   },
   watch: {
@@ -206,6 +225,14 @@ export default {
     }
   },
   methods: {
+    hpPercentage(hp) {
+      let boundedLower = hp < 0 ? 0 : hp;
+      let boundedUpper =
+        boundedLower < this.localCombatant.max_hp
+          ? boundedLower
+          : this.localCombatant.max_hp;
+      return (100 * boundedUpper) / this.localCombatant.max_hp;
+    },
     updateInitiative(increment) {
       this.localCombatant.initiative += increment;
       this.updateFunc(this.localCombatant);
@@ -217,11 +244,13 @@ export default {
     openHpDialog() {
       this.hpDialogHp = this.localCombatant.hp;
       this.hpDialogMaxHp = this.localCombatant.max_hp;
+      this.hpDialogTempHp = this.localCombatant.temp_hp;
       this.hpDialog = true;
     },
     async saveHpDialog() {
       this.localCombatant.hp = this.hpDialogHp;
       this.localCombatant.max_hp = this.hpDialogMaxHp;
+      this.localCombatant.temp_hp = this.hpDialogTempHp;
       await this.updateFunc(this.localCombatant);
       this.hpDialog = false;
     },
@@ -277,5 +306,15 @@ $card-width: 275px;
     rgba(0, 0, 0, 0.33) 0%,
     transparent 36px
   );
+}
+
+.selected-buff {
+  background-color: rgba(76, 175, 80, 0.33);
+}
+.selected-debuff {
+  background-color: rgba(244, 67, 54, 0.33);
+}
+.selected-other {
+  background-color: rgba(158, 158, 158, 0.33);
 }
 </style>
