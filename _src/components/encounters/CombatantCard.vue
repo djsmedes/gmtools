@@ -182,12 +182,12 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="initDialog" width="400">
+    <v-dialog v-model="initDialog" width="400" :persistent="!!initDialogRoll">
       <v-card>
         <v-card-title class="headline grey lighten-2" primary-title>
           {{ localCombatant.name }}
         </v-card-title>
-        <v-form>
+        <v-form v-if="!initDialogRoll">
           <v-container fluid>
             <v-layout row wrap>
               <v-flex xs6>
@@ -207,12 +207,21 @@
             </v-layout>
           </v-container>
         </v-form>
+        <v-card-text v-else-if="initDialogRoll < 0" class="text-xs-center">
+          <v-progress-circular indeterminate></v-progress-circular>
+        </v-card-text>
+        <v-card-text v-else>
+          <span class="title">You rolled: {{ initDialogRoll + initDialogBonus }} ({{ initDialogRoll }} + {{ initDialogBonus }})</span>
+        </v-card-text>
         <v-card-actions>
           <v-btn flat @click="saveInitDialog">
             Save
           </v-btn>
+          <v-btn flat :disabled="!!initDialogRoll" @click="rollInitiative">
+            Roll
+          </v-btn>
           <v-btn flat @click="closeInitDialog">
-            Cancel
+            {{ !!initDialogRoll ? 'Ignore' : 'Cancel' }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -252,7 +261,8 @@ export default {
       hpDialogTempHp: 0,
       initDialog: false,
       initDialogInit: 0,
-      initDialogBonus: 0
+      initDialogBonus: 0,
+      initDialogRoll: 0
     };
   },
   watch: {
@@ -294,7 +304,15 @@ export default {
     openInitDialog() {
       this.initDialogInit = this.localCombatant.initiative;
       this.initDialogBonus = this.localCombatant.initiative_bonus;
+      this.initDialogRoll = 0;
       this.initDialog = true;
+    },
+    rollInitiative() {
+      this.initDialogRoll = -1;
+      setTimeout(() => {
+        this.initDialogRoll = ((Math.random() * 20) | 0) + 1;
+        this.initDialogInit = this.initDialogRoll + this.initDialogBonus;
+      }, 1000);
     },
     async saveInitDialog() {
       this.localCombatant.initiative = this.initDialogInit;
