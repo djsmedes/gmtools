@@ -1,10 +1,11 @@
 <template>
   <v-card :width="400" class="mx-auto">
-    <v-card-text>
-      <v-alert v-for="(err, index) in nonFieldErrors" :key="index" :value="true" type="error">
-        {{ err }}
-      </v-alert>
-      <v-form ref="form">
+    <v-form ref="form" @submit.stop.prevent="submit">
+      <v-card-text>
+        <v-alert v-for="(err, index) in nonFieldErrors" :key="index" :value="true" type="error">
+          {{ err }}
+        </v-alert>
+
         <v-text-field
             v-model="email.value"
             :error-messages="email.errors"
@@ -18,13 +19,14 @@
             label="Password"
             type="password"
         ></v-text-field>
-      </v-form>
-    </v-card-text>
-    <v-card-actions>
-      <v-btn flat @click="submit">
-        Sign in
-      </v-btn>
-    </v-card-actions>
+
+      </v-card-text>
+      <v-card-actions>
+        <v-btn flat type="submit">
+          Sign in
+        </v-btn>
+      </v-card-actions>
+    </v-form>
   </v-card>
 </template>
 
