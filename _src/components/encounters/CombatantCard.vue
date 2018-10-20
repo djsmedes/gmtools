@@ -192,14 +192,18 @@
             <v-layout row wrap>
               <v-flex xs6>
                 <v-text-field
+                    @focus="initDialogBonus = ''"
                     type="number"
+                    pattern="\d*"
                     v-model="initDialogBonus"
                     label="Initiative Bonus"
                 ></v-text-field>
               </v-flex>
               <v-flex xs6>
                 <v-text-field
+                    @focus="initDialogInit = ''"
                     type="number"
+                    pattern="\d*"
                     v-model="initDialogInit"
                     label="Initiative"
                 ></v-text-field>
@@ -211,7 +215,7 @@
           <v-progress-circular indeterminate></v-progress-circular>
         </v-card-text>
         <v-card-text v-else>
-          <span class="title">You rolled: {{ initDialogRoll + initDialogBonus }} ({{ initDialogRoll }} + {{ initDialogBonus }})</span>
+          <span class="title">You rolled: {{ initDialogRoll + Number(initDialogBonus) }} ({{ initDialogRoll }} + {{ Number(initDialogBonus) }})</span>
         </v-card-text>
         <v-card-actions>
           <v-btn flat @click="saveInitDialog">
@@ -311,12 +315,13 @@ export default {
       this.initDialogRoll = -1;
       setTimeout(() => {
         this.initDialogRoll = ((Math.random() * 20) | 0) + 1;
-        this.initDialogInit = this.initDialogRoll + this.initDialogBonus;
+        this.initDialogInit =
+          this.initDialogRoll + Number(this.initDialogBonus);
       }, 1000);
     },
     async saveInitDialog() {
-      this.localCombatant.initiative = this.initDialogInit;
-      this.localCombatant.initiative_bonus = this.initDialogBonus;
+      this.localCombatant.initiative = Number(this.initDialogInit);
+      this.localCombatant.initiative_bonus = Number(this.initDialogBonus);
       await this.updateFunc(this.localCombatant);
       this.closeInitDialog();
     },
