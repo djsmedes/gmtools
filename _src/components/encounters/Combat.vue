@@ -89,17 +89,25 @@
               <v-layout>
                 <v-flex md4 lg3 xl2>
                   <!--<v-autocomplete-->
-                    <!--:items="encounters"-->
-                    <!--item-text="name"-->
-                    <!--item-value="uuid"-->
-                    <!--v-model="active_encounter"-->
-                    <!--@blur="saveEncounterUpdate">-->
+                  <!--:items="encounters"-->
+                  <!--item-text="name"-->
+                  <!--item-value="uuid"-->
+                  <!--v-model="active_encounter"-->
+                  <!--@blur="saveEncounterUpdate">-->
                   <!--</v-autocomplete>-->
                   <v-text-field
-                    :readonly="true"
-                    label="Active encounter"
-                    :value="getEncounter(currentCampaign.active_encounter).name"
-                    append-icon="edit"></v-text-field>
+                      :readonly="true"
+                      label="Active encounter"
+                      :value="getEncounter(currentCampaign.active_encounter).name"
+                      append-icon="edit"
+                      @click:append="() => encounterChooserDialog = true"
+                  ></v-text-field>
+                  <v-dialog :width="500" persistent v-model="encounterChooserDialog">
+                    <encounter-chooser
+                        :save-func="changeActiveEncounter"
+                        :cancel-func="() => encounterChooserDialog = false">
+                    </encounter-chooser>
+                  </v-dialog>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -123,10 +131,11 @@ import encounter from "@/models/encounter";
 import _ from "lodash";
 import { ModuleSocket } from "@/websockets";
 import auth from "@/auth";
+import EncounterChooser from "@/components/encounters/EncounterChooser";
 
 export default {
   name: "Combat",
-  components: { CombatantCard, GMScreen },
+  components: { EncounterChooser, CombatantCard, GMScreen },
   data() {
     return {
       applyingEffectType: combatant.Combatant.effectTypes.NONE,
@@ -156,7 +165,9 @@ export default {
         }
       ],
 
-      active_encounter: null
+      active_encounter: null,
+
+      encounterChooserDialog: false
     };
   },
   watch: {
@@ -242,15 +253,13 @@ export default {
       }
       this.exitApplyEffectMode();
     },
-    async saveEncounterUpdate() {
-      if (this.active_encounter !== this.currentCampaign.active_encounter) {
-        this.socket.update({
-          campaign: {
-            ...this.currentCampaign,
-            active_encounter: this.active_encounter
-          }
-        });
-      }
+    async changeActiveEncounter(newEncounterUuid) {
+      await this.socket.update({
+        campaign: {
+          ...this.currentCampaign,
+          active_encounter: newEncounterUuid
+        }
+      });
     },
     updateOneCombatant: _.debounce(function(combatant) {
       this.socket.update({ combatants: [combatant] });
