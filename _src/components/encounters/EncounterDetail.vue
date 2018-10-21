@@ -1,58 +1,60 @@
 <template>
-  <object-detail
-      :name="localEncounter.name"
-      :start-editing="!encounter.uuid"
-      :save-func="encounter.uuid ? save : create"
-      :clear-func="encounter.uuid ? reset : () => $router.go(-1)"
-      :delete-func="encounter.uuid ? deleteSelf : null">
-    <v-list slot="view">
-      <v-subheader>
-        Name
-      </v-subheader>
-      <v-list-tile>
-        <v-list-tile-content>
-          <v-list-tile-title>
-            {{ encounter.name }}
-          </v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
-    </v-list>
-    <v-container slot="edit">
-      <v-form submit.prevent>
-        <v-layout row wrap>
-          <v-flex xs6 sm4 md3>
-            <v-text-field
-                label="Name"
-                v-model="localEncounter.name"
-            ></v-text-field>
-          </v-flex>
-        </v-layout>
-      </v-form>
+  <display-when-loaded :is-loaded="isLoaded">
+    <object-detail
+        :name="localEncounter.name"
+        :start-editing="!encounter.uuid"
+        :save-func="encounter.uuid ? save : create"
+        :clear-func="encounter.uuid ? reset : () => $router.go(-1)"
+        :delete-func="encounter.uuid ? deleteSelf : null">
+      <v-list slot="view">
+        <v-subheader>
+          Name
+        </v-subheader>
+        <v-list-tile>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              {{ encounter.name }}
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
+      <v-container slot="edit">
+        <v-form submit.prevent>
+          <v-layout row wrap>
+            <v-flex xs6 sm4 md3>
+              <v-text-field
+                  label="Name"
+                  v-model="localEncounter.name"
+              ></v-text-field>
+            </v-flex>
+          </v-layout>
+        </v-form>
 
-      <v-data-iterator
-          :items="localCombatants"
-          :pagination.sync="combatantPagination"
-          hide-actions
-          no-data-text="No combatants"
-          content-tag="v-layout"
-          row wrap>
-        <v-flex
-            slot="item" slot-scope="{ item }"
-            xs6 sm4 md3>
-          <v-card>
-            <v-card-title><h4>{{ item.name }}</h4></v-card-title>
-            <v-divider></v-divider>
-            <v-list dense>
-              <v-list-tile>
-                <v-list-tile-content>Loot:</v-list-tile-content>
-                <v-list-tile-content class="align-end">{{ item.loot }}</v-list-tile-content>
-              </v-list-tile>
-            </v-list>
-          </v-card>
-        </v-flex>
-      </v-data-iterator>
-    </v-container>
-  </object-detail>
+        <v-data-iterator
+            :items="localCombatants"
+            :pagination.sync="combatantPagination"
+            hide-actions
+            no-data-text="No combatants"
+            content-tag="v-layout"
+            row wrap>
+          <v-flex
+              slot="item" slot-scope="{ item }"
+              xs6 sm4 md3>
+            <v-card>
+              <v-card-title><h4>{{ item.name }}</h4></v-card-title>
+              <v-divider></v-divider>
+              <v-list dense>
+                <v-list-tile>
+                  <v-list-tile-content>Loot:</v-list-tile-content>
+                  <v-list-tile-content class="align-end">{{ item.loot }}</v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-card>
+          </v-flex>
+        </v-data-iterator>
+      </v-container>
+    </object-detail>
+  </display-when-loaded>
 </template>
 
 <script>
@@ -61,10 +63,11 @@ import { mapGetters, mapActions } from "vuex";
 import encounter, { Encounter } from "@/models/encounter";
 import combatant, { Combatant } from "@/models/combatant";
 import { routeNames } from "@/router";
+import DisplayWhenLoaded from "@/components/generic/DisplayWhenLoaded";
 
 export default {
   name: "EncounterDetail",
-  components: { ObjectDetail },
+  components: { DisplayWhenLoaded, ObjectDetail },
   props: {
     encounterUuid: {
       type: String,
@@ -77,7 +80,8 @@ export default {
       localCombatants: [],
       combatantPagination: {
         rowsPerPage: -1
-      }
+      },
+      isLoaded: false
     };
   },
   computed: {
@@ -98,7 +102,11 @@ export default {
       );
     }
   },
-
+  watch: {
+    encounterUuid() {
+      this.reset();
+    }
+  },
   methods: {
     ...mapActions(encounter.namespace, {
       loadEncounters: encounter.actionTypes.LIST,
@@ -131,10 +139,10 @@ export default {
       );
     }
   },
-  created() {
-    Promise.all([this.loadEncounters(), this.loadCombatants()]).then(() =>
-      this.reset()
-    );
+  async created() {
+    await Promise.all([this.loadEncounters(), this.loadCombatants()]);
+    this.reset();
+    this.isLoaded = true;
   }
 };
 </script>

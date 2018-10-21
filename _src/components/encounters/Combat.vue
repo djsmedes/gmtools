@@ -123,7 +123,7 @@ import combatant from "@/models/combatant";
 import campaign from "@/models/campaign";
 import encounter from "@/models/encounter";
 import _ from "lodash";
-import { ModuleSocket } from "@/websockets";
+import { ModuleSocket } from "@/utils";
 import auth from "@/auth";
 import { routeNames } from "@/router";
 
