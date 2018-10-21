@@ -86,16 +86,19 @@
         <template slot-scope="{ item }">
           <v-form v-if="item.key === 'settings'" @submit.prevent>
             <v-container>
-              <v-layout>
+              <v-layout row wrap>
                 <v-flex md4 lg3 xl2>
-                  <v-text-field
+                  <v-select
                       :readonly="true"
                       label="Active encounter"
-                      :value="getEncounter(currentCampaign.active_encounter).name"
+                      returnObject
+                      :items="[getEncounter(currentCampaign.active_encounter)]"
+                      item-text="name" item-value="uuid"
+                      :value="currentCampaign.active_encounter"
                       append-icon="edit"
                       @click:append="() => encounterChooserDialog = true"
-                  ></v-text-field>
-                  <v-dialog :width="500" persistent v-model="encounterChooserDialog">
+                  ></v-select>
+                  <v-dialog :width="1000" persistent v-model="encounterChooserDialog">
                     <encounter-chooser
                         :save-func="changeActiveEncounter"
                         :cancel-func="() => encounterChooserDialog = false">

@@ -15,7 +15,6 @@
             v-model="selectedEncounter">
         </v-select>
       </v-form>
-      <v-data-iterator></v-data-iterator>
     </v-card-text>
     <v-card-actions>
       <v-btn flat v-if="saveFunc" @click="save">Save</v-btn>
@@ -27,7 +26,6 @@
 <script>
 import { mapGetters } from "vuex";
 import encounter, { Encounter } from "@/models/encounter";
-import combatant from "@/models/combatant";
 import auth from "@/auth";
 
 export default {
