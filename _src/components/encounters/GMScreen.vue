@@ -38,7 +38,7 @@ export default {
   },
   data() {
     return {
-      tabs: 1
+      tabs: 0
     };
   }
 };

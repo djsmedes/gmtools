@@ -88,13 +88,6 @@
             <v-container>
               <v-layout>
                 <v-flex md4 lg3 xl2>
-                  <!--<v-autocomplete-->
-                  <!--:items="encounters"-->
-                  <!--item-text="name"-->
-                  <!--item-value="uuid"-->
-                  <!--v-model="active_encounter"-->
-                  <!--@blur="saveEncounterUpdate">-->
-                  <!--</v-autocomplete>-->
                   <v-text-field
                       :readonly="true"
                       label="Active encounter"
@@ -193,8 +186,7 @@ export default {
       currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN
     }),
     ...mapGetters(encounter.namespace, {
-      getEncounter: encounter.getterTypes.BY_ID,
-      encounters: encounter.getterTypes.LIST
+      getEncounter: encounter.getterTypes.BY_ID
     }),
     combatantsByInitiative() {
       return [
@@ -253,13 +245,14 @@ export default {
       }
       this.exitApplyEffectMode();
     },
-    async changeActiveEncounter(newEncounterUuid) {
+    async changeActiveEncounter(newEncounter) {
       await this.socket.update({
         campaign: {
           ...this.currentCampaign,
-          active_encounter: newEncounterUuid
+          active_encounter: newEncounter.uuid
         }
       });
+      this.encounterChooserDialog = false;
     },
     updateOneCombatant: _.debounce(function(combatant) {
       this.socket.update({ combatants: [combatant] });
