@@ -1,6 +1,10 @@
 <template>
   <div>
 
+    <v-container class="hidden-sm-and-up" v-if="debugMessage">
+      {{ debugMessage }}
+    </v-container>
+
     <v-speed-dial
         v-model="fab"
         fixed bottom right
@@ -95,15 +99,9 @@
                       :items="[getEncounter(currentCampaign.active_encounter)]"
                       item-text="name" item-value="uuid"
                       :value="currentCampaign.active_encounter"
-                      append-icon="edit"
-                      @click:append="() => encounterChooserDialog = true"
+                      append-outer-icon="edit"
+                      @click:append-outer="goToEncounterChooser"
                   ></v-select>
-                  <v-dialog :width="1000" persistent v-model="encounterChooserDialog">
-                    <encounter-chooser
-                        :save-func="changeActiveEncounter"
-                        :cancel-func="() => encounterChooserDialog = false">
-                    </encounter-chooser>
-                  </v-dialog>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -127,13 +125,15 @@ import encounter from "@/models/encounter";
 import _ from "lodash";
 import { ModuleSocket } from "@/websockets";
 import auth from "@/auth";
-import EncounterChooser from "@/components/encounters/EncounterChooser";
+import { routeNames } from "@/router";
 
 export default {
   name: "Combat",
-  components: { EncounterChooser, CombatantCard, GMScreen },
+  components: { CombatantCard, GMScreen },
   data() {
     return {
+      debugMessage: "",
+
       applyingEffectType: combatant.Combatant.effectTypes.NONE,
       effectToApply: "",
       combatantsToApply: [],
@@ -159,26 +159,8 @@ export default {
           title: "Items",
           content: "This is a list of items"
         }
-      ],
-
-      active_encounter: null,
-
-      encounterChooserDialog: false
+      ]
     };
-  },
-  watch: {
-    currentCampaign: {
-      handler(newVal, oldVal) {
-        if (
-          typeof oldVal === "undefined" ||
-          newVal.active_encounter !== oldVal.active_encounter
-        ) {
-          this.active_encounter = newVal.active_encounter;
-        }
-      },
-      deep: true,
-      immediate: true
-    }
   },
   computed: {
     ...mapGetters(combatant.namespace, {
@@ -248,14 +230,24 @@ export default {
       }
       this.exitApplyEffectMode();
     },
-    async changeActiveEncounter(newEncounter) {
-      await this.socket.update({
+    async changeActiveEncounter(newEncounter, combatantObjs = null) {
+      let data = {
         campaign: {
           ...this.currentCampaign,
           active_encounter: newEncounter.uuid
         }
+      };
+      if (combatantObjs) data.combatants = combatantObjs;
+      await this.socket.update(data);
+    },
+    goToEncounterChooser() {
+      this.$router.push({
+        name: routeNames.ENCOUNTER_CHOOSE,
+        params: {
+          saveFunc: this.changeActiveEncounter,
+          cancelFunc: () => {}
+        }
       });
-      this.encounterChooserDialog = false;
     },
     updateOneCombatant: _.debounce(function(combatant) {
       this.socket.update({ combatants: [combatant] });
@@ -264,9 +256,6 @@ export default {
   created() {
     this.socket.connect();
     this.loadEncounters();
-  },
-  beforeDestroy() {
-    this.socket.disconnect();
   }
 };
 </script>

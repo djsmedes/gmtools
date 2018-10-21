@@ -20,6 +20,7 @@ export const routeNames = {
   ENCOUNTERS: "encounters",
   ENCOUNTER: "encounter",
   ENCOUNTER_CREATE: "encounterCreate",
+  ENCOUNTER_CHOOSE: "encounterChoose",
   ACCOUNT_SETTINGS: "accountSettings",
   LOGIN: "login",
   SIGNUP: "signup",
@@ -86,6 +87,14 @@ const router = new Router({
       component: () =>
         import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterList"),
       beforeEnter: loginRequired
+    },
+    {
+      path: "/encounters/choose/",
+      name: routeNames.ENCOUNTER_CHOOSE,
+      component: () =>
+        import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterChooser"),
+      beforeEnter: loginRequired,
+      props: true
     },
     {
       path: "/encounters/new/",

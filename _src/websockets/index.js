@@ -1,5 +1,12 @@
 import uuid from "uuid/v4";
 
+const readyState = {
+  CONNECTING: 0,
+  OPEN: 1,
+  CLOSING: 2,
+  CLOSED: 3
+};
+
 class WebSocketRequest {
   constructor({ type = null, id = null, data = null } = {}) {
     this.type = type;
@@ -36,6 +43,12 @@ export class ModuleSocket {
   }
 
   connect() {
+    if (this.vm.$socket && this.vm.$socket.readyState === readyState.OPEN) {
+      return new Promise(resolve => {
+        this.vm.$socket.onmessage = this.receive().bind(this);
+        this.vm.$socket.onopen = () => resolve();
+      });
+    }
     return new Promise(resolve => {
       this.vm.$connect(this.url, { format: "json" });
       this.vm.$socket.onmessage = this.receive().bind(this);

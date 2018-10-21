@@ -3,22 +3,28 @@
     <v-card-title>
       <h4 class="headline">Change Encounter</h4>
     </v-card-title>
-    <v-card-text>
+    <v-container fluid grid-list-md>
       <v-form @submit.prevent>
-        <v-select
-            label="Active encounter"
-            :items="encounters"
-            item-value="uuid"
-            item-text="name"
-            :menu-props="{ offsetY: true }"
-            returnObject
-            v-model="selectedEncounter">
-        </v-select>
+        <v-layout row wrap>
+          <v-flex xs6 sm4 md3>
+            <v-select
+                label="Active encounter"
+                :items="encounters"
+                item-value="uuid"
+                item-text="name"
+                :menu-props="{ offsetY: true }"
+                returnObject
+                v-model="selectedEncounter">
+            </v-select>
+          </v-flex>
+        </v-layout>
       </v-form>
-    </v-card-text>
+
+
+    </v-container>
     <v-card-actions>
-      <v-btn flat v-if="saveFunc" @click="save">Save</v-btn>
-      <v-btn flat v-if="cancelFunc" @click="cancelFunc">Cancel</v-btn>
+      <v-btn flat v-if="saveFunc" @click="save">Save & go back</v-btn>
+      <v-btn flat v-if="cancelFunc" @click="cancel">Go back</v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -42,8 +48,7 @@ export default {
   },
   data() {
     return {
-      selectedEncounter: null,
-      activeEncSearch: null
+      selectedEncounter: null
     };
   },
   watch: {
@@ -67,8 +72,13 @@ export default {
     }
   },
   methods: {
-    save() {
-      this.saveFunc(this.selectedEncounter);
+    async save() {
+      await this.saveFunc(this.selectedEncounter);
+      this.$router.go(-1);
+    },
+    async cancel() {
+      await this.cancelFunc();
+      this.$router.go(-1);
     }
   }
 };
