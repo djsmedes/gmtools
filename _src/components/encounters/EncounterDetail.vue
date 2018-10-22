@@ -1,23 +1,27 @@
 <template>
   <display-when-loaded :is-loaded="isLoaded">
     <object-detail
+        @enter-edit-mode="viewMode = false"
+        @enter-view-mode="viewMode = true"
         :name="localEncounter.name"
         :start-editing="!encounter.uuid"
         :save-func="encounter.uuid ? save : create"
         :clear-func="encounter.uuid ? reset : () => $router.go(-1)"
         :delete-func="encounter.uuid ? deleteSelf : null">
-      <v-list slot="view">
-        <v-subheader>
-          Name
-        </v-subheader>
-        <v-list-tile>
-          <v-list-tile-content>
-            <v-list-tile-title>
-              {{ encounter.name }}
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
+
+      <v-container>
+        <v-layout row wrap>
+          <v-flex xs6 sm4 md3>
+            <v-text-field
+                :disabled="viewMode"
+                :class="{'disabled-means-display': viewMode}"
+                label="Name"
+                v-model="localEncounter.name"
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
+      </v-container>
+
       <v-container slot="edit">
         <v-form submit.prevent>
           <v-layout row wrap>
@@ -81,7 +85,8 @@ export default {
       combatantPagination: {
         rowsPerPage: -1
       },
-      isLoaded: false
+      isLoaded: false,
+      viewMode: true
     };
   },
   computed: {

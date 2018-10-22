@@ -129,9 +129,22 @@ export default {
 </script>
 
 <style lang="scss">
-/*@import "./scss/shared";*/
-
 .no-text-dec {
   text-decoration: none !important;
+}
+
+.disabled-means-display {
+  label {
+    color: rgba(0, 0, 0, 0.54) !important;
+  }
+  input {
+    color: black !important;
+  }
+  & > .v-input__control > .v-input__slot::after,
+  & > .v-input__control > .v-input__slot::before {
+    width: 0 !important;
+    border-style: solid !important;
+    border-image: none !important;
+  }
 }
 </style>

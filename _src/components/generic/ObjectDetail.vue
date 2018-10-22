@@ -88,6 +88,7 @@ export default {
   methods: {
     enterEditMode() {
       this.mode = EDIT_MODE;
+      this.$emit("enter-edit-mode");
     },
     async save() {
       await this.saveFunc();
@@ -99,6 +100,7 @@ export default {
     },
     exitEditMode() {
       this.mode = VIEW_MODE;
+      this.$emit("enter-view-mode");
     }
   }
 };
