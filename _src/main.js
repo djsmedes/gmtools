@@ -5,7 +5,6 @@ import VueNativeSock from "vue-native-websocket";
 import App from "@/App";
 import router from "@/router";
 import store from "@/store";
-import "bootstrap";
 import axios from "axios";
 import { namespace, getterTypes } from "@/auth";
 
