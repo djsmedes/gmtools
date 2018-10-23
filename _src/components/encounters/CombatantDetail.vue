@@ -1,11 +1,11 @@
 <template>
-  <object-detail :name="combatant.name"
-                 :start-editing="!combatant.uuid"
-                 :save-func="combatant.uuid ? save : create"
-                 :clear-func="combatant.uuid ? reset : () => $router.go(-1)"
-                 :delete-func="combatant.uuid ? deleteSelf : null">
+  <object-detail :name="combatant.name || 'New Combatant'"
+                 :start-editing="startEditing || (!$route.params.uuid && !combatantUuid)"
+                 :save-func="saveFunc ? () => saveFunc(localCombatant) : combatant.uuid ? save : create"
+                 :clear-func="cancelFunc ? () => cancelFunc(localCombatant) : combatant.uuid ? reset : () => $router.go(-1)"
+                 :delete-func="deleteFunc ? () => deleteFunc(localCombatant) : combatant.uuid ? deleteSelf : null">
     <v-card-text slot-scope="{ isViewMode }">
-      <v-form>
+      <v-form @submit.prevent>
         <v-text-field
             :disabled="isViewMode"
             :class="{ 'disabled-means-display': isViewMode }"
@@ -33,6 +33,28 @@ import { routeNames } from "@/router";
 export default {
   name: "CombatantDetail",
   components: { ObjectDetail },
+  props: {
+    combatantUuid: {
+      type: String,
+      default: null
+    },
+    saveFunc: {
+      type: Function,
+      default: null
+    },
+    cancelFunc: {
+      type: Function,
+      default: null
+    },
+    deleteFunc: {
+      type: Function,
+      default: null
+    },
+    startEditing: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       localCombatant: new Combatant()
@@ -40,12 +62,20 @@ export default {
   },
   computed: {
     combatant() {
-      let uuid = this.$route.params.uuid;
-      return uuid ? this.getCombatant(uuid) : new Combatant();
+      let uuid = this.combatantUuid || this.$route.params.uuid;
+      return this.getCombatant(uuid);
     },
     ...mapGetters(combatant.namespace, {
       getCombatant: combatant.getterTypes.BY_ID
     })
+  },
+  watch: {
+    combatant: {
+      handler() {
+        this.reset();
+      },
+      immediate: true
+    }
   },
   methods: {
     ...mapActions(combatant.namespace, {
@@ -74,7 +104,7 @@ export default {
     }
   },
   created() {
-    this.loadCombatants().then(() => this.reset());
+    this.loadCombatants();
   }
 };
 </script>

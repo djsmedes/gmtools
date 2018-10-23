@@ -5,7 +5,7 @@
     <slot name="edit" v-if="isEditMode"></slot>
     <v-card-actions>
       <v-btn
-          v-if="saveFunc && isViewMode"
+          v-if="(saveFunc || deleteFunc) && isViewMode"
           @click="enterEditMode"
           flat>
         Edit
@@ -22,7 +22,7 @@
           flat>
         Cancel
       </v-btn>
-      <v-dialog v-if="deleteFunc" v-model="deleteDialog" :width="500">
+      <v-dialog v-if="deleteFunc && isEditMode" v-model="deleteDialog" :width="500">
         <v-btn flat slot="activator">
           Delete
         </v-btn>
@@ -31,7 +31,7 @@
             Are you sure you want to delete {{ name }}? This cannot be undone.
           </v-card-text>
           <v-card-actions>
-            <v-btn flat @click="deleteFunc">
+            <v-btn flat @click="deleteSelf">
               Yes, delete {{ name }}
             </v-btn>
             <v-btn flat @click="deleteDialog = false">
@@ -97,6 +97,10 @@ export default {
     clear() {
       this.clearFunc();
       this.exitEditMode();
+    },
+    deleteSelf() {
+      this.deleteDialog = false;
+      this.deleteFunc();
     },
     exitEditMode() {
       this.mode = VIEW_MODE;
