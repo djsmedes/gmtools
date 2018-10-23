@@ -137,7 +137,8 @@ export default {
   label {
     color: rgba(0, 0, 0, 0.54) !important;
   }
-  input {
+  input,
+  .v-select__selection {
     color: black !important;
   }
   & > .v-input__control > .v-input__slot::after,

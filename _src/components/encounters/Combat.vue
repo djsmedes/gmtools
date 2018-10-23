@@ -82,10 +82,7 @@
     <v-card class="hidden-sm-and-down">
       <g-m-screen :items="items">
         <template slot="title" slot-scope="{ item }">
-          <template v-if="item.key === 'settings'">
-            Combat
-          </template>
-          <template v-else>{{ item.title }}</template>
+          {{ item.title }}
         </template>
         <template slot-scope="{ item }">
           <v-form v-if="item.key === 'settings'" @submit.prevent>
@@ -93,14 +90,14 @@
               <v-layout row wrap>
                 <v-flex md4 lg3 xl2>
                   <v-select
-                      :readonly="true"
+                      readonly
                       label="Active encounter"
                       returnObject
                       :items="[getEncounter(currentCampaign.active_encounter)]"
                       item-text="name" item-value="uuid"
                       :value="currentCampaign.active_encounter"
-                      append-outer-icon="edit"
-                      @click:append-outer="goToEncounterChooser"
+                      append-icon="edit"
+                      @click:append="goToEncounterChooser"
                   ></v-select>
                 </v-flex>
               </v-layout>
@@ -148,7 +145,7 @@ export default {
 
       // todo - pass in
       items: [
-        { key: "settings" },
+        { key: "settings", title: "Settings" },
         {
           uuid: "979f7e",
           title: "Conditions",
