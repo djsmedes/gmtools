@@ -1,6 +1,6 @@
 <template>
-  <v-card>
-    <slot></slot>
+  <v-card :class="{ 'display-only': isViewMode }">
+    <slot :isViewMode="isViewMode"></slot>
     <slot name="view" v-if="isViewMode"></slot>
     <slot name="edit" v-if="isEditMode"></slot>
     <v-card-actions>

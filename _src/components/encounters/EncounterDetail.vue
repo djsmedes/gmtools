@@ -9,30 +9,17 @@
         :clear-func="encounter.uuid ? reset : () => $router.go(-1)"
         :delete-func="encounter.uuid ? deleteSelf : null">
 
-      <v-container>
+      <v-container slot-scope="{ isViewMode }">
         <v-layout row wrap>
           <v-flex xs6 sm4 md3>
             <v-text-field
-                :disabled="viewMode"
-                :class="{'disabled-means-display': viewMode}"
+                :disabled="isViewMode"
+                :class="{'disabled-means-display': isViewMode}"
                 label="Name"
                 v-model="localEncounter.name"
             ></v-text-field>
           </v-flex>
         </v-layout>
-      </v-container>
-
-      <v-container slot="edit">
-        <v-form submit.prevent>
-          <v-layout row wrap>
-            <v-flex xs6 sm4 md3>
-              <v-text-field
-                  label="Name"
-                  v-model="localEncounter.name"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-        </v-form>
 
         <v-data-iterator
             :items="localCombatants"
@@ -45,7 +32,11 @@
               slot="item" slot-scope="{ item }"
               xs6 sm4 md3>
             <v-card>
-              <v-card-title><h4>{{ item.name }}</h4></v-card-title>
+              <v-card-title>
+                <h4>{{ item.name }}</h4>
+                <v-spacer></v-spacer>
+                <v-btn small flat icon class="ma-0"><v-icon small>edit</v-icon></v-btn>
+              </v-card-title>
               <v-divider></v-divider>
               <v-list dense>
                 <v-list-tile>

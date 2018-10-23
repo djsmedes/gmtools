@@ -4,36 +4,17 @@
                  :save-func="combatant.uuid ? save : create"
                  :clear-func="combatant.uuid ? reset : () => $router.go(-1)"
                  :delete-func="combatant.uuid ? deleteSelf : null">
-    <v-list slot="view">
-      <v-subheader>
-        Name
-      </v-subheader>
-      <v-list-tile>
-        <v-list-tile-content>
-          <v-list-tile-title>
-            {{ combatant.name }}
-          </v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
-      <v-divider></v-divider>
-      <v-subheader>
-        Loot
-      </v-subheader>
-      <v-list-tile>
-        <v-list-tile-content>
-          <v-list-tile-title class="text-truncate">
-            {{ combatant.loot }}
-          </v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
-    </v-list>
-    <v-card-text slot="edit">
+    <v-card-text slot-scope="{ isViewMode }">
       <v-form>
         <v-text-field
+            :disabled="isViewMode"
+            :class="{ 'disabled-means-display': isViewMode }"
             label="Name"
             v-model="localCombatant.name"
         ></v-text-field>
         <v-textarea
+            :disabled="isViewMode"
+            :class="{ 'disabled-means-display': isViewMode }"
             auto-grow :rows="1"
             label="Loot"
             v-model="localCombatant.loot"

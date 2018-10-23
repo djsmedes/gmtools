@@ -133,11 +133,21 @@ export default {
   text-decoration: none !important;
 }
 
+.display-only .has-display-only {
+  pointer-events: none !important;
+
+  & > .v-input__control > .v-input__slot::after,
+  & > .v-input__control > .v-input__slot::before {
+    width: 0 !important;
+  }
+}
+
 .disabled-means-display {
   label {
     color: rgba(0, 0, 0, 0.54) !important;
   }
   input,
+  textarea,
   .v-select__selection {
     color: black !important;
   }
