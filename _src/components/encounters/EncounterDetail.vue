@@ -9,7 +9,7 @@
         :clear-func="encounter.uuid ? reset : () => $router.go(-1)"
         :delete-func="encounter.uuid ? deleteSelf : null">
 
-      <v-container slot-scope="{ isViewMode }">
+      <v-container slot-scope="{ isViewMode }" grid-list-lg>
         <v-layout row wrap>
           <v-flex xs6 sm4 md3>
             <v-text-field
@@ -61,7 +61,7 @@
         :save-func="combatantDialogSave"
         :cancel-func="combatantDialogCancel"
         :delete-func="combatantDialogDelete"
-        :start-editing="true"
+        :start-editing="combatantDialog"
       ></combatant-detail>
     </v-dialog>
 
@@ -190,16 +190,19 @@ export default {
       } else {
         this.localCombatants.push(updatedCombatant);
       }
-      this.combatantDialog = false;
+      this.closeCombatantDialog();
     },
     combatantDialogCancel() {
-      this.combatantDialogUuid = null;
-      this.combatantDialog = false;
+      this.closeCombatantDialog();
     },
     combatantDialogDelete() {
       this.localCombatants = this.localCombatants.filter(
         c => c.uuid !== this.combatantDialogUuid
       );
+      this.closeCombatantDialog();
+    },
+    closeCombatantDialog() {
+      this.combatantDialogUuid = null;
       this.combatantDialog = false;
     }
   },

@@ -73,9 +73,21 @@ export default {
   },
   data() {
     return {
-      mode: this.startEditing && this.saveFunc ? EDIT_MODE : VIEW_MODE,
+      mode: VIEW_MODE,
       deleteDialog: false
     };
+  },
+  watch: {
+    startEditing: {
+      handler(newVal) {
+        if (newVal && this.saveFunc) {
+          this.mode = EDIT_MODE;
+        } else {
+          this.mode = VIEW_MODE;
+        }
+      },
+      immediate: true
+    }
   },
   computed: {
     isViewMode() {
