@@ -21,6 +21,9 @@ export const routeNames = {
   ENCOUNTER: "encounter",
   ENCOUNTER_CREATE: "encounterCreate",
   ENCOUNTER_CHOOSE: "encounterChoose",
+  GMSCREENTABS: "gmScreenTabs",
+  GMSCREENTAB: "gmScreenTab",
+  GMSCREENTAB_CREATE: "gmScreenTabCreate",
   ACCOUNT_SETTINGS: "accountSettings",
   LOGIN: "login",
   SIGNUP: "signup",
@@ -112,6 +115,29 @@ const router = new Router({
     },
 
     {
+      path: "/gmscreentabs/",
+      name: routeNames.GMSCREENTABS,
+      component: () =>
+        import(/* webpackChunkName: "gmscreentabs" */ "@/components/gmscreen/GMScreenTabDetail"),
+      beforeEnter: loginRequired
+    },
+    {
+      path: "/gmscreentabs/new/",
+      name: routeNames.GMSCREENTAB_CREATE,
+      component: () =>
+        import(/* webpackChunkName: "gmscreentabs" */ "@/components/gmscreen/GMScreenTabDetail"),
+      beforeEnter: loginRequired
+    },
+    {
+      path: "/gmscreentabs/:uuid/",
+      name: routeNames.GMSCREENTAB,
+      component: () =>
+        import(/* webpackChunkName: "gmscreentabs" */ "@/components/gmscreen/GMScreenTabDetail"),
+      beforeEnter: loginRequired,
+      props: true
+    },
+
+    {
       path: "/login/",
       name: routeNames.LOGIN,
       component: () =>
@@ -139,11 +165,6 @@ const router = new Router({
       name: routeNames.NOT_FOUND,
       component: () =>
         import(/* webpackChunkName: "404" */ "@/components/generic/NotFound")
-    },
-
-    {
-      path: "/markdown/",
-      component: () => import("@/components/gmscreen/MarkdownEditor")
     },
 
     {

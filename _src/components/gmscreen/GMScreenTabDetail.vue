@@ -21,10 +21,18 @@
               ></v-textarea>
             </v-form>
           </v-card-text>
+          <v-card-actions>
+            <v-btn v-if="tab.uuid" flat @click="save">
+              Save
+            </v-btn>
+            <v-btn v-else flat @click="create">
+              Save
+            </v-btn>
+          </v-card-actions>
         </v-card>
       </v-flex>
       <v-flex>
-        <g-m-screen
+        <screen
             :items="[{ title: 'Existing tab 1', disabled: true}, { title: '...', disabled: true}, { title: 'Existing tab n', disabled: true}, localTab]"
             class="elevation-1 hidden-sm-and-down"
             :tabs-slider-style="tabsSliderStyle"
@@ -33,43 +41,70 @@
           <template slot="title" slot-scope="{ item }">
             {{ item.title }}
           </template>
-          <g-m-screen-tab
+          <screen-tab
               slot-scope="{ item }"
               :content="item.content"
-          ></g-m-screen-tab>
-        </g-m-screen>
+          ></screen-tab>
+        </screen>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 import _ from "lodash";
-import GMScreenTab from "@/components/gmscreen/GMScreenTab";
-import GMScreen from "@/components/gmscreen/GMScreen";
+import ScreenTab from "@/components/gmscreen/GMScreenTab";
+import Screen from "@/components/gmscreen/GMScreen";
+import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
+import { routeNames } from "@/router";
 
 export default {
   name: "MarkdownEditor",
-  components: { GMScreen, GMScreenTab },
+  components: { Screen, ScreenTab },
+  props: {
+    uuid: {
+      type: String,
+      default: null
+    }
+  },
   data() {
     return {
-      localTab: { title: "New tab", content: "" },
+      localTab: new GMScreenTab({ title: "New tab" }),
       tabsSliderStyle: ""
     };
   },
+  computed: {
+    ...mapGetters(gmscreentab.namespace, {
+      getTab: gmscreentab.getterTypes.BY_ID
+    }),
+    tab() {
+      return this.getTab(this.uuid);
+    }
+  },
   methods: {
+    ...mapActions(gmscreentab.namespace, {
+      createTab: gmscreentab.actionTypes.CREATE
+    }),
     updateContent: _.debounce(function(e) {
       this.localTab.content = e;
     }, 300),
     updateTitle: _.debounce(function(e) {
       this.localTab.title = e;
-    }, 300)
+    }, 300),
+    async save() {},
+    async create() {
+      let newTab = await this.createTab(this.localTab);
+      this.localTab = _.cloneDeep(newTab);
+      this.$router.replace({
+        name: routeNames.GMSCREENTAB,
+        params: { uuid: newTab.uuid }
+      });
+    }
+  },
+  created() {
+    console.log(this.$route.params);
+    console.log(this.uuid);
   }
 };
 </script>
-
-<style lang="scss">
-.text-monospaced textarea {
-  font-family: "Monaco", courier, monospace;
-}
-</style>
