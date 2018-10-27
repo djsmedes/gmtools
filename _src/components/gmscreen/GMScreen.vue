@@ -38,11 +38,15 @@ export default {
     items: {
       type: Array,
       default: () => []
+    },
+    startActive: {
+      type: Number,
+      default: 0
     }
   },
   data() {
     return {
-      activeTab: 0,
+      activeTab: this.startActive,
       tabsSliderStyle: ""
     };
   },

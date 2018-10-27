@@ -25,9 +25,10 @@
       </v-flex>
       <v-flex>
         <g-m-screen
-            :items="[localTab, { title: 'Other tab 1', disabled: true}, { title: 'Other tab 2', disabled: true}, { title: '...', disabled: true},]"
+            :items="[{ title: 'Existing tab 1', disabled: true}, { title: '...', disabled: true}, { title: 'Existing tab n', disabled: true}, localTab]"
             class="elevation-1 hidden-sm-and-down"
             :tabs-slider-style="tabsSliderStyle"
+            :start-active="3"
         >
           <template slot="title" slot-scope="{ item }">
             {{ item.title }}

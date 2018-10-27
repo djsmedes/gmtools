@@ -10,7 +10,8 @@ export default {
   name: "GMScreenTab",
   props: {
     content: {
-      type: String
+      type: String,
+      default: ""
     }
   },
   computed: {
