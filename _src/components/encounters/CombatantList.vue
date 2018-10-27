@@ -25,11 +25,6 @@ export default {
           align: "left",
           value: "name",
           func: item => item.name
-        },
-        {
-          text: "Initiative",
-          value: "initiative",
-          func: item => item.initiative
         }
       ]
     };
