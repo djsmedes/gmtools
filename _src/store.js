@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import campaign from "@/models/campaign";
 import combatant from "@/models/combatant";
 import encounter from "@/models/encounter";
+import gmscreentab from "@/models/gmscreentab";
 import user from "@/models/user";
 import auth from "@/auth";
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
     [campaign.namespace]: campaign.store,
     [combatant.namespace]: combatant.store,
     [encounter.namespace]: encounter.store,
+    [gmscreentab.namespace]: gmscreentab.store,
     [user.namespace]: user.store
   }
 });
