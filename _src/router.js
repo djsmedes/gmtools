@@ -140,6 +140,12 @@ const router = new Router({
       component: () =>
         import(/* webpackChunkName: "404" */ "@/components/generic/NotFound")
     },
+
+    {
+      path: "/markdown/",
+      component: () => import("@/components/gmscreen/MarkdownEditor")
+    },
+
     {
       /* THIS SHOULD ALWAYS BE AT THE END
        * it will match any route not already matched and send it to the 404 page

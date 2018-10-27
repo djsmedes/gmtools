@@ -2,12 +2,16 @@
   <div>
     <v-toolbar dark color="grey darken-3" dense>
       <v-tabs
-          v-model="tabs"
+          v-model="activeTab"
           color="transparent"
-          slider-color="white">
+      >
+        <v-tabs-slider color="white" :style="tabsSliderStyle" ></v-tabs-slider>
         <v-tab
             v-for="(item, index) in items"
-            :key="index">
+            :key="index"
+            :ref="'tab_' + index"
+            :disabled="item.disabled"
+        >
           <slot :item="item" name="title">
             {{ item.title }}
           </slot>
@@ -15,7 +19,7 @@
       </v-tabs>
 
     </v-toolbar>
-    <v-tabs-items v-model="tabs">
+    <v-tabs-items v-model="activeTab">
       <v-tab-item
           v-for="(item, index) in items"
           :key="index">
@@ -38,8 +42,20 @@ export default {
   },
   data() {
     return {
-      tabs: 0
+      activeTab: 0,
+      tabsSliderStyle: ""
     };
+  },
+  watch: {
+    activeTab() {
+      this.tabsSliderStyle = "";
+    },
+    items() {
+      this.$nextTick(() => {
+        let width = this.$refs["tab_" + this.activeTab][0].$el.clientWidth;
+        this.tabsSliderStyle = "width: " + width + "px;";
+      });
+    }
   }
 };
 </script>

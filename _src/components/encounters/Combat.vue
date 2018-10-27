@@ -79,34 +79,32 @@
       </v-layout>
     </v-container>
 
-    <v-card class="hidden-sm-and-down">
-      <g-m-screen :items="items">
-        <template slot="title" slot-scope="{ item }">
-          {{ item.title }}
-        </template>
-        <template slot-scope="{ item }">
-          <v-form v-if="item.key === 'settings'" @submit.prevent>
-            <v-container>
-              <v-layout row wrap>
-                <v-flex md4 lg3 xl2>
-                  <v-select
-                      readonly
-                      label="Active encounter"
-                      returnObject
-                      :items="[getEncounter(currentCampaign.active_encounter)]"
-                      item-text="name" item-value="uuid"
-                      :value="currentCampaign.active_encounter"
-                      append-icon="edit"
-                      @click:append="goToEncounterChooser"
-                  ></v-select>
-                </v-flex>
-              </v-layout>
-            </v-container>
-          </v-form>
-          <v-card-text v-else>{{ item.content }}</v-card-text>
-        </template>
-      </g-m-screen>
-    </v-card>
+    <g-m-screen :items="items" class="elevation-1 hidden-sm-and-down">
+      <template slot="title" slot-scope="{ item }">
+        {{ item.title }}
+      </template>
+      <template slot-scope="{ item }">
+        <v-form v-if="item.key === 'settings'" @submit.prevent>
+          <v-container>
+            <v-layout row wrap>
+              <v-flex md4 lg3 xl2>
+                <v-select
+                    readonly
+                    label="Active encounter"
+                    returnObject
+                    :items="[getEncounter(currentCampaign.active_encounter)]"
+                    item-text="name" item-value="uuid"
+                    :value="currentCampaign.active_encounter"
+                    append-icon="edit"
+                    @click:append="goToEncounterChooser"
+                ></v-select>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-form>
+        <v-card-text v-else>{{ item.content }}</v-card-text>
+      </template>
+    </g-m-screen>
 
     <div style="height: 88px;"></div>
   </div>
@@ -115,7 +113,7 @@
 <script>
 import { mapGetters, mapMutations, mapActions } from "vuex";
 import CombatantCard from "@/components/encounters/CombatantCard";
-import GMScreen from "@/components/encounters/GMScreen";
+import GMScreen from "@/components/gmscreen/GMScreen";
 import combatant from "@/models/combatant";
 import campaign from "@/models/campaign";
 import encounter from "@/models/encounter";
