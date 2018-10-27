@@ -13,32 +13,21 @@ class ChoicesMetaData(SimpleMetadata):
             field_info['choices'] = [
                 {
                     'value': choice_value,
-                    'display_name': force_text(choice_name, strings_only=True)
+                    'text': force_text(choice_name, strings_only=True)
                 }
                 for choice_value, choice_name in field.get_choices().items()
             ]
         return field_info
 
 
-class CampaignModelViewSet(ModelViewSet):
+class MultiTenantedViewSet(ModelViewSet):
     """An ABSTRACT class, which other model viewsets should inherit from"""
-    model = None  # model should inherit from CampaignOwnedModel
+    model = None
     lookup_field = 'uuid'
     metadata_class = ChoicesMetaData
 
     def get_queryset(self):
         return self.model.objects.of_requester(self.request)
-
-    def perform_create(self, serializer):
-        assert self.request.user.is_authenticated, (
-            'Log in to create objects.'
-        )
-        campaign = self.request.user.current_campaign
-        assert campaign, (
-            'Choose a campaign to create objects.'
-        )
-
-        serializer.save(campaign=campaign)
 
     # object-level permissions
     create_permission = None
@@ -82,3 +71,28 @@ class CampaignModelViewSet(ModelViewSet):
         return self._permission_wrapper_function(
             super().destroy, self.destroy_permission, request, *args, **kwargs
         )
+
+
+class CampaignModelViewSet(MultiTenantedViewSet):
+    """self.model should inherit from CampaignOwnedModel"""
+
+    def perform_create(self, serializer):
+        assert self.request.user.is_authenticated, (
+            'Log in to create objects.'
+        )
+        campaign = self.request.user.current_campaign
+        assert campaign, (
+            'Choose a campaign to create objects.'
+        )
+
+        serializer.save(campaign=campaign)
+
+
+class UserOwnedModelViewSet(MultiTenantedViewSet):
+    """self.model should inherit from UserOwnedModel"""
+
+    def perform_create(self, serializer):
+        assert self.request.user.is_authenticated, (
+            'Log in to create objects.'
+        )
+        serializer.save(user=self.request.user)

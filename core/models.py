@@ -29,5 +29,5 @@ class UserOwnedModel(models.Model):
         related_name="%(app_label)s_%(class)s_owned_set",
         editable=False
     )
-    uuid = SmallUUIDField(editable=False, default=uuid_default)
+    uuid = SmallUUIDField(editable=False, default=uuid_default())
     objects = UserModelManager()

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from core.serializers import CampaignModelSerializer
-from .models import Combatant
+from core.serializers import CampaignModelSerializer, UserOwnedModelSerializer
+from .models import Combatant, GMScreenTab
 
 
 class CombatantSerializer(CampaignModelSerializer):
@@ -14,4 +14,15 @@ class CombatantSerializer(CampaignModelSerializer):
             'hp', 'max_hp', 'temp_hp',
             'loot', 'effects',
             'encounter', 'campaign', 'uuid'
+        )
+
+
+class GMScreenTabSerializer(UserOwnedModelSerializer):
+    view_name = 'gmscreentab-detail'
+
+    class Meta:
+        model = GMScreenTab
+        fields = (
+            'title', 'content',
+            'user', 'uuid'
         )
