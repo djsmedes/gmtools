@@ -29,3 +29,25 @@ class CampaignModelManager(models.Manager):
         :rtype: Queryset
         """
         return self.of_user(request.user)
+
+
+class UserModelManager(models.Manager):
+
+    def of_user(self, user):
+        """Get records from specific user
+
+        :param: user -- django user
+        :rtype: Queryset
+        """
+        if user.is_authenticated:
+            return super().get_queryset().filter(user=user)
+        else:
+            return self.none()
+
+    def of_requester(self, request):
+        """Get records from the request's user
+
+        :param: request -- django request
+        :rtype: Queryset
+        """
+        return self.of_user(request.user)
