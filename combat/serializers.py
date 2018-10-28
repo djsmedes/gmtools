@@ -23,6 +23,6 @@ class GMScreenTabSerializer(UserOwnedModelSerializer):
     class Meta:
         model = GMScreenTab
         fields = (
-            'title', 'content',
+            'title', 'content', 'order',
             'user', 'uuid'
         )

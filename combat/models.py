@@ -34,3 +34,4 @@ class Combatant(CampaignOwnedModel):
 class GMScreenTab(UserOwnedModel):
     title = models.CharField(max_length=31)
     content = models.TextField()
+    order = models.IntegerField(null=True, blank=True)

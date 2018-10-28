@@ -12,7 +12,7 @@
       </v-flex>
       <v-flex>
         <screen
-            :items="tabs"
+            :items="localTabList"
             class="elevation-1 hidden-sm-and-down"
             :push-active-tab="0"
         >
@@ -43,19 +43,45 @@ import ScreenTab from "@/components/gmscreen/GMScreenTab";
 export default {
   name: "GMScreenTabList",
   components: { Screen, ScreenTab },
+  data() {
+    return {
+      localTabList: []
+    };
+  },
   computed: {
     ...mapGetters(gmscreentab.namespace, {
       tabs: gmscreentab.getterTypes.LIST
-    })
+    }),
+    orderedTabs() {
+      return [...this.tabs].sort((a, b) => {
+        if (a.order === b.order) return 0;
+        if (a.order === null) return 1;
+        if (b.order === null) return -1;
+        return a.order - b.order;
+      });
+    }
   },
   methods: {
     ...mapActions(gmscreentab.namespace, {
-      loadTabs: gmscreentab.actionTypes.LIST
+      loadTabs: gmscreentab.actionTypes.LIST,
+      updateTab: gmscreentab.actionTypes.UPDATE
     }),
-    async save() {}
+    async save() {
+      let index = 0;
+      await Promise.all(
+        this.orderedTabs.reduce((acc, cur) => {
+          if (cur.order !== index) {
+            acc.push(this.updateTab({ ...cur, order: index }));
+          }
+          index += 1;
+          return acc;
+        }, [])
+      );
+    }
   },
-  created() {
-    this.loadTabs();
+  async created() {
+    await this.loadTabs();
+    this.localTabList = [...this.orderedTabs];
   }
 };
 </script>
