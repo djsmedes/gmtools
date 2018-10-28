@@ -118,7 +118,7 @@ const router = new Router({
       path: "/gmscreentabs/",
       name: routeNames.GMSCREENTABS,
       component: () =>
-        import(/* webpackChunkName: "gmscreentabs" */ "@/components/gmscreen/GMScreenTabDetail"),
+        import(/* webpackChunkName: "gmscreentabs" */ "@/components/gmscreen/GMScreenTabList"),
       beforeEnter: loginRequired
     },
     {

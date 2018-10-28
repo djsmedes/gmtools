@@ -39,18 +39,21 @@ export default {
       type: Array,
       default: () => []
     },
-    startActive: {
+    pushActiveTab: {
       type: Number,
       default: 0
     }
   },
   data() {
     return {
-      activeTab: this.startActive,
+      activeTab: this.pushActiveTab,
       tabsSliderStyle: ""
     };
   },
   watch: {
+    pushActiveTab(newVal) {
+      this.activeTab = newVal;
+    },
     activeTab() {
       this.tabsSliderStyle = "";
     },

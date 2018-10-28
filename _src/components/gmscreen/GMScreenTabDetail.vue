@@ -33,10 +33,9 @@
       </v-flex>
       <v-flex>
         <screen
-            :items="[{ title: 'Existing tab 1', disabled: true}, { title: '...', disabled: true}, { title: 'Existing tab n', disabled: true}, localTab]"
+            :items="[localTab]"
             class="elevation-1 hidden-sm-and-down"
             :tabs-slider-style="tabsSliderStyle"
-            :start-active="3"
         >
           <template slot="title" slot-scope="{ item }">
             {{ item.title }}
@@ -46,6 +45,11 @@
               :content="item.content"
           ></screen-tab>
         </screen>
+        <v-card class="hidden-md-and-up">
+          <v-card-text>
+            The GM screen is hidden on small screens.
+          </v-card-text>
+        </v-card>
       </v-flex>
     </v-layout>
   </v-container>
