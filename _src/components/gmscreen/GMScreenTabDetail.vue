@@ -84,7 +84,9 @@ export default {
   },
   methods: {
     ...mapActions(gmscreentab.namespace, {
-      createTab: gmscreentab.actionTypes.CREATE
+      createTab: gmscreentab.actionTypes.CREATE,
+      updateTab: gmscreentab.actionTypes.UPDATE,
+      loadTabs: gmscreentab.actionTypes.LIST
     }),
     updateContent: _.debounce(function(e) {
       this.localTab.content = e;
@@ -92,7 +94,9 @@ export default {
     updateTitle: _.debounce(function(e) {
       this.localTab.title = e;
     }, 300),
-    async save() {},
+    async save() {
+      await this.updateTab(this.localTab);
+    },
     async create() {
       let newTab = await this.createTab(this.localTab);
       this.localTab = _.cloneDeep(newTab);
@@ -102,9 +106,9 @@ export default {
       });
     }
   },
-  created() {
-    console.log(this.$route.params);
-    console.log(this.uuid);
+  async created() {
+    await this.loadTabs();
+    this.localTab = _.cloneDeep(this.tab);
   }
 };
 </script>
