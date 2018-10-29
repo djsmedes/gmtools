@@ -4,15 +4,43 @@
       <v-flex>
         <v-card>
           <v-card-actions>
-            <v-btn flat @click="save">
-              Save
-            </v-btn>
+            <v-container fluid pa-0>
+              <v-layout row wrap>
+                <v-flex>
+                  <v-btn
+                      flat icon
+                      :disabled="activeTab <= 0"
+                      @click="changeTabIndex(-1)">
+                    <v-icon>arrow_left</v-icon>
+                  </v-btn>
+                  <span class="body-2 text-uppercase">Move selected tab</span>
+                  <v-btn
+                      flat icon
+                      :disabled="activeTab >= orderedTabs.length - 1"
+                      @click="changeTabIndex(1)">
+                    <v-icon>arrow_right</v-icon>
+                  </v-btn>
+                </v-flex>
+              </v-layout>
+              <v-layout row wrap>
+                <v-flex>
+                  <v-btn v-if="tab.uuid" flat :to="{ name: routeNames.GMSCREENTAB, params: { uuid: tab.uuid }}">
+                    Edit selected tab
+                  </v-btn>
+                </v-flex>
+                <v-flex>
+                  <v-btn flat :to="{ name: routeNames.GMSCREENTAB_CREATE }">
+                    Create new tab
+                  </v-btn>
+                </v-flex>
+              </v-layout>
+            </v-container>
           </v-card-actions>
         </v-card>
       </v-flex>
       <v-flex>
         <screen
-            :items="localTabList"
+            :items="orderedTabs"
             class="elevation-1 hidden-sm-and-down"
             v-model="activeTab"
         >
@@ -36,16 +64,17 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import gmscreentab from "@/models/gmscreentab";
+import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
 import Screen from "@/components/gmscreen/GMScreen";
 import ScreenTab from "@/components/gmscreen/GMScreenTab";
+import { routeNames } from "@/router";
 
 export default {
   name: "GMScreenTabList",
   components: { Screen, ScreenTab },
   data() {
     return {
-      localTabList: [],
+      routeNames,
       activeTab: 0
     };
   },
@@ -60,6 +89,9 @@ export default {
         if (b.order === null) return -1;
         return a.order - b.order;
       });
+    },
+    tab() {
+      return this.tabs[this.activeTab] || new GMScreenTab();
     }
   },
   methods: {
@@ -67,10 +99,10 @@ export default {
       loadTabs: gmscreentab.actionTypes.LIST,
       updateTab: gmscreentab.actionTypes.UPDATE
     }),
-    async save() {
+    async save(tabList) {
       let index = 0;
       await Promise.all(
-        this.orderedTabs.reduce((acc, cur) => {
+        tabList.reduce((acc, cur) => {
           if (cur.order !== index) {
             acc.push(this.updateTab({ ...cur, order: index }));
           }
@@ -78,11 +110,21 @@ export default {
           return acc;
         }, [])
       );
+    },
+    async changeTabIndex(direction) {
+      let newIndex = this.activeTab + direction;
+      let tabList = [...this.orderedTabs];
+      if (newIndex < 0 || newIndex >= tabList.length) {
+        return;
+      }
+      let tab = tabList.splice(this.activeTab, 1)[0];
+      tabList.splice(newIndex, 0, tab);
+      await this.save(tabList);
+      this.activeTab = newIndex;
     }
   },
   async created() {
     await this.loadTabs();
-    this.localTabList = [...this.orderedTabs];
   }
 };
 </script>
