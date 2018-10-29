@@ -35,7 +35,6 @@
         <screen
             :items="[localTab]"
             class="elevation-1 hidden-sm-and-down"
-            :tabs-slider-style="tabsSliderStyle"
         >
           <template slot="title" slot-scope="{ item }">
             {{ item.title }}
@@ -74,8 +73,7 @@ export default {
   },
   data() {
     return {
-      localTab: new GMScreenTab({ title: "New tab" }),
-      tabsSliderStyle: ""
+      localTab: new GMScreenTab({ title: "New tab" })
     };
   },
   computed: {
@@ -112,7 +110,7 @@ export default {
   },
   async created() {
     await this.loadTabs();
-    this.localTab = _.cloneDeep(this.tab);
+    if (this.tab.uuid) this.localTab = _.cloneDeep(this.tab);
   }
 };
 </script>

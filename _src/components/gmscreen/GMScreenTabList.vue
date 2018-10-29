@@ -14,7 +14,7 @@
         <screen
             :items="localTabList"
             class="elevation-1 hidden-sm-and-down"
-            :push-active-tab="0"
+            v-model="activeTab"
         >
           <template slot="title" slot-scope="{ item }">
             {{ item.title }}
@@ -45,7 +45,8 @@ export default {
   components: { Screen, ScreenTab },
   data() {
     return {
-      localTabList: []
+      localTabList: [],
+      activeTab: 0
     };
   },
   computed: {

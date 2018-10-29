@@ -3,6 +3,7 @@
     <v-toolbar dark color="grey darken-3" dense>
       <v-tabs
           v-model="activeTab"
+          @input="$emit('input', $event)"
           color="transparent"
       >
         <v-tabs-slider color="white" :style="tabsSliderStyle" ></v-tabs-slider>
@@ -19,7 +20,7 @@
       </v-tabs>
 
     </v-toolbar>
-    <v-tabs-items v-model="activeTab">
+    <v-tabs-items :value="activeTab">
       <v-tab-item
           v-for="(item, index) in items"
           :key="index">
@@ -39,22 +40,20 @@ export default {
       type: Array,
       default: () => []
     },
-    pushActiveTab: {
+    value: {
       type: Number,
       default: 0
     }
   },
   data() {
     return {
-      activeTab: this.pushActiveTab,
+      activeTab: this.value,
       tabsSliderStyle: ""
     };
   },
   watch: {
-    pushActiveTab(newVal) {
+    value(newVal) {
       this.activeTab = newVal;
-    },
-    activeTab() {
       this.tabsSliderStyle = "";
     },
     items() {
