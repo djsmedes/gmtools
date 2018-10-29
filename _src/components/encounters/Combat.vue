@@ -1,10 +1,6 @@
 <template>
   <div>
 
-    <v-container class="hidden-sm-and-up" v-if="debugMessage">
-      {{ debugMessage }}
-    </v-container>
-
     <v-speed-dial
         v-model="fab"
         fixed bottom right
@@ -79,7 +75,7 @@
       </v-layout>
     </v-container>
 
-    <g-m-screen :items="items" class="elevation-1 hidden-sm-and-down">
+    <screen :items="gmScreenTabs" class="elevation-1 hidden-sm-and-down">
       <template slot="title" slot-scope="{ item }">
         {{ item.title }}
       </template>
@@ -100,11 +96,23 @@
                 ></v-select>
               </v-flex>
             </v-layout>
+            <v-layout row wrap>
+              <v-flex>
+                <v-btn flat :to="{ name: routeNames.GMSCREENTABS }">
+                  Edit GM Screen <v-icon>launch</v-icon>
+                </v-btn>
+              </v-flex>
+            </v-layout>
           </v-container>
         </v-form>
-        <v-card-text v-else>{{ item.content }}</v-card-text>
+        <screen-tab v-else :content="item.content"></screen-tab>
       </template>
-    </g-m-screen>
+    </screen>
+    <v-card class="hidden-md-and-up">
+      <v-card-text>
+        The GM screen is hidden on small screens.
+      </v-card-text>
+    </v-card>
 
     <div style="height: 88px;"></div>
   </div>
@@ -113,10 +121,12 @@
 <script>
 import { mapGetters, mapMutations, mapActions } from "vuex";
 import CombatantCard from "@/components/encounters/CombatantCard";
-import GMScreen from "@/components/gmscreen/GMScreen";
+import Screen from "@/components/gmscreen/GMScreen";
+import ScreenTab from "@/components/gmscreen/GMScreenTab";
 import combatant from "@/models/combatant";
 import campaign from "@/models/campaign";
 import encounter from "@/models/encounter";
+import gmscreentab from "@/models/gmscreentab";
 import _ from "lodash";
 import { ModuleSocket } from "@/utils";
 import auth from "@/auth";
@@ -124,10 +134,10 @@ import { routeNames } from "@/router";
 
 export default {
   name: "Combat",
-  components: { CombatantCard, GMScreen },
+  components: { CombatantCard, Screen, ScreenTab },
   data() {
     return {
-      debugMessage: "",
+      routeNames,
 
       applyingEffectType: combatant.Combatant.effectTypes.NONE,
       effectToApply: "",
@@ -139,22 +149,7 @@ export default {
           if (obj.campaign) this.setCampaign({ object: obj.campaign });
         }
       }),
-      fab: false,
-
-      // todo - pass in
-      items: [
-        { key: "settings", title: "Settings" },
-        {
-          uuid: "979f7e",
-          title: "Conditions",
-          content: "This is a list of conditions"
-        },
-        {
-          uuid: "79889ab89a",
-          title: "Items",
-          content: "This is a list of items"
-        }
-      ]
+      fab: false
     };
   },
   computed: {
@@ -168,6 +163,12 @@ export default {
     ...mapGetters(encounter.namespace, {
       getEncounter: encounter.getterTypes.BY_ID
     }),
+    ...mapGetters(gmscreentab.namespace, {
+      tabs: gmscreentab.getterTypes.LIST
+    }),
+    gmScreenTabs() {
+      return [{ key: "settings", title: "Settings" }, ...this.tabs];
+    },
     combatantsByInitiative() {
       return [
         ...this.combatants.filter(
@@ -187,6 +188,9 @@ export default {
     }),
     ...mapActions(encounter.namespace, {
       loadEncounters: encounter.actionTypes.LIST
+    }),
+    ...mapActions(gmscreentab.namespace, {
+      loadTabs: gmscreentab.actionTypes.LIST
     }),
     toggleCombatantWillApply(uuid) {
       if (!this.applyingEffectType) return;
@@ -251,6 +255,7 @@ export default {
   created() {
     this.socket.connect();
     this.loadEncounters();
+    this.loadTabs();
   }
 };
 </script>

@@ -54,6 +54,8 @@ export default {
   watch: {
     value(newVal) {
       this.activeTab = newVal;
+    },
+    activeTab() {
       this.tabsSliderStyle = "";
     },
     items() {
