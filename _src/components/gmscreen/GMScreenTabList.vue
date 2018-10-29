@@ -4,43 +4,31 @@
       <v-flex>
         <v-card>
           <v-card-actions>
-            <v-container fluid pa-0>
-              <v-layout row wrap>
-                <v-flex>
-                  <v-btn
-                      flat icon
-                      :disabled="activeTab <= 0"
-                      @click="changeTabIndex(-1)">
-                    <v-icon>arrow_left</v-icon>
-                  </v-btn>
-                  <span class="body-2 text-uppercase">Move selected tab</span>
-                  <v-btn
-                      flat icon
-                      :disabled="activeTab >= orderedTabs.length - 1"
-                      @click="changeTabIndex(1)">
-                    <v-icon>arrow_right</v-icon>
-                  </v-btn>
-                </v-flex>
-              </v-layout>
-              <v-layout row wrap>
-                <v-flex>
-                  <v-btn v-if="tab.uuid" flat :to="{ name: routeNames.GMSCREENTAB, params: { uuid: tab.uuid }}">
-                    Edit selected tab
-                  </v-btn>
-                </v-flex>
-                <v-flex>
-                  <v-btn flat :to="{ name: routeNames.GMSCREENTAB_CREATE }">
-                    Create new tab
-                  </v-btn>
-                </v-flex>
-              </v-layout>
-            </v-container>
+            <v-btn
+                flat icon
+                :disabled="activeTab <= 0"
+                @click="changeTabIndex(-1)">
+              <v-icon>arrow_left</v-icon>
+            </v-btn>
+            <span class="body-2 text-uppercase">Move selected tab</span>
+            <v-btn
+                flat icon
+                :disabled="activeTab >= tabs.length - 1"
+                @click="changeTabIndex(1)">
+              <v-icon>arrow_right</v-icon>
+            </v-btn>
+            <v-btn v-if="tab.uuid" flat :to="{ name: routeNames.GMSCREENTAB, params: { uuid: tab.uuid }}">
+              Edit selected tab
+            </v-btn>
+            <v-btn flat :to="{ name: routeNames.GMSCREENTAB_CREATE }">
+              Create new tab
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
       <v-flex>
         <screen
-            :items="orderedTabs"
+            :items="tabs"
             class="elevation-1 hidden-sm-and-down"
             v-model="activeTab"
         >
@@ -82,14 +70,6 @@ export default {
     ...mapGetters(gmscreentab.namespace, {
       tabs: gmscreentab.getterTypes.LIST
     }),
-    orderedTabs() {
-      return [...this.tabs].sort((a, b) => {
-        if (a.order === b.order) return 0;
-        if (a.order === null) return 1;
-        if (b.order === null) return -1;
-        return a.order - b.order;
-      });
-    },
     tab() {
       return this.tabs[this.activeTab] || new GMScreenTab();
     }
@@ -113,7 +93,7 @@ export default {
     },
     async changeTabIndex(direction) {
       let newIndex = this.activeTab + direction;
-      let tabList = [...this.orderedTabs];
+      let tabList = [...this.tabs];
       if (newIndex < 0 || newIndex >= tabList.length) {
         return;
       }
