@@ -75,7 +75,15 @@
       </v-layout>
     </v-container>
 
-    <screen :items="gmScreenTabs" class="elevation-1 hidden-sm-and-down">
+    <screen
+        class="elevation-1 hidden-sm-and-down"
+        :items="gmScreenTabs"
+    >
+      <template slot="toolbar-right">
+        <v-btn flat icon :to="{ name: routeNames.GMSCREENTABS }">
+          <v-icon>edit</v-icon>
+        </v-btn>
+      </template>
       <template slot="title" slot-scope="{ item }">
         {{ item.title }}
       </template>
@@ -94,13 +102,6 @@
                     append-icon="edit"
                     @click:append="goToEncounterChooser"
                 ></v-select>
-              </v-flex>
-            </v-layout>
-            <v-layout row wrap>
-              <v-flex>
-                <v-btn flat :to="{ name: routeNames.GMSCREENTABS }">
-                  Edit GM Screen <v-icon>launch</v-icon>
-                </v-btn>
               </v-flex>
             </v-layout>
           </v-container>

@@ -18,6 +18,8 @@
           </slot>
         </v-tab>
       </v-tabs>
+      <v-spacer></v-spacer>
+      <slot name="toolbar-right"></slot>
 
     </v-toolbar>
     <v-tabs-items :value="activeTab">
