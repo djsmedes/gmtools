@@ -28,6 +28,9 @@
             <v-btn v-else flat @click="create">
               Save
             </v-btn>
+            <v-btn flat color="red" v-if="tab.uuid" @click="deleteDialog = true">
+              Delete
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -51,6 +54,23 @@
         </v-card>
       </v-flex>
     </v-layout>
+
+    <v-dialog width=500 v-model="deleteDialog">
+      <v-card>
+        <v-card-text>
+          Are you sure you want to delete this GM screen tab? This cannot be undone.
+        </v-card-text>
+        <v-card-actions>
+          <v-btn flat color="red" @click="deleteSelf">
+            Delete
+          </v-btn>
+          <v-btn flat @click="deleteDialog = false">
+            Cancel
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </v-container>
 </template>
 
@@ -73,6 +93,7 @@ export default {
   },
   data() {
     return {
+      deleteDialog: false,
       localTab: new GMScreenTab({ title: "New tab" })
     };
   },
@@ -88,7 +109,8 @@ export default {
     ...mapActions(gmscreentab.namespace, {
       createTab: gmscreentab.actionTypes.CREATE,
       updateTab: gmscreentab.actionTypes.UPDATE,
-      loadTabs: gmscreentab.actionTypes.LIST
+      loadTabs: gmscreentab.actionTypes.LIST,
+      deleteTab: gmscreentab.actionTypes.DESTROY
     }),
     updateContent: _.debounce(function(e) {
       this.localTab.content = e;
@@ -106,6 +128,10 @@ export default {
         name: routeNames.GMSCREENTAB,
         params: { uuid: newTab.uuid }
       });
+    },
+    async deleteSelf() {
+      await this.deleteTab(this.uuid);
+      this.$router.push({ name: routeNames.GMSCREENTABS });
     }
   },
   async created() {

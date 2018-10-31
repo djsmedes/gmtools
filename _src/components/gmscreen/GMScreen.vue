@@ -5,6 +5,7 @@
           v-model="activeTab"
           @input="$emit('input', $event)"
           color="transparent"
+          show-arrows
       >
         <v-tabs-slider color="white" :style="tabsSliderStyle" ></v-tabs-slider>
         <v-tab
