@@ -124,28 +124,24 @@
       <v-form v-if="activeTab === -1" @submit.prevent>
         <v-container grid-list-md>
           <v-layout row wrap>
-            <v-flex>
+            <v-flex xs12>
               <h6 class="title">
-                <span class="grey--text text--darken-1">
+                <span class="grey--text text--darken-1 font-weight-light">
                   Encounter:
                 </span>
                 <span class="text--black">
-                  {{ getEncounter(currentCampaign.active_encounter).name }}
+                  {{ getEncounter(currentCampaign.active_encounter).name || '--'}}
                 </span>
               </h6>
             </v-flex>
-          </v-layout>
-          <v-layout row wrap>
-            <v-flex md4 lg3 xl2>
-              <v-btn flat @click="() => {}">
-                Complete this encounter
+            <v-flex xs12>
+              <v-btn @click="() => {}" flat>
+                Complete
               </v-btn>
-            </v-flex>
-            <v-flex md4 lg3 xl2>
               <v-dialog width=500 v-model="changeEncounterDialog">
-              <v-btn flat slot="activator">
-                Change encounter
-              </v-btn>
+                <v-btn slot="activator" flat>
+                  Change
+                </v-btn>
                 <encounter-chooser :reset="changeEncounterDialog">
                   <template slot="actions" slot-scope="{ selectedEncounter }">
                     <v-btn flat @click="changeActiveEncounter(selectedEncounter)">
@@ -156,7 +152,7 @@
                     </v-btn>
                   </template>
                 </encounter-chooser>
-                </v-dialog>
+              </v-dialog>
             </v-flex>
           </v-layout>
           <v-layout row wrap>
