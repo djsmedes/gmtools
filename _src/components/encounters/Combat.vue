@@ -122,19 +122,41 @@
         </template>
       </screen>
       <v-form v-if="activeTab === -1" @submit.prevent>
-        <v-container>
+        <v-container grid-list-md>
+          <v-layout row wrap>
+            <v-flex>
+              <h6 class="title">
+                <span class="grey--text text--darken-1">
+                  Encounter:
+                </span>
+                <span class="text--black">
+                  {{ getEncounter(currentCampaign.active_encounter).name }}
+                </span>
+              </h6>
+            </v-flex>
+          </v-layout>
           <v-layout row wrap>
             <v-flex md4 lg3 xl2>
-              <v-select
-                  readonly
-                  label="Active encounter"
-                  returnObject
-                  :items="[getEncounter(currentCampaign.active_encounter)]"
-                  item-text="name" item-value="uuid"
-                  :value="currentCampaign.active_encounter"
-                  append-icon="edit"
-                  @click:append="goToEncounterChooser"
-              ></v-select>
+              <v-btn flat @click="() => {}">
+                Complete this encounter
+              </v-btn>
+            </v-flex>
+            <v-flex md4 lg3 xl2>
+              <v-dialog width=500 v-model="changeEncounterDialog">
+              <v-btn flat slot="activator">
+                Change encounter
+              </v-btn>
+                <encounter-chooser :reset="changeEncounterDialog">
+                  <template slot="actions" slot-scope="{ selectedEncounter }">
+                    <v-btn flat @click="changeActiveEncounter(selectedEncounter)">
+                      Save
+                    </v-btn>
+                    <v-btn flat @click="changeEncounterDialog = false">
+                      Cancel
+                    </v-btn>
+                  </template>
+                </encounter-chooser>
+                </v-dialog>
             </v-flex>
           </v-layout>
           <v-layout row wrap>
@@ -166,6 +188,7 @@ import { mapGetters, mapMutations, mapActions } from "vuex";
 import CombatantCard from "@/components/encounters/CombatantCard";
 import Screen from "@/components/gmscreen/GMScreen";
 import ScreenTab from "@/components/gmscreen/GMScreenTab";
+import EncounterChooser from "@/components/encounters/EncounterChooser";
 import combatant from "@/models/combatant";
 import campaign from "@/models/campaign";
 import encounter from "@/models/encounter";
@@ -177,7 +200,7 @@ import { routeNames } from "@/router";
 
 export default {
   name: "Combat",
-  components: { CombatantCard, Screen, ScreenTab },
+  components: { CombatantCard, Screen, ScreenTab, EncounterChooser },
   data() {
     return {
       routeNames,
@@ -194,7 +217,9 @@ export default {
       }),
       fab: false,
       activeTab: -1,
-      combatantLargeHPIncrement: 5
+      combatantLargeHPIncrement: 5,
+
+      changeEncounterDialog: false
     };
   },
   computed: {
@@ -275,24 +300,15 @@ export default {
       }
       this.exitApplyEffectMode();
     },
-    async changeActiveEncounter(newEncounter, combatantObjs = null) {
+    async changeActiveEncounter(newEncounter) {
       let data = {
         campaign: {
           ...this.currentCampaign,
           active_encounter: newEncounter.uuid
         }
       };
-      if (combatantObjs) data.combatants = combatantObjs;
       await this.socket.update(data);
-    },
-    goToEncounterChooser() {
-      this.$router.push({
-        name: routeNames.ENCOUNTER_CHOOSE,
-        params: {
-          saveFunc: this.changeActiveEncounter,
-          cancelFunc: () => {}
-        }
-      });
+      this.changeEncounterDialog = false;
     },
     updateOneCombatant: _.debounce(function(combatant) {
       this.socket.update({ combatants: [combatant] });
