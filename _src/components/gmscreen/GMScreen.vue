@@ -1,13 +1,19 @@
 <template>
   <div>
     <v-toolbar dark color="grey darken-3" dense>
+      <slot name="toolbar-left"></slot>
+      <v-spacer></v-spacer>
       <v-tabs
           v-model="activeTab"
           @input="$emit('input', $event)"
           color="transparent"
-          show-arrows
+          show-arrows centered grow
       >
-        <v-tabs-slider color="white" :style="tabsSliderStyle" ></v-tabs-slider>
+        <v-tabs-slider
+            color="white"
+            v-show="activeTab !== -1"
+        ></v-tabs-slider>
+
         <v-tab
             v-for="(item, index) in items"
             :key="index"
@@ -28,7 +34,7 @@
           v-for="(item, index) in items"
           :key="index">
         <slot :item="item">
-          {{ item.content }}
+          <screen-tab :content="item.content"></screen-tab>
         </slot>
       </v-tab-item>
     </v-tabs-items>
@@ -36,8 +42,11 @@
 </template>
 
 <script>
+import ScreenTab from "@/components/gmscreen/GMScreenTab";
+
 export default {
   name: "GMScreen",
+  components: { ScreenTab },
   props: {
     items: {
       type: Array,
@@ -57,15 +66,6 @@ export default {
   watch: {
     value(newVal) {
       this.activeTab = newVal;
-    },
-    activeTab() {
-      this.tabsSliderStyle = "";
-    },
-    items() {
-      this.$nextTick(() => {
-        let width = this.$refs["tab_" + this.activeTab][0].$el.clientWidth;
-        this.tabsSliderStyle = "width: " + width + "px;";
-      });
     }
   }
 };

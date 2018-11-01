@@ -21,7 +21,6 @@ export const routeNames = {
   ENCOUNTER: "encounter",
   ENCOUNTER_CREATE: "encounterCreate",
   ENCOUNTER_CHOOSE: "encounterChoose",
-  GMSCREENTABS: "gmScreenTabs",
   GMSCREENTAB: "gmScreenTab",
   GMSCREENTAB_CREATE: "gmScreenTabCreate",
   ACCOUNT_SETTINGS: "accountSettings",
@@ -114,13 +113,6 @@ const router = new Router({
       beforeEnter: loginRequired
     },
 
-    {
-      path: "/gmscreentabs/",
-      name: routeNames.GMSCREENTABS,
-      component: () =>
-        import(/* webpackChunkName: "gmscreentabs" */ "@/components/gmscreen/GMScreenTabList"),
-      beforeEnter: loginRequired
-    },
     {
       path: "/gmscreentabs/new/",
       name: routeNames.GMSCREENTAB_CREATE,

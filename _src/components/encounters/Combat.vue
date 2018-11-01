@@ -75,42 +75,70 @@
       </v-layout>
     </v-container>
 
-    <screen
-        class="elevation-1 hidden-sm-and-down"
-        :items="gmScreenTabs"
-    >
-      <template slot="toolbar-right">
-        <v-btn flat icon :to="{ name: routeNames.GMSCREENTABS }">
-          <v-icon>edit</v-icon>
-        </v-btn>
-      </template>
-      <template slot="title" slot-scope="{ item }">
-        {{ item.title }}
-      </template>
-      <template slot-scope="{ item }">
-        <v-form v-if="item.key === 'settings'" @submit.prevent>
-          <v-container>
-            <v-layout row wrap>
-              <v-flex md4 lg3 xl2>
-                <v-select
-                    readonly
-                    label="Active encounter"
-                    returnObject
-                    :items="[getEncounter(currentCampaign.active_encounter)]"
-                    item-text="name" item-value="uuid"
-                    :value="currentCampaign.active_encounter"
-                    append-icon="edit"
-                    @click:append="goToEncounterChooser"
-                ></v-select>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-form>
-        <screen-tab v-else :content="item.content"></screen-tab>
-      </template>
-    </screen>
-    <v-card class="hidden-md-and-up">
-      <v-card-text>
+    <v-card class="hidden-sm-and-down">
+      <screen
+          :items="tabs"
+          v-model="activeTab"
+      >
+        <template slot="toolbar-left">
+          <v-btn flat icon :input-value="activeTab === -1" @click="activeTab = -1">
+            <v-icon>settings</v-icon>
+          </v-btn>
+        </template>
+        <template slot="toolbar-right">
+          <v-btn
+              flat icon
+              :disabled="activeTab <= 0"
+              @click="changeTabIndex(-1)">
+            <v-icon>arrow_left</v-icon>
+          </v-btn>
+          <span
+              class="body-2 text-uppercase"
+              :style="activeTab === -1 ? 'opacity: 0.7; cursor: default;' : 'cursor: default;'">
+            Reorder
+          </span>
+          <v-btn
+              flat icon
+              :disabled="activeTab >= tabs.length - 1 || activeTab < 0"
+              @click="changeTabIndex(1)">
+            <v-icon>arrow_right</v-icon>
+          </v-btn>
+          <v-btn
+              v-if="tab.uuid"
+              flat icon
+              :to="{ name: routeNames.GMSCREENTAB, params: { uuid: tab.uuid }}">
+            <v-icon>edit</v-icon>
+          </v-btn>
+          <v-btn
+              v-else
+              flat icon
+              disabled>
+            <v-icon>edit</v-icon>
+          </v-btn>
+          <v-btn flat icon :to="{ name: routeNames.GMSCREENTAB_CREATE }">
+            <v-icon>add</v-icon>
+          </v-btn>
+        </template>
+      </screen>
+      <v-form v-if="activeTab === -1" @submit.prevent>
+        <v-container>
+          <v-layout row wrap>
+            <v-flex md4 lg3 xl2>
+              <v-select
+                  readonly
+                  label="Active encounter"
+                  returnObject
+                  :items="[getEncounter(currentCampaign.active_encounter)]"
+                  item-text="name" item-value="uuid"
+                  :value="currentCampaign.active_encounter"
+                  append-icon="edit"
+                  @click:append="goToEncounterChooser"
+              ></v-select>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-form>
+      <v-card-text class="hidden-md-and-up">
         The GM screen is hidden on small screens.
       </v-card-text>
     </v-card>
@@ -127,7 +155,7 @@ import ScreenTab from "@/components/gmscreen/GMScreenTab";
 import combatant from "@/models/combatant";
 import campaign from "@/models/campaign";
 import encounter from "@/models/encounter";
-import gmscreentab from "@/models/gmscreentab";
+import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
 import _ from "lodash";
 import { ModuleSocket } from "@/utils";
 import auth from "@/auth";
@@ -150,7 +178,8 @@ export default {
           if (obj.campaign) this.setCampaign({ object: obj.campaign });
         }
       }),
-      fab: false
+      fab: false,
+      activeTab: -1
     };
   },
   computed: {
@@ -167,9 +196,6 @@ export default {
     ...mapGetters(gmscreentab.namespace, {
       tabs: gmscreentab.getterTypes.LIST
     }),
-    gmScreenTabs() {
-      return [{ key: "settings", title: "Settings" }, ...this.tabs];
-    },
     combatantsByInitiative() {
       return [
         ...this.combatants.filter(
@@ -178,6 +204,9 @@ export default {
             c.encounter === this.currentCampaign.active_encounter
         )
       ].sort((a, b) => b.initiative - a.initiative);
+    },
+    tab() {
+      return this.tabs[this.activeTab] || new GMScreenTab();
     }
   },
   methods: {
@@ -191,7 +220,8 @@ export default {
       loadEncounters: encounter.actionTypes.LIST
     }),
     ...mapActions(gmscreentab.namespace, {
-      loadTabs: gmscreentab.actionTypes.LIST
+      loadTabs: gmscreentab.actionTypes.LIST,
+      updateTab: gmscreentab.actionTypes.UPDATE
     }),
     toggleCombatantWillApply(uuid) {
       if (!this.applyingEffectType) return;
@@ -251,7 +281,27 @@ export default {
     },
     updateOneCombatant: _.debounce(function(combatant) {
       this.socket.update({ combatants: [combatant] });
-    }, 500)
+    }, 500),
+    async changeTabIndex(direction) {
+      let newIndex = this.activeTab + direction;
+      let tabList = [...this.tabs];
+      if (newIndex < 0 || newIndex >= tabList.length) {
+        return;
+      }
+      let tab = tabList.splice(this.activeTab, 1)[0];
+      tabList.splice(newIndex, 0, tab);
+      let index = 0;
+      await Promise.all(
+        tabList.reduce((acc, cur) => {
+          if (cur.order !== index) {
+            acc.push(this.updateTab({ ...cur, order: index }));
+          }
+          index += 1;
+          return acc;
+        }, [])
+      );
+      this.activeTab = newIndex;
+    }
   },
   created() {
     this.socket.connect();
