@@ -70,6 +70,7 @@
               :effect-mode="applyingEffectType"
               :active="combatantsToApply.includes(combatant.uuid)"
               :update-func="updateOneCombatant"
+              :large-h-p-increment="combatantLargeHPIncrement"
               @click="toggleCombatantWillApply($event)"/>
         </v-flex>
       </v-layout>
@@ -136,6 +137,19 @@
               ></v-select>
             </v-flex>
           </v-layout>
+          <v-layout row wrap>
+            <v-flex md4 lg3 xl2>
+              <v-switch
+                  v-model="combatantLargeHPIncrement"
+                  false-value=5
+                  true-value=10
+              >
+                <template slot="label">
+                  Larger damage increment
+                </template>
+              </v-switch>
+            </v-flex>
+          </v-layout>
         </v-container>
       </v-form>
       <v-card-text class="hidden-md-and-up">
@@ -179,7 +193,8 @@ export default {
         }
       }),
       fab: false,
-      activeTab: -1
+      activeTab: -1,
+      combatantLargeHPIncrement: 5
     };
   },
   computed: {

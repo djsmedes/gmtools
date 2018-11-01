@@ -105,8 +105,8 @@
 
     <v-card-actions>
       <v-btn icon flat class="ma-0"
-             @click="updateHp(-10)"
-             :disabled="!!effectMode">-10
+             @click="updateHp(-1*largeHPIncrement)"
+             :disabled="!!effectMode">-{{ largeHPIncrement }}
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn icon flat class="ma-0"
@@ -131,8 +131,8 @@
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn icon flat class="ma-0"
-             @click="updateHp(10)"
-             :disabled="!!effectMode">+10
+             @click="updateHp(largeHPIncrement)"
+             :disabled="!!effectMode">+{{ largeHPIncrement }}
       </v-btn>
     </v-card-actions>
 
@@ -253,6 +253,10 @@ export default {
     updateFunc: {
       type: Function,
       default: null
+    },
+    largeHPIncrement: {
+      type: Number,
+      default: 5
     }
   },
   data() {
