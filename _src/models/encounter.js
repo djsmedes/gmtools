@@ -29,7 +29,9 @@ export class Encounter {
       uuid: this.uuid,
       name: this.name,
       campaign: this.campaign,
-      completion_date: this.completion_date.toISOString().split("T")[0]
+      completion_date: this.completion_date
+        ? this.completion_date.toISOString().split("T")[0]
+        : this.completion_date
     };
   }
 }
@@ -37,6 +39,25 @@ export class Encounter {
 class EncounterVuexModule extends CampaignDependentVuexModule {
   constructor() {
     super(Encounter);
+    this.getterTypes = {
+      ...this.getterTypes,
+      LIST_COMPLETED: "listCompleted"
+    };
+    this.store.getters = {
+      ...this.store.getters,
+      [this.getterTypes.LIST]: (state, getters) => {
+        return Object.values(getters[this.getterTypes.OBJECTS]).filter(
+          enc => enc.completion_date === null
+        );
+      },
+      [this.getterTypes.LIST_COMPLETED]: (state, getters) => {
+        return [
+          ...Object.values(getters[this.getterTypes.OBJECTS]).filter(
+            enc => enc.completion_date !== null
+          )
+        ].sort((a, b) => b.completion_date - a.completion_date);
+      }
+    };
   }
 }
 

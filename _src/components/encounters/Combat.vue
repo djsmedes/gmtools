@@ -145,7 +145,7 @@
                 </v-btn>
                 <encounter-chooser :reset="changeEncounterDialog">
                   <template slot="actions" slot-scope="{ selectedEncounter }">
-                    <v-btn flat @click="changeActiveEncounter(selectedEncounter)">
+                    <v-btn flat @click="changeActiveEncounter(selectedEncounter.uuid)">
                       Save
                     </v-btn>
                     <v-btn flat @click="changeEncounterDialog = false">
@@ -302,11 +302,11 @@ export default {
       }
       this.exitApplyEffectMode();
     },
-    async changeActiveEncounter(newEncounter) {
+    async changeActiveEncounter(newEncounterUuid) {
       let data = {
         campaign: {
           ...this.currentCampaign,
-          active_encounter: newEncounter.uuid
+          active_encounter: newEncounterUuid
         }
       };
       await this.socket.update(data);
@@ -336,9 +336,15 @@ export default {
       this.activeTab = newIndex;
     },
     async completeEncounter() {
-      await this.updateEncounter(
-        new Encounter({ ...this.currentEncounter, completion_date: new Date() })
-      );
+      await Promise.all([
+        this.updateEncounter(
+          new Encounter({
+            ...this.currentEncounter,
+            completion_date: new Date()
+          })
+        ),
+        this.changeActiveEncounter(null)
+      ]);
     }
   },
   created() {
