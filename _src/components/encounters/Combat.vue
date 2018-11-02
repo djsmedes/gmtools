@@ -135,9 +135,9 @@
               </h6>
             </v-flex>
             <v-flex xs12>
-              <v-btn @click="() => {}" flat>
-                Complete
-              </v-btn>
+              <!--<v-btn @click="() => {}" flat>-->
+                <!--Complete-->
+              <!--</v-btn>-->
               <v-dialog width=500 v-model="changeEncounterDialog">
                 <v-btn slot="activator" flat>
                   Change
