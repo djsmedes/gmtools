@@ -135,10 +135,6 @@
               </h6>
             </v-flex>
             <v-flex xs12>
-              <br>
-              <v-btn @click="completeEncounter" flat>
-                Complete
-              </v-btn>
               <v-dialog width=500 v-model="changeEncounterDialog">
                 <v-btn slot="activator" flat>
                   Change
@@ -154,14 +150,17 @@
                   </template>
                 </encounter-chooser>
               </v-dialog>
+              <v-btn @click="completeEncounter" flat>
+                Complete
+              </v-btn>
             </v-flex>
           </v-layout>
           <v-layout row wrap>
             <v-flex md4 lg3 xl2>
               <v-switch
-                  v-model="combatantLargeHPIncrement"
-                  false-value=5
-                  true-value=10
+                  v-model.number="combatantLargeHPIncrement"
+                  :false-value=5
+                  :true-value=10
               >
                 <template slot="label">
                   Larger damage increment

@@ -113,7 +113,8 @@ export default {
     }),
     combatants() {
       return this.getAllCombatants.filter(
-        combatant => combatant.encounter === this.encounter.uuid
+        combatant =>
+          combatant.encounter && combatant.encounter === this.encounter.uuid
       );
     }
   },
