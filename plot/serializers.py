@@ -9,4 +9,4 @@ class EncounterSerializer(CampaignModelSerializer):
 
     class Meta:
         model = Encounter
-        fields = ('uuid', 'name', 'campaign')
+        fields = ('uuid', 'name', 'campaign', 'completion_date')

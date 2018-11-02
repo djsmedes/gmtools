@@ -130,12 +130,13 @@
                   Encounter:
                 </span>
                 <span class="text--black">
-                  {{ getEncounter(currentCampaign.active_encounter).name || '--'}}
+                  {{ currentEncounter.name || '--'}}
                 </span>
               </h6>
             </v-flex>
             <v-flex xs12>
-              <v-btn @click="() => {}" flat>
+              <br>
+              <v-btn @click="completeEncounter" flat>
                 Complete
               </v-btn>
               <v-dialog width=500 v-model="changeEncounterDialog">
@@ -187,7 +188,7 @@ import ScreenTab from "@/components/gmscreen/GMScreenTab";
 import EncounterChooser from "@/components/encounters/EncounterChooser";
 import combatant from "@/models/combatant";
 import campaign from "@/models/campaign";
-import encounter from "@/models/encounter";
+import encounter, { Encounter } from "@/models/encounter";
 import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
 import _ from "lodash";
 import { ModuleSocket } from "@/utils";
@@ -215,7 +216,8 @@ export default {
       activeTab: -1,
       combatantLargeHPIncrement: 5,
 
-      changeEncounterDialog: false
+      changeEncounterDialog: false,
+      localEncounter: new Encounter()
     };
   },
   computed: {
@@ -243,6 +245,9 @@ export default {
     },
     tab() {
       return this.tabs[this.activeTab] || new GMScreenTab();
+    },
+    currentEncounter() {
+      return this.getEncounter(this.currentCampaign.active_encounter);
     }
   },
   methods: {
@@ -253,7 +258,8 @@ export default {
       setCampaign: campaign.mutationTypes.SET
     }),
     ...mapActions(encounter.namespace, {
-      loadEncounters: encounter.actionTypes.LIST
+      loadEncounters: encounter.actionTypes.LIST,
+      updateEncounter: encounter.actionTypes.UPDATE
     }),
     ...mapActions(gmscreentab.namespace, {
       loadTabs: gmscreentab.actionTypes.LIST,
@@ -328,6 +334,11 @@ export default {
         }, [])
       );
       this.activeTab = newIndex;
+    },
+    async completeEncounter() {
+      await this.updateEncounter(
+        new Encounter({ ...this.currentEncounter, completion_date: new Date() })
+      );
     }
   },
   created() {
