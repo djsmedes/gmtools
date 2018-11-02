@@ -1,15 +1,11 @@
 from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
 
-from .managers import CampaignModelManager
+from .managers import CampaignModelManager, UserModelManager
 
 
-class CampaignModelSerializer(serializers.ModelSerializer):
+class MultiTenantedModelSerializer(serializers.ModelSerializer):
     view_name = None
-    campaign = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='uuid'
-    )
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.get('user')
@@ -30,7 +26,7 @@ class CampaignModelSerializer(serializers.ModelSerializer):
             )
 
     def transform_queryset(self, queryset):
-        if isinstance(queryset, CampaignModelManager):
+        if isinstance(queryset, (CampaignModelManager, UserModelManager)):
             if self.user:
                 return queryset.of_user(self.user)
             elif self.root.context.get('request'):
@@ -46,3 +42,17 @@ class CampaignModelSerializer(serializers.ModelSerializer):
         if kwargs.get('queryset'):
             kwargs['queryset'] = self.transform_queryset(kwargs.pop('queryset'))
         return serializers.SlugRelatedField(**kwargs)
+
+
+class CampaignModelSerializer(MultiTenantedModelSerializer):
+    campaign = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='uuid'
+    )
+
+
+class UserOwnedModelSerializer(MultiTenantedModelSerializer):
+    user = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='uuid'
+    )

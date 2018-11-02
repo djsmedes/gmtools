@@ -20,7 +20,8 @@ export const routeNames = {
   ENCOUNTERS: "encounters",
   ENCOUNTER: "encounter",
   ENCOUNTER_CREATE: "encounterCreate",
-  ENCOUNTER_CHOOSE: "encounterChoose",
+  GMSCREENTAB: "gmScreenTab",
+  GMSCREENTAB_CREATE: "gmScreenTabCreate",
   ACCOUNT_SETTINGS: "accountSettings",
   LOGIN: "login",
   SIGNUP: "signup",
@@ -89,14 +90,6 @@ const router = new Router({
       beforeEnter: loginRequired
     },
     {
-      path: "/encounters/choose/",
-      name: routeNames.ENCOUNTER_CHOOSE,
-      component: () =>
-        import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterChooser"),
-      beforeEnter: loginRequired,
-      props: true
-    },
-    {
       path: "/encounters/new/",
       name: routeNames.ENCOUNTER_CREATE,
       component: () =>
@@ -109,6 +102,22 @@ const router = new Router({
       component: () =>
         import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
       beforeEnter: loginRequired
+    },
+
+    {
+      path: "/gmscreentabs/new/",
+      name: routeNames.GMSCREENTAB_CREATE,
+      component: () =>
+        import(/* webpackChunkName: "gmscreentabs" */ "@/components/gmscreen/GMScreenTabDetail"),
+      beforeEnter: loginRequired
+    },
+    {
+      path: "/gmscreentabs/:uuid/",
+      name: routeNames.GMSCREENTAB,
+      component: () =>
+        import(/* webpackChunkName: "gmscreentabs" */ "@/components/gmscreen/GMScreenTabDetail"),
+      beforeEnter: loginRequired,
+      props: true
     },
 
     {
@@ -140,6 +149,7 @@ const router = new Router({
       component: () =>
         import(/* webpackChunkName: "404" */ "@/components/generic/NotFound")
     },
+
     {
       /* THIS SHOULD ALWAYS BE AT THE END
        * it will match any route not already matched and send it to the 404 page

@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 
-from core.models import CampaignOwnedModel
+from core.models import CampaignOwnedModel, UserOwnedModel
 
 
 class Combatant(CampaignOwnedModel):
@@ -29,3 +29,9 @@ class Combatant(CampaignOwnedModel):
 
     def __str__(self):
         return self.name
+
+
+class GMScreenTab(UserOwnedModel):
+    title = models.CharField(max_length=31)
+    content = models.TextField()
+    order = models.IntegerField(null=True, blank=True)

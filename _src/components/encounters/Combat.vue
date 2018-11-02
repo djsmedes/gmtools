@@ -1,10 +1,6 @@
 <template>
   <div>
 
-    <v-container class="hidden-sm-and-up" v-if="debugMessage">
-      {{ debugMessage }}
-    </v-container>
-
     <v-speed-dial
         v-model="fab"
         fixed bottom right
@@ -74,38 +70,109 @@
               :effect-mode="applyingEffectType"
               :active="combatantsToApply.includes(combatant.uuid)"
               :update-func="updateOneCombatant"
+              :large-h-p-increment="combatantLargeHPIncrement"
               @click="toggleCombatantWillApply($event)"/>
         </v-flex>
       </v-layout>
     </v-container>
 
     <v-card class="hidden-sm-and-down">
-      <g-m-screen :items="items">
-        <template slot="title" slot-scope="{ item }">
-          {{ item.title }}
+      <screen
+          :items="tabs"
+          v-model="activeTab"
+      >
+        <template slot="toolbar-left">
+          <v-btn flat icon :input-value="activeTab === -1" @click="activeTab = -1">
+            <v-icon>settings</v-icon>
+          </v-btn>
         </template>
-        <template slot-scope="{ item }">
-          <v-form v-if="item.key === 'settings'" @submit.prevent>
-            <v-container>
-              <v-layout row wrap>
-                <v-flex md4 lg3 xl2>
-                  <v-select
-                      readonly
-                      label="Active encounter"
-                      returnObject
-                      :items="[getEncounter(currentCampaign.active_encounter)]"
-                      item-text="name" item-value="uuid"
-                      :value="currentCampaign.active_encounter"
-                      append-icon="edit"
-                      @click:append="goToEncounterChooser"
-                  ></v-select>
-                </v-flex>
-              </v-layout>
-            </v-container>
-          </v-form>
-          <v-card-text v-else>{{ item.content }}</v-card-text>
+        <template slot="toolbar-right">
+          <v-btn
+              flat icon
+              :disabled="activeTab <= 0"
+              @click="changeTabIndex(-1)">
+            <v-icon>arrow_left</v-icon>
+          </v-btn>
+          <span
+              class="body-2 text-uppercase"
+              :style="activeTab === -1 ? 'opacity: 0.7; cursor: default;' : 'cursor: default;'">
+            Reorder
+          </span>
+          <v-btn
+              flat icon
+              :disabled="activeTab >= tabs.length - 1 || activeTab < 0"
+              @click="changeTabIndex(1)">
+            <v-icon>arrow_right</v-icon>
+          </v-btn>
+          <v-btn
+              v-if="tab.uuid"
+              flat icon
+              :to="{ name: routeNames.GMSCREENTAB, params: { uuid: tab.uuid }}">
+            <v-icon>edit</v-icon>
+          </v-btn>
+          <v-btn
+              v-else
+              flat icon
+              disabled>
+            <v-icon>edit</v-icon>
+          </v-btn>
+          <v-btn flat icon :to="{ name: routeNames.GMSCREENTAB_CREATE }">
+            <v-icon>add</v-icon>
+          </v-btn>
         </template>
-      </g-m-screen>
+      </screen>
+      <v-form v-if="activeTab === -1" @submit.prevent>
+        <v-container grid-list-md>
+          <v-layout row wrap>
+            <v-flex xs12>
+              <h6 class="title">
+                <span class="grey--text text--darken-1 font-weight-light">
+                  Encounter:
+                </span>
+                <span class="text--black">
+                  {{ getEncounter(currentCampaign.active_encounter).name || '--'}}
+                </span>
+              </h6>
+            </v-flex>
+            <v-flex xs12>
+              <!--<v-btn @click="() => {}" flat>-->
+                <!--Complete-->
+              <!--</v-btn>-->
+              <v-dialog width=500 v-model="changeEncounterDialog">
+                <v-btn slot="activator" flat>
+                  Change
+                </v-btn>
+                <encounter-chooser :reset="changeEncounterDialog">
+                  <template slot="actions" slot-scope="{ selectedEncounter }">
+                    <v-btn flat @click="changeActiveEncounter(selectedEncounter)">
+                      Save
+                    </v-btn>
+                    <v-btn flat @click="changeEncounterDialog = false">
+                      Cancel
+                    </v-btn>
+                  </template>
+                </encounter-chooser>
+              </v-dialog>
+            </v-flex>
+          </v-layout>
+          <v-layout row wrap>
+            <v-flex md4 lg3 xl2>
+              <v-switch
+                  v-model="combatantLargeHPIncrement"
+                  false-value=5
+                  true-value=10
+              >
+                <template slot="label">
+                  Larger damage increment
+                </template>
+              </v-switch>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-form>
+      <v-card-text class="hidden-md-and-up">
+        The GM screen is hidden on small screens.
+      </v-card-text>
     </v-card>
 
     <div style="height: 88px;"></div>
@@ -115,10 +182,13 @@
 <script>
 import { mapGetters, mapMutations, mapActions } from "vuex";
 import CombatantCard from "@/components/encounters/CombatantCard";
-import GMScreen from "@/components/encounters/GMScreen";
+import Screen from "@/components/gmscreen/GMScreen";
+import ScreenTab from "@/components/gmscreen/GMScreenTab";
+import EncounterChooser from "@/components/encounters/EncounterChooser";
 import combatant from "@/models/combatant";
 import campaign from "@/models/campaign";
 import encounter from "@/models/encounter";
+import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
 import _ from "lodash";
 import { ModuleSocket } from "@/utils";
 import auth from "@/auth";
@@ -126,10 +196,10 @@ import { routeNames } from "@/router";
 
 export default {
   name: "Combat",
-  components: { CombatantCard, GMScreen },
+  components: { CombatantCard, Screen, ScreenTab, EncounterChooser },
   data() {
     return {
-      debugMessage: "",
+      routeNames,
 
       applyingEffectType: combatant.Combatant.effectTypes.NONE,
       effectToApply: "",
@@ -142,21 +212,10 @@ export default {
         }
       }),
       fab: false,
+      activeTab: -1,
+      combatantLargeHPIncrement: 5,
 
-      // todo - pass in
-      items: [
-        { key: "settings", title: "Settings" },
-        {
-          uuid: "979f7e",
-          title: "Conditions",
-          content: "This is a list of conditions"
-        },
-        {
-          uuid: "79889ab89a",
-          title: "Items",
-          content: "This is a list of items"
-        }
-      ]
+      changeEncounterDialog: false
     };
   },
   computed: {
@@ -170,6 +229,9 @@ export default {
     ...mapGetters(encounter.namespace, {
       getEncounter: encounter.getterTypes.BY_ID
     }),
+    ...mapGetters(gmscreentab.namespace, {
+      tabs: gmscreentab.getterTypes.LIST
+    }),
     combatantsByInitiative() {
       return [
         ...this.combatants.filter(
@@ -178,6 +240,9 @@ export default {
             c.encounter === this.currentCampaign.active_encounter
         )
       ].sort((a, b) => b.initiative - a.initiative);
+    },
+    tab() {
+      return this.tabs[this.activeTab] || new GMScreenTab();
     }
   },
   methods: {
@@ -189,6 +254,10 @@ export default {
     }),
     ...mapActions(encounter.namespace, {
       loadEncounters: encounter.actionTypes.LIST
+    }),
+    ...mapActions(gmscreentab.namespace, {
+      loadTabs: gmscreentab.actionTypes.LIST,
+      updateTab: gmscreentab.actionTypes.UPDATE
     }),
     toggleCombatantWillApply(uuid) {
       if (!this.applyingEffectType) return;
@@ -227,32 +296,44 @@ export default {
       }
       this.exitApplyEffectMode();
     },
-    async changeActiveEncounter(newEncounter, combatantObjs = null) {
+    async changeActiveEncounter(newEncounter) {
       let data = {
         campaign: {
           ...this.currentCampaign,
           active_encounter: newEncounter.uuid
         }
       };
-      if (combatantObjs) data.combatants = combatantObjs;
       await this.socket.update(data);
-    },
-    goToEncounterChooser() {
-      this.$router.push({
-        name: routeNames.ENCOUNTER_CHOOSE,
-        params: {
-          saveFunc: this.changeActiveEncounter,
-          cancelFunc: () => {}
-        }
-      });
+      this.changeEncounterDialog = false;
     },
     updateOneCombatant: _.debounce(function(combatant) {
       this.socket.update({ combatants: [combatant] });
-    }, 500)
+    }, 500),
+    async changeTabIndex(direction) {
+      let newIndex = this.activeTab + direction;
+      let tabList = [...this.tabs];
+      if (newIndex < 0 || newIndex >= tabList.length) {
+        return;
+      }
+      let tab = tabList.splice(this.activeTab, 1)[0];
+      tabList.splice(newIndex, 0, tab);
+      let index = 0;
+      await Promise.all(
+        tabList.reduce((acc, cur) => {
+          if (cur.order !== index) {
+            acc.push(this.updateTab({ ...cur, order: index }));
+          }
+          index += 1;
+          return acc;
+        }, [])
+      );
+      this.activeTab = newIndex;
+    }
   },
   created() {
     this.socket.connect();
     this.loadEncounters();
+    this.loadTabs();
   }
 };
 </script>

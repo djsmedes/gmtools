@@ -149,4 +149,8 @@ export default {
     border-image: none !important;
   }
 }
+
+.text-monospaced textarea {
+  font-family: "Monaco", courier, monospace;
+}
 </style>
