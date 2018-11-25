@@ -101,7 +101,8 @@ const router = new Router({
       name: routeNames.ENCOUNTER,
       component: () =>
         import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
-      beforeEnter: loginRequired
+      beforeEnter: loginRequired,
+      props: true
     },
 
     {
