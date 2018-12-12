@@ -77,9 +77,23 @@
       </v-toolbar-items>
     </v-toolbar>
 
-    <v-container>
-      <router-view v-if="isRequested"/>
-    </v-container>
+    <v-content style="position: relative">
+      <div
+          class="loading-overlay"
+      >
+        <v-progress-circular
+            indeterminate
+            :size=64
+            :width=8
+            color="primary"
+            class="loading-circle"
+        ></v-progress-circular>
+      </div>
+      <v-container >
+
+        <router-view v-if="isRequested"/>
+      </v-container>
+    </v-content>
   </v-app>
 </template>
 
@@ -129,6 +143,24 @@ export default {
 </script>
 
 <style lang="scss">
+$toolbar-height: 48px;
+$loading-circle-radius: 32px;
+
+.loading-overlay {
+  position: absolute;
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.loading-circle {
+  position: absolute;
+  margin-top: calc(50vh - #{$toolbar-height} - #{$loading-circle-radius});
+  margin-left: -$loading-circle-radius;
+}
+
 .no-text-dec {
   text-decoration: none !important;
 }
