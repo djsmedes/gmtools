@@ -10,10 +10,17 @@ import auth from "@/auth";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {},
-  getters: {},
+  state: {
+    loadingCount: 0
+  },
+  getters: {
+    isLoading: state => state.loadingCount > 0
+  },
   actions: {},
-  mutations: {},
+  mutations: {
+    needLoading: state => (state.loadingCount = state.loadingCount + 1),
+    doneLoading: state => (state.loadingCount = state.loadingCount - 1)
+  },
   modules: {
     [auth.namespace]: auth.store,
     [campaign.namespace]: campaign.store,
