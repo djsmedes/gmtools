@@ -1,5 +1,5 @@
 <template>
-  <display-when-loaded :is-loaded="isLoaded">
+  <div>
     <object-detail
         @enter-edit-mode="viewMode = false"
         @enter-view-mode="viewMode = true"
@@ -65,7 +65,7 @@
       ></combatant-detail>
     </v-dialog>
 
-  </display-when-loaded>
+  </div>
 </template>
 
 <script>
@@ -75,11 +75,11 @@ import { mapGetters, mapActions } from "vuex";
 import encounter, { Encounter } from "@/models/encounter";
 import combatant, { Combatant } from "@/models/combatant";
 import { routeNames } from "@/router";
-import DisplayWhenLoaded from "@/components/generic/DisplayWhenLoaded";
+import { needLoading, doneLoading } from "@/utils";
 
 export default {
   name: "EncounterDetail",
-  components: { DisplayWhenLoaded, ObjectDetail, CombatantDetail },
+  components: { ObjectDetail, CombatantDetail },
   props: {
     encounterUuid: {
       type: String,
@@ -93,7 +93,6 @@ export default {
       combatantPagination: {
         rowsPerPage: -1
       },
-      isLoaded: false,
       viewMode: true,
       combatantDialog: false,
       combatantDialogUuid: null
@@ -207,9 +206,10 @@ export default {
     }
   },
   async created() {
+    needLoading();
     await Promise.all([this.loadEncounters(), this.loadCombatants()]);
     this.reset();
-    this.isLoaded = true;
+    doneLoading();
   }
 };
 </script>
