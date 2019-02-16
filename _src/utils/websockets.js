@@ -30,15 +30,13 @@ class WebSocketReply {
 }
 
 export class ModuleSocket {
-  constructor(vm, url, msgType2FunctionMap) {
+  constructor(vm) {
     this.vm = vm;
 
     this.counter = 0;
     this.uuid = uuid();
     this.replyCallbackMap = {};
-    this.msgType2FunctionMap = msgType2FunctionMap;
-    this.vm.$connect();
-    // this.vm.$options.sockets.onmessage = this.receive().bind(this);
+    this.vm.$socket.onmessage = this.receive().bind(this);
   }
 
   connect() {
@@ -66,10 +64,6 @@ export class ModuleSocket {
   receive() {
     return event => {
       let obj = new WebSocketReply(JSON.parse(event.data));
-
-      // if (typeof this.msgType2FunctionMap[obj.type] !== "undefined") {
-      //   this.msgType2FunctionMap[obj.type](obj.data);
-      // }
 
       const evt = new CustomEvent(obj.type, {
         detail: obj.data,

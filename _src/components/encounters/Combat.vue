@@ -59,22 +59,25 @@
       </v-btn>
     </v-toolbar>
 
-    <v-container grid-list-lg class="px-0">
-      <v-layout row wrap>
-        <v-flex
-            d-flex xs12 sm6 md4 lg3 xl2
-            v-for="combatant in combatantsByInitiative"
-            :key="combatant.uuid">
-          <combatant-card
-              :combatant="combatant"
-              :effect-mode="applyingEffectType"
-              :active="combatantsToApply.includes(combatant.uuid)"
-              :update-func="updateOneCombatant"
-              :large-h-p-increment="combatantLargeHPIncrement"
-              @click="toggleCombatantWillApply($event)"/>
-        </v-flex>
-      </v-layout>
-    </v-container>
+    <v-expand-transition mode="out-in">
+      <v-container v-if="combatantsByInitiative.length" grid-list-lg class="px-0">
+        <v-layout  row wrap>
+          <v-flex
+              d-flex xs12 sm6 md4 lg3 xl2
+              v-for="combatant in combatantsByInitiative"
+              :key="combatant.uuid">
+            <combatant-card
+                :combatant="combatant"
+                :effect-mode="applyingEffectType"
+                :active="combatantsToApply.includes(combatant.uuid)"
+                :update-func="updateOneCombatant"
+                :large-h-p-increment="combatantLargeHPIncrement"
+                @click="toggleCombatantWillApply($event)"/>
+          </v-flex>
+        </v-layout>
+      </v-container>
+      <v-progress-linear v-else indeterminate></v-progress-linear>
+    </v-expand-transition>
 
     <v-card class="hidden-sm-and-down">
       <screen
@@ -190,7 +193,6 @@ import campaign from "@/models/campaign";
 import encounter, { Encounter } from "@/models/encounter";
 import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
 import _ from "lodash";
-import { ModuleSocket } from "@/utils/websockets";
 import auth from "@/auth";
 import { routeNames } from "@/router";
 
@@ -205,7 +207,6 @@ export default {
       effectToApply: "",
       combatantsToApply: [],
       effectTypes: Combatant.effectTypes,
-      socket: new ModuleSocket(this, "combat", {}),
       fab: false,
       activeTab: -1,
       combatantLargeHPIncrement: 5,
@@ -258,6 +259,9 @@ export default {
     ...mapActions(gmscreentab.namespace, {
       loadTabs: gmscreentab.actionTypes.LIST,
       updateTab: gmscreentab.actionTypes.UPDATE,
+    }),
+    ...mapActions(combatant.namespace, {
+      loadCombatants: combatant.actionTypes.LIST,
     }),
     toggleCombatantWillApply(uuid) {
       if (!this.applyingEffectType) return;
@@ -347,7 +351,7 @@ export default {
     },
   },
   created() {
-    this.$ws.connect();
+    this.loadCombatants();
     this.loadEncounters();
     this.loadTabs();
     document.addEventListener("update", this.updateFromWs);

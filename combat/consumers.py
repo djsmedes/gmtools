@@ -29,7 +29,6 @@ class CombatConsumer(WebsocketConsumer):
         )
 
         self.accept()
-        self.respond(type='update', data={'combatants': ser.data})
 
     def disconnect(self, code):
         async_to_sync(self.channel_layer.group_discard)(

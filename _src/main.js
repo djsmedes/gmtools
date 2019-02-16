@@ -15,7 +15,6 @@ let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
 let url = ws_scheme + "://" + window.location.host + "/ws/combat/";
 
 Vue.use(VueNativeSock, url, {
-  connectManually: true,
   format: "json",
   reconnection: true,
 });
@@ -44,4 +43,4 @@ const vm = new Vue({
   render: h => h(App),
 }).$mount("#app");
 
-Vue.prototype.$ws = new ModuleSocket(vm, "", {});
+Vue.prototype.$ws = new ModuleSocket(vm);
