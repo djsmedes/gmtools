@@ -11,15 +11,15 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    loadingCount: 0
+    loadingCount: 0,
   },
   getters: {
-    isLoading: state => state.loadingCount > 0
+    isLoading: state => state.loadingCount > 0,
   },
   actions: {},
   mutations: {
     needLoading: state => (state.loadingCount = state.loadingCount + 1),
-    doneLoading: state => (state.loadingCount = state.loadingCount - 1)
+    doneLoading: state => (state.loadingCount = state.loadingCount - 1),
   },
   modules: {
     [auth.namespace]: auth.store,
@@ -27,6 +27,6 @@ export default new Vuex.Store({
     [combatant.namespace]: combatant.store,
     [encounter.namespace]: encounter.store,
     [gmscreentab.namespace]: gmscreentab.store,
-    [user.namespace]: user.store
-  }
+    [user.namespace]: user.store,
+  },
 });

@@ -99,29 +99,29 @@ export default {
   components: { DisplayWhenLoaded },
   data() {
     return {
-      routeNames
+      routeNames,
     };
   },
   computed: {
     ...mapGetters(auth.namespace, {
       user: auth.getterTypes.AUTH_USER,
       isAuthenticated: auth.getterTypes.IS_USER_AUTHENTICATED,
-      isRequested: auth.getterTypes.WAS_AUTH_USER_REQUESTED
+      isRequested: auth.getterTypes.WAS_AUTH_USER_REQUESTED,
     }),
     ...mapGetters(campaignModule.namespace, {
       campaignById: campaignModule.getterTypes.BY_ID,
-      campaignsByUser: campaignModule.getterTypes.BY_USER
-    })
+      campaignsByUser: campaignModule.getterTypes.BY_USER,
+    }),
   },
   methods: {
     ...mapActions(auth.namespace, {
-      logoutUser: auth.actionTypes.LOGOUT
+      logoutUser: auth.actionTypes.LOGOUT,
     }),
     ...mapActions(userModule.namespace, {
-      updateUser: userModule.actionTypes.UPDATE
+      updateUser: userModule.actionTypes.UPDATE,
     }),
     ...mapActions(campaignModule.namespace, {
-      loadCampaigns: campaignModule.actionTypes.LIST
+      loadCampaigns: campaignModule.actionTypes.LIST,
     }),
     logout() {
       this.logoutUser();
@@ -129,8 +129,8 @@ export default {
     },
     async setCurrentCampaign(uuid) {
       await this.updateUser(new User({ ...this.user, current_campaign: uuid }));
-    }
-  }
+    },
+  },
 };
 </script>
 
