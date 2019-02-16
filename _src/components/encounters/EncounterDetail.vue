@@ -75,7 +75,7 @@ import { mapGetters, mapActions } from "vuex";
 import encounter, { Encounter } from "@/models/encounter";
 import combatant, { Combatant } from "@/models/combatant";
 import { routeNames } from "@/router";
-import { needLoading, doneLoading } from "@/utils";
+import { needLoading, doneLoading } from "@/utils/loading";
 
 export default {
   name: "EncounterDetail",

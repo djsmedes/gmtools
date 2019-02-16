@@ -190,7 +190,7 @@ import campaign from "@/models/campaign";
 import encounter, { Encounter } from "@/models/encounter";
 import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
 import _ from "lodash";
-import { ModuleSocket } from "@/utils";
+import { ModuleSocket } from "@/utils/websockets";
 import auth from "@/auth";
 import { routeNames } from "@/router";
 
