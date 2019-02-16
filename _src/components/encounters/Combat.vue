@@ -216,7 +216,7 @@ export default {
       combatantLargeHPIncrement: 5,
 
       changeEncounterDialog: false,
-      localEncounter: new Encounter()
+      localEncounter: new Encounter(),
     };
   },
   computed: {
@@ -247,7 +247,7 @@ export default {
     },
     currentEncounter() {
       return this.getEncounter(this.currentCampaign.active_encounter);
-    }
+    },
   },
   methods: {
     ...mapMutations(combatant.namespace, {
@@ -258,7 +258,7 @@ export default {
     }),
     ...mapActions(encounter.namespace, {
       loadEncounters: encounter.actionTypes.LIST,
-      updateEncounter: encounter.actionTypes.UPDATE
+      updateEncounter: encounter.actionTypes.UPDATE,
     }),
     ...mapActions(gmscreentab.namespace, {
       loadTabs: gmscreentab.actionTypes.LIST,
@@ -305,7 +305,7 @@ export default {
       let data = {
         campaign: {
           ...this.currentCampaign,
-          active_encounter: newEncounterUuid
+          active_encounter: newEncounterUuid,
         },
       };
       await this.socket.update(data);
@@ -339,12 +339,12 @@ export default {
         this.updateEncounter(
           new Encounter({
             ...this.currentEncounter,
-            completion_date: new Date()
+            completion_date: new Date(),
           })
         ),
-        this.changeActiveEncounter(null)
+        this.changeActiveEncounter(null),
       ]);
-    }
+    },
   },
   created() {
     this.socket.connect();
