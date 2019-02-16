@@ -1,5 +1,5 @@
-import api from "./_api";
 import Vue from "vue";
+import axios from "axios";
 
 function generateUrl(endpointList = []) {
   return ["", "api", ...endpointList, ""].join("/");
@@ -20,7 +20,7 @@ export class ModelVuexModule {
 
     this.getDetailUrl = (uuid, extra_url_pieces = []) =>
       generateUrl([this.modelName, uuid, ...extra_url_pieces]);
-    this.getListUrl = extra_url_pieces =>
+    this.getListUrl = (extra_url_pieces = []) =>
       generateUrl([this.modelName, ...extra_url_pieces]);
 
     this.stateKeys = {
@@ -84,11 +84,9 @@ export class ModelVuexModule {
           }
 
           try {
-            let objList = await api.listObjects({
-              modelName: this.modelName,
-            });
+            let { data } = await axios.get(this.getListUrl());
             commit(this.mutationTypes.SET_LIST, {
-              objList: array2ObjByUUID(objList, this.modelClass),
+              objList: array2ObjByUUID(data, this.modelClass),
             });
           } catch (err) {
             // ok, we have failed - allow further requests
@@ -98,42 +96,38 @@ export class ModelVuexModule {
           }
         },
         [this.actionTypes.CREATE]: async ({ commit }, object) => {
-          let returnedObject = await api.createObject({
-            object,
-            modelName: this.modelName,
-          });
-          returnedObject = new this.modelClass(returnedObject);
+          let { data } = await axios.post(this.getListUrl(), object);
+          let returnedObject = new this.modelClass(data);
           commit(this.mutationTypes.SET, {
             object: returnedObject,
           });
           return returnedObject;
         },
         [this.actionTypes.REFRESH]: async ({ commit }, object) => {
-          let returnedObject = await api.retrieveObject({
-            uuid: object.uuid,
-            modelName: this.modelName,
-          });
+          let { data } = await axios.get(this.getDetailUrl(object.uuid));
+          let classyObject = new this.modelClass(data);
           commit(this.mutationTypes.SET, {
-            object: new this.modelClass(returnedObject),
+            object: classyObject,
           });
+          return classyObject;
         },
         [this.actionTypes.UPDATE]: async ({ commit }, object) => {
-          let returnedObject = await api.updateObject({
-            object,
-            modelName: this.modelName,
-          });
+          let { data } = await axios.patch(
+            this.getDetailUrl(object.uuid),
+            object
+          );
+          let classyObject = new this.modelClass(data);
           commit(this.mutationTypes.SET, {
-            object: new this.modelClass(returnedObject),
+            object: classyObject,
           });
+          return classyObject;
         },
         [this.actionTypes.DESTROY]: async ({ commit }, objectUuid) => {
-          await api.destroyObject({
-            uuid: objectUuid,
-            modelName: this.modelName,
-          });
+          let { data } = await axios.delete(this.getDetailUrl(objectUuid));
           commit(this.mutationTypes.REMOVE, {
             objUuid: objectUuid,
           });
+          return data;
         },
       },
       mutations: {
