@@ -1,11 +1,10 @@
-from rest_framework import serializers
-
-from core.serializers import CampaignModelSerializer, UserOwnedModelSerializer
+from core.serializers import CampaignModelSerializer, UserOwnedModelSerializer, ClientControlledJSONField
 from .models import Combatant, GMScreenTab
 
 
 class CombatantSerializer(CampaignModelSerializer):
     view_name = 'combatant-detail'
+    effects = ClientControlledJSONField(allow_null=True, required=False)
 
     class Meta:
         model = Combatant
