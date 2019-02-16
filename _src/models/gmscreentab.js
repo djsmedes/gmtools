@@ -1,6 +1,7 @@
+import { Model } from "./_baseModel";
 import { ModelVuexModule } from "@/models/_baseModule";
 
-export class GMScreenTab {
+export class GMScreenTab extends Model {
   static get modelName() {
     return "gmscreentab";
   }
@@ -10,8 +11,9 @@ export class GMScreenTab {
     user = null,
     title = "",
     content = "",
-    order = null
+    order = null,
   } = {}) {
+    super();
     this.uuid = uuid;
     this.user = user;
     this.title = title;
@@ -22,7 +24,8 @@ export class GMScreenTab {
 
 class GMScreenTabVuexModule extends ModelVuexModule {
   constructor() {
-    super(GMScreenTab);
+    super();
+    this.modelClass = GMScreenTab;
     this.store.getters = {
       ...this.store.getters,
       [this.getterTypes.LIST]: (state, getters) => {
@@ -32,12 +35,9 @@ class GMScreenTabVuexModule extends ModelVuexModule {
           if (b.order === null) return -1;
           return a.order - b.order;
         });
-      }
+      },
     };
   }
 }
 
-export default {
-  GMScreenTab,
-  ...new GMScreenTabVuexModule()
-};
+export default new GMScreenTabVuexModule();

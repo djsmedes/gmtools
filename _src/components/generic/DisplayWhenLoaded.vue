@@ -1,14 +1,19 @@
 <template>
   <div>
-    <slot v-if="isLoaded"></slot>
+    <div v-if="$store.getters.isLoading" class="loading-overlay"></div>
+    <div v-show="!$store.getters.isLoading">
+      <slot></slot>
+    </div>
   <v-dialog
-        v-model="stillLoading"
+        :value="$store.getters.isLoading"
         hide-overlay persistent
         :width="64 + 32">
       <v-card color="grey darken-3" dark>
         <v-card-text>
           <v-progress-circular
-              :size="64"
+              :size=64
+              :width=8
+              :transition=false
               indeterminate
               color="white"
               class="mb-0"
@@ -27,11 +32,15 @@ export default {
       type: Boolean,
       default: true
     }
-  },
-  computed: {
-    stillLoading() {
-      return !this.isLoaded;
-    }
   }
 };
 </script>
+
+<style scoped lang="scss">
+.loading-overlay {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+</style>

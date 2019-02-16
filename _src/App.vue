@@ -77,9 +77,13 @@
       </v-toolbar-items>
     </v-toolbar>
 
-    <v-container>
-      <router-view v-if="isRequested"/>
-    </v-container>
+    <v-content style="position: relative">
+      <display-when-loaded>
+        <v-container>
+          <router-view v-if="isRequested"/>
+        </v-container>
+      </display-when-loaded>
+    </v-content>
   </v-app>
 </template>
 
@@ -89,8 +93,10 @@ import auth from "@/auth";
 import { routeNames } from "@/router";
 import userModule, { User } from "@/models/user";
 import campaignModule from "@/models/campaign";
+import DisplayWhenLoaded from "@/components/generic/DisplayWhenLoaded";
 
 export default {
+  components: { DisplayWhenLoaded },
   data() {
     return {
       routeNames

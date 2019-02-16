@@ -216,7 +216,10 @@ export default {
       combatantLargeHPIncrement: 5,
 
       changeEncounterDialog: false,
+<<<<<<< HEAD
       localEncounter: new Encounter()
+=======
+>>>>>>> master
     };
   },
   computed: {
@@ -245,9 +248,12 @@ export default {
     tab() {
       return this.tabs[this.activeTab] || new GMScreenTab();
     },
+<<<<<<< HEAD
     currentEncounter() {
       return this.getEncounter(this.currentCampaign.active_encounter);
     }
+=======
+>>>>>>> master
   },
   methods: {
     ...mapMutations(combatant.namespace, {
@@ -258,7 +264,10 @@ export default {
     }),
     ...mapActions(encounter.namespace, {
       loadEncounters: encounter.actionTypes.LIST,
+<<<<<<< HEAD
       updateEncounter: encounter.actionTypes.UPDATE
+=======
+>>>>>>> master
     }),
     ...mapActions(gmscreentab.namespace, {
       loadTabs: gmscreentab.actionTypes.LIST,
@@ -305,8 +314,13 @@ export default {
       let data = {
         campaign: {
           ...this.currentCampaign,
+<<<<<<< HEAD
           active_encounter: newEncounterUuid
+        }
+=======
+          active_encounter: newEncounter.uuid,
         },
+>>>>>>> master
       };
       await this.socket.update(data);
       this.changeEncounterDialog = false;
@@ -334,6 +348,7 @@ export default {
       );
       this.activeTab = newIndex;
     },
+<<<<<<< HEAD
     async completeEncounter() {
       await Promise.all([
         this.updateEncounter(
@@ -345,6 +360,8 @@ export default {
         this.changeActiveEncounter(null)
       ]);
     }
+=======
+>>>>>>> master
   },
   created() {
     this.socket.connect();
