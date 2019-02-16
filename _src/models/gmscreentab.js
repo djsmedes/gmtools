@@ -22,7 +22,8 @@ export class GMScreenTab {
 
 class GMScreenTabVuexModule extends ModelVuexModule {
   constructor() {
-    super(GMScreenTab);
+    super();
+    this.modelClass = GMScreenTab;
     this.store.getters = {
       ...this.store.getters,
       [this.getterTypes.LIST]: (state, getters) => {
@@ -37,7 +38,4 @@ class GMScreenTabVuexModule extends ModelVuexModule {
   }
 }
 
-export default {
-  GMScreenTab,
-  ...new GMScreenTabVuexModule()
-};
+export default new GMScreenTabVuexModule();

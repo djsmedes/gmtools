@@ -10,7 +10,7 @@ export class Campaign {
     name = "",
     gm_set = [],
     player_set = [],
-    active_encounter = null
+    active_encounter = null,
   } = {}) {
     this.uuid = uuid;
     this.name = name;
@@ -23,19 +23,20 @@ export class Campaign {
     return {
       uuid: this.uuid,
       name: this.name,
-      active_encounter: this.active_encounter
+      active_encounter: this.active_encounter,
     };
   }
 }
 
 class CampaignVuexModule extends ModelVuexModule {
   constructor() {
-    super(Campaign);
+    super();
+    this.modelClass = Campaign;
     this.getterTypes = {
       ...this.getterTypes,
       BY_USER: "byUser",
       BY_GM: "byGM",
-      BY_PLAYER: "byPlayer"
+      BY_PLAYER: "byPlayer",
     };
     this.store.getters = {
       ...this.store.getters,
@@ -52,14 +53,11 @@ class CampaignVuexModule extends ModelVuexModule {
       [this.getterTypes.BY_USER]: (state, getters) => userUuid => {
         return [
           ...getters[this.getterTypes.BY_GM](userUuid),
-          ...getters[this.getterTypes.BY_PLAYER](userUuid)
+          ...getters[this.getterTypes.BY_PLAYER](userUuid),
         ];
-      }
+      },
     };
   }
 }
 
-export default {
-  Campaign,
-  ...new CampaignVuexModule()
-};
+export default new CampaignVuexModule();

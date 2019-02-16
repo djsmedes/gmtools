@@ -13,15 +13,17 @@ export function array2ObjByUUID(array, objConstructor) {
 }
 
 export class ModelVuexModule {
-  constructor(modelClass = {}) {
-    this.modelClass = modelClass;
-    this.namespace = this.modelClass.modelName;
-    this.modelName = this.modelClass.modelName;
+  get namespace() {
+    return this.modelClass.modelName;
+  }
+
+  constructor() {
+    this.modelClass = {};
 
     this.getDetailUrl = (uuid, extra_url_pieces = []) =>
-      generateUrl([this.modelName, uuid, ...extra_url_pieces]);
+      generateUrl([this.modelClass.modelName, uuid, ...extra_url_pieces]);
     this.getListUrl = (extra_url_pieces = []) =>
-      generateUrl([this.modelName, ...extra_url_pieces]);
+      generateUrl([this.modelClass.modelName, ...extra_url_pieces]);
 
     this.stateKeys = {
       OBJECTS: "objects",
@@ -48,7 +50,6 @@ export class ModelVuexModule {
       SET_RELOAD_NEEDED: "setReloadNeeded",
       SET: "set",
       REMOVE: "remove",
-      SET_OPTIONS: "setOptions",
     };
     this.store = {
       namespaced: true,

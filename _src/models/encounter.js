@@ -14,11 +14,9 @@ export class Encounter {
 
 class EncounterVuexModule extends CampaignDependentVuexModule {
   constructor() {
-    super(Encounter);
+    super();
+    this.modelClass = Encounter;
   }
 }
 
-export default {
-  Encounter,
-  ...new EncounterVuexModule()
-};
+export default new EncounterVuexModule();

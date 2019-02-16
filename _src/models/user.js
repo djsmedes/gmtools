@@ -10,7 +10,7 @@ export class User {
     email = "",
     first_name = "",
     last_name = "",
-    current_campaign = ""
+    current_campaign = "",
   } = {}) {
     this.uuid = uuid;
     this.email = email;
@@ -27,18 +27,16 @@ export class User {
     return {
       uuid: this.uuid,
       email: this.email,
-      current_campaign: this.current_campaign
+      current_campaign: this.current_campaign,
     };
   }
 }
 
 class UserVuexModule extends ModelVuexModule {
   constructor() {
-    super(User);
+    super();
+    this.modelClass = User;
   }
 }
 
-export default {
-  User,
-  ...new UserVuexModule()
-};
+export default new UserVuexModule();

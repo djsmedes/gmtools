@@ -16,7 +16,7 @@ export class Combatant {
     temp_hp = 0,
     effects = "{}",
     loot = "",
-    encounter = null
+    encounter = null,
   } = {}) {
     this.uuid = uuid;
     this.name = name;
@@ -105,7 +105,7 @@ export class Combatant {
       effects: JSON.stringify(this.effects),
       campaign: this.campaign,
       loot: this.loot,
-      encounter: this.encounter
+      encounter: this.encounter,
     };
   }
 
@@ -114,18 +114,16 @@ export class Combatant {
       NONE: "",
       BUFF: "buffs",
       DEBUFF: "debuffs",
-      OTHER: "others"
+      OTHER: "others",
     };
   }
 }
 
 class CombatantVuexModule extends CampaignDependentVuexModule {
   constructor() {
-    super(Combatant);
+    super();
+    this.modelClass = Combatant;
   }
 }
 
-export default {
-  Combatant,
-  ...new CombatantVuexModule()
-};
+export default new CombatantVuexModule();
