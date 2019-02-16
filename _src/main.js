@@ -10,7 +10,7 @@ import { namespace, getterTypes } from "@/auth";
 
 Vue.config.productionTip = false;
 Vue.use(VueNativeSock, "not-implemented", {
-  connectManually: true
+  connectManually: true,
 });
 Vue.use(Vuetify, {
   theme: {
@@ -20,18 +20,18 @@ Vue.use(Vuetify, {
     error: "#FF5252",
     info: "#2196F3",
     success: "#4CAF50",
-    warning: "#FFC107"
-  }
+    warning: "#FFC107",
+  },
 });
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 axios.defaults.headers["common"] = {
-  ...store.getters[namespace + "/" + getterTypes.AUTH_HEADER]
+  ...store.getters[namespace + "/" + getterTypes.AUTH_HEADER],
 };
 
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
 }).$mount("#app");

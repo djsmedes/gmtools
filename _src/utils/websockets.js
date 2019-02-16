@@ -4,7 +4,7 @@ const readyState = {
   CONNECTING: 0,
   OPEN: 1,
   CLOSING: 2,
-  CLOSED: 3
+  CLOSED: 3,
 };
 
 class WebSocketRequest {
@@ -20,7 +20,7 @@ class WebSocketReply {
     type = null,
     replyTo = null,
     data = null,
-    status = null
+    status = null,
   } = {}) {
     this.type = type;
     this.replyTo = replyTo;
