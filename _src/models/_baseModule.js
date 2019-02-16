@@ -41,6 +41,7 @@ export class ModelVuexModule {
       UPDATE: "update",
       DESTROY: "destroy",
       LIST: "list",
+      QUERY_LIST: "queryList",
       REFRESH: "refresh",
       REFRESH_LIST: "refreshList",
       OPTIONS: "options",
@@ -96,6 +97,14 @@ export class ModelVuexModule {
             throw err;
           }
         },
+        [this.actionTypes.QUERY_LIST]: async ({ commit }, params) => {
+          let { data } = await axios.get(this.getListUrl(), { params });
+          let objectDict = array2ObjByUUID(data, this.modelClass);
+          commit(this.mutationTypes.SET, {
+            objectDict,
+          });
+          return objectDict;
+        },
         [this.actionTypes.CREATE]: async ({ commit }, object) => {
           let { data } = await axios.post(this.getListUrl(), object);
           let returnedObject = new this.modelClass(data);
@@ -139,9 +148,14 @@ export class ModelVuexModule {
         [this.mutationTypes.SET_RELOAD_NEEDED]: (state, val) => {
           Vue.set(state, this.stateKeys.NEEDS_RELOAD, val);
         },
-        [this.mutationTypes.SET]: (state, { object, objAry }) => {
+        [this.mutationTypes.SET]: (state, { object, objAry, objectDict }) => {
           if (object) {
             Vue.set(state[this.stateKeys.OBJECTS], object.uuid, object);
+          } else if (objectDict) {
+            Vue.set(state, this.stateKeys.OBJECTS, {
+              ...state[this.stateKeys.OBJECTS],
+              ...objectDict,
+            });
           } else if (objAry) {
             objAry.map(obj =>
               Vue.set(

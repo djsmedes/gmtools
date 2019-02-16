@@ -1,33 +1,66 @@
+import re
+from django.utils.functional import cached_property
 from django.http.response import HttpResponseForbidden
-from django.utils.encoding import force_text
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.metadata import SimpleMetadata
-from rest_framework.relations import RelatedField, ManyRelatedField
 
 
-class ChoicesMetaData(SimpleMetadata):
+class ParamFilterKwargHelper:
+    def __init__(self, key, validity_checker=None):
+        self.key = key
+        if validity_checker is None:
+            self.validity_checker = lambda _: True
+        else:
+            self.validity_checker = validity_checker
 
-    def get_field_info(self, field):
-        field_info = super().get_field_info(field)
-        if isinstance(field, (RelatedField, ManyRelatedField)):
-            field_info['choices'] = [
-                {
-                    'value': choice_value,
-                    'text': force_text(choice_name, strings_only=True)
-                }
-                for choice_value, choice_name in field.get_choices().items()
-            ]
-        return field_info
+    def get_kwargs(self, param_value_list):
+        return {
+            self.key: [
+                    val
+                    for val in param_value_list
+                    if self.validity_checker(val)
+                ]
+        }
+
+    @staticmethod
+    def is_uuid4(tst):
+        return re.fullmatch(
+            r'[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}',
+            tst
+        )
 
 
-class MultiTenantedViewSet(ModelViewSet):
+class GetParamFilterableMixin(ModelViewSet):
+    query_param_filters = {}
+
+    def get_query_param_filters(self):
+        return self.query_param_filters
+
+    @cached_property
+    def _query_param_filters(self):
+        return self.get_query_param_filters()
+
+    def filter_queryset(self, queryset):
+        try:
+            for param in self.request.query_params:
+                if param in self._query_param_filters:
+                    f_kwargs = self._query_param_filters[param].get_kwargs(
+                        self.request.query_params.getlist(param)
+                    )
+                    queryset = queryset.filter(**f_kwargs).distinct()
+        except Exception as e:
+            print(e)
+        finally:
+            return queryset
+
+
+class MultiTenantedViewSet(GetParamFilterableMixin, ModelViewSet):
     """An ABSTRACT class, which other model viewsets should inherit from"""
     model = None
     lookup_field = 'uuid'
-    metadata_class = ChoicesMetaData
 
     def get_queryset(self):
-        return self.model.objects.of_requester(self.request)
+        qs = self.model.objects.of_requester(self.request)
+        return self.filter_queryset(qs)
 
     # object-level permissions
     create_permission = None

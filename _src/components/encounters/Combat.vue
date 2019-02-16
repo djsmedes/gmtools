@@ -130,21 +130,18 @@
                   Encounter:
                 </span>
                 <span class="text--black">
-                  {{ getEncounter(currentCampaign.active_encounter).name || '--'}}
+                  {{ currentEncounter.name || '--'}}
                 </span>
               </h6>
             </v-flex>
             <v-flex xs12>
-              <!--<v-btn @click="() => {}" flat>-->
-                <!--Complete-->
-              <!--</v-btn>-->
               <v-dialog width=500 v-model="changeEncounterDialog">
                 <v-btn slot="activator" flat>
                   Change
                 </v-btn>
                 <encounter-chooser :reset="changeEncounterDialog">
                   <template slot="actions" slot-scope="{ selectedEncounter }">
-                    <v-btn flat @click="changeActiveEncounter(selectedEncounter)">
+                    <v-btn flat @click="changeActiveEncounter(selectedEncounter.uuid)">
                       Save
                     </v-btn>
                     <v-btn flat @click="changeEncounterDialog = false">
@@ -153,14 +150,17 @@
                   </template>
                 </encounter-chooser>
               </v-dialog>
+              <v-btn @click="completeEncounter" flat>
+                Complete
+              </v-btn>
             </v-flex>
           </v-layout>
           <v-layout row wrap>
             <v-flex md4 lg3 xl2>
               <v-switch
-                  v-model="combatantLargeHPIncrement"
-                  false-value=5
-                  true-value=10
+                  v-model.number="combatantLargeHPIncrement"
+                  :false-value=5
+                  :true-value=10
               >
                 <template slot="label">
                   Larger damage increment
@@ -187,7 +187,7 @@ import ScreenTab from "@/components/gmscreen/GMScreenTab";
 import EncounterChooser from "@/components/encounters/EncounterChooser";
 import combatant, { Combatant } from "@/models/combatant";
 import campaign from "@/models/campaign";
-import encounter from "@/models/encounter";
+import encounter, { Encounter } from "@/models/encounter";
 import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
 import _ from "lodash";
 import { ModuleSocket } from "@/utils";
@@ -216,6 +216,7 @@ export default {
       combatantLargeHPIncrement: 5,
 
       changeEncounterDialog: false,
+      localEncounter: new Encounter()
     };
   },
   computed: {
@@ -244,6 +245,9 @@ export default {
     tab() {
       return this.tabs[this.activeTab] || new GMScreenTab();
     },
+    currentEncounter() {
+      return this.getEncounter(this.currentCampaign.active_encounter);
+    }
   },
   methods: {
     ...mapMutations(combatant.namespace, {
@@ -254,6 +258,7 @@ export default {
     }),
     ...mapActions(encounter.namespace, {
       loadEncounters: encounter.actionTypes.LIST,
+      updateEncounter: encounter.actionTypes.UPDATE
     }),
     ...mapActions(gmscreentab.namespace, {
       loadTabs: gmscreentab.actionTypes.LIST,
@@ -296,11 +301,11 @@ export default {
       }
       this.exitApplyEffectMode();
     },
-    async changeActiveEncounter(newEncounter) {
+    async changeActiveEncounter(newEncounterUuid) {
       let data = {
         campaign: {
           ...this.currentCampaign,
-          active_encounter: newEncounter.uuid,
+          active_encounter: newEncounterUuid
         },
       };
       await this.socket.update(data);
@@ -329,6 +334,17 @@ export default {
       );
       this.activeTab = newIndex;
     },
+    async completeEncounter() {
+      await Promise.all([
+        this.updateEncounter(
+          new Encounter({
+            ...this.currentEncounter,
+            completion_date: new Date()
+          })
+        ),
+        this.changeActiveEncounter(null)
+      ]);
+    }
   },
   created() {
     this.socket.connect();

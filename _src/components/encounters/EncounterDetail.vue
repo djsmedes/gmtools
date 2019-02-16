@@ -81,7 +81,7 @@ export default {
   name: "EncounterDetail",
   components: { ObjectDetail, CombatantDetail },
   props: {
-    encounterUuid: {
+    uuid: {
       type: String,
       default: null
     }
@@ -100,8 +100,7 @@ export default {
   },
   computed: {
     encounter() {
-      let uuid = this.encounterUuid || this.$route.params.uuid;
-      return this.getEncounter(uuid);
+      return this.getEncounter(this.uuid);
     },
     ...mapGetters(encounter.namespace, {
       getEncounter: encounter.getterTypes.BY_ID
@@ -112,12 +111,13 @@ export default {
     }),
     combatants() {
       return this.getAllCombatants.filter(
-        combatant => combatant.encounter === this.encounter.uuid
+        combatant =>
+          combatant.encounter && combatant.encounter === this.encounter.uuid
       );
     }
   },
   watch: {
-    encounterUuid() {
+    uuid() {
       this.reset();
     }
   },

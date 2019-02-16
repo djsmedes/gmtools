@@ -1,27 +1,27 @@
-# Byte-compiled / optimized / DLL files
+# local env files
+.env
+.env.local
+.env.*.local
+
+# general python
 __pycache__/
 *.py[cod]
 *$py.class
 
-# may contain sensitive info
-.env
-
 # Django stuff
+db.sqlite3
 staticfiles/
+
+# npm stuff / vue-cli stuff
+.DS_Store
+node_modules/
+dist/
+
+# kdiff3
+*.orig
 
 # PyCharm stuff
 .idea/
-
-# npm stuff
-node_modules/
-
-# vue-cli stuff
-.DS_Store
-dist/
-
-# local env files
-.env.local
-.env.*.local
 
 # Log files
 npm-debug.log*
