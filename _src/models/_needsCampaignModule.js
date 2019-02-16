@@ -2,8 +2,8 @@ import { ModelVuexModule } from "./_baseModule";
 import auth from "@/auth";
 
 export class CampaignDependentVuexModule extends ModelVuexModule {
-  constructor(modelClass) {
-    super(modelClass);
+  constructor() {
+    super();
     this.store.getters = {
       ...this.store.getters,
       [this.getterTypes.OBJECTS]: (state, getters, rootState, rootGetters) => {
@@ -22,7 +22,7 @@ export class CampaignDependentVuexModule extends ModelVuexModule {
           },
           {}
         );
-      }
+      },
     };
   }
 }

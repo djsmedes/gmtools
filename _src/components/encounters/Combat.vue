@@ -185,7 +185,7 @@ import CombatantCard from "@/components/encounters/CombatantCard";
 import Screen from "@/components/gmscreen/GMScreen";
 import ScreenTab from "@/components/gmscreen/GMScreenTab";
 import EncounterChooser from "@/components/encounters/EncounterChooser";
-import combatant from "@/models/combatant";
+import combatant, { Combatant } from "@/models/combatant";
 import campaign from "@/models/campaign";
 import encounter from "@/models/encounter";
 import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
@@ -201,36 +201,36 @@ export default {
     return {
       routeNames,
 
-      applyingEffectType: combatant.Combatant.effectTypes.NONE,
+      applyingEffectType: Combatant.effectTypes.NONE,
       effectToApply: "",
       combatantsToApply: [],
-      effectTypes: combatant.Combatant.effectTypes,
+      effectTypes: Combatant.effectTypes,
       socket: new ModuleSocket(this, "combat", {
         update: obj => {
           if (obj.combatants) this.setCombatant({ objAry: obj.combatants });
           if (obj.campaign) this.setCampaign({ object: obj.campaign });
-        }
+        },
       }),
       fab: false,
       activeTab: -1,
       combatantLargeHPIncrement: 5,
 
-      changeEncounterDialog: false
+      changeEncounterDialog: false,
     };
   },
   computed: {
     ...mapGetters(combatant.namespace, {
       combatants: combatant.getterTypes.LIST,
-      getCombatant: combatant.getterTypes.BY_ID
+      getCombatant: combatant.getterTypes.BY_ID,
     }),
     ...mapGetters(auth.namespace, {
-      currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN
+      currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN,
     }),
     ...mapGetters(encounter.namespace, {
-      getEncounter: encounter.getterTypes.BY_ID
+      getEncounter: encounter.getterTypes.BY_ID,
     }),
     ...mapGetters(gmscreentab.namespace, {
-      tabs: gmscreentab.getterTypes.LIST
+      tabs: gmscreentab.getterTypes.LIST,
     }),
     combatantsByInitiative() {
       return [
@@ -238,26 +238,26 @@ export default {
           c =>
             c.encounter === null ||
             c.encounter === this.currentCampaign.active_encounter
-        )
+        ),
       ].sort((a, b) => b.initiative - a.initiative);
     },
     tab() {
       return this.tabs[this.activeTab] || new GMScreenTab();
-    }
+    },
   },
   methods: {
     ...mapMutations(combatant.namespace, {
-      setCombatant: combatant.mutationTypes.SET
+      setCombatant: combatant.mutationTypes.SET,
     }),
     ...mapMutations(campaign.namespace, {
-      setCampaign: campaign.mutationTypes.SET
+      setCampaign: campaign.mutationTypes.SET,
     }),
     ...mapActions(encounter.namespace, {
-      loadEncounters: encounter.actionTypes.LIST
+      loadEncounters: encounter.actionTypes.LIST,
     }),
     ...mapActions(gmscreentab.namespace, {
       loadTabs: gmscreentab.actionTypes.LIST,
-      updateTab: gmscreentab.actionTypes.UPDATE
+      updateTab: gmscreentab.actionTypes.UPDATE,
     }),
     toggleCombatantWillApply(uuid) {
       if (!this.applyingEffectType) return;
@@ -270,16 +270,16 @@ export default {
       }
     },
     enterApplyBuffMode() {
-      this.applyingEffectType = combatant.Combatant.effectTypes.BUFF;
+      this.applyingEffectType = Combatant.effectTypes.BUFF;
     },
     enterApplyDebuffMode() {
-      this.applyingEffectType = combatant.Combatant.effectTypes.DEBUFF;
+      this.applyingEffectType = Combatant.effectTypes.DEBUFF;
     },
     enterApplyOtherMode() {
-      this.applyingEffectType = combatant.Combatant.effectTypes.OTHER;
+      this.applyingEffectType = Combatant.effectTypes.OTHER;
     },
     exitApplyEffectMode() {
-      this.applyingEffectType = combatant.Combatant.effectTypes.NONE;
+      this.applyingEffectType = Combatant.effectTypes.NONE;
       this.effectToApply = "";
       this.combatantsToApply = [];
     },
@@ -300,8 +300,8 @@ export default {
       let data = {
         campaign: {
           ...this.currentCampaign,
-          active_encounter: newEncounter.uuid
-        }
+          active_encounter: newEncounter.uuid,
+        },
       };
       await this.socket.update(data);
       this.changeEncounterDialog = false;
@@ -328,12 +328,12 @@ export default {
         }, [])
       );
       this.activeTab = newIndex;
-    }
+    },
   },
   created() {
     this.socket.connect();
     this.loadEncounters();
     this.loadTabs();
-  }
+  },
 };
 </script>
