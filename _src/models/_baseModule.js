@@ -1,6 +1,10 @@
 import api from "./_api";
 import Vue from "vue";
 
+function generateUrl(endpointList = []) {
+  return ["", "api", ...endpointList, ""].join("/");
+}
+
 export function array2ObjByUUID(array, objConstructor) {
   return array.reduce((accumulator, currentVal) => {
     accumulator[currentVal.uuid] = new objConstructor(currentVal);
@@ -9,18 +13,25 @@ export function array2ObjByUUID(array, objConstructor) {
 }
 
 export class ModelVuexModule {
-  constructor(modelClass) {
-    this.namespace = modelClass.modelName;
-    this.modelName = modelClass.modelName;
+  constructor(modelClass = {}) {
+    this.modelClass = modelClass;
+    this.namespace = this.modelClass.modelName;
+    this.modelName = this.modelClass.modelName;
+
+    this.getDetailUrl = (uuid, extra_url_pieces = []) =>
+      generateUrl([this.modelName, uuid, ...extra_url_pieces]);
+    this.getListUrl = extra_url_pieces =>
+      generateUrl([this.modelName, ...extra_url_pieces]);
+
     this.stateKeys = {
       OBJECTS: "objects",
-      NEEDS_RELOAD: "needsReload"
+      NEEDS_RELOAD: "needsReload",
     };
     this.getterTypes = {
       OBJECTS: "map",
       IDS: "ids",
       LIST: "list",
-      BY_ID: "byID"
+      BY_ID: "byID",
     };
     this.actionTypes = {
       CREATE: "create",
@@ -30,20 +41,20 @@ export class ModelVuexModule {
       LIST: "list",
       REFRESH: "refresh",
       REFRESH_LIST: "refreshList",
-      OPTIONS: "options"
+      OPTIONS: "options",
     };
     this.mutationTypes = {
       SET_LIST: "setList",
       SET_RELOAD_NEEDED: "setReloadNeeded",
       SET: "set",
       REMOVE: "remove",
-      SET_OPTIONS: "setOptions"
+      SET_OPTIONS: "setOptions",
     };
     this.store = {
       namespaced: true,
       state: {
         [this.stateKeys.OBJECTS]: {},
-        [this.stateKeys.NEEDS_RELOAD]: true
+        [this.stateKeys.NEEDS_RELOAD]: true,
       },
       getters: {
         [this.getterTypes.OBJECTS]: state => {
@@ -57,9 +68,9 @@ export class ModelVuexModule {
         },
         [this.getterTypes.BY_ID]: (state, getters) => uuid => {
           let obj = getters[this.getterTypes.OBJECTS][uuid];
-          if (typeof obj === "undefined") return new modelClass();
+          if (typeof obj === "undefined") return new this.modelClass();
           return obj;
-        }
+        },
       },
       actions: {
         [this.actionTypes.LIST]: async ({ state, commit }) => {
@@ -74,10 +85,10 @@ export class ModelVuexModule {
 
           try {
             let objList = await api.listObjects({
-              modelName: this.modelName
+              modelName: this.modelName,
             });
             commit(this.mutationTypes.SET_LIST, {
-              objList: array2ObjByUUID(objList, modelClass)
+              objList: array2ObjByUUID(objList, this.modelClass),
             });
           } catch (err) {
             // ok, we have failed - allow further requests
@@ -89,41 +100,41 @@ export class ModelVuexModule {
         [this.actionTypes.CREATE]: async ({ commit }, object) => {
           let returnedObject = await api.createObject({
             object,
-            modelName: this.modelName
+            modelName: this.modelName,
           });
-          returnedObject = new modelClass(returnedObject);
+          returnedObject = new this.modelClass(returnedObject);
           commit(this.mutationTypes.SET, {
-            object: returnedObject
+            object: returnedObject,
           });
           return returnedObject;
         },
         [this.actionTypes.REFRESH]: async ({ commit }, object) => {
           let returnedObject = await api.retrieveObject({
             uuid: object.uuid,
-            modelName: this.modelName
+            modelName: this.modelName,
           });
           commit(this.mutationTypes.SET, {
-            object: new modelClass(returnedObject)
+            object: new this.modelClass(returnedObject),
           });
         },
         [this.actionTypes.UPDATE]: async ({ commit }, object) => {
           let returnedObject = await api.updateObject({
             object,
-            modelName: this.modelName
+            modelName: this.modelName,
           });
           commit(this.mutationTypes.SET, {
-            object: new modelClass(returnedObject)
+            object: new this.modelClass(returnedObject),
           });
         },
         [this.actionTypes.DESTROY]: async ({ commit }, objectUuid) => {
           await api.destroyObject({
             uuid: objectUuid,
-            modelName: this.modelName
+            modelName: this.modelName,
           });
           commit(this.mutationTypes.REMOVE, {
-            objUuid: objectUuid
+            objUuid: objectUuid,
           });
-        }
+        },
       },
       mutations: {
         [this.mutationTypes.SET_LIST]: (state, { objList }) => {
@@ -141,15 +152,15 @@ export class ModelVuexModule {
               Vue.set(
                 state[this.stateKeys.OBJECTS],
                 obj.uuid,
-                new modelClass(obj)
+                new this.modelClass(obj)
               )
             );
           }
         },
         [this.mutationTypes.REMOVE]: (state, { objUuid }) => {
           Vue.delete(state[this.stateKeys.OBJECTS], objUuid);
-        }
-      }
+        },
+      },
     };
   }
 }
