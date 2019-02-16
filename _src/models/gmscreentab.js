@@ -1,6 +1,7 @@
+import { Model } from "./_baseModel";
 import { ModelVuexModule } from "@/models/_baseModule";
 
-export class GMScreenTab {
+export class GMScreenTab extends Model {
   static get modelName() {
     return "gmscreentab";
   }
@@ -10,8 +11,9 @@ export class GMScreenTab {
     user = null,
     title = "",
     content = "",
-    order = null
+    order = null,
   } = {}) {
+    super();
     this.uuid = uuid;
     this.user = user;
     this.title = title;
@@ -33,7 +35,7 @@ class GMScreenTabVuexModule extends ModelVuexModule {
           if (b.order === null) return -1;
           return a.order - b.order;
         });
-      }
+      },
     };
   }
 }

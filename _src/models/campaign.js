@@ -1,6 +1,7 @@
+import { Model } from "./_baseModel";
 import { ModelVuexModule } from "./_baseModule";
 
-export class Campaign {
+export class Campaign extends Model {
   static get modelName() {
     return "campaign";
   }
@@ -12,19 +13,12 @@ export class Campaign {
     player_set = [],
     active_encounter = null,
   } = {}) {
+    super();
     this.uuid = uuid;
     this.name = name;
     this.gm_set = gm_set;
     this.player_set = player_set;
     this.active_encounter = active_encounter;
-  }
-
-  toJSON() {
-    return {
-      uuid: this.uuid,
-      name: this.name,
-      active_encounter: this.active_encounter,
-    };
   }
 }
 
