@@ -33,13 +33,12 @@ export class ModuleSocket {
   constructor(vm, url, msgType2FunctionMap) {
     this.vm = vm;
 
-    let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
-    this.url = ws_scheme + "://" + window.location.host + "/ws/" + url + "/";
-
     this.counter = 0;
     this.uuid = uuid();
     this.replyCallbackMap = {};
     this.msgType2FunctionMap = msgType2FunctionMap;
+    this.vm.$connect();
+    // this.vm.$options.sockets.onmessage = this.receive().bind(this);
   }
 
   connect() {
@@ -50,7 +49,7 @@ export class ModuleSocket {
       });
     }
     return new Promise(resolve => {
-      this.vm.$connect(this.url, { format: "json" });
+      this.vm.$connect();
       this.vm.$socket.onmessage = this.receive().bind(this);
       this.vm.$socket.onopen = () => resolve();
     });
@@ -68,9 +67,17 @@ export class ModuleSocket {
     return event => {
       let obj = new WebSocketReply(JSON.parse(event.data));
 
-      if (typeof this.msgType2FunctionMap[obj.type] !== "undefined") {
-        this.msgType2FunctionMap[obj.type](obj.data);
-      }
+      // if (typeof this.msgType2FunctionMap[obj.type] !== "undefined") {
+      //   this.msgType2FunctionMap[obj.type](obj.data);
+      // }
+
+      const evt = new CustomEvent(obj.type, {
+        detail: obj.data,
+        bubbles: true,
+        cancelable: true,
+      });
+      document.dispatchEvent(evt);
+
       if (
         obj.replyTo !== null &&
         typeof this.replyCallbackMap[obj.replyTo] !== "undefined"

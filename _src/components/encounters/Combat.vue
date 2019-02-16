@@ -205,12 +205,7 @@ export default {
       effectToApply: "",
       combatantsToApply: [],
       effectTypes: Combatant.effectTypes,
-      socket: new ModuleSocket(this, "combat", {
-        update: obj => {
-          if (obj.combatants) this.setCombatant({ objAry: obj.combatants });
-          if (obj.campaign) this.setCampaign({ object: obj.campaign });
-        },
-      }),
+      socket: new ModuleSocket(this, "combat", {}),
       fab: false,
       activeTab: -1,
       combatantLargeHPIncrement: 5,
@@ -297,7 +292,7 @@ export default {
             this.applyingEffectType
           ].push(this.effectToApply);
         }
-        await this.socket.update({ combatants: combatantObjs });
+        await this.$ws.update({ combatants: combatantObjs });
       }
       this.exitApplyEffectMode();
     },
@@ -308,11 +303,11 @@ export default {
           active_encounter: newEncounterUuid,
         },
       };
-      await this.socket.update(data);
+      await this.$ws.update(data);
       this.changeEncounterDialog = false;
     },
     updateOneCombatant: _.debounce(function(combatant) {
-      this.socket.update({ combatants: [combatant] });
+      this.$ws.update({ combatants: [combatant] });
     }, 500),
     async changeTabIndex(direction) {
       let newIndex = this.activeTab + direction;
@@ -345,11 +340,20 @@ export default {
         this.changeActiveEncounter(null),
       ]);
     },
+    updateFromWs($event) {
+      const obj = $event.detail;
+      if (obj.combatants) this.setCombatant({ objAry: obj.combatants });
+      if (obj.campaign) this.setCampaign({ object: obj.campaign });
+    },
   },
   created() {
-    this.socket.connect();
+    this.$ws.connect();
     this.loadEncounters();
     this.loadTabs();
+    document.addEventListener("update", this.updateFromWs);
+  },
+  beforeDestroy() {
+    document.removeEventListener("update", this.updateFromWs);
   },
 };
 </script>
