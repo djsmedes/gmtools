@@ -22,6 +22,12 @@ export default new Vuex.Store({
     needLoading: state => (state.loadingCount = state.loadingCount + 1),
     doneLoading: state => (state.loadingCount = state.loadingCount - 1),
     setLastReply: (state, value) => Vue.set(state, "lastReplyId", value),
+    SOCKET_ONOPEN: state => {},
+    SOCKET_ONCLOSE: state => {},
+    SOCKET_ONERROR: state => {},
+    SOCKET_ONMESSAGE: state => {},
+    SOCKET_RECONNECT: state => {},
+    SOCKET_RECONNECT_ERROR: state => {},
   },
   modules: {
     [auth.namespace]: auth.store,

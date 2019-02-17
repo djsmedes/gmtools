@@ -183,7 +183,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import CombatantCard from "@/components/encounters/CombatantCard";
 import Screen from "@/components/gmscreen/GMScreen";
 import ScreenTab from "@/components/gmscreen/GMScreenTab";
@@ -246,12 +246,6 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(combatant.namespace, {
-      setCombatant: combatant.mutationTypes.SET,
-    }),
-    ...mapMutations(campaign.namespace, {
-      setCampaign: campaign.mutationTypes.SET,
-    }),
     ...mapActions(encounter.namespace, {
       loadEncounters: encounter.actionTypes.LIST,
       updateEncounter: encounter.actionTypes.UPDATE,
@@ -313,6 +307,7 @@ export default {
       this.changeEncounterDialog = false;
     },
     updateOneCombatant: _.debounce(function(combatant) {
+      // debounced because the way this update happens is via clicking a +1 button
       this.$ws.update({ combatant: [combatant] });
     }, 500),
     async changeTabIndex(direction) {
