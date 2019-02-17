@@ -12,6 +12,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     loadingCount: 0,
+    lastReplyId: null,
   },
   getters: {
     isLoading: state => state.loadingCount > 0,
@@ -20,6 +21,7 @@ export default new Vuex.Store({
   mutations: {
     needLoading: state => (state.loadingCount = state.loadingCount + 1),
     doneLoading: state => (state.loadingCount = state.loadingCount - 1),
+    setLastReply: (state, value) => Vue.set(state, "lastReplyId", value),
   },
   modules: {
     [auth.namespace]: auth.store,

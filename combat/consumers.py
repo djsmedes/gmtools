@@ -22,12 +22,6 @@ class CombatConsumer(WebsocketConsumer):
             self.channel_name
         )
 
-        ser = CombatantSerializer(
-            many=True,
-            instance=Combatant.objects.of_user(user),
-            user=user
-        )
-
         self.accept()
 
     def disconnect(self, code):

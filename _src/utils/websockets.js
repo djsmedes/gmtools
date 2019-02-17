@@ -37,6 +37,15 @@ export class ModuleSocket {
     this.uuid = uuid();
     this.replyCallbackMap = {};
     this.vm.$socket.onmessage = this.receive().bind(this);
+    this.vm.$store.watch(
+      state => state.lastReplyId,
+      value => {
+        if (this.replyCallbackMap[value] !== undefined) {
+          this.replyCallbackMap[value]();
+          delete this.replyCallbackMap[value];
+        }
+      }
+    );
   }
 
   connect() {
@@ -72,13 +81,7 @@ export class ModuleSocket {
       });
       document.dispatchEvent(evt);
 
-      if (
-        obj.replyTo !== null &&
-        typeof this.replyCallbackMap[obj.replyTo] !== "undefined"
-      ) {
-        this.replyCallbackMap[obj.replyTo](obj);
-        delete this.replyCallbackMap[obj.replyTo];
-      }
+      this.vm.$store.commit("setLastReply", obj.replyTo);
     };
   }
 
