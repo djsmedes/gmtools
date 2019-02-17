@@ -13,74 +13,67 @@ ACTION = "SOCKET_DATA"
 
 
 class CombatConsumer(WebsocketConsumer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.channel_group_name = None
+
     def connect(self):
         user = self.scope.get('user')
         if user is None or not user.is_authenticated:
             return
 
-        self.channel_group_name = f'{user.current_campaign.uuid}_combat'
+        if user.current_campaign is not None:
+            self.join_channel_group(f'{user.current_campaign.uuid}')
 
+        self.accept()
+
+    def leave_channel_group(self):
+        if self.channel_group_name is not None:
+            async_to_sync(self.channel_layer.group_discard)(
+                self.channel_group_name,
+                self.channel_name
+            )
+        self.channel_group_name = None
+
+    def join_channel_group(self, channel_group_name):
+        self.leave_channel_group()
+        self.channel_group_name = channel_group_name
         async_to_sync(self.channel_layer.group_add)(
             self.channel_group_name,
             self.channel_name
         )
 
-        self.accept()
-
     def disconnect(self, code):
-        async_to_sync(self.channel_layer.group_discard)(
-            self.channel_group_name,
-            self.channel_name
-        )
+        self.leave_channel_group()
 
     def receive(self, text_data=None, bytes_data=None):
         msg = json.loads(text_data)
-        msg_id, msg_type, msg_data = msg.get('id'), msg.get('type'), msg.get('data')
+        msg_id, msg_type, msg_data = msg.get('id'), msg.get('type'), msg.get('data', {})
 
         if msg_type == 'update':
-            self.update(msg_id, msg_data)
+            if len(msg_data) > 1:
+                print(
+                    'Websocket will send multiple replies to one request. '
+                    'Unexpected behavior may occur.'
+                )
+            for namespace in msg_data:
+                self.update_model(msg_id, namespace, msg_data.get(namespace, []))
+        elif msg_type == 'join_campaign_group':
+            user = self.scope.get('user')
+            if user and user.current_campaign:
+                self.join_channel_group(f'{user.current_campaign.uuid}')
         else:
-            self.respond(type=msg_type, reply_to=msg_id, status=400)
+            self.respond(msg_type=msg_type, reply_to=msg_id, status=400)
 
-    def respond(self, type=None, reply_to=None, status=200, data=None):
+    def respond(self, msg_type=None, reply_to=None, status=200, data=None):
         if data is None:
             data = {}
         self.send(text_data=JSONRenderer().render({
-            'type': type,
+            'type': msg_type,
             'replyTo': reply_to,
             'status': status,
             'data': data
         }).decode())
-
-    def update(self, msg_id, data_to_update):
-        if 'campaign' in data_to_update:
-            self.update_model(msg_id, 'campaign', data_to_update)
-        if 'combatant' in data_to_update:
-            self.update_model(msg_id, 'combatant', data_to_update)
-
-        # data = {}
-        #
-        # combatants = self.update_combatants(data_to_update)
-        # if combatants:
-        #     data['combatants'] = combatants
-        # campaign = self.update_campaign(data_to_update)
-        # if campaign:
-        #     data['campaign'] = campaign
-        #
-        # async_to_sync(self.channel_layer.group_send)(
-        #     self.channel_group_name,
-        #     {
-        #         'type': 'data_update',
-        #         'text_data': JSONRenderer().render({
-        #             'type': 'update',
-        #             'replyTo': msg_id,
-        #             'status': 200,
-        #             'data': data,
-        #             'action': ACTION,
-        #             'namespace': 'campaign'
-        #         }).decode()
-        #     }
-        # )
 
     KEY_2_MODEL_CLASS = {
         'combatant': Combatant,
@@ -91,12 +84,12 @@ class CombatConsumer(WebsocketConsumer):
         'campaign': CampaignSerializer,
     }
 
-    def update_model(self, msg_id, model_key, data):
+    def update_model(self, msg_id: str, model_namespace: str, data: list):
         successful_data = []
-        model_class = self.KEY_2_MODEL_CLASS[model_key]
-        serializer_class = self.KEY_2_SERIALIZER_CLASS[model_key]
+        model_class = self.KEY_2_MODEL_CLASS[model_namespace]
+        serializer_class = self.KEY_2_SERIALIZER_CLASS[model_namespace]
 
-        for obj in data.get(model_key, []):
+        for obj in data:
             try:
                 instance = model_class.objects.get(uuid=obj.get('uuid'))
             except model_class.DoesNotExist:
@@ -120,7 +113,7 @@ class CombatConsumer(WebsocketConsumer):
                     'status': 200,
                     'data': successful_data,
                     'action': ACTION,
-                    'namespace': model_key
+                    'namespace': model_namespace
                 }).decode()
             }
         )
@@ -131,35 +124,3 @@ class CombatConsumer(WebsocketConsumer):
             return
 
         self.send(text_data=text_data)
-
-    def update_combatants(self, data_to_update):
-        combatants = []
-        failed_combatants = []
-        for combatant in data_to_update.get('combatants', []):
-            instance = Combatant.objects.get(uuid=combatant.get('uuid'))
-            ser = CombatantSerializer(
-                instance=instance,
-                data=combatant,
-                partial=True,
-                user=self.scope.get('user')
-            )
-            if ser.is_valid():
-                ser.save()
-                combatants.append(ser.data)
-            else:
-                failed_combatants.append(instance.uuid)
-        return combatants
-
-    def update_campaign(self, data_to_update):
-        campaign = data_to_update.get('campaign')
-        if campaign:
-            instance = Campaign.objects.get(uuid=campaign.get('uuid'))
-            ser = CampaignSerializer(
-                instance=instance,
-                data=campaign,
-                partial=True,
-                user=self.scope.get('user')
-            )
-            if ser.is_valid():
-                ser.save()
-                return ser.data

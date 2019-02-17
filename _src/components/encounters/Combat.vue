@@ -290,25 +290,24 @@ export default {
             this.applyingEffectType
           ].push(this.effectToApply);
         }
-        await this.$ws.update({ combatant: combatantObjs });
+        await this.$ws.update({ [combatant.namespace]: combatantObjs });
       }
       this.exitApplyEffectMode();
     },
     async changeActiveEncounter(newEncounterUuid) {
-      let data = {
-        campaign: [
+      await this.$ws.update({
+        [campaign.namespace]: [
           {
             ...this.currentCampaign,
             active_encounter: newEncounterUuid,
           },
         ],
-      };
-      await this.$ws.update(data);
+      });
       this.changeEncounterDialog = false;
     },
-    updateOneCombatant: _.debounce(function(combatant) {
+    updateOneCombatant: _.debounce(function(cbt) {
       // debounced because the way this update happens is via clicking a +1 button
-      this.$ws.update({ combatant: [combatant] });
+      this.$ws.update({ [combatant.namespace]: [cbt] });
     }, 500),
     async changeTabIndex(direction) {
       let newIndex = this.activeTab + direction;
