@@ -17,6 +17,7 @@ let url = ws_scheme + "://" + window.location.host + "/ws/combat/";
 Vue.use(VueNativeSock, url, {
   format: "json",
   reconnection: true,
+  store: store,
 });
 
 Vue.use(Vuetify, {

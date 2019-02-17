@@ -9,6 +9,9 @@ from .models import Combatant
 from .serializers import CombatantSerializer
 
 
+ACTION = "SOCKET_DATA"
+
+
 class CombatConsumer(WebsocketConsumer):
     def connect(self):
         user = self.scope.get('user')
@@ -50,24 +53,74 @@ class CombatConsumer(WebsocketConsumer):
         }).decode())
 
     def update(self, msg_id, data_to_update):
-        data = {}
+        if 'campaign' in data_to_update:
+            self.update_model(msg_id, 'campaign', data_to_update)
+        if 'combatant' in data_to_update:
+            self.update_model(msg_id, 'combatant', data_to_update)
 
-        combatants = self.update_combatants(data_to_update)
-        if combatants:
-            data['combatants'] = combatants
-        campaign = self.update_campaign(data_to_update)
-        if campaign:
-            data['campaign'] = campaign
+        # data = {}
+        #
+        # combatants = self.update_combatants(data_to_update)
+        # if combatants:
+        #     data['combatants'] = combatants
+        # campaign = self.update_campaign(data_to_update)
+        # if campaign:
+        #     data['campaign'] = campaign
+        #
+        # async_to_sync(self.channel_layer.group_send)(
+        #     self.channel_group_name,
+        #     {
+        #         'type': 'data_update',
+        #         'text_data': JSONRenderer().render({
+        #             'type': 'update',
+        #             'replyTo': msg_id,
+        #             'status': 200,
+        #             'data': data,
+        #             'action': ACTION,
+        #             'namespace': 'campaign'
+        #         }).decode()
+        #     }
+        # )
+
+    KEY_2_MODEL_CLASS = {
+        'combatant': Combatant,
+        'campaign': Campaign,
+    }
+    KEY_2_SERIALIZER_CLASS = {
+        'combatant': CombatantSerializer,
+        'campaign': CampaignSerializer,
+    }
+
+    def update_model(self, msg_id, model_key, data):
+        successful_data = []
+        model_class = self.KEY_2_MODEL_CLASS[model_key]
+        serializer_class = self.KEY_2_SERIALIZER_CLASS[model_key]
+
+        for obj in data.get(model_key, []):
+            try:
+                instance = model_class.objects.get(uuid=obj.get('uuid'))
+            except model_class.DoesNotExist:
+                continue
+            ser = serializer_class(
+                instance=instance,
+                data=obj,
+                partial=True,
+                user=self.scope.get('user')
+            )
+            if ser.is_valid():
+                ser.save()
+                successful_data.append(ser.data)
 
         async_to_sync(self.channel_layer.group_send)(
             self.channel_group_name,
             {
                 'type': 'data_update',
                 'text_data': JSONRenderer().render({
-                    'type': 'update',
                     'replyTo': msg_id,
                     'status': 200,
-                    'data': data
+                    'data': successful_data,
+                    'action': ACTION,
+                    'namespace': model_key
                 }).decode()
             }
         )

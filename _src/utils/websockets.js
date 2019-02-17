@@ -1,12 +1,5 @@
 import uuid from "uuid/v4";
 
-const readyState = {
-  CONNECTING: 0,
-  OPEN: 1,
-  CLOSING: 2,
-  CLOSED: 3,
-};
-
 class WebSocketRequest {
   constructor({ type = null, id = null, data = null } = {}) {
     this.type = type;
@@ -36,7 +29,7 @@ export class ModuleSocket {
     this.counter = 0;
     this.uuid = uuid();
     this.replyCallbackMap = {};
-    this.vm.$socket.onmessage = this.receive().bind(this);
+    // this.vm.$socket.onmessage = this.receive().bind(this);
     this.vm.$store.watch(
       state => state.lastReplyId,
       value => {
@@ -46,28 +39,6 @@ export class ModuleSocket {
         }
       }
     );
-  }
-
-  connect() {
-    if (this.vm.$socket && this.vm.$socket.readyState === readyState.OPEN) {
-      return new Promise(resolve => {
-        this.vm.$socket.onmessage = this.receive().bind(this);
-        this.vm.$socket.onopen = () => resolve();
-      });
-    }
-    return new Promise(resolve => {
-      this.vm.$connect();
-      this.vm.$socket.onmessage = this.receive().bind(this);
-      this.vm.$socket.onopen = () => resolve();
-    });
-  }
-
-  disconnect() {
-    this.vm.$disconnect();
-  }
-
-  send(obj) {
-    this.vm.$socket.sendObj(obj);
   }
 
   receive() {
@@ -81,7 +52,7 @@ export class ModuleSocket {
       });
       document.dispatchEvent(evt);
 
-      this.vm.$store.commit("setLastReply", obj.replyTo);
+      // this.vm.$store.commit("setLastReply", obj.replyTo);
     };
   }
 
@@ -90,7 +61,7 @@ export class ModuleSocket {
       this.counter += 1;
       let id = this.uuid + "-" + this.counter;
       this.replyCallbackMap[id] = obj => resolve(obj);
-      this.send(new WebSocketRequest({ id, type, data }));
+      this.vm.$socket.sendObj(new WebSocketRequest({ id, type, data }));
     });
   }
 

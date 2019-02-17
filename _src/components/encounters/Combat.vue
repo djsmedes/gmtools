@@ -302,10 +302,12 @@ export default {
     },
     async changeActiveEncounter(newEncounterUuid) {
       let data = {
-        campaign: {
-          ...this.currentCampaign,
-          active_encounter: newEncounterUuid,
-        },
+        campaign: [
+          {
+            ...this.currentCampaign,
+            active_encounter: newEncounterUuid,
+          },
+        ],
       };
       await this.$ws.update(data);
       this.changeEncounterDialog = false;
