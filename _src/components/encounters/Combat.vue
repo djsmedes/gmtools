@@ -296,7 +296,7 @@ export default {
             this.applyingEffectType
           ].push(this.effectToApply);
         }
-        await this.$ws.update({ combatants: combatantObjs });
+        await this.$ws.update({ combatant: combatantObjs });
       }
       this.exitApplyEffectMode();
     },
@@ -313,7 +313,7 @@ export default {
       this.changeEncounterDialog = false;
     },
     updateOneCombatant: _.debounce(function(combatant) {
-      this.$ws.update({ combatants: [combatant] });
+      this.$ws.update({ combatant: [combatant] });
     }, 500),
     async changeTabIndex(direction) {
       let newIndex = this.activeTab + direction;
@@ -346,20 +346,11 @@ export default {
         this.changeActiveEncounter(null),
       ]);
     },
-    updateFromWs($event) {
-      const obj = $event.detail;
-      if (obj.combatants) this.setCombatant({ objAry: obj.combatants });
-      if (obj.campaign) this.setCampaign({ object: obj.campaign });
-    },
   },
   created() {
     this.loadCombatants();
     this.loadEncounters();
     this.loadTabs();
-    document.addEventListener("update", this.updateFromWs);
-  },
-  beforeDestroy() {
-    document.removeEventListener("update", this.updateFromWs);
   },
 };
 </script>

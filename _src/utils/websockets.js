@@ -29,7 +29,6 @@ export class ModuleSocket {
     this.counter = 0;
     this.uuid = uuid();
     this.replyCallbackMap = {};
-    // this.vm.$socket.onmessage = this.receive().bind(this);
     this.vm.$store.watch(
       state => state.lastReplyId,
       value => {
@@ -39,21 +38,6 @@ export class ModuleSocket {
         }
       }
     );
-  }
-
-  receive() {
-    return event => {
-      let obj = new WebSocketReply(JSON.parse(event.data));
-
-      const evt = new CustomEvent(obj.type, {
-        detail: obj.data,
-        bubbles: true,
-        cancelable: true,
-      });
-      document.dispatchEvent(evt);
-
-      // this.vm.$store.commit("setLastReply", obj.replyTo);
-    };
   }
 
   request(type, data) {
