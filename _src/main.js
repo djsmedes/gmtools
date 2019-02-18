@@ -11,10 +11,7 @@ import { ModuleSocket } from "@/utils/websockets";
 
 Vue.config.productionTip = false;
 
-let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
-let url = ws_scheme + "://" + window.location.host + "/ws/combat/";
-
-Vue.use(VueNativeSock, url, {
+Vue.use(VueNativeSock, "//" + window.location.host + "/ws/combat/", {
   format: "json",
   reconnection: true,
   store: store,
