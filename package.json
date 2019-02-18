@@ -28,10 +28,16 @@
     "@vue/cli-plugin-eslint": "^3.4.0",
     "@vue/cli-service": "^3.4.0",
     "@vue/eslint-config-prettier": "^4.0.1",
+    "css-loader": "^2.1.0",
     "node-sass": "^4.11.0",
     "sass-loader": "^7.0.1",
+    "style-loader": "^0.23.1",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2",
     "vue-cli-plugin-vuetify": "^0.4.6",
-    "vue-template-compiler": "^2.6.6"
+    "vue-cli-plugin-webpack-bundle-analyzer": "^1.2.0",
+    "vue-template-compiler": "^2.6.6",
+    "vuetify-loader": "^1.2.1"
   },
   "postcss": {
     "plugins": {

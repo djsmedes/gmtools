@@ -192,7 +192,8 @@ import combatant, { Combatant } from "@/models/combatant";
 import campaign from "@/models/campaign";
 import encounter, { Encounter } from "@/models/encounter";
 import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
-import _ from "lodash";
+import cloneDeep from "lodash/cloneDeep";
+import debounce from "lodash/debounce";
 import auth from "@/auth";
 import { routeNames } from "@/router";
 
@@ -285,7 +286,7 @@ export default {
       let combatantObjs = [];
       if (this.effectToApply.length) {
         for (let uuid of this.combatantsToApply) {
-          combatantObjs.push(_.cloneDeep(this.getCombatant(uuid)));
+          combatantObjs.push(cloneDeep(this.getCombatant(uuid)));
           combatantObjs[combatantObjs.length - 1].effects[
             this.applyingEffectType
           ].push(this.effectToApply);
@@ -305,7 +306,7 @@ export default {
       });
       this.changeEncounterDialog = false;
     },
-    updateOneCombatant: _.debounce(function(cbt) {
+    updateOneCombatant: debounce(function(cbt) {
       // debounced because the way this update happens is via clicking a +1 button
       this.$ws.put({ [combatant.namespace]: [cbt] });
     }, 500),

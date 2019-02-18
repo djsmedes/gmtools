@@ -1,7 +1,6 @@
 import store from "@/store";
 import auth from "@/auth";
 import { routeNames } from "@/router";
-import _ from "lodash";
 
 const wasUserRequested = () =>
   store.getters[
@@ -23,7 +22,7 @@ export function loginRequired(to, from, next) {
     ? next()
     : next({
         name: routeNames.LOGIN,
-        params: { successRoute: _.cloneDeep(to) }
+        params: { successRoute: { ...to } },
       });
 }
 

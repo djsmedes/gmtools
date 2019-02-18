@@ -6,26 +6,30 @@ module.exports = {
       "/api": {
         target: "http://localhost:8000",
         changeOrigin: true,
-        ws: true
+        ws: true,
       },
       "/ws": {
         target: "ws://localhost:8000",
         secure: false,
-        ws: true
-      }
-    }
+        ws: true,
+      },
+    },
   },
 
-  configureWebpack: config => {
-    return {
-      resolve: {
-        alias: {
-          "@": __dirname + "/_src"
-        }
+  configureWebpack: {
+    optimization: {
+      splitChunks: {
+        minSize: 10000,
+        maxSize: 250000,
       },
-      entry: {
-        app: "./_src/main.js"
-      }
-    };
-  }
+    },
+    resolve: {
+      alias: {
+        "@": __dirname + "/_src",
+      },
+    },
+    entry: {
+      app: "./_src/main.js",
+    },
+  },
 };

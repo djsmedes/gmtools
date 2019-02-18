@@ -76,7 +76,8 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import _ from "lodash";
+import cloneDeep from "lodash/cloneDeep";
+import debounce from "lodash/debounce";
 import ScreenTab from "@/components/gmscreen/GMScreenTab";
 import Screen from "@/components/gmscreen/GMScreen";
 import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
@@ -88,34 +89,34 @@ export default {
   props: {
     uuid: {
       type: String,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
       deleteDialog: false,
-      localTab: new GMScreenTab({ title: "New tab" })
+      localTab: new GMScreenTab({ title: "New tab" }),
     };
   },
   computed: {
     ...mapGetters(gmscreentab.namespace, {
-      getTab: gmscreentab.getterTypes.BY_ID
+      getTab: gmscreentab.getterTypes.BY_ID,
     }),
     tab() {
       return this.getTab(this.uuid);
-    }
+    },
   },
   methods: {
     ...mapActions(gmscreentab.namespace, {
       createTab: gmscreentab.actionTypes.CREATE,
       updateTab: gmscreentab.actionTypes.UPDATE,
       loadTabs: gmscreentab.actionTypes.LIST,
-      deleteTab: gmscreentab.actionTypes.DESTROY
+      deleteTab: gmscreentab.actionTypes.DESTROY,
     }),
-    updateContent: _.debounce(function(e) {
+    updateContent: debounce(function(e) {
       this.localTab.content = e;
     }, 300),
-    updateTitle: _.debounce(function(e) {
+    updateTitle: debounce(function(e) {
       this.localTab.title = e;
     }, 300),
     async save() {
@@ -123,20 +124,20 @@ export default {
     },
     async create() {
       let newTab = await this.createTab(this.localTab);
-      this.localTab = _.cloneDeep(newTab);
+      this.localTab = cloneDeep(newTab);
       this.$router.replace({
         name: routeNames.GMSCREENTAB,
-        params: { uuid: newTab.uuid }
+        params: { uuid: newTab.uuid },
       });
     },
     async deleteSelf() {
       await this.deleteTab(this.uuid);
       this.$router.push({ name: routeNames.GMSCREENTABS });
-    }
+    },
   },
   async created() {
     await this.loadTabs();
-    if (this.tab.uuid) this.localTab = _.cloneDeep(this.tab);
-  }
+    if (this.tab.uuid) this.localTab = cloneDeep(this.tab);
+  },
 };
 </script>
