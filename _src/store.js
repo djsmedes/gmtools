@@ -24,7 +24,9 @@ export default new Vuex.Store({
     setLastReply: (state, value) => Vue.set(state, "lastReplyId", value),
     SOCKET_ONOPEN: state => {},
     SOCKET_ONCLOSE: state => {},
-    SOCKET_ONERROR: state => {},
+    SOCKET_ONERROR: (state, wsEvent) => {
+      console.warn(wsEvent);
+    },
     SOCKET_ONMESSAGE: state => {},
     SOCKET_RECONNECT: state => {},
     SOCKET_RECONNECT_ERROR: state => {},
