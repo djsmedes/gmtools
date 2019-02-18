@@ -13,6 +13,8 @@ ACTION = "SOCKET_DATA"
 
 
 class CombatConsumer(WebsocketConsumer):
+    allowed_verbs = ['PUT']
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.channel_group_name = None
@@ -48,28 +50,47 @@ class CombatConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None, bytes_data=None):
         msg = json.loads(text_data)
-        msg_id, msg_type, msg_data = msg.get('id'), msg.get('type'), msg.get('data', {})
+        msg_id = msg.get('id')
+        msg_verb: str = msg.get('verb')
+        msg_data: dict = msg.get('data', {})
 
-        if msg_type == 'update':
-            if len(msg_data) > 1:
-                print(
-                    'Websocket will send multiple replies to one request. '
-                    'Unexpected behavior may occur.'
-                )
-            for namespace in msg_data:
-                self.update_model(msg_id, namespace, msg_data.get(namespace, []))
-        elif msg_type == 'join_campaign_group':
+        if msg_verb in self.allowed_verbs:
+            getattr(self, msg_verb.lower())(msg_id, msg_data)
+        elif msg_verb == 'join_campaign_group':
             user = self.scope.get('user')
             if user and user.current_campaign:
                 self.join_channel_group(f'{user.current_campaign.uuid}')
         else:
-            self.respond(msg_type=msg_type, reply_to=msg_id, status=400)
+            self.respond(reply_to=msg_id, status=405)
 
-    def respond(self, msg_type=None, reply_to=None, status=200, data=None):
+    def get(self, msg_id, msg_data):
+        successful_gets = {}
+        for namespace in msg_data:
+            uuids = msg_data.get(namespace, [])
+            model_class = self.KEY_2_MODEL_CLASS[namespace]
+            serializer_class = self.KEY_2_SERIALIZER_CLASS[namespace]
+            qs = model_class.objects.of_user(self.scope.get('user')).filter(uuid__in=uuids)
+            ser = serializer_class(
+                many=True,
+                instance=qs,
+                user=self.scope.get('user')
+            )
+            successful_gets[namespace] = ser.data
+        self.respond(reply_to=msg_id, data=successful_gets)
+
+    def put(self, msg_id, msg_data):
+        if len(msg_data) > 1:
+            print(
+                'Websocket will send multiple replies to one request. '
+                'Unexpected behavior may occur.'
+            )
+        for namespace in msg_data:
+            self.update_model(msg_id, namespace, msg_data.get(namespace, []))
+
+    def respond(self, reply_to=None, status=200, data=None):
         if data is None:
             data = {}
         self.send(text_data=JSONRenderer().render({
-            'type': msg_type,
             'replyTo': reply_to,
             'status': status,
             'data': data
@@ -91,7 +112,7 @@ class CombatConsumer(WebsocketConsumer):
 
         for obj in data:
             try:
-                instance = model_class.objects.get(uuid=obj.get('uuid'))
+                instance = model_class.objects.of_user(self.scope.get('user')).get(uuid=obj.get('uuid'))
             except model_class.DoesNotExist:
                 continue
             ser = serializer_class(

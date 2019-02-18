@@ -1,24 +1,10 @@
 import uuid from "uuid/v4";
 
 class WebSocketRequest {
-  constructor({ type = null, id = null, data = null } = {}) {
-    this.type = type;
+  constructor({ verb = null, id = null, data = null } = {}) {
+    this.verb = verb;
     this.id = id;
     this.data = data;
-  }
-}
-
-class WebSocketReply {
-  constructor({
-    type = null,
-    replyTo = null,
-    data = null,
-    status = null,
-  } = {}) {
-    this.type = type;
-    this.replyTo = replyTo;
-    this.data = data;
-    this.status = status;
   }
 }
 
@@ -40,16 +26,28 @@ export class ModuleSocket {
     );
   }
 
-  request(type, data) {
+  request(verb, data) {
     return new Promise(resolve => {
       this.counter += 1;
       let id = this.uuid + "-" + this.counter;
       this.replyCallbackMap[id] = obj => resolve(obj);
-      this.vm.$socket.sendObj(new WebSocketRequest({ id, type, data }));
+      this.vm.$socket.sendObj(new WebSocketRequest({ id, verb, data }));
     });
   }
 
-  async update(data) {
-    return await this.request("update", data);
+  async get(data) {
+    return await this.request("GET", data);
+  }
+
+  async put(data) {
+    return await this.request("PUT", data);
+  }
+
+  async post(data) {
+    return await this.request("POST", data);
+  }
+
+  async delete(data) {
+    return await this.request("DELETE", data);
   }
 }
