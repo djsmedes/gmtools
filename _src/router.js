@@ -4,7 +4,7 @@ import Combat from "@/components/encounters/Combat";
 import {
   userRequired,
   loginRequired,
-  loggedInExcluded
+  loggedInExcluded,
 } from "@/auth/navigationGuards";
 
 Vue.use(Router);
@@ -25,7 +25,7 @@ export const routeNames = {
   ACCOUNT_SETTINGS: "accountSettings",
   LOGIN: "login",
   SIGNUP: "signup",
-  NOT_FOUND: "notFound"
+  NOT_FOUND: "notFound",
 };
 
 const router = new Router({
@@ -35,7 +35,7 @@ const router = new Router({
       path: "/",
       name: routeNames.HOME,
       component: Combat,
-      beforeEnter: loginRequired
+      beforeEnter: loginRequired,
     },
 
     {
@@ -43,21 +43,21 @@ const router = new Router({
       name: routeNames.COMBATANTS,
       component: () =>
         import(/* webpackChunkName: "combatants" */ "@/components/encounters/CombatantList"),
-      beforeEnter: loginRequired
+      beforeEnter: loginRequired,
     },
     {
       path: "/combatants/new/",
       name: routeNames.COMBATANT_CREATE,
       component: () =>
         import(/* webpackChunkName: "combatants" */ "@/components/encounters/CombatantDetail"),
-      beforeEnter: loginRequired
+      beforeEnter: loginRequired,
     },
     {
       path: "/combatants/:uuid/",
       name: routeNames.COMBATANT,
       component: () =>
         import(/* webpackChunkName: "combatants" */ "@/components/encounters/CombatantDetail"),
-      beforeEnter: loginRequired
+      beforeEnter: loginRequired,
     },
 
     {
@@ -65,21 +65,21 @@ const router = new Router({
       name: routeNames.CAMPAIGNS,
       component: () =>
         import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignList"),
-      beforeEnter: loginRequired
+      beforeEnter: loginRequired,
     },
     {
       path: "/campaigns/new/",
       name: routeNames.CAMPAIGN_CREATE,
       component: () =>
         import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignDetail"),
-      beforeEnter: loginRequired
+      beforeEnter: loginRequired,
     },
     {
       path: "/campaigns/:uuid/",
       name: routeNames.CAMPAIGN,
       component: () =>
         import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignDetail"),
-      beforeEnter: loginRequired
+      beforeEnter: loginRequired,
     },
 
     {
@@ -87,14 +87,14 @@ const router = new Router({
       name: routeNames.ENCOUNTERS,
       component: () =>
         import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterList"),
-      beforeEnter: loginRequired
+      beforeEnter: loginRequired,
     },
     {
       path: "/encounters/new/",
       name: routeNames.ENCOUNTER_CREATE,
       component: () =>
         import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
-      beforeEnter: loginRequired
+      beforeEnter: loginRequired,
     },
     {
       path: "/encounters/:uuid/",
@@ -102,7 +102,7 @@ const router = new Router({
       component: () =>
         import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
       beforeEnter: loginRequired,
-      props: true
+      props: true,
     },
 
     {
@@ -110,7 +110,7 @@ const router = new Router({
       name: routeNames.GMSCREENTAB_CREATE,
       component: () =>
         import(/* webpackChunkName: "gmscreentabs" */ "@/components/gmscreen/GMScreenTabDetail"),
-      beforeEnter: loginRequired
+      beforeEnter: loginRequired,
     },
     {
       path: "/gmscreentabs/:uuid/",
@@ -118,7 +118,7 @@ const router = new Router({
       component: () =>
         import(/* webpackChunkName: "gmscreentabs" */ "@/components/gmscreen/GMScreenTabDetail"),
       beforeEnter: loginRequired,
-      props: true
+      props: true,
     },
 
     {
@@ -127,28 +127,28 @@ const router = new Router({
       component: () =>
         import(/* webpackChunkName: "nonAuth" */ "@/components/auth/Login"),
       props: true,
-      beforeEnter: loggedInExcluded
+      beforeEnter: loggedInExcluded,
     },
     {
       path: "/signup/",
       name: routeNames.SIGNUP,
       component: () =>
         import(/* webpackChunkName: "nonAuth" */ "@/components/auth/SignUp"),
-      beforeEnter: loggedInExcluded
+      beforeEnter: loggedInExcluded,
     },
     {
       path: "/account/",
       name: routeNames.ACCOUNT_SETTINGS,
       component: () =>
         import(/* webpackChunkName: "account" */ "@/components/auth/AccountSettings"),
-      beforeEnter: loginRequired
+      beforeEnter: loginRequired,
     },
 
     {
       path: "/404/",
       name: routeNames.NOT_FOUND,
       component: () =>
-        import(/* webpackChunkName: "404" */ "@/components/generic/NotFound")
+        import(/* webpackChunkName: "404" */ "@/components/generic/NotFound"),
     },
 
     {
@@ -156,9 +156,9 @@ const router = new Router({
        * it will match any route not already matched and send it to the 404 page
        */
       path: "*",
-      redirect: { name: routeNames.NOT_FOUND }
-    }
-  ]
+      redirect: { name: routeNames.NOT_FOUND },
+    },
+  ],
 });
 
 router.beforeEach(userRequired);

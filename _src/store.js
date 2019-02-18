@@ -11,15 +11,23 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    loadingCount: 0
+    loadingCount: 0,
+    lastReplyId: null,
   },
   getters: {
-    isLoading: state => state.loadingCount > 0
+    isLoading: state => state.loadingCount > 0,
   },
   actions: {},
   mutations: {
     needLoading: state => (state.loadingCount = state.loadingCount + 1),
-    doneLoading: state => (state.loadingCount = state.loadingCount - 1)
+    doneLoading: state => (state.loadingCount = state.loadingCount - 1),
+    setLastReply: (state, value) => Vue.set(state, "lastReplyId", value),
+    SOCKET_ONOPEN: state => {},
+    SOCKET_ONCLOSE: state => {},
+    SOCKET_ONERROR: state => {},
+    SOCKET_ONMESSAGE: state => {},
+    SOCKET_RECONNECT: state => {},
+    SOCKET_RECONNECT_ERROR: state => {},
   },
   modules: {
     [auth.namespace]: auth.store,
@@ -27,6 +35,6 @@ export default new Vuex.Store({
     [combatant.namespace]: combatant.store,
     [encounter.namespace]: encounter.store,
     [gmscreentab.namespace]: gmscreentab.store,
-    [user.namespace]: user.store
-  }
+    [user.namespace]: user.store,
+  },
 });

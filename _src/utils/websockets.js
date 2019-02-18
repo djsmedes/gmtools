@@ -1,96 +1,53 @@
 import uuid from "uuid/v4";
 
-const readyState = {
-  CONNECTING: 0,
-  OPEN: 1,
-  CLOSING: 2,
-  CLOSED: 3
-};
-
 class WebSocketRequest {
-  constructor({ type = null, id = null, data = null } = {}) {
-    this.type = type;
+  constructor({ verb = null, id = null, data = null } = {}) {
+    this.verb = verb;
     this.id = id;
     this.data = data;
   }
 }
 
-class WebSocketReply {
-  constructor({
-    type = null,
-    replyTo = null,
-    data = null,
-    status = null
-  } = {}) {
-    this.type = type;
-    this.replyTo = replyTo;
-    this.data = data;
-    this.status = status;
-  }
-}
-
 export class ModuleSocket {
-  constructor(vm, url, msgType2FunctionMap) {
+  constructor(vm) {
     this.vm = vm;
-
-    let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
-    this.url = ws_scheme + "://" + window.location.host + "/ws/" + url + "/";
 
     this.counter = 0;
     this.uuid = uuid();
     this.replyCallbackMap = {};
-    this.msgType2FunctionMap = msgType2FunctionMap;
-  }
-
-  connect() {
-    if (this.vm.$socket && this.vm.$socket.readyState === readyState.OPEN) {
-      return new Promise(resolve => {
-        this.vm.$socket.onmessage = this.receive().bind(this);
-        this.vm.$socket.onopen = () => resolve();
-      });
-    }
-    return new Promise(resolve => {
-      this.vm.$connect(this.url, { format: "json" });
-      this.vm.$socket.onmessage = this.receive().bind(this);
-      this.vm.$socket.onopen = () => resolve();
-    });
-  }
-
-  disconnect() {
-    this.vm.$disconnect();
-  }
-
-  send(obj) {
-    this.vm.$socket.sendObj(obj);
-  }
-
-  receive() {
-    return event => {
-      let obj = new WebSocketReply(JSON.parse(event.data));
-
-      if (typeof this.msgType2FunctionMap[obj.type] !== "undefined") {
-        this.msgType2FunctionMap[obj.type](obj.data);
+    this.vm.$store.watch(
+      state => state.lastReplyId,
+      value => {
+        if (this.replyCallbackMap[value] !== undefined) {
+          this.replyCallbackMap[value]();
+          delete this.replyCallbackMap[value];
+        }
       }
-      if (
-        obj.replyTo !== null &&
-        typeof this.replyCallbackMap[obj.replyTo] !== "undefined"
-      ) {
-        this.replyCallbackMap[obj.replyTo](obj);
-        delete this.replyCallbackMap[obj.replyTo];
-      }
-    };
+    );
   }
 
-  request(type, data) {
+  request(verb, data) {
     return new Promise(resolve => {
       this.counter += 1;
       let id = this.uuid + "-" + this.counter;
       this.replyCallbackMap[id] = obj => resolve(obj);
-      this.send(new WebSocketRequest({ id, type, data }));
+      this.vm.$socket.sendObj(new WebSocketRequest({ id, verb, data }));
     });
   }
 
-  async update(data) {
-    return await this.request("update", data);
+  async get(data) {
+    return await this.request("GET", data);
+  }
+
+  async put(data) {
+    return await this.request("PUT", data);
+  }
+
+  async post(data) {
+    return await this.request("POST", data);
+  }
+
+  async delete(data) {
+    return await this.request("DELETE", data);
   }
 }

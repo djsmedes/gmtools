@@ -7,11 +7,19 @@ import router from "@/router";
 import store from "@/store";
 import axios from "axios";
 import { namespace, getterTypes } from "@/auth";
+import { ModuleSocket } from "@/utils/websockets";
 
 Vue.config.productionTip = false;
-Vue.use(VueNativeSock, "not-implemented", {
-  connectManually: true
+
+let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+let url = ws_scheme + "://" + window.location.host + "/ws/combat/";
+
+Vue.use(VueNativeSock, url, {
+  format: "json",
+  reconnection: true,
+  store: store,
 });
+
 Vue.use(Vuetify, {
   theme: {
     primary: "#1976D2",
@@ -20,18 +28,20 @@ Vue.use(Vuetify, {
     error: "#FF5252",
     info: "#2196F3",
     success: "#4CAF50",
-    warning: "#FFC107"
-  }
+    warning: "#FFC107",
+  },
 });
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 axios.defaults.headers["common"] = {
-  ...store.getters[namespace + "/" + getterTypes.AUTH_HEADER]
+  ...store.getters[namespace + "/" + getterTypes.AUTH_HEADER],
 };
 
-new Vue({
+const vm = new Vue({
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
 }).$mount("#app");
+
+Vue.prototype.$ws = new ModuleSocket(vm);

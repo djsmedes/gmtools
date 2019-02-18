@@ -59,22 +59,25 @@
       </v-btn>
     </v-toolbar>
 
-    <v-container grid-list-lg class="px-0">
-      <v-layout row wrap>
-        <v-flex
-            d-flex xs12 sm6 md4 lg3 xl2
-            v-for="combatant in combatantsByInitiative"
-            :key="combatant.uuid">
-          <combatant-card
-              :combatant="combatant"
-              :effect-mode="applyingEffectType"
-              :active="combatantsToApply.includes(combatant.uuid)"
-              :update-func="updateOneCombatant"
-              :large-h-p-increment="combatantLargeHPIncrement"
-              @click="toggleCombatantWillApply($event)"/>
-        </v-flex>
-      </v-layout>
-    </v-container>
+    <v-expand-transition mode="out-in">
+      <v-container v-if="combatantsByInitiative.length" grid-list-lg class="px-0">
+        <v-layout  row wrap>
+          <v-flex
+              d-flex xs12 sm6 md4 lg3 xl2
+              v-for="combatant in combatantsByInitiative"
+              :key="combatant.uuid">
+            <combatant-card
+                :combatant="combatant"
+                :effect-mode="applyingEffectType"
+                :active="combatantsToApply.includes(combatant.uuid)"
+                :update-func="updateOneCombatant"
+                :large-h-p-increment="combatantLargeHPIncrement"
+                @click="toggleCombatantWillApply($event)"/>
+          </v-flex>
+        </v-layout>
+      </v-container>
+      <v-progress-linear v-else indeterminate></v-progress-linear>
+    </v-expand-transition>
 
     <v-card class="hidden-sm-and-down">
       <screen
@@ -180,7 +183,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import CombatantCard from "@/components/encounters/CombatantCard";
 import Screen from "@/components/gmscreen/GMScreen";
 import ScreenTab from "@/components/gmscreen/GMScreenTab";
@@ -190,7 +193,6 @@ import campaign from "@/models/campaign";
 import encounter, { Encounter } from "@/models/encounter";
 import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
 import _ from "lodash";
-import { ModuleSocket } from "@/utils";
 import auth from "@/auth";
 import { routeNames } from "@/router";
 
@@ -205,18 +207,12 @@ export default {
       effectToApply: "",
       combatantsToApply: [],
       effectTypes: Combatant.effectTypes,
-      socket: new ModuleSocket(this, "combat", {
-        update: obj => {
-          if (obj.combatants) this.setCombatant({ objAry: obj.combatants });
-          if (obj.campaign) this.setCampaign({ object: obj.campaign });
-        },
-      }),
       fab: false,
       activeTab: -1,
       combatantLargeHPIncrement: 5,
 
       changeEncounterDialog: false,
-      localEncounter: new Encounter()
+      localEncounter: new Encounter(),
     };
   },
   computed: {
@@ -247,22 +243,19 @@ export default {
     },
     currentEncounter() {
       return this.getEncounter(this.currentCampaign.active_encounter);
-    }
+    },
   },
   methods: {
-    ...mapMutations(combatant.namespace, {
-      setCombatant: combatant.mutationTypes.SET,
-    }),
-    ...mapMutations(campaign.namespace, {
-      setCampaign: campaign.mutationTypes.SET,
-    }),
     ...mapActions(encounter.namespace, {
       loadEncounters: encounter.actionTypes.LIST,
-      updateEncounter: encounter.actionTypes.UPDATE
+      updateEncounter: encounter.actionTypes.UPDATE,
     }),
     ...mapActions(gmscreentab.namespace, {
       loadTabs: gmscreentab.actionTypes.LIST,
       updateTab: gmscreentab.actionTypes.UPDATE,
+    }),
+    ...mapActions(combatant.namespace, {
+      loadCombatants: combatant.actionTypes.LIST,
     }),
     toggleCombatantWillApply(uuid) {
       if (!this.applyingEffectType) return;
@@ -297,22 +290,24 @@ export default {
             this.applyingEffectType
           ].push(this.effectToApply);
         }
-        await this.socket.update({ combatants: combatantObjs });
+        await this.$ws.put({ [combatant.namespace]: combatantObjs });
       }
       this.exitApplyEffectMode();
     },
     async changeActiveEncounter(newEncounterUuid) {
-      let data = {
-        campaign: {
-          ...this.currentCampaign,
-          active_encounter: newEncounterUuid
-        },
-      };
-      await this.socket.update(data);
+      await this.$ws.put({
+        [campaign.namespace]: [
+          {
+            ...this.currentCampaign,
+            active_encounter: newEncounterUuid,
+          },
+        ],
+      });
       this.changeEncounterDialog = false;
     },
-    updateOneCombatant: _.debounce(function(combatant) {
-      this.socket.update({ combatants: [combatant] });
+    updateOneCombatant: _.debounce(function(cbt) {
+      // debounced because the way this update happens is via clicking a +1 button
+      this.$ws.put({ [combatant.namespace]: [cbt] });
     }, 500),
     async changeTabIndex(direction) {
       let newIndex = this.activeTab + direction;
@@ -339,15 +334,15 @@ export default {
         this.updateEncounter(
           new Encounter({
             ...this.currentEncounter,
-            completion_date: new Date()
+            completion_date: new Date(),
           })
         ),
-        this.changeActiveEncounter(null)
+        this.changeActiveEncounter(null),
       ]);
-    }
+    },
   },
   created() {
-    this.socket.connect();
+    this.loadCombatants();
     this.loadEncounters();
     this.loadTabs();
   },

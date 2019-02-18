@@ -9,72 +9,132 @@ from .models import Combatant
 from .serializers import CombatantSerializer
 
 
+ACTION = "SOCKET_DATA"
+
+
 class CombatConsumer(WebsocketConsumer):
+    allowed_verbs = ['PUT']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.channel_group_name = None
+
     def connect(self):
         user = self.scope.get('user')
         if user is None or not user.is_authenticated:
             return
 
-        self.channel_group_name = f'{user.current_campaign.uuid}_combat'
+        if user.current_campaign is not None:
+            self.join_channel_group(f'{user.current_campaign.uuid}')
 
+        self.accept()
+
+    def leave_channel_group(self):
+        if self.channel_group_name is not None:
+            async_to_sync(self.channel_layer.group_discard)(
+                self.channel_group_name,
+                self.channel_name
+            )
+        self.channel_group_name = None
+
+    def join_channel_group(self, channel_group_name):
+        self.leave_channel_group()
+        self.channel_group_name = channel_group_name
         async_to_sync(self.channel_layer.group_add)(
             self.channel_group_name,
             self.channel_name
         )
 
-        ser = CombatantSerializer(
-            many=True,
-            instance=Combatant.objects.of_user(user),
-            user=user
-        )
-
-        self.accept()
-        self.respond(type='update', data={'combatants': ser.data})
-
     def disconnect(self, code):
-        async_to_sync(self.channel_layer.group_discard)(
-            self.channel_group_name,
-            self.channel_name
-        )
+        self.leave_channel_group()
 
     def receive(self, text_data=None, bytes_data=None):
         msg = json.loads(text_data)
-        msg_id, msg_type, msg_data = msg.get('id'), msg.get('type'), msg.get('data')
+        msg_id = msg.get('id')
+        msg_verb: str = msg.get('verb')
+        msg_data: dict = msg.get('data', {})
 
-        if msg_type == 'update':
-            self.update(msg_id, msg_data)
+        if msg_verb in self.allowed_verbs:
+            getattr(self, msg_verb.lower())(msg_id, msg_data)
+        elif msg_verb == 'join_campaign_group':
+            user = self.scope.get('user')
+            if user and user.current_campaign:
+                self.join_channel_group(f'{user.current_campaign.uuid}')
         else:
-            self.respond(type=msg_type, reply_to=msg_id, status=400)
+            self.respond(reply_to=msg_id, status=405)
 
-    def respond(self, type=None, reply_to=None, status=200, data=None):
+    def get(self, msg_id, msg_data):
+        successful_gets = {}
+        for namespace in msg_data:
+            uuids = msg_data.get(namespace, [])
+            model_class = self.KEY_2_MODEL_CLASS[namespace]
+            serializer_class = self.KEY_2_SERIALIZER_CLASS[namespace]
+            qs = model_class.objects.of_user(self.scope.get('user')).filter(uuid__in=uuids)
+            ser = serializer_class(
+                many=True,
+                instance=qs,
+                user=self.scope.get('user')
+            )
+            successful_gets[namespace] = ser.data
+        self.respond(reply_to=msg_id, data=successful_gets)
+
+    def put(self, msg_id, msg_data):
+        if len(msg_data) > 1:
+            print(
+                'Websocket will send multiple replies to one request. '
+                'Unexpected behavior may occur.'
+            )
+        for namespace in msg_data:
+            self.update_model(msg_id, namespace, msg_data.get(namespace, []))
+
+    def respond(self, reply_to=None, status=200, data=None):
         if data is None:
             data = {}
         self.send(text_data=JSONRenderer().render({
-            'type': type,
             'replyTo': reply_to,
             'status': status,
             'data': data
         }).decode())
 
-    def update(self, msg_id, data_to_update):
-        data = {}
+    KEY_2_MODEL_CLASS = {
+        'combatant': Combatant,
+        'campaign': Campaign,
+    }
+    KEY_2_SERIALIZER_CLASS = {
+        'combatant': CombatantSerializer,
+        'campaign': CampaignSerializer,
+    }
 
-        combatants = self.update_combatants(data_to_update)
-        if combatants:
-            data['combatants'] = combatants
-        campaign = self.update_campaign(data_to_update)
-        if campaign:
-            data['campaign'] = campaign
+    def update_model(self, msg_id: str, model_namespace: str, data: list):
+        successful_data = []
+        model_class = self.KEY_2_MODEL_CLASS[model_namespace]
+        serializer_class = self.KEY_2_SERIALIZER_CLASS[model_namespace]
+
+        for obj in data:
+            try:
+                instance = model_class.objects.of_user(self.scope.get('user')).get(uuid=obj.get('uuid'))
+            except model_class.DoesNotExist:
+                continue
+            ser = serializer_class(
+                instance=instance,
+                data=obj,
+                partial=True,
+                user=self.scope.get('user')
+            )
+            if ser.is_valid():
+                ser.save()
+                successful_data.append(ser.data)
 
         async_to_sync(self.channel_layer.group_send)(
             self.channel_group_name,
             {
                 'type': 'data_update',
                 'text_data': JSONRenderer().render({
-                    'type': 'update',
                     'replyTo': msg_id,
                     'status': 200,
-                    'data': data
+                    'data': successful_data,
+                    'action': ACTION,
+                    'namespace': model_namespace
                 }).decode()
             }
         )
@@ -85,35 +145,3 @@ class CombatConsumer(WebsocketConsumer):
             return
 
         self.send(text_data=text_data)
-
-    def update_combatants(self, data_to_update):
-        combatants = []
-        failed_combatants = []
-        for combatant in data_to_update.get('combatants', []):
-            instance = Combatant.objects.get(uuid=combatant.get('uuid'))
-            ser = CombatantSerializer(
-                instance=instance,
-                data=combatant,
-                partial=True,
-                user=self.scope.get('user')
-            )
-            if ser.is_valid():
-                ser.save()
-                combatants.append(ser.data)
-            else:
-                failed_combatants.append(instance.uuid)
-        return combatants
-
-    def update_campaign(self, data_to_update):
-        campaign = data_to_update.get('campaign')
-        if campaign:
-            instance = Campaign.objects.get(uuid=campaign.get('uuid'))
-            ser = CampaignSerializer(
-                instance=instance,
-                data=campaign,
-                partial=True,
-                user=self.scope.get('user')
-            )
-            if ser.is_valid():
-                ser.save()
-                return ser.data
