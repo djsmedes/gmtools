@@ -1,4 +1,4 @@
- [[source]]
+[[source]]
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
@@ -8,7 +8,7 @@ python_version = '3.6'
 
 [packages]
 dj-database-url = "==0.4.1"
-django = "==2.1.2"
+django = "==2.2b1"
 gunicorn = "==19.6.0"
 whitenoise = "==3.2"
 "psycopg2-binary" = "*"
@@ -20,3 +20,6 @@ channels = "*"
 channels-redis = "*"
 
 [dev-packages]
+
+[pipenv]
+allow_prereleases = true
