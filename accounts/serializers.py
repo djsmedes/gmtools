@@ -1,7 +1,35 @@
 from rest_framework import serializers
+from typing import MutableSequence, Sequence, Union
 
 from core.serializers import CampaignModelSerializer
 from .models import User, Campaign
+
+
+class AbilityRule(dict):
+    """
+    Based on typescript definition shown here:
+    https://stalniy.github.io/casl/abilities/2017/07/20/define-abilities.html
+    """
+    def __init__(
+            self,
+            actions: Union[MutableSequence[str], str],
+            subject: Union[MutableSequence[str], str],
+            conditions: dict = None,
+            fields: Union[MutableSequence[str], str] = None,
+            inverted: bool = None,
+            reason: str = None
+    ):
+        self.actions = actions
+        self.subject = subject
+        self.conditions = conditions
+        self.fields = fields
+        self.inverted = inverted
+        self.reason = reason
+        super().__init__(**{
+            key: getattr(self, key)
+            for key in ['actions', 'subject', 'conditions', 'fields', 'inverted', 'reason']
+            if getattr(self, key) is not None
+        })
 
 
 class UserSerializer(CampaignModelSerializer):
@@ -37,7 +65,9 @@ class UserWithPermsSerializer(UserSerializer):
     permissions = serializers.SerializerMethodField()
 
     def get_permissions(self, user: User):
-        return [{'actions': 'read', 'subject': 'all'}]
+        return [
+            AbilityRule('read', 'all')
+        ]
 
     class Meta:
         model = User

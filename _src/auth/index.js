@@ -145,7 +145,7 @@ export const store = {
       if (!user.uuid) {
         commit(mutationTypes.CLEAR_AUTH_USER);
       } else {
-        commit(mutationTypes.SET_AUTH_USER, user.uuid);
+        commit(mutationTypes.SET_AUTH_USER, user);
         commit(
           userModule.namespace + "/" + userModule.mutationTypes.SET,
           { object: new User(user) },
@@ -184,7 +184,7 @@ export const store = {
     },
   },
   mutations: {
-    [mutationTypes.SET_AUTH_USER](state, uuid) {
+    [mutationTypes.SET_AUTH_USER](state, { uuid }) {
       Vue.set(state, stateKeys.AUTH_USER, uuid);
     },
     [mutationTypes.CLEAR_AUTH_USER](state) {
