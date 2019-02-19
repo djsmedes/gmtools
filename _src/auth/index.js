@@ -1,10 +1,10 @@
 import Vue from "vue";
-import api from "./api";
 import userModule, { User } from "@/models/user";
 import campaignModule, { Campaign } from "@/models/campaign";
 import { array2ObjByUUID } from "@/models/_baseModule";
 import * as Cookies from "js-cookie";
 import axios from "axios";
+import { generateUrl } from "@/utils/urls";
 
 export const namespace = "auth";
 
@@ -87,7 +87,12 @@ export const store = {
   actions: {
     [actionTypes.LOGIN]: async ({ commit, dispatch }, { email, password }) => {
       try {
-        let token = await api.getToken({ email, password });
+        let { data } = await axios.post(generateUrl(["token-auth"]), {
+          username: email,
+          password: password,
+        });
+        let { token } = data;
+
         commit(mutationTypes.SET_TOKEN, { token });
         await dispatch(actionTypes.GET_USER);
       } catch (err) {
@@ -107,7 +112,9 @@ export const store = {
     },
     [actionTypes.GET_USER]: async ({ commit, dispatch }) => {
       try {
-        let { user, campaigns } = await api.getUser();
+        let { data } = await axios.get(generateUrl(["request-user"]));
+        let { user, campaigns } = data;
+
         dispatch(actionTypes.SET_AUTH_USER, user);
         let campaignSetListKey =
           campaignModule.namespace +
@@ -158,7 +165,13 @@ export const store = {
       { email, password1, password2 }
     ) => {
       try {
-        let { user, token } = await api.signUp({ email, password1, password2 });
+        let { data } = await axios.post(generateUrl(["signup"]), {
+          email,
+          password1,
+          password2,
+        });
+        let { user, token } = data;
+
         commit(mutationTypes.SET_TOKEN, { token });
         dispatch(actionTypes.SET_AUTH_USER, user);
       } catch (err) {

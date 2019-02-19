@@ -1,9 +1,6 @@
 import Vue from "vue";
 import axios from "axios";
-
-function generateUrl(endpointList = []) {
-  return ["", "api", ...endpointList, ""].join("/");
-}
+import { generateUrl } from "@/utils/urls";
 
 export function array2ObjByUUID(array, objConstructor) {
   return array.reduce((accumulator, currentVal) => {
