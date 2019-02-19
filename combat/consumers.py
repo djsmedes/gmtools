@@ -3,8 +3,8 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 from rest_framework.renderers import JSONRenderer
 
-from accounts.models import Campaign
-from accounts.serializers import CampaignSerializer
+from accounts.models import Campaign, User
+from accounts.serializers import CampaignSerializer, UserSerializer
 from .models import Combatant
 from .serializers import CombatantSerializer
 
@@ -56,12 +56,23 @@ class CombatConsumer(WebsocketConsumer):
 
         if msg_verb in self.allowed_verbs:
             getattr(self, msg_verb.lower())(msg_id, msg_data)
-        elif msg_verb == 'join_campaign_group':
-            user = self.scope.get('user')
-            if user and user.current_campaign:
-                self.join_channel_group(f'{user.current_campaign.uuid}')
+        elif msg_verb == 'change_campaign':
+            self.change_campaign(msg_id, msg_data)
         else:
             self.respond(reply_to=msg_id, status=405)
+
+    def change_campaign(self, msg_id, msg_data):
+        campaign_uuid = msg_data.get('campaign_uuid')
+        try:
+            campaign = Campaign.objects.filter(user=self.scope.get('user')).get(uuid=campaign_uuid)
+        except Campaign.DoesNotExist:
+            self.respond(reply_to=msg_id, status=404)
+            return
+        user = User.objects.get(uuid=self.scope.get('user').uuid)
+        user.current_campaign = campaign
+        user.save()
+        self.join_channel_group(campaign_uuid)
+        self.respond(reply_to=msg_id, data=[UserSerializer(instance=user).data], action=ACTION, namespace='user')
 
     def get(self, msg_id, msg_data):
         successful_gets = {}
@@ -87,14 +98,19 @@ class CombatConsumer(WebsocketConsumer):
         for namespace in msg_data:
             self.update_model(msg_id, namespace, msg_data.get(namespace, []))
 
-    def respond(self, reply_to=None, status=200, data=None):
+    def respond(self, reply_to=None, status=200, data=None, action=None, namespace=None):
         if data is None:
             data = {}
-        self.send(text_data=JSONRenderer().render({
+        to_send = {
             'replyTo': reply_to,
             'status': status,
             'data': data
-        }).decode())
+        }
+        if action is not None:
+            to_send['action'] = action
+        if namespace is not None:
+            to_send['namespace'] = namespace
+        self.send(text_data=JSONRenderer().render(to_send).decode())
 
     KEY_2_MODEL_CLASS = {
         'combatant': Combatant,

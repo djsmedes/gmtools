@@ -48,7 +48,7 @@ const vm = new Vue({
 
 Vue.prototype.$ws = new ModuleSocket(vm);
 
-Vue.prototype.$unsubscribeToWs = store.subscribe((mutation, state) => {
+store.subscribe((mutation, state) => {
   switch (mutation.type) {
     case namespace + "/" + mutationTypes.SET_AUTH_USER:
       if (state[namespace][stateKeys.AUTH_USER]) {

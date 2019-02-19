@@ -106,7 +106,6 @@
 import { mapGetters, mapActions } from "vuex";
 import auth from "@/auth";
 import { routeNames } from "@/router";
-import userModule, { User } from "@/models/user";
 import campaignModule from "@/models/campaign";
 import DisplayWhenLoaded from "@/components/generic/DisplayWhenLoaded";
 
@@ -132,9 +131,6 @@ export default {
     ...mapActions(auth.namespace, {
       logoutUser: auth.actionTypes.LOGOUT,
     }),
-    ...mapActions(userModule.namespace, {
-      updateUser: userModule.actionTypes.UPDATE,
-    }),
     ...mapActions(campaignModule.namespace, {
       loadCampaigns: campaignModule.actionTypes.LIST,
     }),
@@ -143,7 +139,7 @@ export default {
       this.$router.push({ name: routeNames.LOGIN });
     },
     async setCurrentCampaign(uuid) {
-      await this.updateUser(new User({ ...this.user, current_campaign: uuid }));
+      await this.$ws.request("change_campaign", { campaign_uuid: uuid });
     },
   },
 };

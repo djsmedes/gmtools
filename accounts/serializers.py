@@ -33,6 +33,8 @@ class AbilityRule(dict):
 
 
 class UserSerializer(CampaignModelSerializer):
+    view_name = 'user-detail'
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if hasattr(self.instance, 'campaigns'):
@@ -40,11 +42,11 @@ class UserSerializer(CampaignModelSerializer):
         else:
             qs = []
         self.fields['current_campaign'].queryset = qs
-
-    url = serializers.HyperlinkedIdentityField(
-        lookup_field='uuid',
-        view_name='user-detail',
-    )
+        if self.view_name and self.context.get('request'):
+            self.fields['url'] = serializers.HyperlinkedIdentityField(
+                view_name=self.view_name,
+                lookup_field='uuid'
+            )
 
     def transform_queryset(self, queryset):
         return queryset
@@ -53,7 +55,7 @@ class UserSerializer(CampaignModelSerializer):
         model = User
         fields = ('first_name', 'last_name', 'email',
                   'current_campaign',
-                  'uuid', 'url')
+                  'uuid',)
 
     def validate_current_campaign(self, value):
         if value not in self.root.instance.campaigns.all():
