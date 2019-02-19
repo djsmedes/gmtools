@@ -6,12 +6,13 @@ import App from "@/App";
 import router from "@/router";
 import store from "@/store";
 import axios from "axios";
-import { namespace, getterTypes } from "@/auth";
+import { namespace, stateKeys, getterTypes, mutationTypes } from "@/auth";
 import { ModuleSocket } from "@/utils/websockets";
 
 Vue.config.productionTip = false;
 
 Vue.use(VueNativeSock, "//" + window.location.host + "/ws/combat/", {
+  connectManually: true,
   format: "json",
   reconnection: true,
   store: store,
@@ -42,3 +43,14 @@ const vm = new Vue({
 }).$mount("#app");
 
 Vue.prototype.$ws = new ModuleSocket(vm);
+
+Vue.prototype.$unsubscribeToWs = store.subscribe((mutation, state) => {
+  switch (mutation.type) {
+    case namespace + "/" + mutationTypes.SET_AUTH_USER:
+      if (state[namespace][stateKeys.AUTH_USER]) vm.$connect();
+      break;
+    case namespace + "/" + mutationTypes.CLEAR_AUTH_USER:
+      if (typeof vm.$disconnect === "function") vm.$disconnect();
+      break;
+  }
+});
