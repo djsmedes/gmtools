@@ -33,6 +33,17 @@ class UserSerializer(CampaignModelSerializer):
         return value
 
 
+class UserWithPermsSerializer(UserSerializer):
+    permissions = serializers.SerializerMethodField()
+
+    def get_permissions(self, user: User):
+        return [{'actions': 'read', 'subject': 'all'}]
+
+    class Meta:
+        model = User
+        fields = UserSerializer.Meta.fields + ('permissions',)
+
+
 class CampaignSerializer(CampaignModelSerializer):
     gm_set = serializers.SerializerMethodField()
     player_set = serializers.SerializerMethodField()
