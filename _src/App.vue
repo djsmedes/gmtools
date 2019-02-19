@@ -2,35 +2,46 @@
   <v-app>
     <v-toolbar color="grey darken-3" dark dense>
       <v-toolbar-items>
-        <v-btn flat exact class="title no-text-dec"
-               :to="{name: routeNames.HOME}">
+        <v-btn
+          flat
+          exact
+          class="title no-text-dec"
+          :to="{ name: routeNames.HOME }"
+        >
           <span class="hidden-xs-only">GMTOOLS</span>
           <v-icon dark class="hidden-sm-and-up">home</v-icon>
         </v-btn>
-        <v-btn flat v-if="isAuthenticated"
-               class="no-text-dec hidden-xs-only"
-               :to="{name: routeNames.CAMPAIGNS}">
+        <v-btn
+          flat
+          v-if="isAuthenticated"
+          class="no-text-dec hidden-xs-only"
+          :to="{ name: routeNames.CAMPAIGNS }"
+        >
           Campaigns
         </v-btn>
-        <v-btn flat v-if="isAuthenticated"
-               class="no-text-dec hidden-xs-only"
-               :to="{name: routeNames.COMBATANTS}">
+        <v-btn
+          flat
+          v-if="isAuthenticated"
+          class="no-text-dec hidden-xs-only"
+          :to="{ name: routeNames.COMBATANTS }"
+        >
           Combatants
         </v-btn>
-        <v-btn flat v-if="isAuthenticated"
-               class="no-text-dec hidden-xs-only"
-               :to="{name: routeNames.ENCOUNTERS}">
+        <v-btn
+          flat
+          v-if="isAuthenticated"
+          class="no-text-dec hidden-xs-only"
+          :to="{ name: routeNames.ENCOUNTERS }"
+        >
           Encounters
         </v-btn>
       </v-toolbar-items>
       <v-spacer></v-spacer>
       <v-toolbar-items v-if="!isAuthenticated">
-        <v-btn flat class="no-text-dec"
-               :to="{name: routeNames.LOGIN}">
+        <v-btn flat class="no-text-dec" :to="{ name: routeNames.LOGIN }">
           Sign in
         </v-btn>
-        <v-btn flat class="no-text-dec"
-               :to="{name: routeNames.SIGNUP}">
+        <v-btn flat class="no-text-dec" :to="{ name: routeNames.SIGNUP }">
           Sign up
         </v-btn>
       </v-toolbar-items>
@@ -44,17 +55,19 @@
 
           <v-list dense subheader>
             <v-list-tile class="grey--text">
-              <span>Signed in as <strong>{{ user.name }}</strong></span>
+              <span
+                >Signed in as <strong>{{ user.name }}</strong></span
+              >
             </v-list-tile>
             <v-divider class="mt-1 mb-1"></v-divider>
             <v-subheader>
               Campaigns
             </v-subheader>
-            <v-list-tile @click.stop
-                         v-for="campaign in campaignsByUser(user.uuid)"
-                         :key="campaign.uuid">
-
-
+            <v-list-tile
+              @click.stop
+              v-for="campaign in campaignsByUser(user.uuid)"
+              :key="campaign.uuid"
+            >
               <v-list-tile-content @click="setCurrentCampaign(campaign.uuid)">
                 <v-list-tile-title>{{ campaign.name }}</v-list-tile-title>
               </v-list-tile-content>
@@ -66,7 +79,9 @@
               </v-list-tile-action>
             </v-list-tile>
             <v-divider class="mt-1 mb-1"></v-divider>
-            <v-list-tile @click="$router.push({name: routeNames.ACCOUNT_SETTINGS})">
+            <v-list-tile
+              @click="$router.push({ name: routeNames.ACCOUNT_SETTINGS })"
+            >
               Account
             </v-list-tile>
             <v-list-tile @click="logout">
@@ -80,7 +95,7 @@
     <v-content style="position: relative">
       <display-when-loaded>
         <v-container>
-          <router-view v-if="isRequested"/>
+          <router-view v-if="isRequested" />
         </v-container>
       </display-when-loaded>
     </v-content>
