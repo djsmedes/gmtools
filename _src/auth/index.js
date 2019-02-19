@@ -12,7 +12,7 @@ export const stateKeys = {
   TOKEN: "authToken",
   AUTH_USER: "authUser",
   PASS_RESET_USER_KEY: "passResetUserKey",
-  PASS_RESET_TOKEN: "passResetToken"
+  PASS_RESET_TOKEN: "passResetToken",
 };
 
 export const getterTypes = {
@@ -20,7 +20,7 @@ export const getterTypes = {
   AUTH_USER: "authUser",
   WAS_AUTH_USER_REQUESTED: "wasAuthUserRequested",
   IS_USER_AUTHENTICATED: "isUserAuthenticated",
-  CURRENT_CAMPAIGN: "currentCampaign"
+  CURRENT_CAMPAIGN: "currentCampaign",
 };
 
 export const actionTypes = {
@@ -28,7 +28,7 @@ export const actionTypes = {
   SET_AUTH_USER: "setAuthUser",
   SIGNUP: "signUp",
   LOGIN: "getToken",
-  LOGOUT: "removeToken"
+  LOGOUT: "removeToken",
 };
 
 export const mutationTypes = {
@@ -38,7 +38,7 @@ export const mutationTypes = {
   SET_TOKEN: "setAuth",
   REMOVE_TOKEN: "removeAuth",
   SET_PASS_RESET_DATA: "setPassResetData",
-  CLEAR_PASS_RESET_DATA: "clearPassResetData"
+  CLEAR_PASS_RESET_DATA: "clearPassResetData",
 };
 
 export const store = {
@@ -82,7 +82,7 @@ export const store = {
       let user = getters[getterTypes.AUTH_USER];
       if (typeof user === "undefined") return false;
       return user.email.length !== 0;
-    }
+    },
   },
   actions: {
     [actionTypes.LOGIN]: async ({ commit, dispatch }, { email, password }) => {
@@ -116,7 +116,7 @@ export const store = {
         commit(
           campaignSetListKey,
           {
-            objList: array2ObjByUUID(campaigns, Campaign)
+            objList: array2ObjByUUID(campaigns, Campaign),
           },
           { root: true }
         );
@@ -143,7 +143,7 @@ export const store = {
           userModule.namespace + "/" + userModule.mutationTypes.SET,
           { object: new User(user) },
           {
-            root: true
+            root: true,
           }
         );
       }
@@ -168,7 +168,7 @@ export const store = {
           throw err;
         }
       }
-    }
+    },
   },
   mutations: {
     [mutationTypes.SET_AUTH_USER](state, uuid) {
@@ -180,19 +180,19 @@ export const store = {
     [mutationTypes.SET_TOKEN](state, { token }) {
       Cookies.set(stateKeys.TOKEN, token, {
         expires: 7,
-        secure: process.env.NODE_ENV === "production"
+        secure: process.env.NODE_ENV === "production",
       });
       axios.defaults.headers["common"] = {
-        Authorization: "Token " + token
+        Authorization: "Token " + token,
       };
     },
     [mutationTypes.REMOVE_TOKEN]() {
       Cookies.remove(stateKeys.TOKEN);
       axios.defaults.headers["common"] = {
-        Authorization: ""
+        Authorization: "",
       };
-    }
-  }
+    },
+  },
 };
 
 export default {
@@ -202,5 +202,5 @@ export default {
   actionTypes,
   mutationTypes,
   store,
-  User
+  User,
 };
