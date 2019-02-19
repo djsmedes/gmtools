@@ -1,10 +1,11 @@
 <template>
   <object-detail
-      :name="localCampaign.name"
-      :start-editing="!campaign.uuid"
-      :save-func="campaign.uuid ? save : create"
-      :clear-func="campaign.uuid ? reset : () => $router.go(-1)"
-      :delete-func="campaign.uuid ? deleteSelf : null">
+    :name="localCampaign.name"
+    :start-editing="!campaign.uuid"
+    :save-func="campaign.uuid ? save : create"
+    :clear-func="campaign.uuid ? reset : () => $router.go(-1)"
+    :delete-func="campaign.uuid ? deleteSelf : null"
+  >
     <v-list slot="view">
       <v-subheader>
         Name
@@ -41,27 +42,26 @@
       <v-divider></v-divider>
     </v-list>
     <v-card-text slot="edit">
-      <v-text-field
-          label="Name"
-          v-model="localCampaign.name"
-      ></v-text-field>
+      <v-text-field label="Name" v-model="localCampaign.name"></v-text-field>
       <v-select
-          readonly
-          label="GMs"
-          multiple chips
-          :items="localCampaign.gm_set.map(userUuid => getUser(userUuid))"
-          item-text="name"
-          item-value="uuid"
-          v-model="localCampaign.gm_set"
+        readonly
+        label="GMs"
+        multiple
+        chips
+        :items="localCampaign.gm_set.map(userUuid => getUser(userUuid))"
+        item-text="name"
+        item-value="uuid"
+        v-model="localCampaign.gm_set"
       ></v-select>
       <v-select
-          readonly
-          label="Players"
-          multiple chips
-          :items="localCampaign.player_set.map(userUuid => getUser(userUuid))"
-          item-text="name"
-          item-value="uuid"
-          v-model="localCampaign.player_set"
+        readonly
+        label="Players"
+        multiple
+        chips
+        :items="localCampaign.player_set.map(userUuid => getUser(userUuid))"
+        item-text="name"
+        item-value="uuid"
+        v-model="localCampaign.player_set"
       ></v-select>
     </v-card-text>
   </object-detail>
@@ -79,7 +79,7 @@ export default {
   components: { ObjectDetail },
   data() {
     return {
-      localCampaign: new Campaign()
+      localCampaign: new Campaign(),
     };
   },
   computed: {
@@ -88,21 +88,21 @@ export default {
       return uuid ? this.getCampaign(uuid) : new Campaign();
     },
     ...mapGetters(campaign.namespace, {
-      getCampaign: campaign.getterTypes.BY_ID
+      getCampaign: campaign.getterTypes.BY_ID,
     }),
     ...mapGetters(userModule.namespace, {
-      getUser: userModule.getterTypes.BY_ID
-    })
+      getUser: userModule.getterTypes.BY_ID,
+    }),
   },
   methods: {
     ...mapActions(campaign.namespace, {
       loadCampaigns: campaign.actionTypes.LIST,
       deleteCampaign: campaign.actionTypes.DESTROY,
       updateCampaign: campaign.actionTypes.UPDATE,
-      createCampaign: campaign.actionTypes.CREATE
+      createCampaign: campaign.actionTypes.CREATE,
     }),
     ...mapActions(userModule.namespace, {
-      loadUsers: userModule.actionTypes.LIST
+      loadUsers: userModule.actionTypes.LIST,
     }),
     async deleteSelf() {
       await this.deleteCampaign(this.campaign.uuid);
@@ -116,12 +116,12 @@ export default {
       let rObj = await this.createCampaign(this.localCampaign);
       this.$router.replace({
         name: routeNames.CAMPAIGN,
-        params: { uuid: rObj.uuid }
+        params: { uuid: rObj.uuid },
       });
     },
     reset() {
       this.localCampaign = new Campaign(this.campaign);
-    }
+    },
   },
   created() {
     this.loadCampaigns().then(() => {
@@ -131,6 +131,6 @@ export default {
       }
     });
     this.loadUsers();
-  }
+  },
 };
 </script>
