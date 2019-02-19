@@ -66,7 +66,7 @@ class UserWithPermsSerializer(UserSerializer):
 
     def get_permissions(self, user: User):
         return [
-            AbilityRule('read', 'all')
+            AbilityRule('gm', 'campaign', conditions={"gm_set": {"$in": [user.uuid]}})
         ]
 
     class Meta:

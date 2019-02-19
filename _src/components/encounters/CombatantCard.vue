@@ -117,7 +117,7 @@
 
     <v-divider></v-divider>
 
-    <v-card-actions>
+    <v-card-actions v-if="$can('gm', currentCampaign)">
       <v-btn
         icon
         flat
@@ -276,6 +276,8 @@
 
 <script>
 import { Combatant } from "@/models/combatant";
+import { mapGetters } from "vuex";
+import auth from "@/auth";
 
 export default {
   name: "Combatant",
@@ -320,6 +322,11 @@ export default {
         this.localCombatant = new Combatant(newCombatant);
       },
     },
+  },
+  computed: {
+    ...mapGetters(auth.namespace, {
+      currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN,
+    }),
   },
   methods: {
     hpPercentage(hp) {
