@@ -1,14 +1,21 @@
 <template>
-  <v-card @click.native="$emit('click', combatant.uuid)"
-          :raised="active"
-          :class="[
-            { bloodied: !effectMode && localCombatant.hp < (localCombatant.max_hp / 2) && 0 < localCombatant.hp },
-            { unconscious: !effectMode && 0 >= localCombatant.hp },
-            { 'selected-buff': active && effectMode === effectTypes.BUFF },
-            { 'selected-debuff': active && effectMode === effectTypes.DEBUFF },
-            { 'selected-other': active && effectMode === effectTypes.OTHER }
-          ]"
-          class="combatant-card">
+  <v-card
+    @click.native="$emit('click', combatant.uuid)"
+    :raised="active"
+    :class="[
+      {
+        bloodied:
+          !effectMode &&
+          localCombatant.hp < localCombatant.max_hp / 2 &&
+          0 < localCombatant.hp,
+      },
+      { unconscious: !effectMode && 0 >= localCombatant.hp },
+      { 'selected-buff': active && effectMode === effectTypes.BUFF },
+      { 'selected-debuff': active && effectMode === effectTypes.DEBUFF },
+      { 'selected-other': active && effectMode === effectTypes.OTHER },
+    ]"
+    class="combatant-card"
+  >
     <v-card-title class="pb-0 pt-2">
       <v-container fluid class="pa-0 ma-0">
         <v-layout row align-center>
@@ -19,10 +26,11 @@
           </v-flex>
           <v-flex xs3>
             <v-btn icon @click.stop="openInitDialog" :disabled="!!effectMode">
-              <v-badge
-                  overlap left color="transparent">
+              <v-badge overlap left color="transparent">
                 <v-avatar slot="badge" size="12">
-                  <span class="black--text">{{ localCombatant.initiative }}</span>
+                  <span class="black--text">{{
+                    localCombatant.initiative
+                  }}</span>
                 </v-avatar>
                 <v-icon large>directions_run</v-icon>
               </v-badge>
@@ -31,24 +39,24 @@
         </v-layout>
       </v-container>
     </v-card-title>
-    <v-card-title class="py-1">
-
-    </v-card-title>
+    <v-card-title class="py-1"> </v-card-title>
     <v-divider></v-divider>
-
 
     <v-card-text class="combatant-card-body">
       <v-container fluid class="pa-0">
         <v-layout row wrap>
           <v-chip
-              v-if="localCombatant.temp_hp > 0"
-              @click.stop="openHpDialog"
-              close @input="localCombatant.temp_hp = 0">
+            v-if="localCombatant.temp_hp > 0"
+            @click.stop="openHpDialog"
+            close
+            @input="localCombatant.temp_hp = 0"
+          >
             <v-avatar class="white">
               <v-progress-circular
-                  :rotate="-90"
-                  :value="hpPercentage(localCombatant.temp_hp)"
-                  color="yellow darken-2">
+                :rotate="-90"
+                :value="hpPercentage(localCombatant.temp_hp)"
+                color="yellow darken-2"
+              >
                 <span class="body-2">{{ localCombatant.temp_hp }}</span>
               </v-progress-circular>
             </v-avatar>
@@ -59,9 +67,11 @@
         </v-layout>
         <v-layout row wrap>
           <v-chip
-              v-for="(buff, index) in localCombatant.effects[effectTypes.BUFF]"
-              :key="index" :close="!!updateFunc"
-              @input="removeEffect(effectTypes.BUFF, index)">
+            v-for="(buff, index) in localCombatant.effects[effectTypes.BUFF]"
+            :key="index"
+            :close="!!updateFunc"
+            @input="removeEffect(effectTypes.BUFF, index)"
+          >
             <v-avatar color="green">
               <v-icon small style="color: #fff;">trending_up</v-icon>
             </v-avatar>
@@ -72,9 +82,13 @@
         </v-layout>
         <v-layout row wrap>
           <v-chip
-              v-for="(debuff, index) in localCombatant.effects[effectTypes.DEBUFF]"
-              :key="index" :close="!!updateFunc"
-              @input="removeEffect(effectTypes.DEBUFF, index)">
+            v-for="(debuff, index) in localCombatant.effects[
+              effectTypes.DEBUFF
+            ]"
+            :key="index"
+            :close="!!updateFunc"
+            @input="removeEffect(effectTypes.DEBUFF, index)"
+          >
             <v-avatar color="red">
               <v-icon small style="color: #fff;">trending_down</v-icon>
             </v-avatar>
@@ -85,9 +99,11 @@
         </v-layout>
         <v-layout row wrap>
           <v-chip
-              v-for="(other, index) in localCombatant.effects[effectTypes.OTHER]"
-              :key="index" :close="!!updateFunc"
-              @input="removeEffect(effectTypes.OTHER, index)">
+            v-for="(other, index) in localCombatant.effects[effectTypes.OTHER]"
+            :key="index"
+            :close="!!updateFunc"
+            @input="removeEffect(effectTypes.OTHER, index)"
+          >
             <v-avatar color="grey">
               <v-icon small style="color: #fff;">trending_flat</v-icon>
             </v-avatar>
@@ -99,40 +115,60 @@
       </v-container>
     </v-card-text>
 
-
     <v-divider></v-divider>
 
-
     <v-card-actions>
-      <v-btn icon flat class="ma-0"
-             @click="updateHp(-1*largeHPIncrement)"
-             :disabled="!!effectMode">-{{ largeHPIncrement }}
+      <v-btn
+        icon
+        flat
+        class="ma-0"
+        @click="updateHp(-1 * largeHPIncrement)"
+        :disabled="!!effectMode"
+        >-{{ largeHPIncrement }}
       </v-btn>
       <v-spacer></v-spacer>
-      <v-btn icon flat class="ma-0"
-             @click="updateHp(-1)"
-             :disabled="!!effectMode">-1
+      <v-btn
+        icon
+        flat
+        class="ma-0"
+        @click="updateHp(-1)"
+        :disabled="!!effectMode"
+        >-1
       </v-btn>
       <v-spacer></v-spacer>
-      <v-btn icon flat class="ma-0" color="red darken-2"
-             @click="openHpDialog"
-             :disabled="!!effectMode">
+      <v-btn
+        icon
+        flat
+        class="ma-0"
+        color="red darken-2"
+        @click="openHpDialog"
+        :disabled="!!effectMode"
+      >
         <v-progress-circular
-            :rotate="-90"
-            :value="hpPercentage(localCombatant.hp)"
-            color="red darken-2">
+          :rotate="-90"
+          :value="hpPercentage(localCombatant.hp)"
+          color="red darken-2"
+        >
           <span class="body-2">{{ localCombatant.hp }}</span>
         </v-progress-circular>
       </v-btn>
       <v-spacer></v-spacer>
-      <v-btn icon flat class="ma-0"
-             @click="updateHp(1)"
-             :disabled="!!effectMode">+1
+      <v-btn
+        icon
+        flat
+        class="ma-0"
+        @click="updateHp(1)"
+        :disabled="!!effectMode"
+        >+1
       </v-btn>
       <v-spacer></v-spacer>
-      <v-btn icon flat class="ma-0"
-             @click="updateHp(largeHPIncrement)"
-             :disabled="!!effectMode">+{{ largeHPIncrement }}
+      <v-btn
+        icon
+        flat
+        class="ma-0"
+        @click="updateHp(largeHPIncrement)"
+        :disabled="!!effectMode"
+        >+{{ largeHPIncrement }}
       </v-btn>
     </v-card-actions>
 
@@ -146,23 +182,23 @@
             <v-layout row wrap>
               <v-flex xs4>
                 <v-text-field
-                    type="number"
-                    v-model="hpDialogHp"
-                    label="Current HP"
+                  type="number"
+                  v-model="hpDialogHp"
+                  label="Current HP"
                 ></v-text-field>
               </v-flex>
               <v-flex xs4>
                 <v-text-field
-                    type="number"
-                    v-model="hpDialogMaxHp"
-                    label="Max HP"
+                  type="number"
+                  v-model="hpDialogMaxHp"
+                  label="Max HP"
                 ></v-text-field>
               </v-flex>
               <v-flex xs4>
                 <v-text-field
-                    type="number"
-                    v-model="hpDialogTempHp"
-                    label="Temp HP"
+                  type="number"
+                  v-model="hpDialogTempHp"
+                  label="Temp HP"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -192,20 +228,20 @@
             <v-layout row wrap>
               <v-flex xs6>
                 <v-text-field
-                    @focus="initDialogBonus = ''"
-                    type="number"
-                    pattern="\d*"
-                    v-model="initDialogBonus"
-                    label="Initiative Bonus"
+                  @focus="initDialogBonus = ''"
+                  type="number"
+                  pattern="\d*"
+                  v-model="initDialogBonus"
+                  label="Initiative Bonus"
                 ></v-text-field>
               </v-flex>
               <v-flex xs6>
                 <v-text-field
-                    @focus="initDialogInit = ''"
-                    type="number"
-                    pattern="\d*"
-                    v-model="initDialogInit"
-                    label="Initiative"
+                  @focus="initDialogInit = ''"
+                  type="number"
+                  pattern="\d*"
+                  v-model="initDialogInit"
+                  label="Initiative"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -215,7 +251,12 @@
           <v-progress-circular indeterminate></v-progress-circular>
         </v-card-text>
         <v-card-text v-else>
-          <span class="title">You rolled: {{ initDialogRoll + Number(initDialogBonus) }} ({{ initDialogRoll }} + {{ Number(initDialogBonus) }})</span>
+          <span class="title"
+            >You rolled: {{ initDialogRoll + Number(initDialogBonus) }} ({{
+              initDialogRoll
+            }}
+            + {{ Number(initDialogBonus) }})</span
+          >
         </v-card-text>
         <v-card-actions>
           <v-btn flat @click="saveInitDialog">
@@ -225,7 +266,7 @@
             Roll
           </v-btn>
           <v-btn flat @click="closeInitDialog">
-            {{ !!initDialogRoll ? 'Ignore' : 'Cancel' }}
+            {{ !!initDialogRoll ? "Ignore" : "Cancel" }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -241,23 +282,23 @@ export default {
   props: {
     combatant: {
       type: Combatant,
-      default: () => new Combatant()
+      default: () => new Combatant(),
     },
     effectMode: {
-      default: Combatant.effectTypes.NONE
+      default: Combatant.effectTypes.NONE,
     },
     active: {
       type: Boolean,
-      default: false
+      default: false,
     },
     updateFunc: {
       type: Function,
-      default: null
+      default: null,
     },
     largeHPIncrement: {
       type: Number,
-      default: 5
-    }
+      default: 5,
+    },
   },
   data() {
     return {
@@ -270,15 +311,15 @@ export default {
       initDialog: false,
       initDialogInit: 0,
       initDialogBonus: 0,
-      initDialogRoll: 0
+      initDialogRoll: 0,
     };
   },
   watch: {
     combatant: {
       handler(newCombatant) {
         this.localCombatant = new Combatant(newCombatant);
-      }
-    }
+      },
+    },
   },
   methods: {
     hpPercentage(hp) {
@@ -335,9 +376,9 @@ export default {
     removeEffect(effectType, index) {
       this.localCombatant.effects[effectType].splice(index, 1);
       this.updateFunc(this.localCombatant);
-    }
+    },
   },
-  created() {}
+  created() {},
 };
 </script>
 
