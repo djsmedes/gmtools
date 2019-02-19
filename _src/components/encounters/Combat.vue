@@ -106,7 +106,6 @@
           </v-flex>
         </v-layout>
       </v-container>
-      <v-progress-linear v-else indeterminate></v-progress-linear>
     </v-expand-transition>
 
     <v-card class="hidden-sm-and-down">
