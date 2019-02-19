@@ -1,15 +1,14 @@
 <template>
   <div>
-
     <v-speed-dial
-        v-model="fab"
-        fixed bottom right
-        v-if="!applyingEffectType"
-        direction="left">
-      <v-btn
-          slot="activator"
-          v-model="fab"
-          fab dark color="blue">
+      v-model="fab"
+      fixed
+      bottom
+      right
+      v-if="!applyingEffectType"
+      direction="left"
+    >
+      <v-btn slot="activator" v-model="fab" fab dark color="blue">
         <v-icon>more_vert</v-icon>
         <v-icon>close</v-icon>
       </v-btn>
@@ -25,29 +24,49 @@
     </v-speed-dial>
 
     <v-toolbar
-        v-if="!!applyingEffectType"
-        floating fixed
-        style="bottom: 16px; right: 16px; left: unset; top: unset;">
-      <v-btn icon dark class="green" :ripple="false"
-             v-if="applyingEffectType === effectTypes.BUFF"
-             @click="applyingEffectType = effectTypes.DEBUFF">
+      v-if="!!applyingEffectType"
+      floating
+      fixed
+      style="bottom: 16px; right: 16px; left: unset; top: unset;"
+    >
+      <v-btn
+        icon
+        dark
+        class="green"
+        :ripple="false"
+        v-if="applyingEffectType === effectTypes.BUFF"
+        @click="applyingEffectType = effectTypes.DEBUFF"
+      >
         <v-icon>trending_up</v-icon>
       </v-btn>
-      <v-btn icon dark class="red" :ripple="false"
-             v-if="applyingEffectType === effectTypes.DEBUFF"
-             @click="applyingEffectType = effectTypes.OTHER">
+      <v-btn
+        icon
+        dark
+        class="red"
+        :ripple="false"
+        v-if="applyingEffectType === effectTypes.DEBUFF"
+        @click="applyingEffectType = effectTypes.OTHER"
+      >
         <v-icon>trending_down</v-icon>
       </v-btn>
-      <v-btn icon dark class="grey" :ripple="false"
-             v-if="applyingEffectType === effectTypes.OTHER"
-             @click="applyingEffectType = effectTypes.BUFF">
+      <v-btn
+        icon
+        dark
+        class="grey"
+        :ripple="false"
+        v-if="applyingEffectType === effectTypes.OTHER"
+        @click="applyingEffectType = effectTypes.BUFF"
+      >
         <v-icon>trending_flat</v-icon>
       </v-btn>
 
       <v-text-field
-          :autofocus="!!applyingEffectType"
-          hide-details single-line box
-          v-model="effectToApply">
+        :autofocus="!!applyingEffectType"
+        hide-details
+        single-line
+        box
+        v-model="effectToApply"
+      >
       </v-text-field>
 
       <v-btn icon @click="saveAppliedEffects">
@@ -60,19 +79,30 @@
     </v-toolbar>
 
     <v-expand-transition mode="out-in">
-      <v-container v-if="combatantsByInitiative.length" grid-list-lg class="px-0">
-        <v-layout  row wrap>
+      <v-container
+        v-if="combatantsByInitiative.length"
+        grid-list-lg
+        class="px-0"
+      >
+        <v-layout row wrap>
           <v-flex
-              d-flex xs12 sm6 md4 lg3 xl2
-              v-for="combatant in combatantsByInitiative"
-              :key="combatant.uuid">
+            d-flex
+            xs12
+            sm6
+            md4
+            lg3
+            xl2
+            v-for="combatant in combatantsByInitiative"
+            :key="combatant.uuid"
+          >
             <combatant-card
-                :combatant="combatant"
-                :effect-mode="applyingEffectType"
-                :active="combatantsToApply.includes(combatant.uuid)"
-                :update-func="updateOneCombatant"
-                :large-h-p-increment="combatantLargeHPIncrement"
-                @click="toggleCombatantWillApply($event)"/>
+              :combatant="combatant"
+              :effect-mode="applyingEffectType"
+              :active="combatantsToApply.includes(combatant.uuid)"
+              :update-func="updateOneCombatant"
+              :large-h-p-increment="combatantLargeHPIncrement"
+              @click="toggleCombatantWillApply($event)"
+            />
           </v-flex>
         </v-layout>
       </v-container>
@@ -80,43 +110,53 @@
     </v-expand-transition>
 
     <v-card class="hidden-sm-and-down">
-      <screen
-          :items="tabs"
-          v-model="activeTab"
-      >
+      <screen :items="tabs" v-model="activeTab">
         <template slot="toolbar-left">
-          <v-btn flat icon :input-value="activeTab === -1" @click="activeTab = -1">
+          <v-btn
+            flat
+            icon
+            :input-value="activeTab === -1"
+            @click="activeTab = -1"
+          >
             <v-icon>settings</v-icon>
           </v-btn>
         </template>
         <template slot="toolbar-right">
           <v-btn
-              flat icon
-              :disabled="activeTab <= 0"
-              @click="changeTabIndex(-1)">
+            flat
+            icon
+            :disabled="activeTab <= 0"
+            @click="changeTabIndex(-1)"
+          >
             <v-icon>arrow_left</v-icon>
           </v-btn>
           <span
-              class="body-2 text-uppercase"
-              :style="activeTab === -1 ? 'opacity: 0.7; cursor: default;' : 'cursor: default;'">
+            class="body-2 text-uppercase"
+            :style="
+              activeTab === -1
+                ? 'opacity: 0.7; cursor: default;'
+                : 'cursor: default;'
+            "
+          >
             Reorder
           </span>
           <v-btn
-              flat icon
-              :disabled="activeTab >= tabs.length - 1 || activeTab < 0"
-              @click="changeTabIndex(1)">
+            flat
+            icon
+            :disabled="activeTab >= tabs.length - 1 || activeTab < 0"
+            @click="changeTabIndex(1)"
+          >
             <v-icon>arrow_right</v-icon>
           </v-btn>
           <v-btn
-              v-if="tab.uuid"
-              flat icon
-              :to="{ name: routeNames.GMSCREENTAB, params: { uuid: tab.uuid }}">
+            v-if="tab.uuid"
+            flat
+            icon
+            :to="{ name: routeNames.GMSCREENTAB, params: { uuid: tab.uuid } }"
+          >
             <v-icon>edit</v-icon>
           </v-btn>
-          <v-btn
-              v-else
-              flat icon
-              disabled>
+          <v-btn v-else flat icon disabled>
             <v-icon>edit</v-icon>
           </v-btn>
           <v-btn flat icon :to="{ name: routeNames.GMSCREENTAB_CREATE }">
@@ -133,18 +173,21 @@
                   Encounter:
                 </span>
                 <span class="text--black">
-                  {{ currentEncounter.name || '--'}}
+                  {{ currentEncounter.name || "--" }}
                 </span>
               </h6>
             </v-flex>
             <v-flex xs12>
-              <v-dialog width=500 v-model="changeEncounterDialog">
+              <v-dialog width="500" v-model="changeEncounterDialog">
                 <v-btn slot="activator" flat>
                   Change
                 </v-btn>
                 <encounter-chooser :reset="changeEncounterDialog">
                   <template slot="actions" slot-scope="{ selectedEncounter }">
-                    <v-btn flat @click="changeActiveEncounter(selectedEncounter.uuid)">
+                    <v-btn
+                      flat
+                      @click="changeActiveEncounter(selectedEncounter.uuid)"
+                    >
                       Save
                     </v-btn>
                     <v-btn flat @click="changeEncounterDialog = false">
@@ -161,9 +204,9 @@
           <v-layout row wrap>
             <v-flex md4 lg3 xl2>
               <v-switch
-                  v-model.number="combatantLargeHPIncrement"
-                  :false-value=5
-                  :true-value=10
+                v-model.number="combatantLargeHPIncrement"
+                :false-value="5"
+                :true-value="10"
               >
                 <template slot="label">
                   Larger damage increment

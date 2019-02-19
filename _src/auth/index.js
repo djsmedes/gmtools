@@ -68,9 +68,9 @@ export const store = {
       rootGetters
     ) => {
       let user = getters[getterTypes.AUTH_USER];
-      if (!user) return;
+      if (!user) return new Campaign();
       let campaignUuid = user.current_campaign;
-      if (!campaignUuid) return;
+      if (!campaignUuid) return new Campaign();
       let campaignByIdGetterName =
         campaignModule.namespace + "/" + campaignModule.getterTypes.BY_ID;
       return rootGetters[campaignByIdGetterName](campaignUuid);

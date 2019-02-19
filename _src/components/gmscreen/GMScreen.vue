@@ -4,21 +4,20 @@
       <slot name="toolbar-left"></slot>
       <v-spacer></v-spacer>
       <v-tabs
-          v-model="activeTab"
-          @input="$emit('input', $event)"
-          color="transparent"
-          show-arrows centered grow
+        v-model="activeTab"
+        @change="$emit('input', $event)"
+        color="transparent"
+        show-arrows
+        centered
+        grow
       >
-        <v-tabs-slider
-            color="white"
-            v-show="activeTab !== -1"
-        ></v-tabs-slider>
+        <v-tabs-slider color="white" v-show="activeTab !== -1"></v-tabs-slider>
 
         <v-tab
-            v-for="(item, index) in items"
-            :key="index"
-            :ref="'tab_' + index"
-            :disabled="item.disabled"
+          v-for="(item, index) in items"
+          :key="index"
+          :ref="'tab_' + index"
+          :disabled="item.disabled"
         >
           <slot :item="item" name="title">
             {{ item.title }}
@@ -27,12 +26,9 @@
       </v-tabs>
       <v-spacer></v-spacer>
       <slot name="toolbar-right"></slot>
-
     </v-toolbar>
     <v-tabs-items :value="activeTab">
-      <v-tab-item
-          v-for="(item, index) in items"
-          :key="index">
+      <v-tab-item v-for="(item, index) in items" :key="index">
         <slot :item="item">
           <screen-tab :content="item.content"></screen-tab>
         </slot>
@@ -50,23 +46,23 @@ export default {
   props: {
     items: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     value: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
   data() {
     return {
       activeTab: this.value,
-      tabsSliderStyle: ""
+      tabsSliderStyle: "",
     };
   },
   watch: {
     value(newVal) {
       this.activeTab = newVal;
-    }
-  }
+    },
+  },
 };
 </script>
