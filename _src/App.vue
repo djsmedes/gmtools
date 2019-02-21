@@ -46,10 +46,17 @@
         </v-btn>
       </v-toolbar-items>
       <v-toolbar-items v-else>
+
+        <v-btn slot="activator" icon flat>
+          <v-badge overlap>
+            <span v-if="false" slot="badge"></span>
+            <v-icon dark>notifications</v-icon>
+          </v-badge>
+        </v-btn>
+
         <v-menu offset-y left>
           <v-btn slot="activator" flat>
-            <span class="hidden-xs-only">{{ user.email }}</span>
-            <v-icon dark class="hidden-sm-and-up">person</v-icon>
+            <v-icon dark>person</v-icon>
             <v-icon dark>arrow_drop_down</v-icon>
           </v-btn>
 
