@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from typing import MutableSequence, Sequence, Union
+from typing import MutableSequence, Union
 
-from core.serializers import CampaignModelSerializer
-from .models import User, Campaign
+from core.serializers import CampaignModelSerializer, MultiTenantedModelSerializer
+from .models import User, Campaign, Invitation
 
 
 class AbilityRule(dict):
@@ -104,4 +104,20 @@ class CampaignSerializer(CampaignModelSerializer):
             'name', 'gm_set', 'player_set',
             'active_encounter',
             'uuid'
+        )
+
+
+class InvitationSerializer(MultiTenantedModelSerializer):
+    campaign_name = serializers.SerializerMethodField()
+
+    def get_campaign_name(self, invite: Invitation):
+        return invite.campaign.name
+
+    class Meta:
+        model = Invitation
+        fields = (
+            'uuid', 'campaign_name', 'joiner', 'approver',
+        )
+        read_only_fields = (
+            'uuid', 'campaign_name', 'joiner', 'approver',
         )

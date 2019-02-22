@@ -20,7 +20,7 @@ from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import ObtainAuthToken
 
-from accounts.viewsets import UserViewSet, CampaignViewSet
+from accounts.viewsets import UserViewSet, CampaignViewSet, InvitationViewSet
 from accounts.views import UserView, SignupApiView
 from combat.viewsets import CombatantViewSet, GMScreenTabViewSet
 from plot.viewsets import EncounterViewSet
@@ -37,6 +37,12 @@ router.register(
     viewset=CampaignViewSet,
     base_name='campaign'
 )
+router.register(
+    prefix='invitation',
+    viewset=InvitationViewSet,
+    base_name='invitation'
+)
+
 router.register(
     prefix='combatant',
     viewset=CombatantViewSet,

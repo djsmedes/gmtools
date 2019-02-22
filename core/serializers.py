@@ -9,9 +9,7 @@ class MultiTenantedModelSerializer(serializers.ModelSerializer):
     view_name = None
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.get('user')
-        if self.user:
-            kwargs.pop('user')
+        self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             if isinstance(field, PrimaryKeyRelatedField):

@@ -4,8 +4,8 @@ from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, UpdateMode
 from rest_framework.response import Response
 from rest_framework.status import HTTP_403_FORBIDDEN
 
-from .models import User, Campaign, CampaignRole
-from .serializers import UserSerializer, CampaignSerializer
+from .models import User, Campaign, CampaignRole, Invitation
+from .serializers import UserSerializer, CampaignSerializer, InvitationSerializer
 
 
 class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericViewSet):
@@ -45,3 +45,10 @@ class CampaignViewSet(ModelViewSet):
 
         instance = serializer.save()
         CampaignRole.objects.create(user=self.request.user, campaign=instance, is_gm=True)
+
+
+class InvitationViewSet(ListModelMixin, GenericViewSet):
+    serializer_class = InvitationSerializer
+
+    def get_queryset(self):
+        Invitation.get_current_invites().filter(joiner=self.request.user)
