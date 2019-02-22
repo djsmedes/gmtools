@@ -123,10 +123,10 @@ class Invitation(models.Model):
         blank=True,
         related_name='invites_approved',
     )
-    joiner_assumed_email = models.EmailField(null=True, blank=True)
+    joiner_external_identifier = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.joiner_assumed_email} -> {self.campaign!s}"
+        return f"{self.joiner_external_identifier} -> {self.campaign!s}"
 
     class Expired(Exception):
         pass
