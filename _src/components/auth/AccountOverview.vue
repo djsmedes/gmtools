@@ -40,6 +40,8 @@
 </template>
 
 <script>
+import { Invitation, load as loadInvites } from "@/models/invitation";
+
 export default {
   name: "AccountOverview",
   data() {
@@ -49,6 +51,9 @@ export default {
         { uuid: 2, campaign_name: "Joe's Campaign", inviter_name: "Joe" },
       ],
     };
+  },
+  async created() {
+    this.invites = await loadInvites();
   },
 };
 </script>

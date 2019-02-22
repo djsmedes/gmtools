@@ -52,7 +52,7 @@ class InvitationViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
     serializer_class = InvitationSerializer
 
     def get_queryset(self):
-        Invitation.get_current_invites().filter(joiner=self.request.user)
+        return Invitation.get_current_invites().filter(joiner=self.request.user)
 
     @action(methods=['get'], detail=False)
     def sent(self, request):
