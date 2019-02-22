@@ -116,8 +116,6 @@ class InvitationSerializer(MultiTenantedModelSerializer):
     class Meta:
         model = Invitation
         fields = (
-            'uuid', 'campaign_name', 'joiner', 'approver',
+            'uuid', 'campaign_name', 'campaign', 'joiner', 'approver',
         )
-        read_only_fields = (
-            'uuid', 'campaign_name', 'joiner', 'approver',
-        )
+        read_only_fields = ('approver',)
