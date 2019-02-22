@@ -145,16 +145,20 @@ class Invitation(models.Model):
         self._validate(self.approver, accepting_user or self.joiner)
         self._complete(self.approver, accepting_user or self.joiner)
 
+    def reject(self):
+        self.joiner = None
+        self.save()
+
     def approve(self, approving_user):
         self._validate(approving_user, self.joiner)
         self._complete(approving_user, self.joiner)
 
     def _complete(self, approving_user, accepting_user):
+        CampaignRole.objects.create(user=accepting_user, campaign=self.campaign)
         self.approver = approving_user
         self.joiner = accepting_user
         self.completion_date = datetime.date.today()
         self.save()
-        CampaignRole.objects.create(user=accepting_user, campaign=self.campaign)
 
     @classmethod
     def get_current_invites(cls):

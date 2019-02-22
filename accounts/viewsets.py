@@ -51,6 +51,7 @@ class CampaignViewSet(ModelViewSet):
 
 class InvitationViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
     serializer_class = InvitationSerializer
+    lookup_field = 'uuid'
 
     def get_queryset(self):
         return Invitation.get_current_invites().filter(joiner=self.request.user)
@@ -96,3 +97,35 @@ class InvitationViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
         kwargs['approver'] = self.request.user
         kwargs['joiner'] = self.joiner  # if we don't have a self.joiner, an AttributeError is perfectly appropriate
         serializer.save(**kwargs)
+
+    @action(methods=['post'], detail=True)
+    def accept(self, request):
+        invite: Invitation = self.get_object()
+        if request.user != invite.joiner:
+            return Response(status=403)
+
+        try:
+            invite.accept()
+        except Invitation.ApproverNotAuthorized:
+            return Response(data={
+                "detail": "The user who invited you is not authorized to admit new users to this campaign."
+            }, status=400)
+        except Invitation.Expired:
+            return Response(data={
+                "detail": "The invitation has expired."
+            }, status=400)
+
+        return Response({
+            "detail": "Invitation accepted"
+        })
+
+    @action(methods=['post'], detail=True)
+    def reject(self, request):
+        invite: Invitation = self.get_object()
+        if request.user != invite.joiner:
+            return Response(status=403)
+
+        invite.reject()
+        return Response({
+            "detail": "Invitation rejected"
+        })

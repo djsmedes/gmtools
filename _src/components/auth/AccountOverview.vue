@@ -12,7 +12,8 @@
                   {{ invite.campaign_name }}
                 </v-list-tile-title>
                 <v-list-tile-sub-title>
-                  Invited by <strong>{{ invite.approver_external_identifier }}</strong>
+                  Invited by
+                  <strong>{{ invite.approver_external_identifier }}</strong>
                 </v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-action>
