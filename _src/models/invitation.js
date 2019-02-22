@@ -17,6 +17,8 @@ export class Invitation extends Model {
     campaign = null,
     joiner = null,
     approver = null,
+    joiner_external_identifier = "",
+    approver_external_identifier = "",
   } = {}) {
     super();
     this.uuid = uuid;
@@ -24,6 +26,8 @@ export class Invitation extends Model {
     this.campaign = campaign;
     this.joiner = joiner;
     this.approver = approver;
+    this.joiner_external_identifier = joiner_external_identifier;
+    this.approver_external_identifier = approver_external_identifier;
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
   <v-layout wrap>
     <v-flex shrink>
-      <v-card max-width=500>
+      <v-card max-width="800">
         <v-card-title class="title">Invitations</v-card-title>
         <v-list two-line>
           <template v-for="(invite, index) in invites">
@@ -12,7 +12,7 @@
                   {{ invite.campaign_name }}
                 </v-list-tile-title>
                 <v-list-tile-sub-title>
-                  {{ invite.inviter_name }}
+                  Invited by <strong>{{ invite.approver_external_identifier }}</strong>
                 </v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-action>

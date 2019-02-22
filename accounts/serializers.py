@@ -109,13 +109,18 @@ class CampaignSerializer(CampaignModelSerializer):
 
 class InvitationSerializer(MultiTenantedModelSerializer):
     campaign_name = serializers.SerializerMethodField()
+    approver_external_identifier = serializers.SerializerMethodField()
 
     def get_campaign_name(self, invite: Invitation):
         return invite.campaign.name
+
+    def get_approver_external_identifier(self, invite: Invitation):
+        return invite.approver.email  # may eventually be something less personal like a username
 
     class Meta:
         model = Invitation
         fields = (
             'uuid', 'campaign_name', 'campaign', 'joiner', 'approver',
+            'joiner_external_identifier', 'approver_external_identifier',
         )
-        read_only_fields = ('approver',)
+        read_only_fields = ('approver', 'joiner',)

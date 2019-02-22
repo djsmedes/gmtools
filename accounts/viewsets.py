@@ -4,6 +4,7 @@ from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, UpdateMode
 from rest_framework.response import Response
 from rest_framework.status import HTTP_403_FORBIDDEN
 from rest_framework.decorators import action
+from django.core.validators import validate_email, ValidationError
 
 from .models import User, Campaign, CampaignRole, Invitation
 from .serializers import UserSerializer, CampaignSerializer, InvitationSerializer
@@ -65,16 +66,33 @@ class InvitationViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
     def create(self, request, *args, **kwargs):
         campaign = request.data.get('campaign')
         try:
-            if request.user.campaigns.filter(campaignrole__is_gm=True).filter(uuid=campaign):
-                return super().create(request, *args, **kwargs)
-            else:
+            if not request.user.campaigns.filter(campaignrole__is_gm=True).filter(uuid=campaign):
                 return Response(data={
                     "detail": "You do not have permission to create an invitation for this campaign"
                 }, status=403)
         except Exception as e:
-            print(repr(e))
+            print(repr(e))  # really just trying to catch malformed uuids here
             return Response(status=400)
+
+        joiner_identifier = request.data.get('joiner_external_identifier')
+        try:
+            validate_email(joiner_identifier)
+        except ValidationError:
+            return Response(data={
+                "joiner_external_identifier": ["Only invitations using email addresses are currently supported."]
+            }, status=400)
+
+        try:
+            self.joiner = User.objects.get(email=joiner_identifier)
+        except User.DoesNotExist:
+            self.joiner = None
+
+        if self.joiner is None:
+            return Response(status=400)  # todo - write this in a way that obscures whether there is a user with this email address
+
+        return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer, **kwargs):
         kwargs['approver'] = self.request.user
+        kwargs['joiner'] = self.joiner  # if we don't have a self.joiner, an AttributeError is perfectly appropriate
         serializer.save(**kwargs)
