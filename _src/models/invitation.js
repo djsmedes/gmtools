@@ -45,3 +45,13 @@ export async function create(invitation) {
   let { data } = await axios.post(getListUrl(), invitation.serialize());
   return new Invitation(data);
 }
+
+export async function accept(invitation) {
+  let { data } = await axios.post(getListUrl([invitation.uuid, "accept"]));
+  return data;
+}
+
+export async function reject(invitation) {
+  let { data } = await axios.post(getListUrl([invitation.uuid, "reject"]));
+  return data;
+}

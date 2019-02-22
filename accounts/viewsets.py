@@ -99,7 +99,7 @@ class InvitationViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
         serializer.save(**kwargs)
 
     @action(methods=['post'], detail=True)
-    def accept(self, request):
+    def accept(self, request, uuid):
         invite: Invitation = self.get_object()
         if request.user != invite.joiner:
             return Response(status=403)
@@ -120,7 +120,7 @@ class InvitationViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
         })
 
     @action(methods=['post'], detail=True)
-    def reject(self, request):
+    def reject(self, request, uuid):
         invite: Invitation = self.get_object()
         if request.user != invite.joiner:
             return Response(status=403)
