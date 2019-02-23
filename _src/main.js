@@ -1,5 +1,5 @@
 import Vue from "vue";
-import Vuetify from "vuetify/lib";
+import Vuetify, { VLayout } from "vuetify/lib";
 import "vuetify/src/stylus/app.styl";
 import VueNativeSock from "vue-native-websocket";
 import App from "@/App";
@@ -21,8 +21,13 @@ Vue.use(VueNativeSock, "//" + window.location.host + "/ws/combat/", {
 });
 
 Vue.use(Vuetify, {
+  components: { VLayout },
   theme: {
     primary: "#1976D2",
+    edit: "#1976D2",
+    save: "#1976D2",
+    cancel: "#424242",
+    delete: "#FF5252",
     secondary: "#424242",
     accent: "#82B1FF",
     error: "#FF5252",
