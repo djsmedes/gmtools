@@ -5,26 +5,6 @@
     </v-card-title>
     <v-card-text v-if="editMode">
       <v-text-field label="Name" v-model="localCampaign.name"></v-text-field>
-      <v-select
-        readonly
-        label="GMs"
-        multiple
-        chips
-        :items="localCampaign.gm_set.map(userUuid => getUser(userUuid))"
-        item-text="name"
-        item-value="uuid"
-        v-model="localCampaign.gm_set"
-      ></v-select>
-      <v-select
-        readonly
-        label="Players"
-        multiple
-        chips
-        :items="localCampaign.player_set.map(userUuid => getUser(userUuid))"
-        item-text="name"
-        item-value="uuid"
-        v-model="localCampaign.player_set"
-      ></v-select>
     </v-card-text>
     <v-list v-else>
       <v-subheader>
@@ -79,6 +59,7 @@
       </v-tooltip>
     </v-card-actions>
     <v-card-actions v-show="!editMode">
+      <v-btn icon disabled></v-btn>
       <v-spacer></v-spacer>
       <v-tooltip top>
         <v-btn
@@ -94,6 +75,18 @@
         <span>Edit</span>
       </v-tooltip>
       <v-spacer></v-spacer>
+      <v-tooltip top>
+        <v-btn
+          slot="activator"
+          flat
+          icon
+          @click="() => {}"
+          :disabled="disabled"
+        >
+          <v-icon>group_add</v-icon>
+        </v-btn>
+        <span>Invite players</span>
+      </v-tooltip>
     </v-card-actions>
   </v-card>
 </template>
@@ -118,7 +111,7 @@ export default {
   },
   data() {
     return {
-      localCampaign: new Campaign(),
+      localCampaign: null,
       editMode: false,
     };
   },
@@ -127,7 +120,9 @@ export default {
       handler(isEditMode) {
         if (isEditMode) {
           this.$emit("focus");
+          this.localCampaign = new Campaign(this.campaign);
         } else {
+          this.localCampaign = null;
           this.$emit("blur");
         }
       },
