@@ -77,6 +77,12 @@ import { routeNames } from "@/router";
 export default {
   name: "CampaignDetail",
   components: { ObjectDetail },
+  props: {
+    uuid: {
+      type: String,
+      default: null,
+    },
+  },
   data() {
     return {
       localCampaign: new Campaign(),
@@ -84,8 +90,7 @@ export default {
   },
   computed: {
     campaign() {
-      let uuid = this.$route.params.uuid;
-      return uuid ? this.getCampaign(uuid) : new Campaign();
+      return this.getCampaign(this.uuid);
     },
     ...mapGetters(campaign.namespace, {
       getCampaign: campaign.getterTypes.BY_ID,

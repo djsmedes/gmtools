@@ -80,6 +80,7 @@ const router = new Router({
       component: () =>
         import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignDetail"),
       beforeEnter: loginRequired,
+      props: true,
     },
 
     {

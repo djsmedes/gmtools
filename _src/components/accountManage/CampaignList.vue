@@ -1,8 +1,9 @@
 <template>
   <object-list
-      :detail-view-name="routeNames.CAMPAIGN"
-      :create-view-name="routeNames.CAMPAIGN_CREATE"
-      :object-list="campaigns">
+    :detail-view-name="routeNames.CAMPAIGN"
+    :create-view-name="routeNames.CAMPAIGN_CREATE"
+    :object-list="campaigns"
+  >
   </object-list>
 </template>
 
@@ -17,21 +18,21 @@ export default {
   components: { ObjectList },
   data() {
     return {
-      routeNames
+      routeNames,
     };
   },
   computed: {
     ...mapGetters(campaign.namespace, {
-      campaigns: campaign.getterTypes.LIST
-    })
+      campaigns: campaign.getterTypes.LIST,
+    }),
   },
   methods: {
     ...mapActions(campaign.namespace, {
-      loadCampaigns: campaign.actionTypes.LIST
-    })
+      loadCampaigns: campaign.actionTypes.LIST,
+    }),
   },
   created() {
     this.loadCampaigns();
-  }
+  },
 };
 </script>
