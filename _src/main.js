@@ -10,8 +10,10 @@ import { namespace, stateKeys, getterTypes, mutationTypes } from "@/auth";
 import { ModuleSocket } from "@/utils/websockets";
 import { ability } from "@/utils/ability";
 import { abilitiesPlugin } from "@casl/vue";
+import { confirmPlugin } from "@/plugins/userChoiceDialog";
 
 Vue.config.productionTip = false;
+Vue.use(confirmPlugin);
 
 Vue.use(VueNativeSock, "//" + window.location.host + "/ws/combat/", {
   connectManually: true,

@@ -150,7 +150,10 @@ export default {
       loadUsers: userModule.actionTypes.LIST,
     }),
     async tryDelete() {
-      alert("tryDelete");
+      let choice = await this.$userChoice(
+        `<p>Are you sure?</p>`,
+        "Confirm delete"
+      );
       // await this.deleteCampaign(this.campaign.uuid);
     },
     async save() {
