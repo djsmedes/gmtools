@@ -1,10 +1,38 @@
 <template>
   <v-expand-transition mode="out-in">
     <v-container v-if="campaigns.length" grid-list-xl>
+      <v-layout wrap>
+        <v-flex xs12 md6 lg4>
+          <h1 class="display-1 mb-3">Current Campaign</h1>
+          <campaign-detail
+            :uuid="currentCampaign.uuid"
+            @focus="campaignUnderEdit = currentCampaign.uuid"
+            @blur="
+              campaignUnderEdit =
+                campaignUnderEdit === currentCampaign.uuid
+                  ? null
+                  : campaignUnderEdit
+            "
+            :disabled="
+              campaignUnderEdit && campaignUnderEdit !== currentCampaign.uuid
+            "
+          ></campaign-detail>
+        </v-flex>
+        <v-flex lg4 class="hidden-md-and-down">
+          <v-layout fill-height justify-center align-center>
+            <img :src="icos" alt="icosahedron" style="max-width: 100px" />
+          </v-layout>
+        </v-flex>
+        <v-flex xs12 md6 lg4>
+          <h1 class="display-1 mb-3">Invitations</h1>
+          <invitations></invitations>
+        </v-flex>
+      </v-layout>
+
+      <h1 class="display-1 mb-3 mt-5">Other Campaigns</h1>
       <v-data-iterator
         :items="campaigns"
         content-tag="v-layout"
-        row
         wrap
         hide-actions
       >
@@ -31,10 +59,12 @@ import { mapGetters, mapActions } from "vuex";
 import { routeNames } from "@/router";
 import campaign from "@/models/campaign";
 import CampaignDetail from "@/components/accountManage/CampaignDetail";
+import auth from "@/auth";
+import Invitations from "@/components/accountManage/Invitations";
 
 export default {
   name: "CampaignList",
-  components: { CampaignDetail },
+  components: { Invitations, CampaignDetail },
   data() {
     return {
       routeNames,
@@ -43,8 +73,19 @@ export default {
   },
   computed: {
     ...mapGetters(campaign.namespace, {
-      campaigns: campaign.getterTypes.LIST,
+      allCampaigns: campaign.getterTypes.LIST,
     }),
+    ...mapGetters(auth.namespace, {
+      currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN,
+    }),
+    campaigns() {
+      return this.allCampaigns.filter(
+        c => c.uuid !== this.currentCampaign.uuid
+      );
+    },
+    icos() {
+      return require("@/assets/img/icosahedron.svg");
+    },
   },
   methods: {
     ...mapActions(campaign.namespace, {
