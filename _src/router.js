@@ -15,8 +15,6 @@ export const routeNames = {
   COMBATANT: "combatant",
   COMBATANT_CREATE: "combatantCreate",
   CAMPAIGNS: "campaigns",
-  CAMPAIGN: "campaign",
-  CAMPAIGN_CREATE: "campaignCreate",
   ENCOUNTERS: "encounters",
   ENCOUNTER: "encounter",
   ENCOUNTER_CREATE: "encounterCreate",
@@ -66,21 +64,6 @@ const router = new Router({
       component: () =>
         import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignList"),
       beforeEnter: loginRequired,
-    },
-    {
-      path: "/campaigns/new/",
-      name: routeNames.CAMPAIGN_CREATE,
-      component: () =>
-        import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignDetail"),
-      beforeEnter: loginRequired,
-    },
-    {
-      path: "/campaigns/:uuid/",
-      name: routeNames.CAMPAIGN,
-      component: () =>
-        import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignDetail"),
-      beforeEnter: loginRequired,
-      props: true,
     },
 
     {

@@ -3,7 +3,7 @@
     <v-container v-if="campaigns.length" grid-list-xl>
       <v-layout wrap>
         <v-flex xs12 md6 lg4>
-          <v-toolbar dense color="transparent" flat class="p-0">
+          <v-toolbar dense color="transparent" flat class="pa-0">
             <v-toolbar-title class="display-1 mb-3">
               Current Campaign
             </v-toolbar-title>
@@ -34,7 +34,14 @@
         <invitations class="flex xs12 md6 lg4"></invitations>
       </v-layout>
 
-      <h1 class="display-1 mb-3 mt-5">Other Campaigns</h1>
+      <v-toolbar class="pa-0 mt-5" flat color="transparent" dense>
+        <v-toolbar-title class="display-1">Other Campaigns</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" flat @click="tryCreate">
+          <v-icon left>add</v-icon>
+          Create a new campaign
+        </v-btn>
+      </v-toolbar>
       <v-fade-transition>
         <v-layout v-if="showCampaigns" wrap>
           <v-flex
@@ -67,11 +74,12 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { routeNames } from "@/router";
-import campaign from "@/models/campaign";
+import campaign, { Campaign } from "@/models/campaign";
 import CampaignDetail from "@/components/accountManage/CampaignDetail";
 import auth from "@/auth";
 import Invitations from "@/components/accountManage/Invitations";
 import { sleep } from "@/utils/time";
+import NewCampaign from "@/components/accountManage/NewCampaign";
 
 export default {
   name: "CampaignList",
@@ -79,7 +87,7 @@ export default {
   data() {
     return {
       routeNames,
-      campaignUnderEdit: null,
+      p_campaignUnderEdit: null,
       showCampaigns: true,
     };
   },
@@ -90,6 +98,16 @@ export default {
     ...mapGetters(auth.namespace, {
       currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN,
     }),
+    campaignUnderEdit: {
+      get() {
+        return [...this.campaigns, this.currentCampaign]
+          .map(c => c.uuid)
+          .find(u => u === this.p_campaignUnderEdit);
+      },
+      set(val) {
+        this.p_campaignUnderEdit = val;
+      },
+    },
     campaigns() {
       return this.allCampaigns.filter(
         c => c.uuid !== this.currentCampaign.uuid
@@ -102,6 +120,7 @@ export default {
   methods: {
     ...mapActions(campaign.namespace, {
       loadCampaigns: campaign.actionTypes.LIST,
+      createCampaign: campaign.actionTypes.CREATE,
     }),
     async setCurrentCampaign(uuid) {
       this.showCampaigns = false;
@@ -117,6 +136,12 @@ export default {
         await sleep(500);
       }
       this.showCampaigns = true;
+    },
+    async tryCreate() {
+      let name = await this.$dialog(NewCampaign);
+      if (name) {
+        await this.createCampaign(new Campaign({ name }));
+      }
     },
   },
   created() {

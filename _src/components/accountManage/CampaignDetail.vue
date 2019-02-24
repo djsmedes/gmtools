@@ -68,7 +68,7 @@
       </v-tooltip>
       <v-spacer></v-spacer>
       <v-tooltip top>
-        <v-btn slot="activator" flat icon color="save" @click="() => {}">
+        <v-btn slot="activator" flat icon color="save" @click="save">
           <v-icon>save</v-icon>
         </v-btn>
         <span>Save</span>
@@ -166,7 +166,6 @@ export default {
       loadCampaigns: campaign.actionTypes.LIST,
       deleteCampaign: campaign.actionTypes.DESTROY,
       updateCampaign: campaign.actionTypes.UPDATE,
-      createCampaign: campaign.actionTypes.CREATE,
     }),
     ...mapActions(userModule.namespace, {
       loadUsers: userModule.actionTypes.LIST,
@@ -184,11 +183,11 @@ export default {
           new ButtonOption(),
         ]
       );
-      // await this.deleteCampaign(this.campaign.uuid);
+      await this.deleteCampaign(this.campaign.uuid);
     },
     async save() {
       await this.updateCampaign(this.localCampaign);
-      this.reset();
+      this.editMode = false;
     },
     async create() {
       let rObj = await this.createCampaign(this.localCampaign);
@@ -196,9 +195,6 @@ export default {
         name: routeNames.CAMPAIGN,
         params: { uuid: rObj.uuid },
       });
-    },
-    reset() {
-      this.localCampaign = new Campaign(this.campaign);
     },
     async invitePlayers() {
       if (
@@ -210,7 +206,6 @@ export default {
   },
   created() {
     this.loadCampaigns().then(() => {
-      this.reset();
       if (this.$route.params.uuid && !this.campaign.uuid) {
         this.$router.replace({ name: routeNames.NOT_FOUND });
       }

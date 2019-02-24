@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-toolbar dense color="transparent" flat class="p-0">
+    <v-toolbar dense color="transparent" flat class="pa-0">
       <v-toolbar-title class="display-1 mb-3">
         Invitations
       </v-toolbar-title>
