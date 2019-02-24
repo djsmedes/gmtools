@@ -12,27 +12,37 @@ export class ButtonOption {
   }
 }
 
-export function confirmPlugin(Vue) {
+function asyncDialog(ComponentConstructor, componentProps) {
+  const dialog = new ComponentConstructor({
+    parent: this.$root,
+    propsData: componentProps,
+  });
+  dialog.$mount();
+  document.body.appendChild(dialog.$el);
+  dialog.open();
+
+  return new Promise(resolve => {
+    dialog.$once("close", returnVal => {
+      document.body.removeChild(dialog.$el);
+      dialog.$destroy();
+      resolve(returnVal);
+    });
+  });
+}
+
+export function dialogPlugin(Vue) {
   const ConfirmComponent = Vue.extend(Confirm);
 
   Vue.prototype.$userChoice = function(title, body, buttonList) {
-    const dialog = new ConfirmComponent({
-      parent: this.$root,
-      propsData: {
-        title,
-        body,
-        buttonList,
-      },
+    return asyncDialog.bind(this)(ConfirmComponent, {
+      title,
+      body,
+      buttonList,
     });
-    dialog.$mount();
-    document.body.appendChild(dialog.$el);
-    dialog.open();
+  };
 
-    return new Promise(resolve => {
-      dialog.$once("close", choice => {
-        document.body.removeChild(dialog.$el);
-        resolve(choice);
-      });
-    });
+  Vue.prototype.$dialog = function(component, componentProps) {
+    const TheComponent = Vue.extend(component);
+    return asyncDialog.bind(this)(TheComponent, componentProps);
   };
 }

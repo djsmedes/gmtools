@@ -80,7 +80,7 @@
           slot="activator"
           flat
           icon
-          @click="() => {}"
+          @click="invitePlayers"
           :disabled="disabled"
         >
           <v-icon>group_add</v-icon>
@@ -97,6 +97,7 @@ import campaign, { Campaign } from "@/models/campaign";
 import userModule from "@/models/user";
 import { routeNames } from "@/router";
 import { ButtonOption } from "@/plugins/userChoiceDialog";
+import InvitePlayers from "@/components/accountManage/InvitePlayers";
 
 export default {
   name: "CampaignDetail",
@@ -178,6 +179,9 @@ export default {
     },
     reset() {
       this.localCampaign = new Campaign(this.campaign);
+    },
+    async invitePlayers() {
+      await this.$dialog(InvitePlayers);
     },
   },
   created() {
