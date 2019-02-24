@@ -48,6 +48,28 @@ class CampaignViewSet(ModelViewSet):
         instance = serializer.save()
         CampaignRole.objects.create(user=self.request.user, campaign=instance, is_gm=True)
 
+    @action(methods=['post'], detail=True)
+    def leave(self, request, uuid):
+        campaign: Campaign = self.get_object()
+        try:
+            campaign_role = CampaignRole.objects.get(user=request.user, campaign=campaign)
+        except CampaignRole.DoesNotExist:
+            return Response(data={"detail": "You are not associated with a campaign with that ID."}, status=404)
+
+        # don't let the last gm leave the campaign - they must delete it or assign a new GM first
+        if campaign_role.is_gm and not CampaignRole.objects.filter(campaign=campaign, is_gm=True).exclude(
+                user=request.user).exists():
+            return Response(data={
+                "detail": (
+                    "You cannot leave a campaign as its only GM. "
+                    "Either delete the entire campaign or promote another player "
+                    "to GM before leaving."
+                )
+            }, status=403)
+
+        campaign_role.delete()
+        return Response(data={"detail": "You have left the campaign."})
+
 
 class InvitationViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
     serializer_class = InvitationSerializer

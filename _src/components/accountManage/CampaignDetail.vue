@@ -75,7 +75,19 @@
       </v-tooltip>
     </v-card-actions>
     <v-card-actions v-show="!editMode">
-      <v-btn icon disabled></v-btn>
+      <v-tooltip top>
+        <v-btn
+          slot="activator"
+          flat
+          icon
+          color="delete"
+          @click="tryLeave"
+          :disabled="disabled"
+        >
+          <v-icon>person_outline</v-icon>
+        </v-btn>
+        <span>Leave this campaign</span>
+      </v-tooltip>
       <v-spacer></v-spacer>
       <v-tooltip top>
         <v-btn
@@ -114,6 +126,7 @@ import userModule from "@/models/user";
 import { routeNames } from "@/router";
 import { ButtonOption } from "@/plugins/userChoiceDialog";
 import InvitePlayers from "@/components/accountManage/InvitePlayers";
+import axios from "axios";
 
 export default {
   name: "CampaignDetail",
@@ -183,18 +196,30 @@ export default {
           new ButtonOption(),
         ]
       );
-      await this.deleteCampaign(this.campaign.uuid);
+      if (choice) {
+        await this.deleteCampaign(this.campaign.uuid);
+      }
+    },
+    async tryLeave() {
+      let choice = await this.$userChoice(
+        "Confirm leaving campaign",
+        `<p>Are you sure you want to leave ${this.campaign.name}? You will need to be re-invited by a GM to rejoin it.</p>`,
+        [
+          new ButtonOption({
+            returnVal: true,
+            text: `Yes, leave ${this.campaign.name}`,
+            attrs: { color: "delete" },
+          }),
+          new ButtonOption(),
+        ]
+      );
+      if (choice) {
+        await axios.post(campaign.getDetailUrl(this.campaign.uuid, ["leave"]));
+      }
     },
     async save() {
       await this.updateCampaign(this.localCampaign);
       this.editMode = false;
-    },
-    async create() {
-      let rObj = await this.createCampaign(this.localCampaign);
-      this.$router.replace({
-        name: routeNames.CAMPAIGN,
-        params: { uuid: rObj.uuid },
-      });
     },
     async invitePlayers() {
       if (
