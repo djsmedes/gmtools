@@ -1,8 +1,24 @@
 <template>
   <v-card>
-    <v-card-title :class="{ title: true, 'grey--text': editMode }">
+    <v-card-title
+      :class="{
+        title: true,
+        'grey--text': editMode,
+        'pb-0': !isCurrentCampaign,
+      }"
+    >
       {{ campaign.name }}
     </v-card-title>
+    <v-btn
+      v-if="!isCurrentCampaign"
+      flat
+      small
+      color="save"
+      @click="$emit('set-active', uuid)"
+    >
+      Play this campaign
+      <v-icon small right>call_made</v-icon>
+    </v-btn>
     <v-card-text v-if="editMode">
       <v-text-field label="Name" v-model="localCampaign.name"></v-text-field>
     </v-card-text>
@@ -107,6 +123,10 @@ export default {
       default: null,
     },
     disabled: {
+      type: Boolean,
+      default: false,
+    },
+    isCurrentCampaign: {
       type: Boolean,
       default: false,
     },

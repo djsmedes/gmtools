@@ -8,19 +8,23 @@
               Current Campaign
             </v-toolbar-title>
           </v-toolbar>
-          <campaign-detail
-            :uuid="currentCampaign.uuid"
-            @focus="campaignUnderEdit = currentCampaign.uuid"
-            @blur="
-              campaignUnderEdit =
-                campaignUnderEdit === currentCampaign.uuid
-                  ? null
-                  : campaignUnderEdit
-            "
-            :disabled="
-              campaignUnderEdit && campaignUnderEdit !== currentCampaign.uuid
-            "
-          ></campaign-detail>
+          <v-fade-transition mode="out-in">
+            <campaign-detail
+              :key="currentCampaign.uuid"
+              :uuid="currentCampaign.uuid"
+              @focus="campaignUnderEdit = currentCampaign.uuid"
+              @blur="
+                campaignUnderEdit =
+                  campaignUnderEdit === currentCampaign.uuid
+                    ? null
+                    : campaignUnderEdit
+              "
+              :disabled="
+                campaignUnderEdit && campaignUnderEdit !== currentCampaign.uuid
+              "
+              :is-current-campaign="true"
+            ></campaign-detail>
+          </v-fade-transition>
         </v-flex>
         <v-flex lg4 class="hidden-md-and-down">
           <v-layout fill-height justify-center align-center>
@@ -31,26 +35,31 @@
       </v-layout>
 
       <h1 class="display-1 mb-3 mt-5">Other Campaigns</h1>
-      <v-data-iterator
-        :items="campaigns"
-        content-tag="v-layout"
-        wrap
-        hide-actions
-      >
-        <v-flex slot="item" slot-scope="props" xs12 md6 lg4>
-          <campaign-detail
-            :uuid="props.item.uuid"
-            @focus="campaignUnderEdit = props.item.uuid"
-            @blur="
-              campaignUnderEdit =
-                campaignUnderEdit === props.item.uuid ? null : campaignUnderEdit
-            "
-            :disabled="
-              campaignUnderEdit && campaignUnderEdit !== props.item.uuid
-            "
-          ></campaign-detail>
-        </v-flex>
-      </v-data-iterator>
+      <v-fade-transition>
+        <v-layout v-if="showCampaigns" wrap>
+          <v-flex
+            v-for="campaign in campaigns"
+            xs12
+            md6
+            lg4
+            :key="campaign.uuid"
+            class="campaign-list-item"
+          >
+            <campaign-detail
+              :uuid="campaign.uuid"
+              @set-active="setCurrentCampaign"
+              @focus="campaignUnderEdit = campaign.uuid"
+              @blur="
+                campaignUnderEdit =
+                  campaignUnderEdit === campaign.uuid ? null : campaignUnderEdit
+              "
+              :disabled="
+                campaignUnderEdit && campaignUnderEdit !== campaign.uuid
+              "
+            ></campaign-detail>
+          </v-flex>
+        </v-layout>
+      </v-fade-transition>
     </v-container>
   </v-expand-transition>
 </template>
@@ -62,6 +71,7 @@ import campaign from "@/models/campaign";
 import CampaignDetail from "@/components/accountManage/CampaignDetail";
 import auth from "@/auth";
 import Invitations from "@/components/accountManage/Invitations";
+import { sleep } from "@/utils/time";
 
 export default {
   name: "CampaignList",
@@ -70,6 +80,7 @@ export default {
     return {
       routeNames,
       campaignUnderEdit: null,
+      showCampaigns: true,
     };
   },
   computed: {
@@ -92,6 +103,21 @@ export default {
     ...mapActions(campaign.namespace, {
       loadCampaigns: campaign.actionTypes.LIST,
     }),
+    async setCurrentCampaign(uuid) {
+      this.showCampaigns = false;
+      let error = await Promise.race([
+        this.$ws.request("change_campaign", { campaign_uuid: uuid }),
+        sleep(4000).then(
+          () => "This is taking a while. You may want to refresh the page."
+        ),
+      ]);
+      if (error) {
+        this.$showSnack(error);
+      } else {
+        await sleep(500);
+      }
+      this.showCampaigns = true;
+    },
   },
   created() {
     this.loadCampaigns();
