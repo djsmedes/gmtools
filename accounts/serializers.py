@@ -1,10 +1,40 @@
 from rest_framework import serializers
+from typing import MutableSequence, Sequence, Union
 
 from core.serializers import CampaignModelSerializer
 from .models import User, Campaign
 
 
+class AbilityRule(dict):
+    """
+    Based on typescript definition shown here:
+    https://stalniy.github.io/casl/abilities/2017/07/20/define-abilities.html
+    """
+    def __init__(
+            self,
+            actions: Union[MutableSequence[str], str],
+            subject: Union[MutableSequence[str], str],
+            conditions: dict = None,
+            fields: Union[MutableSequence[str], str] = None,
+            inverted: bool = None,
+            reason: str = None
+    ):
+        self.actions = actions
+        self.subject = subject
+        self.conditions = conditions
+        self.fields = fields
+        self.inverted = inverted
+        self.reason = reason
+        super().__init__(**{
+            key: getattr(self, key)
+            for key in ['actions', 'subject', 'conditions', 'fields', 'inverted', 'reason']
+            if getattr(self, key) is not None
+        })
+
+
 class UserSerializer(CampaignModelSerializer):
+    view_name = 'user-detail'
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if hasattr(self.instance, 'campaigns'):
@@ -12,11 +42,11 @@ class UserSerializer(CampaignModelSerializer):
         else:
             qs = []
         self.fields['current_campaign'].queryset = qs
-
-    url = serializers.HyperlinkedIdentityField(
-        lookup_field='uuid',
-        view_name='user-detail',
-    )
+        if self.view_name and self.context.get('request'):
+            self.fields['url'] = serializers.HyperlinkedIdentityField(
+                view_name=self.view_name,
+                lookup_field='uuid'
+            )
 
     def transform_queryset(self, queryset):
         return queryset
@@ -25,12 +55,25 @@ class UserSerializer(CampaignModelSerializer):
         model = User
         fields = ('first_name', 'last_name', 'email',
                   'current_campaign',
-                  'uuid', 'url')
+                  'uuid',)
 
     def validate_current_campaign(self, value):
         if value not in self.root.instance.campaigns.all():
             raise serializers.ValidationError('Cannot set current campaign to one of which you are not a member.')
         return value
+
+
+class UserWithPermsSerializer(UserSerializer):
+    permissions = serializers.SerializerMethodField()
+
+    def get_permissions(self, user: User):
+        return [
+            AbilityRule('gm', 'campaign', conditions={"gm_set": {"$in": [user.uuid]}})
+        ]
+
+    class Meta:
+        model = User
+        fields = UserSerializer.Meta.fields + ('permissions',)
 
 
 class CampaignSerializer(CampaignModelSerializer):

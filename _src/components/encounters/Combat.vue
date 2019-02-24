@@ -108,7 +108,7 @@
       </v-container>
     </v-expand-transition>
 
-    <v-card class="hidden-sm-and-down">
+    <v-card v-if="$can('gm', currentCampaign)" class="hidden-sm-and-down">
       <screen :items="tabs" v-model="activeTab">
         <template slot="toolbar-left">
           <v-btn

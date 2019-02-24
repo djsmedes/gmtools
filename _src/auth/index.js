@@ -1,10 +1,10 @@
 import Vue from "vue";
-import api from "./api";
 import userModule, { User } from "@/models/user";
 import campaignModule, { Campaign } from "@/models/campaign";
 import { array2ObjByUUID } from "@/models/_baseModule";
 import * as Cookies from "js-cookie";
 import axios from "axios";
+import { generateUrl } from "@/utils/urls";
 
 export const namespace = "auth";
 
@@ -12,7 +12,7 @@ export const stateKeys = {
   TOKEN: "authToken",
   AUTH_USER: "authUser",
   PASS_RESET_USER_KEY: "passResetUserKey",
-  PASS_RESET_TOKEN: "passResetToken"
+  PASS_RESET_TOKEN: "passResetToken",
 };
 
 export const getterTypes = {
@@ -20,7 +20,7 @@ export const getterTypes = {
   AUTH_USER: "authUser",
   WAS_AUTH_USER_REQUESTED: "wasAuthUserRequested",
   IS_USER_AUTHENTICATED: "isUserAuthenticated",
-  CURRENT_CAMPAIGN: "currentCampaign"
+  CURRENT_CAMPAIGN: "currentCampaign",
 };
 
 export const actionTypes = {
@@ -28,7 +28,7 @@ export const actionTypes = {
   SET_AUTH_USER: "setAuthUser",
   SIGNUP: "signUp",
   LOGIN: "getToken",
-  LOGOUT: "removeToken"
+  LOGOUT: "removeToken",
 };
 
 export const mutationTypes = {
@@ -38,7 +38,7 @@ export const mutationTypes = {
   SET_TOKEN: "setAuth",
   REMOVE_TOKEN: "removeAuth",
   SET_PASS_RESET_DATA: "setPassResetData",
-  CLEAR_PASS_RESET_DATA: "clearPassResetData"
+  CLEAR_PASS_RESET_DATA: "clearPassResetData",
 };
 
 export const store = {
@@ -82,12 +82,17 @@ export const store = {
       let user = getters[getterTypes.AUTH_USER];
       if (typeof user === "undefined") return false;
       return user.email.length !== 0;
-    }
+    },
   },
   actions: {
     [actionTypes.LOGIN]: async ({ commit, dispatch }, { email, password }) => {
       try {
-        let token = await api.getToken({ email, password });
+        let { data } = await axios.post(generateUrl(["token-auth"]), {
+          username: email,
+          password: password,
+        });
+        let { token } = data;
+
         commit(mutationTypes.SET_TOKEN, { token });
         await dispatch(actionTypes.GET_USER);
       } catch (err) {
@@ -107,7 +112,9 @@ export const store = {
     },
     [actionTypes.GET_USER]: async ({ commit, dispatch }) => {
       try {
-        let { user, campaigns } = await api.getUser();
+        let { data } = await axios.get(generateUrl(["request-user"]));
+        let { user, campaigns } = data;
+
         dispatch(actionTypes.SET_AUTH_USER, user);
         let campaignSetListKey =
           campaignModule.namespace +
@@ -116,7 +123,7 @@ export const store = {
         commit(
           campaignSetListKey,
           {
-            objList: array2ObjByUUID(campaigns, Campaign)
+            objList: array2ObjByUUID(campaigns, Campaign),
           },
           { root: true }
         );
@@ -138,12 +145,12 @@ export const store = {
       if (!user.uuid) {
         commit(mutationTypes.CLEAR_AUTH_USER);
       } else {
-        commit(mutationTypes.SET_AUTH_USER, user.uuid);
+        commit(mutationTypes.SET_AUTH_USER, user);
         commit(
           userModule.namespace + "/" + userModule.mutationTypes.SET,
           { object: new User(user) },
           {
-            root: true
+            root: true,
           }
         );
       }
@@ -158,7 +165,13 @@ export const store = {
       { email, password1, password2 }
     ) => {
       try {
-        let { user, token } = await api.signUp({ email, password1, password2 });
+        let { data } = await axios.post(generateUrl(["signup"]), {
+          email,
+          password1,
+          password2,
+        });
+        let { user, token } = data;
+
         commit(mutationTypes.SET_TOKEN, { token });
         dispatch(actionTypes.SET_AUTH_USER, user);
       } catch (err) {
@@ -168,10 +181,10 @@ export const store = {
           throw err;
         }
       }
-    }
+    },
   },
   mutations: {
-    [mutationTypes.SET_AUTH_USER](state, uuid) {
+    [mutationTypes.SET_AUTH_USER](state, { uuid }) {
       Vue.set(state, stateKeys.AUTH_USER, uuid);
     },
     [mutationTypes.CLEAR_AUTH_USER](state) {
@@ -180,19 +193,19 @@ export const store = {
     [mutationTypes.SET_TOKEN](state, { token }) {
       Cookies.set(stateKeys.TOKEN, token, {
         expires: 7,
-        secure: process.env.NODE_ENV === "production"
+        secure: process.env.NODE_ENV === "production",
       });
       axios.defaults.headers["common"] = {
-        Authorization: "Token " + token
+        Authorization: "Token " + token,
       };
     },
     [mutationTypes.REMOVE_TOKEN]() {
       Cookies.remove(stateKeys.TOKEN);
       axios.defaults.headers["common"] = {
-        Authorization: ""
+        Authorization: "",
       };
-    }
-  }
+    },
+  },
 };
 
 export default {
@@ -202,5 +215,5 @@ export default {
   actionTypes,
   mutationTypes,
   store,
-  User
+  User,
 };
