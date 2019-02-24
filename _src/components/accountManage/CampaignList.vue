@@ -3,7 +3,11 @@
     <v-container v-if="campaigns.length" grid-list-xl>
       <v-layout wrap>
         <v-flex xs12 md6 lg4>
-          <h1 class="display-1 mb-3">Current Campaign</h1>
+          <v-toolbar dense color="transparent" flat class="p-0">
+            <v-toolbar-title class="display-1 mb-3">
+              Current Campaign
+            </v-toolbar-title>
+          </v-toolbar>
           <campaign-detail
             :uuid="currentCampaign.uuid"
             @focus="campaignUnderEdit = currentCampaign.uuid"
@@ -23,10 +27,7 @@
             <img :src="icos" alt="icosahedron" style="max-width: 100px" />
           </v-layout>
         </v-flex>
-        <v-flex xs12 md6 lg4>
-          <h1 class="display-1 mb-3">Invitations</h1>
-          <invitations></invitations>
-        </v-flex>
+        <invitations class="flex xs12 md6 lg4"></invitations>
       </v-layout>
 
       <h1 class="display-1 mb-3 mt-5">Other Campaigns</h1>

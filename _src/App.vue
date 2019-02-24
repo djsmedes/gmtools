@@ -177,4 +177,8 @@ export default {
 .text-monospaced textarea {
   font-family: "Monaco", courier, monospace;
 }
+
+nav.p-0 > .v-toolbar__content {
+  padding: 0;
+}
 </style>
