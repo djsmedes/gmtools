@@ -11,17 +11,9 @@ import { ModuleSocket } from "@/utils/websockets";
 import { ability } from "@/utils/ability";
 import { abilitiesPlugin } from "@casl/vue";
 import { dialogPlugin } from "@/plugins/userChoiceDialog";
+import { showSnackPlugin } from "@/plugins/showSnack";
 
 Vue.config.productionTip = false;
-Vue.use(dialogPlugin);
-
-Vue.use(VueNativeSock, "//" + window.location.host + "/ws/combat/", {
-  connectManually: true,
-  format: "json",
-  reconnection: true,
-  store: store,
-});
-
 Vue.use(Vuetify, {
   components: { VLayout },
   theme: {
@@ -37,6 +29,16 @@ Vue.use(Vuetify, {
     success: "#4CAF50",
     warning: "#FFC107",
   },
+});
+
+Vue.use(dialogPlugin);
+Vue.use(showSnackPlugin);
+
+Vue.use(VueNativeSock, "//" + window.location.host + "/ws/combat/", {
+  connectManually: true,
+  format: "json",
+  reconnection: true,
+  store: store,
 });
 
 Vue.use(abilitiesPlugin, ability);

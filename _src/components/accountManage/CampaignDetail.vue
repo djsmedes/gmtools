@@ -181,7 +181,11 @@ export default {
       this.localCampaign = new Campaign(this.campaign);
     },
     async invitePlayers() {
-      await this.$dialog(InvitePlayers, { campaignUuid: this.campaign.uuid });
+      if (
+        await this.$dialog(InvitePlayers, { campaignUuid: this.campaign.uuid })
+      ) {
+        this.$showSnack("Invitations sent");
+      }
     },
   },
   created() {

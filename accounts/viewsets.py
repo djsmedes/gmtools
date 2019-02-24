@@ -93,7 +93,9 @@ class InvitationViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
             response = super().create(request, *args, **kwargs)
             if response.status_code >= 400:
                 return response
-        return Response()
+        return Response(data={
+            "detail": "Success"
+        })
 
     def perform_create(self, serializer, **kwargs):
         kwargs['approver'] = self.request.user
