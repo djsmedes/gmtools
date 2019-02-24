@@ -11,15 +11,35 @@
     </v-toolbar>
     <v-card tile>
       <v-card-text>
-        some stuff here
+        Type an email address, then press &nbsp;<kbd>enter</kbd>&nbsp; or
+        &nbsp;<kbd>tab</kbd>&nbsp; to enter more.
+        <v-form @submit.prevent v-model="formValid" ref="form">
+          <v-combobox
+            ref="emails"
+            multiple
+            v-model="emailsToInvite"
+            chips
+            hide-selected
+            :append-icon="''"
+            :rules="[validateEmails]"
+            validate-on-blur
+          >
+          </v-combobox>
+        </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-btn flat>
+        <v-btn flat @click="close(false)">
+          <v-icon left>cancel</v-icon>
           cancel
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn flat>
-          <v-icon left></v-icon>
+        <v-btn
+          flat
+          @click="sendInvites"
+          color="save"
+          :disabled="!formValid || !emailsToInvite.length"
+        >
+          <v-icon left>send</v-icon>
           send invites
         </v-btn>
       </v-card-actions>
@@ -35,7 +55,14 @@ export default {
   mixins: [functionalDialogMixin],
   data() {
     return {
+      emailsToInvite: [],
+      formValid: false,
     };
+  },
+  watch: {
+    dialog(val) {
+      if (val) this.$nextTick(this.$refs.emails.focus);
+    },
   },
   computed: {
     width() {
@@ -54,6 +81,25 @@ export default {
     },
   },
   methods: {
+    sendInvites() {
+      if (this.$refs.form.validate()) {
+        console.log(this.emailsToInvite);
+        this.close(true);
+      }
+    },
+    validateEmails(emailList) {
+      let badEmails = emailList.filter(
+        email => !/^[^\s]+@[^\s]+\.[^\s]+$/.test(email)
+      );
+      if (badEmails.length) {
+        return (
+          "These don't seem to be valid email addresses: " +
+          badEmails.join(", ")
+        );
+      } else {
+        return true;
+      }
+    },
   },
 };
 </script>
