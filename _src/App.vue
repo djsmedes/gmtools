@@ -15,14 +15,6 @@
           flat
           v-if="isAuthenticated"
           class="no-text-dec hidden-xs-only"
-          :to="{ name: routeNames.CAMPAIGNS }"
-        >
-          Campaigns
-        </v-btn>
-        <v-btn
-          flat
-          v-if="isAuthenticated"
-          class="no-text-dec hidden-xs-only"
           :to="{ name: routeNames.COMBATANTS }"
         >
           Combatants
@@ -46,7 +38,6 @@
         </v-btn>
       </v-toolbar-items>
       <v-toolbar-items v-else>
-
         <v-btn slot="activator" icon flat>
           <v-badge overlap>
             <span v-if="false" slot="badge"></span>
@@ -60,39 +51,48 @@
             <v-icon dark>arrow_drop_down</v-icon>
           </v-btn>
 
-          <v-list dense subheader>
+          <v-list subheader>
             <v-list-tile class="grey--text">
-              <span
-                >Signed in as <strong>{{ user.name }}</strong></span
-              >
+              <span>
+                Signed in as <strong>{{ user.name }}</strong>
+              </span>
+            </v-list-tile>
+            <v-list-tile class="grey--text">
+              <span>
+                Playing <strong>{{ currentCampaign.name }}</strong>
+              </span>
             </v-list-tile>
             <v-divider class="mt-1 mb-1"></v-divider>
-            <v-subheader>
-              Campaigns
-            </v-subheader>
-            <v-list-tile
-              @click.stop
-              v-for="campaign in campaignsByUser(user.uuid)"
-              :key="campaign.uuid"
-            >
-              <v-list-tile-content @click="setCurrentCampaign(campaign.uuid)">
-                <v-list-tile-title>{{ campaign.name }}</v-list-tile-title>
-              </v-list-tile-content>
-
+            <v-list-tile :to="{ name: routeNames.CAMPAIGNS }">
               <v-list-tile-action>
-                <v-icon v-if="campaign.uuid === user.current_campaign">
-                  location_on
-                </v-icon>
+                <v-icon>recent_actors</v-icon>
               </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  Campaigns
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+            <v-list-tile :to="{ name: routeNames.ACCOUNT_SETTINGS }">
+              <v-list-tile-action>
+                <v-icon>build</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  Account
+                </v-list-tile-title>
+              </v-list-tile-content>
             </v-list-tile>
             <v-divider class="mt-1 mb-1"></v-divider>
-            <v-list-tile
-              @click="$router.push({ name: routeNames.ACCOUNT_SETTINGS })"
-            >
-              Account
-            </v-list-tile>
             <v-list-tile @click="logout">
-              Sign out
+              <v-list-tile-action>
+                <v-icon>exit_to_app</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  Sign out
+                </v-list-tile-title>
+              </v-list-tile-content>
             </v-list-tile>
           </v-list>
         </v-menu>
@@ -113,7 +113,6 @@
 import { mapGetters, mapActions } from "vuex";
 import auth from "@/auth";
 import { routeNames } from "@/router";
-import campaignModule from "@/models/campaign";
 import DisplayWhenLoaded from "@/components/generic/DisplayWhenLoaded";
 
 export default {
@@ -126,27 +125,18 @@ export default {
   computed: {
     ...mapGetters(auth.namespace, {
       user: auth.getterTypes.AUTH_USER,
+      currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN,
       isAuthenticated: auth.getterTypes.IS_USER_AUTHENTICATED,
       isRequested: auth.getterTypes.WAS_AUTH_USER_REQUESTED,
-    }),
-    ...mapGetters(campaignModule.namespace, {
-      campaignById: campaignModule.getterTypes.BY_ID,
-      campaignsByUser: campaignModule.getterTypes.BY_USER,
     }),
   },
   methods: {
     ...mapActions(auth.namespace, {
       logoutUser: auth.actionTypes.LOGOUT,
     }),
-    ...mapActions(campaignModule.namespace, {
-      loadCampaigns: campaignModule.actionTypes.LIST,
-    }),
     logout() {
       this.logoutUser();
       this.$router.push({ name: routeNames.LOGIN });
-    },
-    async setCurrentCampaign(uuid) {
-      await this.$ws.request("change_campaign", { campaign_uuid: uuid });
     },
   },
 };
@@ -176,5 +166,9 @@ export default {
 
 .text-monospaced textarea {
   font-family: "Monaco", courier, monospace;
+}
+
+nav.pa-0 > .v-toolbar__content {
+  padding: 0;
 }
 </style>
