@@ -49,7 +49,7 @@
 import functionalDialogMixin from "@/mixins/functionalDialog";
 
 export default {
-  name: "InvitePlayers",
+  name: "NewCampaign",
   mixins: [functionalDialogMixin],
   data() {
     return {

@@ -23,9 +23,12 @@ function asyncDialog(ComponentConstructor, componentProps) {
 
   return new Promise(resolve => {
     dialog.$once("close", returnVal => {
-      document.body.removeChild(dialog.$el);
-      dialog.$destroy();
-      resolve(returnVal);
+      // timeout to allow the close animation to play before we rip this out of the DOM and burn it
+      setTimeout(() => {
+        document.body.removeChild(dialog.$el);
+        dialog.$destroy();
+        resolve(returnVal);
+      }, 100);
     });
   });
 }
@@ -42,7 +45,6 @@ export function dialogPlugin(Vue) {
   };
 
   Vue.prototype.$dialog = function(component, componentProps) {
-    const TheComponent = Vue.extend(component);
-    return asyncDialog.bind(this)(TheComponent, componentProps);
+    return asyncDialog.bind(this)(Vue.extend(component), componentProps);
   };
 }
