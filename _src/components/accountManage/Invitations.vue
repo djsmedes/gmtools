@@ -47,6 +47,11 @@
         </v-list-tile>
       </v-list>
     </v-card>
+    <v-layout v-if="!invites.length" justify-center key="no-invites">
+      <v-flex shrink class="grey--text subheading">
+        No invitations
+      </v-flex>
+    </v-layout>
   </v-slide-x-reverse-transition>
 </template>
 
