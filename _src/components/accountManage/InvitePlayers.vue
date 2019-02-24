@@ -38,6 +38,7 @@
           @click="sendInvites"
           color="save"
           :disabled="!formValid || !emailsToInvite.length"
+          :loading="loading"
         >
           <v-icon left>send</v-icon>
           send invites
@@ -49,14 +50,23 @@
 
 <script>
 import functionalDialogMixin from "@/mixins/functionalDialog";
+import { Invitation, create as createInvitation } from "@/models/invitation";
+import { sleep } from "@/utils/time";
 
 export default {
   name: "InvitePlayers",
   mixins: [functionalDialogMixin],
+  props: {
+    campaignUuid: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       emailsToInvite: [],
       formValid: false,
+      loading: false,
     };
   },
   watch: {
@@ -81,10 +91,27 @@ export default {
     },
   },
   methods: {
-    sendInvites() {
+    async sendInvites() {
       if (this.$refs.form.validate()) {
-        console.log(this.emailsToInvite);
-        this.close(true);
+        this.loading = true;
+        try {
+          await Promise.all([
+            ...this.emailsToInvite.map(email =>
+              createInvitation(
+                new Invitation({
+                  campaign: this.campaignUuid,
+                  joiner_external_identifier: email,
+                })
+              )
+            ),
+            sleep(1000),
+          ]);
+          this.close(true);
+        } catch (err) {
+          if (process.env.NODE_ENV !== "production") console.warn(err);
+        } finally {
+          this.loading = false;
+        }
       }
     },
     validateEmails(emailList) {

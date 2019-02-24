@@ -181,7 +181,7 @@ export default {
       this.localCampaign = new Campaign(this.campaign);
     },
     async invitePlayers() {
-      await this.$dialog(InvitePlayers);
+      await this.$dialog(InvitePlayers, { campaignUuid: this.campaign.uuid });
     },
   },
   created() {

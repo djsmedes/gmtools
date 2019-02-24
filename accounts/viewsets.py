@@ -88,10 +88,12 @@ class InvitationViewSet(CreateModelMixin, ListModelMixin, GenericViewSet):
         except User.DoesNotExist:
             self.joiner = None
 
-        if self.joiner is None:
-            return Response(status=400)  # todo - write this in a way that obscures whether there is a user with this email address
-
-        return super().create(request, *args, **kwargs)
+        # remove information that could be used to determine whether an email has an account
+        if self.joiner is not None:
+            response = super().create(request, *args, **kwargs)
+            if response.status_code >= 400:
+                return response
+        return Response()
 
     def perform_create(self, serializer, **kwargs):
         kwargs['approver'] = self.request.user
