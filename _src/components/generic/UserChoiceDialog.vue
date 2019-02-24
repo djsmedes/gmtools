@@ -3,7 +3,7 @@
     v-model="dialog"
     persistent
     :max-width="width"
-    @keydown.esc="cancel"
+    @keydown.esc="close(null)"
   >
     <v-toolbar v-if="title" dark color="primary" dense>
       <v-toolbar-title>{{ title }}</v-toolbar-title>
@@ -16,7 +16,7 @@
           v-for="buttonOption in buttonList"
           :key="buttonOption.text"
           v-bind="buttonOption.attrs"
-          @click="choiceMade(buttonOption.returnVal)"
+          @click="close(buttonOption.returnVal)"
         >
           {{ buttonOption.text }}
         </v-btn>
@@ -26,8 +26,11 @@
 </template>
 
 <script>
+import functionalDialogMixin from "@/mixins/functionalDialog";
+
 export default {
   name: "UserChoiceDialog",
+  mixins: [functionalDialogMixin],
   props: {
     title: {
       type: String,
@@ -41,11 +44,6 @@ export default {
       type: Array,
       required: true,
     },
-  },
-  data() {
-    return {
-      dialog: false,
-    };
   },
   computed: {
     width() {
@@ -61,19 +59,6 @@ export default {
         case "xl":
           return "800px";
       }
-    },
-  },
-  methods: {
-    choiceMade(choice) {
-      this.dialog = false;
-      this.$emit("close", choice);
-    },
-    open() {
-      this.dialog = true;
-    },
-    cancel() {
-      this.dialog = false;
-      this.$emit("close", null);
     },
   },
 };

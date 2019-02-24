@@ -4,7 +4,7 @@
     :max-width="width"
     :fullscreen="$vuetify.breakpoint.xsOnly"
     persistent
-    @keydown.esc="cancel"
+    @keydown.esc="close(null)"
   >
     <v-toolbar dark color="grey darken-2" dense>
       <v-toolbar-title>Invite Players</v-toolbar-title>
@@ -28,11 +28,13 @@
 </template>
 
 <script>
+import functionalDialogMixin from "@/mixins/functionalDialog";
+
 export default {
   name: "InvitePlayers",
+  mixins: [functionalDialogMixin],
   data() {
     return {
-      dialog: false,
     };
   },
   computed: {
@@ -52,13 +54,6 @@ export default {
     },
   },
   methods: {
-    cancel() {
-      this.dialog = false;
-      this.$emit("close", null);
-    },
-    open() {
-      this.dialog = true;
-    },
   },
 };
 </script>
