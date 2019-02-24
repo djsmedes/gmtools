@@ -1,15 +1,27 @@
 import Confirm from "@/components/generic/UserChoiceDialog";
 
+export class ButtonOption {
+  constructor({ returnVal = false, text = "Cancel", attrs = {} } = {}) {
+    this.returnVal = returnVal;
+    this.text = text;
+    this.attrs = {
+      // add defaults here
+      flat: true,
+      ...attrs,
+    };
+  }
+}
+
 export function confirmPlugin(Vue) {
   const ConfirmComponent = Vue.extend(Confirm);
 
-  Vue.prototype.$userChoice = function(message, title, params = {}) {
+  Vue.prototype.$userChoice = function(title, body, buttonList) {
     const dialog = new ConfirmComponent({
       parent: this.$root,
       propsData: {
-        message,
         title,
-        params,
+        body,
+        buttonList,
       },
     });
     dialog.$mount();

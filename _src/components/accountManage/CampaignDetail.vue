@@ -96,6 +96,7 @@ import { mapGetters, mapActions } from "vuex";
 import campaign, { Campaign } from "@/models/campaign";
 import userModule from "@/models/user";
 import { routeNames } from "@/router";
+import { ButtonOption } from "@/plugins/userChoiceDialog";
 
 export default {
   name: "CampaignDetail",
@@ -151,8 +152,16 @@ export default {
     }),
     async tryDelete() {
       let choice = await this.$userChoice(
+        "Confirm delete",
         `<p>Are you sure?</p>`,
-        "Confirm delete"
+        [
+          new ButtonOption({
+            returnVal: true,
+            text: `Yes, delete ${this.campaign.name}`,
+            attrs: { color: "delete" },
+          }),
+          new ButtonOption(),
+        ]
       );
       // await this.deleteCampaign(this.campaign.uuid);
     },
