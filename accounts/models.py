@@ -100,9 +100,6 @@ class Invitation(models.Model):
 
     EXPIRE_TIMEDELTA = datetime.timedelta(days=7)
 
-    class Meta:
-        unique_together = ('joiner', 'campaign', 'creation_date',)
-
     uuid = SmallUUIDField(editable=False, default=uuid_default())
     creation_date = models.DateField(auto_now_add=True)
     completion_date = models.DateField(editable=False, null=True, blank=True)
