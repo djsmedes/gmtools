@@ -25,7 +25,10 @@ export default new Vuex.Store({
     SOCKET_ONOPEN: state => {},
     SOCKET_ONCLOSE: state => {},
     SOCKET_ONERROR: (state, wsEvent) => {
-      console.warn(wsEvent);
+      if (process.env.NODE_ENV !== "production") {
+        // eslint-disable-next-line
+        console.warn(wsEvent);
+      }
     },
     SOCKET_ONMESSAGE: state => {},
     SOCKET_RECONNECT: state => {},

@@ -1,6 +1,7 @@
 export class Model {
   static get modelName() {
     if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line
       console.error("modelName not implemented.");
     }
   }

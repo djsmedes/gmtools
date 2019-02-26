@@ -1,3 +1,17 @@
+class CustomFilterPlugin {
+  constructor({ exclude }) {
+    this.exclude = exclude;
+  }
+
+  apply(compiler) {
+    compiler.hooks.afterEmit.tap("CustomFilterPlugin", compilation => {
+      compilation.warnings = compilation.warnings.filter(
+        warning => !this.exclude.test(warning.message)
+      );
+    });
+  }
+}
+
 module.exports = {
   assetsDir: "static",
 
@@ -17,10 +31,22 @@ module.exports = {
   },
 
   configureWebpack: {
+    plugins: [
+      new CustomFilterPlugin({
+        exclude: /mini-css-extract-plugin[^]*Conflicting order between:/,
+      }),
+    ],
+
     optimization: {
       splitChunks: {
-        minSize: 10000,
-        maxSize: 250000,
+        minSize: 30000,
+        cacheGroups: {
+          vendor: {
+            chunks: "all",
+            name: "vuetify",
+            test: /[\\/]node_modules[\\/]vuetify[\\/]/,
+          },
+        },
       },
     },
     resolve: {

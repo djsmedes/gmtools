@@ -93,14 +93,14 @@ const router = new Router({
       path: "/gmscreentabs/new/",
       name: routeNames.GMSCREENTAB_CREATE,
       component: () =>
-        import(/* webpackChunkName: "gmscreentabs" */ "@/components/gmscreen/GMScreenTabDetail"),
+        import(/* webpackChunkName: "misc" */ "@/components/gmscreen/GMScreenTabDetail"),
       beforeEnter: loginRequired,
     },
     {
       path: "/gmscreentabs/:uuid/",
       name: routeNames.GMSCREENTAB,
       component: () =>
-        import(/* webpackChunkName: "gmscreentabs" */ "@/components/gmscreen/GMScreenTabDetail"),
+        import(/* webpackChunkName: "misc" */ "@/components/gmscreen/GMScreenTabDetail"),
       beforeEnter: loginRequired,
       props: true,
     },
@@ -109,7 +109,7 @@ const router = new Router({
       path: "/login/",
       name: routeNames.LOGIN,
       component: () =>
-        import(/* webpackChunkName: "nonAuth" */ "@/components/auth/Login"),
+        import(/* webpackChunkName: "misc" */ "@/components/auth/Login"),
       props: true,
       beforeEnter: loggedInExcluded,
     },
@@ -117,14 +117,14 @@ const router = new Router({
       path: "/signup/",
       name: routeNames.SIGNUP,
       component: () =>
-        import(/* webpackChunkName: "nonAuth" */ "@/components/auth/SignUp"),
+        import(/* webpackChunkName: "misc" */ "@/components/auth/SignUp"),
       beforeEnter: loggedInExcluded,
     },
     {
       path: "/account/",
       name: routeNames.ACCOUNT_SETTINGS,
       component: () =>
-        import(/* webpackChunkName: "account" */ "@/components/auth/AccountOverview"),
+        import(/* webpackChunkName: "misc" */ "@/components/auth/AccountOverview"),
       beforeEnter: loginRequired,
     },
 
@@ -132,7 +132,7 @@ const router = new Router({
       path: "/404/",
       name: routeNames.NOT_FOUND,
       component: () =>
-        import(/* webpackChunkName: "404" */ "@/components/generic/NotFound"),
+        import(/* webpackChunkName: "misc" */ "@/components/generic/NotFound"),
     },
 
     {
