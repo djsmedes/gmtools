@@ -6,7 +6,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
+    "lint": "vue-cli-service lint _src/*",
     "build+report": "vue-cli-service build --report",
     "prepare": "npm run build"
   },

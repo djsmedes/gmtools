@@ -1,9 +1,10 @@
 <template>
   <object-list
-      :detail-view-name="routeNames.COMBATANT"
-      :create-view-name="routeNames.COMBATANT_CREATE"
-      :object-list="combatants"
-      :headers="headers">
+    :detail-view-name="routeNames.COMBATANT"
+    :create-view-name="routeNames.COMBATANT_CREATE"
+    :object-list="combatants"
+    :headers="headers"
+  >
   </object-list>
 </template>
 
@@ -24,23 +25,23 @@ export default {
           text: "Name",
           align: "left",
           value: "name",
-          func: item => item.name
-        }
-      ]
+          func: item => item.name,
+        },
+      ],
     };
   },
   computed: {
     ...mapGetters(combatant.namespace, {
-      combatants: combatant.getterTypes.LIST
-    })
+      combatants: combatant.getterTypes.LIST,
+    }),
   },
   methods: {
     ...mapActions(combatant.namespace, {
-      loadCombatants: combatant.actionTypes.LIST
-    })
+      loadCombatants: combatant.actionTypes.LIST,
+    }),
   },
   created() {
     this.loadCombatants();
-  }
+  },
 };
 </script>

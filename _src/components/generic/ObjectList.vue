@@ -1,12 +1,15 @@
 <template>
   <v-card>
-    <v-data-table
-        :headers="headers"
-        :items="objectList">
+    <v-data-table :headers="headers" :items="objectList">
       <router-link
-          tag="tr" slot="items" slot-scope="props"
-          :to="{ name: detailViewName, params: { uuid: props.item.uuid }}">
-        <td v-for="header in headers" :key="header.text">{{ header.func(props.item) }}</td>
+        tag="tr"
+        slot="items"
+        slot-scope="props"
+        :to="{ name: detailViewName, params: { uuid: props.item.uuid } }"
+      >
+        <td v-for="header in headers" :key="header.text">
+          {{ header.func(props.item) }}
+        </td>
       </router-link>
     </v-data-table>
     <v-card-actions>
@@ -24,7 +27,7 @@ export default {
     detailViewName: String,
     createViewName: String,
     objectList: {
-      default: () => []
+      default: () => [],
     },
     headers: {
       default() {
@@ -33,11 +36,11 @@ export default {
             text: "Name",
             align: "left",
             value: "name",
-            func: item => item.name
-          }
+            func: item => item.name,
+          },
         ];
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>

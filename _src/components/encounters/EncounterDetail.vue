@@ -1,44 +1,48 @@
 <template>
   <div>
     <object-detail
-        @enter-edit-mode="viewMode = false"
-        @enter-view-mode="viewMode = true"
-        :name="localEncounter.name"
-        :start-editing="!encounter.uuid"
-        :save-func="encounter.uuid ? save : create"
-        :clear-func="encounter.uuid ? reset : () => $router.go(-1)"
-        :delete-func="encounter.uuid ? deleteSelf : null">
-
+      @enter-edit-mode="viewMode = false"
+      @enter-view-mode="viewMode = true"
+      :name="localEncounter.name"
+      :start-editing="!encounter.uuid"
+      :save-func="encounter.uuid ? save : create"
+      :clear-func="encounter.uuid ? reset : () => $router.go(-1)"
+      :delete-func="encounter.uuid ? deleteSelf : null"
+    >
       <v-container slot-scope="{ isViewMode }" grid-list-lg>
         <v-layout row wrap>
           <v-flex xs6 sm4 md3>
             <v-text-field
-                :disabled="isViewMode"
-                :class="{'disabled-means-display': isViewMode}"
-                label="Name"
-                v-model="localEncounter.name"
+              :disabled="isViewMode"
+              :class="{ 'disabled-means-display': isViewMode }"
+              label="Name"
+              v-model="localEncounter.name"
             ></v-text-field>
           </v-flex>
         </v-layout>
 
         <v-data-iterator
-            :items="localCombatants"
-            :pagination.sync="combatantPagination"
-            hide-actions
-            no-data-text="No combatants"
-            content-tag="v-layout"
-            row wrap>
-          <v-flex
-              slot="item" slot-scope="{ item }"
-              xs6 sm4 md3>
+          :items="localCombatants"
+          :pagination.sync="combatantPagination"
+          hide-actions
+          no-data-text="No combatants"
+          content-tag="v-layout"
+          row
+          wrap
+        >
+          <v-flex slot="item" slot-scope="{ item }" xs6 sm4 md3>
             <v-card>
               <v-card-title>
                 <h4>{{ item.name }}</h4>
                 <v-spacer></v-spacer>
                 <v-btn
-                    v-if="!isViewMode"
-                    @click="openCombatantDialog(item.uuid)"
-                    small flat icon class="ma-0">
+                  v-if="!isViewMode"
+                  @click="openCombatantDialog(item.uuid)"
+                  small
+                  flat
+                  icon
+                  class="ma-0"
+                >
                   <v-icon small>edit</v-icon>
                 </v-btn>
               </v-card-title>
@@ -46,13 +50,20 @@
               <v-list dense>
                 <v-list-tile>
                   <v-list-tile-content>Loot:</v-list-tile-content>
-                  <v-list-tile-content class="align-end">{{ item.loot }}</v-list-tile-content>
+                  <v-list-tile-content class="align-end">{{
+                    item.loot
+                  }}</v-list-tile-content>
                 </v-list-tile>
               </v-list>
             </v-card>
           </v-flex>
         </v-data-iterator>
-        <v-btn v-if="!isViewMode && encounter.uuid" flat @click="openCombatantDialog('new')">+ Add Combatant</v-btn>
+        <v-btn
+          v-if="!isViewMode && encounter.uuid"
+          flat
+          @click="openCombatantDialog('new')"
+          >+ Add Combatant</v-btn
+        >
       </v-container>
     </object-detail>
     <v-dialog width="900" persistent v-model="combatantDialog">
@@ -64,7 +75,6 @@
         :start-editing="combatantDialog"
       ></combatant-detail>
     </v-dialog>
-
   </div>
 </template>
 
@@ -83,19 +93,19 @@ export default {
   props: {
     uuid: {
       type: String,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
       localEncounter: new Encounter(),
       localCombatants: [],
       combatantPagination: {
-        rowsPerPage: -1
+        rowsPerPage: -1,
       },
       viewMode: true,
       combatantDialog: false,
-      combatantDialogUuid: null
+      combatantDialogUuid: null,
     };
   },
   computed: {
@@ -103,36 +113,36 @@ export default {
       return this.getEncounter(this.uuid);
     },
     ...mapGetters(encounter.namespace, {
-      getEncounter: encounter.getterTypes.BY_ID
+      getEncounter: encounter.getterTypes.BY_ID,
     }),
     ...mapGetters(combatant.namespace, {
       getCombatant: combatant.getterTypes.BY_ID,
-      getAllCombatants: combatant.getterTypes.LIST
+      getAllCombatants: combatant.getterTypes.LIST,
     }),
     combatants() {
       return this.getAllCombatants.filter(
         combatant =>
           combatant.encounter && combatant.encounter === this.encounter.uuid
       );
-    }
+    },
   },
   watch: {
     uuid() {
       this.reset();
-    }
+    },
   },
   methods: {
     ...mapActions(encounter.namespace, {
       loadEncounters: encounter.actionTypes.LIST,
       deleteEncounter: encounter.actionTypes.DESTROY,
       updateEncounter: encounter.actionTypes.UPDATE,
-      createEncounter: encounter.actionTypes.CREATE
+      createEncounter: encounter.actionTypes.CREATE,
     }),
     ...mapActions(combatant.namespace, {
       loadCombatants: combatant.actionTypes.LIST,
       updateCombatant: combatant.actionTypes.UPDATE,
       deleteCombatant: combatant.actionTypes.DESTROY,
-      createCombatant: combatant.actionTypes.CREATE
+      createCombatant: combatant.actionTypes.CREATE,
     }),
     async deleteSelf() {
       await this.deleteEncounter(this.encounter.uuid);
@@ -147,7 +157,7 @@ export default {
           } else {
             return this.createCombatant({
               ...combatant,
-              encounter: this.encounter.uuid
+              encounter: this.encounter.uuid,
             });
           }
         }),
@@ -157,7 +167,7 @@ export default {
           )
           .map(combatant => {
             return this.deleteCombatant(combatant.uuid);
-          })
+          }),
       ]);
       this.reset();
     },
@@ -165,7 +175,7 @@ export default {
       let rObj = await this.createEncounter(this.localEncounter);
       this.$router.replace({
         name: routeNames.ENCOUNTER,
-        params: { uuid: rObj.uuid }
+        params: { uuid: rObj.uuid },
       });
     },
     reset() {
@@ -180,11 +190,10 @@ export default {
     },
     combatantDialogSave(updatedCombatant) {
       if (updatedCombatant.uuid) {
-        this.localCombatants = this.localCombatants.map(
-          combatant =>
-            combatant.uuid === updatedCombatant.uuid
-              ? updatedCombatant
-              : combatant
+        this.localCombatants = this.localCombatants.map(combatant =>
+          combatant.uuid === updatedCombatant.uuid
+            ? updatedCombatant
+            : combatant
         );
       } else {
         this.localCombatants.push(updatedCombatant);
@@ -203,13 +212,13 @@ export default {
     closeCombatantDialog() {
       this.combatantDialogUuid = null;
       this.combatantDialog = false;
-    }
+    },
   },
   async created() {
     needLoading();
     await Promise.all([this.loadEncounters(), this.loadCombatants()]);
     this.reset();
     doneLoading();
-  }
+  },
 };
 </script>

@@ -1,23 +1,40 @@
 <template>
-  <object-detail :name="combatant.name || 'New Combatant'"
-                 :start-editing="startEditing || (!$route.params.uuid && !combatantUuid)"
-                 :save-func="saveFunc ? () => saveFunc(localCombatant) : combatant.uuid ? save : create"
-                 :clear-func="cancelFunc ? () => cancelFunc(localCombatant) : combatant.uuid ? reset : () => $router.go(-1)"
-                 :delete-func="deleteFunc ? () => deleteFunc(localCombatant) : combatant.uuid ? deleteSelf : null">
+  <object-detail
+    :name="combatant.name || 'New Combatant'"
+    :start-editing="startEditing || (!$route.params.uuid && !combatantUuid)"
+    :save-func="
+      saveFunc ? () => saveFunc(localCombatant) : combatant.uuid ? save : create
+    "
+    :clear-func="
+      cancelFunc
+        ? () => cancelFunc(localCombatant)
+        : combatant.uuid
+        ? reset
+        : () => $router.go(-1)
+    "
+    :delete-func="
+      deleteFunc
+        ? () => deleteFunc(localCombatant)
+        : combatant.uuid
+        ? deleteSelf
+        : null
+    "
+  >
     <v-card-text slot-scope="{ isViewMode }">
       <v-form @submit.prevent>
         <v-text-field
-            :disabled="isViewMode"
-            :class="{ 'disabled-means-display': isViewMode }"
-            label="Name"
-            v-model="localCombatant.name"
+          :disabled="isViewMode"
+          :class="{ 'disabled-means-display': isViewMode }"
+          label="Name"
+          v-model="localCombatant.name"
         ></v-text-field>
         <v-textarea
-            :disabled="isViewMode"
-            :class="{ 'disabled-means-display': isViewMode }"
-            auto-grow :rows="1"
-            label="Loot"
-            v-model="localCombatant.loot"
+          :disabled="isViewMode"
+          :class="{ 'disabled-means-display': isViewMode }"
+          auto-grow
+          :rows="1"
+          label="Loot"
+          v-model="localCombatant.loot"
         ></v-textarea>
       </v-form>
     </v-card-text>
@@ -36,28 +53,28 @@ export default {
   props: {
     combatantUuid: {
       type: String,
-      default: null
+      default: null,
     },
     saveFunc: {
       type: Function,
-      default: null
+      default: null,
     },
     cancelFunc: {
       type: Function,
-      default: null
+      default: null,
     },
     deleteFunc: {
       type: Function,
-      default: null
+      default: null,
     },
     startEditing: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
-      localCombatant: new Combatant()
+      localCombatant: new Combatant(),
     };
   },
   computed: {
@@ -66,23 +83,23 @@ export default {
       return this.getCombatant(uuid);
     },
     ...mapGetters(combatant.namespace, {
-      getCombatant: combatant.getterTypes.BY_ID
-    })
+      getCombatant: combatant.getterTypes.BY_ID,
+    }),
   },
   watch: {
     combatant: {
       handler() {
         this.reset();
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     ...mapActions(combatant.namespace, {
       loadCombatants: combatant.actionTypes.LIST,
       deleteCombatant: combatant.actionTypes.DESTROY,
       updateCombatant: combatant.actionTypes.UPDATE,
-      createCombatant: combatant.actionTypes.CREATE
+      createCombatant: combatant.actionTypes.CREATE,
     }),
     async deleteSelf() {
       await this.deleteCombatant(this.combatant.uuid);
@@ -96,15 +113,15 @@ export default {
       let rObj = await this.createCombatant(this.localCombatant);
       this.$router.replace({
         name: routeNames.COMBATANT,
-        params: { uuid: rObj.uuid }
+        params: { uuid: rObj.uuid },
       });
     },
     reset() {
       this.localCombatant = new Combatant(this.combatant);
-    }
+    },
   },
   created() {
     this.loadCombatants();
-  }
+  },
 };
 </script>

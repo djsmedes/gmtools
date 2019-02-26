@@ -1,8 +1,9 @@
 <template>
   <object-list
-      :detail-view-name="routeNames.ENCOUNTER"
-      :create-view-name="routeNames.ENCOUNTER_CREATE"
-      :object-list="encounters">
+    :detail-view-name="routeNames.ENCOUNTER"
+    :create-view-name="routeNames.ENCOUNTER_CREATE"
+    :object-list="encounters"
+  >
   </object-list>
 </template>
 
@@ -17,21 +18,21 @@ export default {
   components: { ObjectList },
   data() {
     return {
-      routeNames
+      routeNames,
     };
   },
   computed: {
     ...mapGetters(encounter.namespace, {
-      encounters: encounter.getterTypes.LIST
-    })
+      encounters: encounter.getterTypes.LIST,
+    }),
   },
   methods: {
     ...mapActions(encounter.namespace, {
-      loadEncounters: encounter.actionTypes.LIST
-    })
+      loadEncounters: encounter.actionTypes.LIST,
+    }),
   },
   created() {
     this.loadEncounters();
-  }
+  },
 };
 </script>

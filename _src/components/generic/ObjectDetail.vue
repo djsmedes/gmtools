@@ -5,24 +5,23 @@
     <slot name="edit" v-if="isEditMode"></slot>
     <v-card-actions>
       <v-btn
-          v-if="(saveFunc || deleteFunc) && isViewMode"
-          @click="enterEditMode"
-          flat>
+        v-if="(saveFunc || deleteFunc) && isViewMode"
+        @click="enterEditMode"
+        flat
+      >
         Edit
       </v-btn>
-      <v-btn
-          v-if="saveFunc && isEditMode"
-          @click="save"
-          flat>
+      <v-btn v-if="saveFunc && isEditMode" @click="save" flat>
         Save
       </v-btn>
-      <v-btn
-          v-if="saveFunc && isEditMode"
-          @click="clear"
-          flat>
+      <v-btn v-if="saveFunc && isEditMode" @click="clear" flat>
         Cancel
       </v-btn>
-      <v-dialog v-if="deleteFunc && isEditMode" v-model="deleteDialog" :width="500">
+      <v-dialog
+        v-if="deleteFunc && isEditMode"
+        v-model="deleteDialog"
+        :width="500"
+      >
         <v-btn flat slot="activator">
           Delete
         </v-btn>
@@ -31,9 +30,7 @@
             Are you sure you want to delete {{ name }}? This cannot be undone.
           </v-card-text>
           <v-card-actions>
-            <v-btn flat @click="deleteSelf">
-              Yes, delete {{ name }}
-            </v-btn>
+            <v-btn flat @click="deleteSelf"> Yes, delete {{ name }} </v-btn>
             <v-btn flat @click="deleteDialog = false">
               Cancel
             </v-btn>
@@ -52,29 +49,29 @@ export default {
   name: "ObjectDetail",
   props: {
     name: {
-      type: String
+      type: String,
     },
     startEditing: {
       type: Boolean,
-      default: false
+      default: false,
     },
     saveFunc: {
       type: Function,
-      default: null
+      default: null,
     },
     clearFunc: {
       type: Function,
-      default: () => {}
+      default: () => {},
     },
     deleteFunc: {
       type: Function,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
       mode: VIEW_MODE,
-      deleteDialog: false
+      deleteDialog: false,
     };
   },
   watch: {
@@ -86,8 +83,8 @@ export default {
           this.mode = VIEW_MODE;
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   computed: {
     isViewMode() {
@@ -95,7 +92,7 @@ export default {
     },
     isEditMode() {
       return this.mode === EDIT_MODE;
-    }
+    },
   },
   methods: {
     enterEditMode() {
@@ -117,7 +114,7 @@ export default {
     exitEditMode() {
       this.mode = VIEW_MODE;
       this.$emit("enter-view-mode");
-    }
-  }
+    },
+  },
 };
 </script>

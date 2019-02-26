@@ -171,9 +171,6 @@ export class ModelVuexModule {
         [this.mutationTypes.REMOVE]: (state, { objUuid }) => {
           Vue.delete(state[this.stateKeys.OBJECTS], objUuid);
         },
-        SOCKET_SET: (state, wsEvent) => {
-          console.log(wsEvent);
-        },
       },
     };
   }

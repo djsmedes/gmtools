@@ -1,6 +1,5 @@
 <template>
-  <v-container fluid v-html="compiledMarkdown" class="gm-screen">
-  </v-container>
+  <v-container fluid v-html="compiledMarkdown" class="gm-screen"> </v-container>
 </template>
 
 <script>
@@ -11,14 +10,14 @@ export default {
   props: {
     content: {
       type: String,
-      default: ""
-    }
+      default: "",
+    },
   },
   computed: {
     compiledMarkdown() {
       return marked(this.content, { sanitize: true });
-    }
-  }
+    },
+  },
 };
 </script>
 
