@@ -29,17 +29,11 @@ class User(AbstractEmailUser):
         ordering = ['last_name', 'first_name']
 
     def __str__(self):
-        return '{0.name} <{0.email}>'.format(self)
+        return f'{self.name} <{self.email}>'
 
     @property
     def name(self):
-        return '{0.first_name} {0.last_name}'.format(self)
-
-    def get_full_name(self):
-        return self.name
-
-    def get_short_name(self):
-        return self.name
+        return f'{self.first_name} {self.last_name}'
 
 
 class Campaign(models.Model):
@@ -55,28 +49,6 @@ class Campaign(models.Model):
         null=True, blank=True,
         related_name='campaign_active_in'
     )
-
-    def set_as_player(self, player: settings.AUTH_USER_MODEL):
-        match_qs = CampaignRole.objects.filter(user=player, campaign=self)
-        if match_qs.exists():
-            match_qs.update(is_gm=False)
-        else:
-            CampaignRole.objects.create(user=player, campaign=self)
-
-    def set_as_gm(self, gm: settings.AUTH_USER_MODEL):
-        match_qs = CampaignRole.objects.filter(user=gm, campaign=self)
-        if match_qs.exists():
-            match_qs.update(is_gm=True)
-        else:
-            CampaignRole.objects.create(user=gm, campaign=self, is_gm=True)
-
-    @property
-    def player_set(self):
-        return User.objects.filter(campaigns=self, campaignrole__is_gm=False)
-
-    @property
-    def gm_set(self):
-        return User.objects.filter(campaigns=self, campaignrole__is_gm=True)
 
     def __str__(self):
         return self.name
@@ -143,6 +115,8 @@ class Invitation(models.Model):
         self._complete(self.approver, accepting_user or self.joiner)
 
     def reject(self):
+        # reject intentionally gives no information to the inviter that the invitee
+        #   has seen the message; it will just hang out in inviter's queue until it expires
         self.joiner = None
         self.save()
 

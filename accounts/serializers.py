@@ -34,6 +34,10 @@ class AbilityRule(dict):
 
 class UserSerializer(CampaignModelSerializer):
     view_name = 'user-detail'
+    campaigns_gm_of = serializers.SerializerMethodField()
+
+    def get_campaigns_gm_of(self, instance: User):
+        return [c.uuid for c in instance.campaigns.filter(campaignrole__is_gm=True)]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -53,9 +57,11 @@ class UserSerializer(CampaignModelSerializer):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email',
-                  'current_campaign',
-                  'uuid',)
+        fields = (
+            'first_name', 'last_name', 'email',
+            'current_campaign', 'campaigns_gm_of',
+            'uuid',
+        )
 
     def validate_current_campaign(self, value):
         if value not in self.root.instance.campaigns.all():
@@ -92,11 +98,11 @@ class CampaignSerializer(CampaignModelSerializer):
                 view_name='campaign-detail', lookup_field='uuid'
             )
 
-    def get_gm_set(self, instance):
-        return [user.uuid for user in instance.gm_set]
+    def get_gm_set(self, instance: Campaign):
+        return [user.uuid for user in instance.user_set.filter(campaignrole__is_gm=True)]
 
     def get_player_set(self, instance):
-        return [user.uuid for user in instance.player_set]
+        return [user.uuid for user in instance.user_set.filter(campaignrole__is_gm=False)]
 
     class Meta:
         model = Campaign
