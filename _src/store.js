@@ -22,13 +22,21 @@ export default new Vuex.Store({
     needLoading: state => (state.loadingCount = state.loadingCount + 1),
     doneLoading: state => (state.loadingCount = state.loadingCount - 1),
     setLastReply: (state, value) => Vue.set(state, "lastReplyId", value),
+    // eslint-disable-next-line
     SOCKET_ONOPEN: state => {},
+    // eslint-disable-next-line
     SOCKET_ONCLOSE: state => {},
     SOCKET_ONERROR: (state, wsEvent) => {
-      console.warn(wsEvent);
+      if (process.env.NODE_ENV !== "production") {
+        // eslint-disable-next-line
+        console.warn(wsEvent);
+      }
     },
+    // eslint-disable-next-line
     SOCKET_ONMESSAGE: state => {},
+    // eslint-disable-next-line
     SOCKET_RECONNECT: state => {},
+    // eslint-disable-next-line
     SOCKET_RECONNECT_ERROR: state => {},
   },
   modules: {

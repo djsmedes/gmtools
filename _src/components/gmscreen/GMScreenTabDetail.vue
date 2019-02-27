@@ -6,18 +6,18 @@
           <v-card-text>
             <v-form @submit.prevent>
               <v-text-field
-                  label="Title"
-                  :value="localTab.title"
-                  @input="updateTitle"
+                label="Title"
+                :value="localTab.title"
+                @input="updateTitle"
               ></v-text-field>
               <v-textarea
-                  label="Content"
-                  hint="This field supports Markdown syntax"
-                  box
-                  class="text-monospaced"
-                  :auto-grow="true"
-                  :value="localTab.content"
-                  @input="updateContent"
+                label="Content"
+                hint="This field supports Markdown syntax"
+                box
+                class="text-monospaced"
+                :auto-grow="true"
+                :value="localTab.content"
+                @input="updateContent"
               ></v-textarea>
             </v-form>
           </v-card-text>
@@ -28,23 +28,25 @@
             <v-btn v-else flat @click="create">
               Save
             </v-btn>
-            <v-btn flat color="red" v-if="tab.uuid" @click="deleteDialog = true">
+            <v-btn
+              flat
+              color="red"
+              v-if="tab.uuid"
+              @click="deleteDialog = true"
+            >
               Delete
             </v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
       <v-flex>
-        <screen
-            :items="[localTab]"
-            class="elevation-1 hidden-sm-and-down"
-        >
+        <screen :items="[localTab]" class="elevation-1 hidden-sm-and-down">
           <template slot="title" slot-scope="{ item }">
             {{ item.title }}
           </template>
           <screen-tab
-              slot-scope="{ item }"
-              :content="item.content"
+            slot-scope="{ item }"
+            :content="item.content"
           ></screen-tab>
         </screen>
         <v-card class="hidden-md-and-up">
@@ -55,10 +57,11 @@
       </v-flex>
     </v-layout>
 
-    <v-dialog width=500 v-model="deleteDialog">
+    <v-dialog width="500" v-model="deleteDialog">
       <v-card>
         <v-card-text>
-          Are you sure you want to delete this GM screen tab? This cannot be undone.
+          Are you sure you want to delete this GM screen tab? This cannot be
+          undone.
         </v-card-text>
         <v-card-actions>
           <v-btn flat color="red" @click="deleteSelf">
@@ -70,7 +73,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
   </v-container>
 </template>
 

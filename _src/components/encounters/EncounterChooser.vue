@@ -10,21 +10,24 @@
       </v-btn>
     </v-card-title>
     <v-card-text>
-    <v-form @submit.prevent>
-      <v-select
+      <v-form @submit.prevent>
+        <v-select
           label="Active encounter"
-          :items="showCompleted ? [...encounters, ...completedEncounters] : encounters"
+          :items="
+            showCompleted ? [...encounters, ...completedEncounters] : encounters
+          "
           item-value="uuid"
           item-text="name"
           :menu-props="{ offsetY: true }"
           returnObject
-          v-model="selectedEncounter">
-        <template slot="item" slot-scope="{ item }">
-          {{ item.name }}{{ item.completion_date ? ' (completed)' : '' }}
-        </template>
-      </v-select>
-    </v-form>
-      </v-card-text>
+          v-model="selectedEncounter"
+        >
+          <template slot="item" slot-scope="{ item }">
+            {{ item.name }}{{ item.completion_date ? " (completed)" : "" }}
+          </template>
+        </v-select>
+      </v-form>
+    </v-card-text>
     <v-card-actions>
       <slot name="actions" :selectedEncounter="selectedEncounter"></slot>
     </v-card-actions>

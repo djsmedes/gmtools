@@ -108,7 +108,10 @@ export default {
           ]);
           this.close(true);
         } catch (err) {
-          if (process.env.NODE_ENV !== "production") console.warn(err);
+          if (process.env.NODE_ENV !== "production") {
+            // eslint-disable-next-line
+            console.warn(err);
+          }
         } finally {
           this.loading = false;
         }
