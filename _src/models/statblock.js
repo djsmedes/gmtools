@@ -20,6 +20,7 @@ export class Statblock extends Model {
     armor_kind = null,
     hit_points = null,
     num_hit_die = null,
+    avg_hp = null,
     hit_die_size = null,
     speed = null,
     str = null,
@@ -37,11 +38,11 @@ export class Statblock extends Model {
     saving_throws = null,
     skills = null,
     senses = null,
-    damage_vulnerabilities = null,
-    damage_resistances = null,
-    damage_immunities = null,
-    condition_immunities = null,
-    languages = null,
+    damage_vulnerabilities = {},
+    damage_resistances = {},
+    damage_immunities = {},
+    condition_immunities = {},
+    languages = {},
   } = {}) {
     super();
     this.uuid = uuid;
@@ -58,6 +59,7 @@ export class Statblock extends Model {
     this.hit_points = hit_points;
     this.num_hit_die = num_hit_die;
     this.hit_die_size = hit_die_size;
+    this.avg_hp = avg_hp;
     this.speed = speed;
     this.str = str;
     this.dex = dex;
@@ -80,6 +82,60 @@ export class Statblock extends Model {
     this.damage_immunities = damage_immunities;
     this.condition_immunities = condition_immunities;
     this.languages = languages;
+  }
+
+  static get Size() {
+    return {
+      TINY: 1,
+      SMALL: 2,
+      MEDIUM: 3,
+      LARGE: 4,
+      HUGE: 5,
+      GARGANTUAN: 6,
+      COLOSSAL: 7,
+    };
+  }
+
+  get size_display() {
+    switch (this.size) {
+      case Statblock.Size.TINY:
+        return "tiny";
+      case Statblock.Size.SMALL:
+        return "small";
+      case Statblock.Size.MEDIUM:
+        return "medium";
+      case Statblock.Size.LARGE:
+        return "large";
+      case Statblock.Size.HUGE:
+        return "huge";
+      case Statblock.Size.GARGANTUAN:
+        return "gargantuan";
+      case Statblock.Size.COLOSSAL:
+        return "colossal";
+    }
+  }
+
+  static get Alignment() {
+    return {
+      UNALIGNED: 0,
+      LAWFUL_GOOD: 1,
+      NEUTRAL_GOOD: 2,
+      CHAOTIC_GOOD: 3,
+      LAWFUL_NEUTRAL: 4,
+      NEUTRAL: 5,
+      CHAOTIC_NEUTRAL: 6,
+      LAWFUL_EVIL: 7,
+      NEUTRAL_EVIL: 8,
+      CHAOTIC_EVIL: 9,
+    };
+  }
+
+  get alignment_display() {
+    let key =
+      Object.keys(Statblock.Alignment).find(
+        key => Statblock.Alignment[key] === this.alignment
+      ) || "";
+    return key.replace("_", " ").toLowerCase();
   }
 }
 

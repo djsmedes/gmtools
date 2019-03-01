@@ -54,8 +54,11 @@ class StatblockSerializer(CampaignModelSerializer):
             "armor_class",
             "armor_kind",
             "hit_points",
+
             "num_hit_die",
             "hit_die_size",
+            "avg_hp",
+
             "speed",
             "str",
             "dex",
