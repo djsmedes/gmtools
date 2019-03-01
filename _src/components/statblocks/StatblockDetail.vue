@@ -21,6 +21,7 @@
                 <v-text-field
                   label="Generic name"
                   hint="This will be used in action descriptions"
+                  v-model="statblock.generic_name"
                 ></v-text-field>
               </v-flex>
               <v-flex xs12 sm4>
@@ -40,6 +41,9 @@
         <statblock-view :value="statblock"></statblock-view>
       </v-tab-item>
     </v-tabs-items>
+
+    <v-btn @click="statblock.vuex_save()">SAVE</v-btn>
+
   </div>
 </template>
 
@@ -62,7 +66,7 @@ export default {
     return {
       whichTab: 0,
       formValid: false,
-      statblock: new Statblock(),
+      statblock: new Statblock({ uuid: this.uuid }),
     };
   },
   computed: {
@@ -76,9 +80,7 @@ export default {
     }),
   },
   async created() {
-    this.statblock = new Statblock(
-      await this.loadStatblock({ uuid: this.uuid })
-    );
+    this.statblock.vuex_fetch(this.$store);
   },
 };
 </script>

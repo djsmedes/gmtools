@@ -4,7 +4,7 @@ import campaign from "@/models/campaign";
 import combatant from "@/models/combatant";
 import encounter from "@/models/encounter";
 import gmscreentab from "@/models/gmscreentab";
-import statblock from "@/models/statblock";
+import statblock from "@/models/statblock_mc";
 import user from "@/models/user";
 import auth from "@/auth";
 
