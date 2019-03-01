@@ -110,6 +110,13 @@ export class ModelVuexModule {
           });
           return returnedObject;
         },
+        [this.actionTypes.RETRIEVE]: async ({ state, dispatch }, object) => {
+          if (state[this.stateKeys.OBJECTS][object.uuid]) {
+            return state[this.stateKeys.OBJECTS][object.uuid];
+          } else {
+            return await dispatch(this.actionTypes.REFRESH, object);
+          }
+        },
         [this.actionTypes.REFRESH]: async ({ commit }, object) => {
           let { data } = await axios.get(this.getDetailUrl(object.uuid));
           let classyObject = new this.modelClass(data);

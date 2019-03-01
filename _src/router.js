@@ -106,14 +106,14 @@ const router = new Router({
     //     import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
     //   beforeEnter: loginRequired,
     // },
-    // {
-    //   path: "/encounters/:uuid/",
-    //   name: routeNames.ENCOUNTER,
-    //   component: () =>
-    //     import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
-    //   beforeEnter: loginRequired,
-    //   props: true,
-    // },
+    {
+      path: "/statblocks/:uuid/",
+      name: routeNames.STATBLOCK,
+      component: () =>
+        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/StatblockDetail"),
+      beforeEnter: loginRequired,
+      props: true,
+    },
 
     {
       path: "/gmscreentabs/new/",

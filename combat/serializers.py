@@ -41,6 +41,9 @@ class StatblockSerializer(CampaignModelSerializer):
     class Meta:
         model = Statblock
         fields = (
+            "uuid",
+            "campaign",
+
             "name",
             "generic_name",
             "proficiency",
