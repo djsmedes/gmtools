@@ -15,10 +15,13 @@
           <v-container grid-list-xl>
             <v-layout wrap>
               <v-flex xs12 sm6>
-                <v-text-field label="Name"></v-text-field>
+                <v-text-field label="Name" v-model="statblock.name"></v-text-field>
               </v-flex>
               <v-flex xs12 sm6>
-                <v-text-field label="Generic name" hint="This will be used in action descriptions"></v-text-field>
+                <v-text-field
+                  label="Generic name"
+                  hint="This will be used in action descriptions"
+                ></v-text-field>
               </v-flex>
               <v-flex xs12 sm4>
                 <v-text-field label="Size"></v-text-field>
@@ -42,8 +45,8 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import statblock, { Statblock } from "@/models/statblock";
-import { routeNames } from "@/router";
+import statblock from "@/models/statblock";
+import { Statblock } from "@/models/statblock_mc";
 import StatblockView from "@/components/statblocks/StatblockView";
 
 export default {
@@ -59,23 +62,23 @@ export default {
     return {
       whichTab: 0,
       formValid: false,
+      statblock: new Statblock(),
     };
   },
   computed: {
     ...mapGetters(statblock.namespace, {
       getStatblock: statblock.getterTypes.BY_ID,
     }),
-    statblock() {
-      return this.getStatblock(this.uuid);
-    },
   },
   methods: {
     ...mapActions(statblock.namespace, {
       loadStatblock: statblock.actionTypes.RETRIEVE,
     }),
   },
-  created() {
-    this.loadStatblock({ uuid: this.uuid });
+  async created() {
+    this.statblock = new Statblock(
+      await this.loadStatblock({ uuid: this.uuid })
+    );
   },
 };
 </script>

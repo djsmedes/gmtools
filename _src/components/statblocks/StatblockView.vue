@@ -74,7 +74,7 @@ export default {
   name: "StatblockView",
   props: {
     value: {
-      type: Statblock,
+      type: Object,
       required: true,
     },
   },
