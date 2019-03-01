@@ -1,6 +1,10 @@
 <template>
   <v-card>
-    <v-data-table :headers="headers" :items="objectList">
+    <v-data-table
+      :headers="headers"
+      :items="objectList"
+      :rows-per-page-items="[25, 50]"
+    >
       <router-link
         tag="tr"
         slot="items"

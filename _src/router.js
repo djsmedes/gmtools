@@ -18,6 +18,9 @@ export const routeNames = {
   ENCOUNTERS: "encounters",
   ENCOUNTER: "encounter",
   ENCOUNTER_CREATE: "encounterCreate",
+  STATBLOCKS: "statblocks",
+  STATBLOCK: "statblock",
+  STATBLOCK_CREATE: "statblockCreate",
   GMSCREENTAB: "gmScreenTab",
   GMSCREENTAB_CREATE: "gmScreenTabCreate",
   ACCOUNT_SETTINGS: "accountSettings",
@@ -88,6 +91,29 @@ const router = new Router({
       beforeEnter: loginRequired,
       props: true,
     },
+
+    {
+      path: "/statblocks/",
+      name: routeNames.STATBLOCKS,
+      component: () =>
+        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/StatblockList"),
+      beforeEnter: loginRequired,
+    },
+    // {
+    //   path: "/encounters/new/",
+    //   name: routeNames.ENCOUNTER_CREATE,
+    //   component: () =>
+    //     import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
+    //   beforeEnter: loginRequired,
+    // },
+    // {
+    //   path: "/encounters/:uuid/",
+    //   name: routeNames.ENCOUNTER,
+    //   component: () =>
+    //     import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
+    //   beforeEnter: loginRequired,
+    //   props: true,
+    // },
 
     {
       path: "/gmscreentabs/new/",

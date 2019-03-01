@@ -27,8 +27,18 @@
         >
           Encounters
         </v-btn>
+        <v-btn
+          flat
+          v-if="isAuthenticated"
+          class="no-text-dec hidden-xs-only"
+          :to="{ name: routeNames.STATBLOCKS }"
+        >
+          Statblocks
+        </v-btn>
       </v-toolbar-items>
+
       <v-spacer></v-spacer>
+
       <v-toolbar-items v-if="!isAuthenticated">
         <v-btn flat class="no-text-dec" :to="{ name: routeNames.LOGIN }">
           Sign in

@@ -4,6 +4,7 @@ import campaign from "@/models/campaign";
 import combatant from "@/models/combatant";
 import encounter from "@/models/encounter";
 import gmscreentab from "@/models/gmscreentab";
+import statblock from "@/models/statblock";
 import user from "@/models/user";
 import auth from "@/auth";
 
@@ -45,6 +46,7 @@ export default new Vuex.Store({
     [combatant.namespace]: combatant.store,
     [encounter.namespace]: encounter.store,
     [gmscreentab.namespace]: gmscreentab.store,
+    [statblock.namespace]: statblock.store,
     [user.namespace]: user.store,
   },
 });

@@ -3,8 +3,7 @@
     :detail-view-name="routeNames.ENCOUNTER"
     :create-view-name="routeNames.ENCOUNTER_CREATE"
     :object-list="encounters"
-  >
-  </object-list>
+  ></object-list>
 </template>
 
 <script>
