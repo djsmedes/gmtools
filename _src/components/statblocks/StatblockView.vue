@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import { Statblock } from "@/models/statblock_mc";
+import { Statblock } from "@/models/statblock";
 
 export default {
   name: "StatblockView",

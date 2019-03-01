@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { Statblock } from "@/models/statblock_mc";
+import { Statblock } from "@/models/statblock";
 import StatblockView from "@/components/statblocks/StatblockView";
 
 export default {
