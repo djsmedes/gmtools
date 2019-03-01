@@ -9,7 +9,7 @@
 import { mapGetters, mapActions } from "vuex";
 import ObjectList from "@/components/generic/ObjectList";
 import { routeNames } from "@/router";
-import statblock from "@/models/statblock";
+import statblock from "@/models/statblock_mc";
 
 export default {
   name: "StatblockList",

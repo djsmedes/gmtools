@@ -42,14 +42,13 @@
       </v-tab-item>
     </v-tabs-items>
 
-    <v-btn @click="statblock.vuex_save()">SAVE</v-btn>
+    <v-btn @click="statblock.vuex_save()">save</v-btn>
+    <v-btn @click="statblock.reset()">reset</v-btn>
 
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import statblock from "@/models/statblock";
 import { Statblock } from "@/models/statblock_mc";
 import StatblockView from "@/components/statblocks/StatblockView";
 
@@ -68,16 +67,6 @@ export default {
       formValid: false,
       statblock: new Statblock({ uuid: this.uuid }),
     };
-  },
-  computed: {
-    ...mapGetters(statblock.namespace, {
-      getStatblock: statblock.getterTypes.BY_ID,
-    }),
-  },
-  methods: {
-    ...mapActions(statblock.namespace, {
-      loadStatblock: statblock.actionTypes.RETRIEVE,
-    }),
   },
   async created() {
     this.statblock.vuex_fetch(this.$store);

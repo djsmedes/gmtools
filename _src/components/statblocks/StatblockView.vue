@@ -68,13 +68,13 @@
 </template>
 
 <script>
-import { Statblock } from "@/models/statblock";
+import { Statblock } from "@/models/statblock_mc";
 
 export default {
   name: "StatblockView",
   props: {
     value: {
-      type: Object,
+      type: Statblock,
       required: true,
     },
   },

@@ -1,6 +1,6 @@
 import { Model } from "vue-mc";
 import { generateUrl } from "@/utils/urls";
-import { mutationTypes } from "@/models/_constants";
+import { getterTypes, mutationTypes } from "@/models/_constants";
 import { MCModule } from "@/models/_baseMCModule";
 
 // todo - put this somewhere more central and import it
@@ -132,10 +132,26 @@ export class Statblock extends Model {
   }
 
   async vuex_fetch(store) {
-    let { response } = await this.fetch();
-    store.commit(Statblock.modelName + "/" + mutationTypes.SET, {
-      object: response.data,
-    });
+    if (!this.uuid) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(modelName + " tried to call fetch with no uuid.");
+      }
+    }
+
+    let cached = store.getters[modelName + "/" + getterTypes.BY_ID](this.uuid);
+
+    if (cached === undefined) {
+      let { response } = await this.fetch();
+      store.commit(modelName + "/" + mutationTypes.SET, {
+        object: response.data,
+      });
+    } else {
+      Object.keys(cached).reduce((_, key) => {
+        this.set(key, cached[key]);
+      });
+      // must also apply this new active state to the saved state
+      this.sync();
+    }
   }
 
   async vuex_save(store) {
