@@ -22,7 +22,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 
 from accounts.viewsets import UserViewSet, CampaignViewSet, InvitationViewSet
 from accounts.views import UserView, SignupApiView
-from combat.viewsets import CombatantViewSet, GMScreenTabViewSet
+from combat.viewsets import CombatantViewSet, GMScreenTabViewSet, StatblockViewSet
 from plot.viewsets import EncounterViewSet
 
 router = DefaultRouter()
@@ -58,6 +58,12 @@ router.register(
     viewset=GMScreenTabViewSet,
     base_name='gmscreentab'
 )
+router.register(
+    prefix='statblock',
+    viewset=StatblockViewSet,
+    base_name='statblock'
+)
+
 
 urlpatterns = [
     path('api/', include(router.urls)),
