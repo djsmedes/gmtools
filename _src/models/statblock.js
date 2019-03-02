@@ -8,7 +8,7 @@ const mutateEmptyStringToNull = v => (v !== "" ? v : null);
 
 const modelName = "statblock";
 
-export const size = {
+const size = {
   TINY: 1,
   SMALL: 2,
   MEDIUM: 3,
@@ -25,7 +25,12 @@ const sizeDisplay = Object.keys(size).reduce((memo, curSize) => {
   };
 }, {});
 
-export const alignment = {
+export const sizeChoices = Object.keys(sizeDisplay).map(key => ({
+  value: Number(key),
+  text: sizeDisplay[key].charAt(0).toUpperCase() + sizeDisplay[key].slice(1),
+}));
+
+const alignment = {
   UNALIGNED: 0,
   LAWFUL_GOOD: 1,
   NEUTRAL_GOOD: 2,
@@ -46,6 +51,13 @@ const alignmentDisplay = Object.keys(alignment).reduce((memo, curAlignment) => {
       .toLowerCase(),
   };
 }, {});
+
+export const alignmentChoices = Object.keys(alignmentDisplay).map(key => ({
+  value: Number(key),
+  text:
+    alignmentDisplay[key].charAt(0).toUpperCase() +
+    alignmentDisplay[key].slice(1),
+}));
 
 export class Statblock extends Model {
   static get modelName() {
@@ -91,11 +103,11 @@ export class Statblock extends Model {
       saving_throws: null,
       skills: null,
       senses: null,
-      damage_vulnerabilities: {},
-      damage_resistances: {},
-      damage_immunities: {},
-      condition_immunities: {},
-      languages: {},
+      damage_vulnerabilities: [],
+      damage_resistances: [],
+      damage_immunities: [],
+      condition_immunities: [],
+      languages: [],
     };
   }
 
@@ -177,3 +189,68 @@ class StatblockModule extends MCModule {
 }
 
 export default new StatblockModule();
+
+export const damageTypes = [
+  "bludgeoning",
+  "piercing",
+  "slashing",
+  "bludgeoning, piercing, and slashing",
+  "bludgeoning, piercing, and slashing from nonmagical attacks",
+  "bludgeoning, piercing, and slashing from nonmagical attacks not made with silvered weapons",
+  "fire",
+  "cold",
+  "acid",
+  "lightning",
+  "thunder",
+  "poison",
+  "psychic",
+  "force",
+  "radiant",
+  "necrotic",
+];
+
+export const conditions = [
+  "blinded",
+  "charmed",
+  "deafened",
+  "frightened",
+  "grappled",
+  "incapacitated",
+  "invisible",
+  "paralyzed",
+  "petrified",
+  "poisoned",
+  "prone",
+  "restrained",
+  "stunned",
+  "unconscious",
+];
+
+export const languages = [
+  "Common",
+  "Dwarvish",
+  "Elvish",
+  "Giant",
+  "Goblin",
+  "Orc",
+  "Gnomish",
+  "Halfling",
+  "Abyssal",
+  "Celestial",
+  "Infernal",
+  "Draconic",
+  "Sylvan",
+  "Primordial",
+  "Auran",
+  "Aquan",
+  "Ignan",
+  "Terran",
+  "Undercommon",
+  "Deep Speech",
+  "Druidic",
+  "Thieve's Cant",
+  "Telepathy",
+  "Telepathy 30 ft.",
+  "Telepathy 60 ft.",
+  "Telepathy 120 ft.",
+];
