@@ -1,6 +1,7 @@
 import Vue from "vue";
 import axios from "axios";
 import { generateUrl } from "@/utils/urls";
+import { stateKeys, getterTypes, actionTypes, mutationTypes } from "@/models/_constants";
 
 export function array2ObjByUUID(array, objConstructor) {
   return array.reduce((accumulator, currentVal) => {
@@ -22,33 +23,10 @@ export class ModelVuexModule {
     this.getListUrl = (extra_url_pieces = []) =>
       generateUrl([this.modelClass.modelName, ...extra_url_pieces]);
 
-    this.stateKeys = {
-      OBJECTS: "objects",
-      NEEDS_RELOAD: "needsReload",
-    };
-    this.getterTypes = {
-      OBJECTS: "map",
-      IDS: "ids",
-      LIST: "list",
-      BY_ID: "byID",
-    };
-    this.actionTypes = {
-      CREATE: "create",
-      RETRIEVE: "retrieve",
-      UPDATE: "update",
-      DESTROY: "destroy",
-      LIST: "list",
-      QUERY_LIST: "queryList",
-      REFRESH: "refresh",
-      REFRESH_LIST: "refreshList",
-      OPTIONS: "options",
-    };
-    this.mutationTypes = {
-      SET_LIST: "setList",
-      SET_RELOAD_NEEDED: "setReloadNeeded",
-      SET: "set",
-      REMOVE: "remove",
-    };
+    this.stateKeys = stateKeys;
+    this.getterTypes = getterTypes;
+    this.actionTypes = actionTypes;
+    this.mutationTypes = mutationTypes;
     this.store = {
       namespaced: true,
       state: {

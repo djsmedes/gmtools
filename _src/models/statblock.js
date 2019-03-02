@@ -1,149 +1,256 @@
-import { Model } from "./_baseModel";
-import { CampaignDependentVuexModule } from "./_needsCampaignModule";
+import { Model } from "vue-mc";
+import { generateUrl } from "@/utils/urls";
+import { getterTypes, mutationTypes } from "@/models/_constants";
+import { MCModule } from "@/models/_baseMCModule";
+
+// todo - put this somewhere more central and import it
+const mutateEmptyStringToNull = v => (v !== "" ? v : null);
+
+const modelName = "statblock";
+
+const size = {
+  TINY: 1,
+  SMALL: 2,
+  MEDIUM: 3,
+  LARGE: 4,
+  HUGE: 5,
+  GARGANTUAN: 6,
+  COLOSSAL: 7,
+};
+
+const sizeDisplay = Object.keys(size).reduce((memo, curSize) => {
+  return {
+    ...memo,
+    [size[curSize]]: String(curSize).toLowerCase(),
+  };
+}, {});
+
+export const sizeChoices = Object.keys(sizeDisplay).map(key => ({
+  value: Number(key),
+  text: sizeDisplay[key].charAt(0).toUpperCase() + sizeDisplay[key].slice(1),
+}));
+
+const alignment = {
+  UNALIGNED: 0,
+  LAWFUL_GOOD: 1,
+  NEUTRAL_GOOD: 2,
+  CHAOTIC_GOOD: 3,
+  LAWFUL_NEUTRAL: 4,
+  NEUTRAL: 5,
+  CHAOTIC_NEUTRAL: 6,
+  LAWFUL_EVIL: 7,
+  NEUTRAL_EVIL: 8,
+  CHAOTIC_EVIL: 9,
+};
+
+const alignmentDisplay = Object.keys(alignment).reduce((memo, curAlignment) => {
+  return {
+    ...memo,
+    [alignment[curAlignment]]: String(curAlignment)
+      .replace("_", " ")
+      .toLowerCase(),
+  };
+}, {});
+
+export const alignmentChoices = Object.keys(alignmentDisplay).map(key => ({
+  value: Number(key),
+  text:
+    alignmentDisplay[key].charAt(0).toUpperCase() +
+    alignmentDisplay[key].slice(1),
+}));
 
 export class Statblock extends Model {
   static get modelName() {
-    return "statblock";
+    return modelName;
   }
 
-  constructor({
-    uuid = null,
-    campaign = "",
-    name = "",
-    generic_name = "",
-    proficiency = null,
-    challenge = null,
-    size = null,
-    type = null,
-    alignment = null,
-    armor_class = null,
-    armor_kind = null,
-    hit_points = null,
-    num_hit_die = null,
-    avg_hp = null,
-    hit_die_size = null,
-    speed = null,
-    str = null,
-    dex = null,
-    con = null,
-    int = null,
-    wis = null,
-    cha = null,
-    str_mod = null,
-    dex_mod = null,
-    con_mod = null,
-    int_mod = null,
-    wis_mod = null,
-    cha_mod = null,
-    saving_throws = null,
-    skills = null,
-    senses = null,
-    damage_vulnerabilities = {},
-    damage_resistances = {},
-    damage_immunities = {},
-    condition_immunities = {},
-    languages = {},
-  } = {}) {
-    super();
-    this.uuid = uuid;
-    this.campaign = campaign;
-    this.name = name;
-    this.generic_name = generic_name;
-    this.proficiency = proficiency;
-    this.challenge = challenge;
-    this.size = size;
-    this.type = type;
-    this.alignment = alignment;
-    this.armor_class = armor_class;
-    this.armor_kind = armor_kind;
-    this.hit_points = hit_points;
-    this.num_hit_die = num_hit_die;
-    this.hit_die_size = hit_die_size;
-    this.avg_hp = avg_hp;
-    this.speed = speed;
-    this.str = str;
-    this.dex = dex;
-    this.con = con;
-    this.int = int;
-    this.wis = wis;
-    this.cha = cha;
-    this.str_mod = str_mod;
-    this.dex_mod = dex_mod;
-    this.con_mod = con_mod;
-    this.int_mod = int_mod;
-    this.wis_mod = wis_mod;
-    this.cha_mod = cha_mod;
-    this.saving_throws = saving_throws;
-    this.skills = skills;
-    this.senses = senses;
-
-    this.damage_vulnerabilities = damage_vulnerabilities;
-    this.damage_resistances = damage_resistances;
-    this.damage_immunities = damage_immunities;
-    this.condition_immunities = condition_immunities;
-    this.languages = languages;
-  }
-
-  static get Size() {
+  options() {
     return {
-      TINY: 1,
-      SMALL: 2,
-      MEDIUM: 3,
-      LARGE: 4,
-      HUGE: 5,
-      GARGANTUAN: 6,
-      COLOSSAL: 7,
+      identifier: "uuid",
     };
+  }
+
+  defaults() {
+    return {
+      uuid: null,
+      campaign: null,
+      name: null,
+      generic_name: null,
+      proficiency: null,
+      challenge: null,
+      size: null,
+      type: null,
+      alignment: null,
+      armor_class: null,
+      armor_kind: null,
+      hit_points: null,
+      num_hit_die: 1,
+      avg_hp: null,
+      hit_die_size: 4,
+      speed: null,
+      str: 10,
+      dex: 10,
+      con: 10,
+      int: 10,
+      wis: 10,
+      cha: 10,
+      str_mod: 0,
+      dex_mod: 0,
+      con_mod: 0,
+      int_mod: 0,
+      wis_mod: 0,
+      cha_mod: 0,
+      saving_throws: null,
+      skills: null,
+      senses: null,
+      damage_vulnerabilities: [],
+      damage_resistances: [],
+      damage_immunities: [],
+      condition_immunities: [],
+      languages: [],
+    };
+  }
+
+  mutations() {
+    return Object.keys(this.defaults()).reduce((memo, key) => {
+      return { ...memo, [key]: mutateEmptyStringToNull };
+    }, {});
   }
 
   get size_display() {
-    switch (this.size) {
-      case Statblock.Size.TINY:
-        return "tiny";
-      case Statblock.Size.SMALL:
-        return "small";
-      case Statblock.Size.MEDIUM:
-        return "medium";
-      case Statblock.Size.LARGE:
-        return "large";
-      case Statblock.Size.HUGE:
-        return "huge";
-      case Statblock.Size.GARGANTUAN:
-        return "gargantuan";
-      case Statblock.Size.COLOSSAL:
-        return "colossal";
-    }
-  }
-
-  static get Alignment() {
-    return {
-      UNALIGNED: 0,
-      LAWFUL_GOOD: 1,
-      NEUTRAL_GOOD: 2,
-      CHAOTIC_GOOD: 3,
-      LAWFUL_NEUTRAL: 4,
-      NEUTRAL: 5,
-      CHAOTIC_NEUTRAL: 6,
-      LAWFUL_EVIL: 7,
-      NEUTRAL_EVIL: 8,
-      CHAOTIC_EVIL: 9,
-    };
+    return sizeDisplay[this.size] || "";
   }
 
   get alignment_display() {
-    let key =
-      Object.keys(Statblock.Alignment).find(
-        key => Statblock.Alignment[key] === this.alignment
-      ) || "";
-    return key.replace("_", " ").toLowerCase();
+    return alignmentDisplay[this.alignment] || "";
+  }
+
+  routes() {
+    return {
+      fetch: generateUrl([Statblock.modelName, this.uuid]),
+      delete: generateUrl([Statblock.modelName, this.uuid]),
+    };
+  }
+
+  getSaveURL() {
+    return generateUrl([
+      Statblock.modelName,
+      ...(this.uuid ? [this.uuid] : []),
+    ]);
+  }
+
+  getSaveMethod() {
+    return this.uuid ? "PUT" : "POST";
+  }
+
+  async vuex_fetch(store) {
+    if (!this.uuid) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(modelName + " tried to call fetch with no uuid.");
+      }
+    }
+
+    let cached = store.getters[modelName + "/" + getterTypes.BY_ID](this.uuid);
+
+    if (cached === undefined) {
+      let { response } = await this.fetch();
+      store.commit(modelName + "/" + mutationTypes.SET, {
+        object: response.data,
+      });
+    } else {
+      Object.keys(cached).reduce((_, key) => {
+        this.set(key, cached[key]);
+      });
+      // must also apply this new active state to the saved state
+      this.sync();
+    }
+  }
+
+  async vuex_save(store) {
+    let { response } = await this.save();
+    store.commit(Statblock.modelName + "/" + mutationTypes.SET, {
+      object: response.data,
+    });
+  }
+
+  async vuex_delete(store) {
+    let { response } = await this.delete();
+    store.commit(
+      Statblock.modelName + "/" + mutationTypes.REMOVE,
+      response.data
+    );
   }
 }
 
-class StatblockVuexModule extends CampaignDependentVuexModule {
+class StatblockModule extends MCModule {
   constructor() {
-    super();
-    this.modelClass = Statblock;
+    super(modelName);
   }
 }
 
-export default new StatblockVuexModule();
+export default new StatblockModule();
+
+export const damageTypes = [
+  "bludgeoning",
+  "piercing",
+  "slashing",
+  "bludgeoning, piercing, and slashing",
+  "bludgeoning, piercing, and slashing from nonmagical attacks",
+  "bludgeoning, piercing, and slashing from nonmagical attacks not made with silvered weapons",
+  "fire",
+  "cold",
+  "acid",
+  "lightning",
+  "thunder",
+  "poison",
+  "psychic",
+  "force",
+  "radiant",
+  "necrotic",
+];
+
+export const conditions = [
+  "blinded",
+  "charmed",
+  "deafened",
+  "frightened",
+  "grappled",
+  "incapacitated",
+  "invisible",
+  "paralyzed",
+  "petrified",
+  "poisoned",
+  "prone",
+  "restrained",
+  "stunned",
+  "unconscious",
+];
+
+export const languages = [
+  "Common",
+  "Dwarvish",
+  "Elvish",
+  "Giant",
+  "Goblin",
+  "Orc",
+  "Gnomish",
+  "Halfling",
+  "Abyssal",
+  "Celestial",
+  "Infernal",
+  "Draconic",
+  "Sylvan",
+  "Primordial",
+  "Auran",
+  "Aquan",
+  "Ignan",
+  "Terran",
+  "Undercommon",
+  "Deep Speech",
+  "Druidic",
+  "Thieve's Cant",
+  "Telepathy",
+  "Telepathy 30 ft.",
+  "Telepathy 60 ft.",
+  "Telepathy 120 ft.",
+];

@@ -15,19 +15,83 @@
           <v-container grid-list-xl>
             <v-layout wrap>
               <v-flex xs12 sm6>
-                <v-text-field label="Name"></v-text-field>
+                <v-text-field
+                  label="Name"
+                  v-model="statblock.name"
+                ></v-text-field>
               </v-flex>
               <v-flex xs12 sm6>
-                <v-text-field label="Generic name" hint="This will be used in action descriptions"></v-text-field>
+                <v-text-field
+                  label="Generic name"
+                  hint="This will be used in action descriptions"
+                  v-model="statblock.generic_name"
+                ></v-text-field>
               </v-flex>
               <v-flex xs12 sm4>
-                <v-text-field label="Size"></v-text-field>
+                <v-select
+                  label="Size"
+                  :items="sizeChoices"
+                  v-model="statblock.size"
+                ></v-select>
               </v-flex>
               <v-flex xs12 sm4>
-                <v-text-field label="Type"></v-text-field>
+                <v-text-field
+                  label="Type"
+                  v-model="statblock.type"
+                ></v-text-field>
               </v-flex>
               <v-flex xs12 sm4>
-                <v-text-field label="Alignment"></v-text-field>
+                <v-select
+                  label="Alignment"
+                  :items="alignmentChoices"
+                  v-model="statblock.alignment"
+                ></v-select>
+              </v-flex>
+
+              <v-flex xs12>
+                <v-combobox
+                  label="Damage vulnerabilities"
+                  chips
+                  multiple
+                  :items="damageTypes"
+                  v-model="statblock.damage_vulnerabilities"
+                ></v-combobox>
+              </v-flex>
+              <v-flex xs12>
+                <v-combobox
+                  label="Damage resistances"
+                  chips
+                  multiple
+                  :items="damageTypes"
+                  v-model="statblock.damage_resistances"
+                ></v-combobox>
+              </v-flex>
+              <v-flex xs12>
+                <v-combobox
+                  label="Damage immunities"
+                  chips
+                  multiple
+                  :items="damageTypes"
+                  v-model="statblock.damage_immunities"
+                ></v-combobox>
+              </v-flex>
+              <v-flex xs12>
+                <v-combobox
+                  label="Condition immunities"
+                  chips
+                  multiple
+                  :items="conditions"
+                  v-model="statblock.condition_immunities"
+                ></v-combobox>
+              </v-flex>
+              <v-flex xs12>
+                <v-combobox
+                  label="Languages"
+                  chips
+                  multiple
+                  :items="languages"
+                  v-model="statblock.languages"
+                ></v-combobox>
               </v-flex>
             </v-layout>
           </v-container>
@@ -37,13 +101,21 @@
         <statblock-view :value="statblock"></statblock-view>
       </v-tab-item>
     </v-tabs-items>
+
+    <v-btn @click="statblock.vuex_save()">save</v-btn>
+    <v-btn @click="statblock.reset()">reset</v-btn>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import statblock, { Statblock } from "@/models/statblock";
-import { routeNames } from "@/router";
+import {
+  Statblock,
+  sizeChoices,
+  alignmentChoices,
+  damageTypes,
+  conditions,
+  languages,
+} from "@/models/statblock";
 import StatblockView from "@/components/statblocks/StatblockView";
 
 export default {
@@ -57,25 +129,18 @@ export default {
   },
   data() {
     return {
+      sizeChoices,
+      alignmentChoices,
+      damageTypes,
+      conditions,
+      languages,
       whichTab: 0,
       formValid: false,
+      statblock: new Statblock({ uuid: this.uuid }),
     };
   },
-  computed: {
-    ...mapGetters(statblock.namespace, {
-      getStatblock: statblock.getterTypes.BY_ID,
-    }),
-    statblock() {
-      return this.getStatblock(this.uuid);
-    },
-  },
-  methods: {
-    ...mapActions(statblock.namespace, {
-      loadStatblock: statblock.actionTypes.RETRIEVE,
-    }),
-  },
-  created() {
-    this.loadStatblock({ uuid: this.uuid });
+  async created() {
+    this.statblock.vuex_fetch(this.$store);
   },
 };
 </script>
