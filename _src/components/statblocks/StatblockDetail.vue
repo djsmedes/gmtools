@@ -65,6 +65,12 @@
                   v-model="statblock.num_hit_die"
                 ></v-text-field>
               </v-flex>
+              <v-flex xs12 sm6>
+                <v-btn flat color="save" @click="helpCalcHitDie">
+                  Help me calculate hit dice
+                </v-btn>
+              </v-flex>
+
 
               <v-flex xs12>
                 <v-text-field
@@ -198,6 +204,7 @@ import {
   hitDieSizes,
 } from "@/models/statblock";
 import StatblockView from "@/components/statblocks/StatblockView";
+import CalcHitDieDialog from "@/components/statblocks/CalcHitDieDialog";
 
 export default {
   name: "StatblockDetail",
@@ -220,6 +227,18 @@ export default {
       formValid: false,
       statblock: new Statblock({ uuid: this.uuid }),
     };
+  },
+  methods: {
+    async helpCalcHitDie() {
+      let response = await this.$dialog(CalcHitDieDialog, {
+        creatureSizeDisplay: this.statblock.size_display,
+        creatureHitDieSize: this.statblock.hit_die_size,
+        creatureConMod: this.statblock.con_mod,
+      });
+      if (response) {
+        this.statblock.num_hit_die = response;
+      }
+    },
   },
   async created() {
     this.statblock.vuex_fetch(this.$store);
