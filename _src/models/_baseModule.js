@@ -1,7 +1,12 @@
 import Vue from "vue";
 import axios from "axios";
 import { generateUrl } from "@/utils/urls";
-import { stateKeys, getterTypes, actionTypes, mutationTypes } from "@/models/_constants";
+import {
+  stateKeys,
+  getterTypes,
+  actionTypes,
+  mutationTypes,
+} from "@/models/_constants";
 
 export function array2ObjByUUID(array, objConstructor) {
   return array.reduce((accumulator, currentVal) => {

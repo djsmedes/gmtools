@@ -146,6 +146,7 @@ export class Statblock extends Model {
   async vuex_fetch(store) {
     if (!this.uuid) {
       if (process.env.NODE_ENV !== "production") {
+        // eslint-disable-next-line
         console.warn(modelName + " tried to call fetch with no uuid.");
       }
     }

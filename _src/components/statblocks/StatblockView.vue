@@ -26,7 +26,9 @@
           <strong class="text-capitalize">{{ abl }}</strong>
           <br />
           {{ value[abl] }} ({{
-            value[abl + "_mod"] >= 0 ? "+" + value[abl + "_mod"] : value[abl + "_mod"]
+            value[abl + "_mod"] >= 0
+              ? "+" + value[abl + "_mod"]
+              : value[abl + "_mod"]
           }})
         </v-flex>
       </v-layout>
@@ -41,25 +43,44 @@
         <strong>Skills</strong> {{ value.skills }}
         <br />
       </template>
-      <template v-if="value.damage_vulnerabilities && value.damage_vulnerabilities.length">
-        <strong>Damage Vulnerabilities</strong> {{ value.damage_vulnerabilities.join(", ") }}
+      <template
+        v-if="
+          value.damage_vulnerabilities && value.damage_vulnerabilities.length
+        "
+      >
+        <strong>Damage Vulnerabilities</strong>
+        {{ value.damage_vulnerabilities.join(", ") }}
         <br />
       </template>
-      <template v-if="value.damage_resistances && value.damage_resistances.length">
-        <strong>Damage Resistances</strong> {{ value.damage_resistances.join(", ") }}
+      <template
+        v-if="value.damage_resistances && value.damage_resistances.length"
+      >
+        <strong>Damage Resistances</strong>
+        {{ value.damage_resistances.join(", ") }}
         <br />
       </template>
-      <template v-if="value.damage_immunities && value.damage_immunities.length">
-        <strong>Damage Immunities</strong> {{ value.damage_immunities.join(", ") }}
+      <template
+        v-if="value.damage_immunities && value.damage_immunities.length"
+      >
+        <strong>Damage Immunities</strong>
+        {{ value.damage_immunities.join(", ") }}
         <br />
       </template>
-      <template v-if="value.condition_immunities && value.condition_immunities.length">
-        <strong>Condition Immunities</strong> {{ value.condition_immunities.join(", ") }}
+      <template
+        v-if="value.condition_immunities && value.condition_immunities.length"
+      >
+        <strong>Condition Immunities</strong>
+        {{ value.condition_immunities.join(", ") }}
         <br />
       </template>
       <strong>Senses</strong> {{ value.senses }}
       <br />
-      <strong>Languages</strong> {{ value.languages && value.languages.length ? value.languages.join(", ") : "&mdash;" }}
+      <strong>Languages</strong>
+      {{
+        value.languages && value.languages.length
+          ? value.languages.join(", ")
+          : "&mdash;"
+      }}
       <br />
       <strong>Challenge</strong> {{ value.challenge }}
     </v-flex>
