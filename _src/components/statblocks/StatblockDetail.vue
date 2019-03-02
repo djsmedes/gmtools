@@ -233,7 +233,7 @@ export default {
       let response = await this.$dialog(CalcHitDieDialog, {
         creatureSizeDisplay: this.statblock.size_display,
         creatureHitDieSize: this.statblock.hit_die_size,
-        creatureConMod: this.statblock.con_mod,
+        creatureCon: this.statblock.con,
       });
       if (response) {
         this.statblock.num_hit_die = response;

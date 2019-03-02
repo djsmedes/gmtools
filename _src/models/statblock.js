@@ -62,7 +62,7 @@ const expectedValue = (die_size, num = 1) => {
   return Math.floor((num * (die_size + 1)) / 2);
 };
 
-const calculateModifier = score => Math.floor(((score || 0) - 10) / 2);
+export const calculateModifier = score => Math.floor(((score || 0) - 10) / 2);
 
 export class Statblock extends Model {
   static get modelName() {
