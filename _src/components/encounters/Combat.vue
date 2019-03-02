@@ -234,8 +234,7 @@ import combatant, { Combatant } from "@/models/combatant";
 import campaign from "@/models/campaign";
 import encounter, { Encounter } from "@/models/encounter";
 import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
-import cloneDeep from "lodash/cloneDeep";
-import debounce from "lodash/debounce";
+import { cloneDeep, debounce } from "lodash-es";
 import auth from "@/auth";
 import { routeNames } from "@/router";
 

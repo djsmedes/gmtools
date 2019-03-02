@@ -78,8 +78,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import cloneDeep from "lodash/cloneDeep";
-import debounce from "lodash/debounce";
+import { cloneDeep, debounce } from "lodash-es";
 import ScreenTab from "@/components/gmscreen/GMScreenTab";
 import Screen from "@/components/gmscreen/GMScreen";
 import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";

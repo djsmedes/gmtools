@@ -1,4 +1,4 @@
-import { Model } from "vue-mc";
+import { Model } from "vue-mc/vue-mc.es";
 import { generateUrl } from "@/utils/urls";
 import { getterTypes, mutationTypes } from "@/models/_constants";
 import { MCModule } from "@/models/_baseMCModule";
