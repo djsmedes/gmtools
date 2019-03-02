@@ -65,13 +65,6 @@
                   v-model="statblock.num_hit_die"
                 ></v-text-field>
               </v-flex>
-              <v-flex xs12 sm6>
-                <v-select
-                  label="Hit die size"
-                  :items="dieSizes"
-                  v-model="statblock.hit_die_size"
-                ></v-select>
-              </v-flex>
 
               <v-flex xs12>
                 <v-text-field
@@ -202,7 +195,7 @@ import {
   damageTypes,
   conditions,
   languages,
-  dieSizes,
+  hitDieSizes,
 } from "@/models/statblock";
 import StatblockView from "@/components/statblocks/StatblockView";
 
@@ -222,7 +215,7 @@ export default {
       damageTypes,
       conditions,
       languages,
-      dieSizes,
+      hitDieSizes,
       whichTab: 0,
       formValid: false,
       statblock: new Statblock({ uuid: this.uuid }),

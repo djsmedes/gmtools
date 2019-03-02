@@ -15,7 +15,6 @@ const size = {
   LARGE: 4,
   HUGE: 5,
   GARGANTUAN: 6,
-  COLOSSAL: 7,
 };
 
 const sizeDisplay = Object.keys(size).reduce((memo, curSize) => {
@@ -63,11 +62,6 @@ const expectedValue = (die_size, num = 1) => {
   return Math.floor((num * (die_size + 1)) / 2);
 };
 
-export const dieSizes = [2, 4, 6, 8, 10, 12, 20, 100].map(sides => ({
-  text: "d" + sides,
-  value: sides,
-}));
-
 const calculateModifier = score => Math.floor(((score || 0) - 10) / 2);
 
 export class Statblock extends Model {
@@ -96,7 +90,6 @@ export class Statblock extends Model {
       armor_kind: null,
       hit_points: null,
       num_hit_die: 1,
-      hit_die_size: 4,
       speed: null,
       str: 10,
       dex: 10,
@@ -129,6 +122,16 @@ export class Statblock extends Model {
     return alignmentDisplay[this.alignment] || "";
   }
 
+  get hit_die_size() {
+    return {
+      1: 4,
+      2: 6,
+      3: 8,
+      4: 10,
+      5: 12,
+      6: 20,
+    }[this.size];
+  }
   get avg_hp() {
     return Math.max(
       expectedValue(this.hit_die_size, this.num_hit_die) +

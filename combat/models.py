@@ -59,7 +59,6 @@ class Statblock(CampaignOwnedModel):
 
     hit_points = models.PositiveSmallIntegerField(null=True, blank=True)
     num_hit_die = models.PositiveSmallIntegerField(default=1, blank=True)
-    hit_die_size = models.PositiveSmallIntegerField(choices=Die.MODEL_CHOICES, default=Die.d4, blank=True)
     speed = models.CharField(max_length=100, null=True, blank=True)
 
     str = models.PositiveSmallIntegerField(default=0, blank=True)
@@ -68,6 +67,11 @@ class Statblock(CampaignOwnedModel):
     int = models.PositiveSmallIntegerField(default=0, blank=True)
     wis = models.PositiveSmallIntegerField(default=0, blank=True)
     cha = models.PositiveSmallIntegerField(default=0, blank=True)
+
+    @property
+    def hit_die_size(self):
+        size_die_crosswalk = {1: 4, 2: 6, 3: 8, 4: 10, 5: 12, 6: 20}
+        return size_die_crosswalk.get(self.size)
 
     @property
     def str_mod(self):

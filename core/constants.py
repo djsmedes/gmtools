@@ -2,10 +2,10 @@ from typing import Union
 
 
 class Size:
-    TINY, SMALL, MEDIUM, LARGE, HUGE, GARGANTUAN, COLOSSAL = 1, 2, 3, 4, 5, 6, 7
+    TINY, SMALL, MEDIUM, LARGE, HUGE, GARGANTUAN = 1, 2, 3, 4, 5, 6
     MODEL_CHOICES = [
         (TINY, 'Tiny'), (SMALL, 'Small'), (MEDIUM, 'Medium'), (LARGE, 'Large'), (HUGE, 'Huge'),
-        (GARGANTUAN, 'Gargantuan'), (COLOSSAL, 'Colossal'),
+        (GARGANTUAN, 'Gargantuan')
     ]
 
 

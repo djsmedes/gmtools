@@ -56,7 +56,6 @@ class StatblockSerializer(CampaignModelSerializer):
 
             "hit_points",
             "num_hit_die",
-            "hit_die_size",
 
             "speed",
             "str",
