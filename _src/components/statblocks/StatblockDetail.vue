@@ -236,7 +236,9 @@ export default {
         creatureCon: this.statblock.con,
       });
       if (response) {
-        this.statblock.num_hit_die = response;
+        this.statblock.num_hit_die = response.num_hit_die;
+        this.statblock.con = response.con || this.statblock.con;
+        this.statblock.size = response.size || this.statblock.size;
       }
     },
   },

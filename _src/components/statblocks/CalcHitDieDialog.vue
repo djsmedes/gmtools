@@ -43,8 +43,42 @@
           </v-btn>
           <v-layout>
             <v-spacer></v-spacer>
-            <v-btn flat small color="grey">I need more choices</v-btn>
+            <v-btn flat small color="grey" @click="advanced = !advanced">
+              {{ advanced ? "hide advanced options" : "I need more choices" }}
+            </v-btn>
           </v-layout>
+          <v-expand-transition>
+            <v-form @submit.prevent v-if="advanced">
+              <p>
+                Tweak the constitution score (which controls the constant
+                contribution to HP) and size (which controls the size of the hit
+                dice) to reach your desired HP total.
+              </p>
+              <p>
+                Reducing the constitution or size of the creature will mean that
+                each hit die adds a smaller increment, making it easier to get
+                closer to a desired HP total, but using more hit die.
+              </p>
+              <v-container grid-list-xl>
+                <v-layout wrap>
+                  <v-flex xs6>
+                    <v-text-field
+                      label="Constitution score"
+                      :value="adv_con"
+                      @input="updateAdvCon"
+                    ></v-text-field>
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-select
+                      label="Size"
+                      :items="sizeChoices"
+                      v-model="adv_size"
+                    ></v-select>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-form>
+          </v-expand-transition>
         </v-card-text>
       </v-expand-transition>
       <v-card-actions>
@@ -55,7 +89,7 @@
         <v-spacer></v-spacer>
         <v-btn
           flat
-          @click="close(selection)"
+          @click="close(returnValue)"
           color="save"
           :disabled="!selection"
         >
@@ -69,7 +103,26 @@
 
 <script>
 import functionalDialogMixin from "@/mixins/functionalDialog";
-import { calculateModifier } from "@/models/statblock";
+import { calculateModifier, sizeChoices } from "@/models/statblock";
+import { debounce } from "lodash-es";
+
+const size_2_die = {
+  1: 4,
+  2: 6,
+  3: 8,
+  4: 10,
+  5: 12,
+  6: 20,
+};
+
+const die_2_size = {
+  4: 1,
+  6: 2,
+  8: 3,
+  10: 4,
+  12: 5,
+  20: 6,
+};
 
 export default {
   name: "CalcHitDieDialog",
@@ -90,12 +143,13 @@ export default {
   },
   data() {
     return {
+      sizeChoices,
       formValid: false,
       userHpEstimate: null,
       suggestions: [],
       selection: null,
       advanced: false,
-      adv_hitDieSize: this.creatureHitDieSize,
+      adv_size: die_2_size[this.creatureHitDieSize],
       adv_con: this.creatureCon,
     };
   },
@@ -105,6 +159,12 @@ export default {
     },
     suggestions(val) {
       if (!val.includes(this.selection)) this.selection = null;
+    },
+    adv_con() {
+      this.getSuggestions();
+    },
+    adv_size() {
+      this.getSuggestions();
     },
   },
   computed: {
@@ -122,11 +182,20 @@ export default {
           return "800px";
       }
     },
+    adv_hitDieSize() {
+      return size_2_die[this.adv_size];
+    },
     hitDieSize() {
       return this.advanced ? this.adv_hitDieSize : this.creatureHitDieSize;
     },
     conMod() {
       return calculateModifier(this.advanced ? this.adv_con : this.creatureCon);
+    },
+    returnValue() {
+      return {
+        num_hit_die: this.selection,
+        ...(this.advanced ? { size: this.adv_size, con: this.adv_con } : {}),
+      };
     },
   },
   methods: {
@@ -138,14 +207,26 @@ export default {
 
       let denom = (this.hitDieSize + 1) / 2 + this.conMod;
       let x = this.userHpEstimate / denom;
+
       let under = Math.floor(x);
-      this.suggestions = [under, ...(under === x ? [] : [Math.ceil(x)])];
+      if (this.avg_hp(under) === Number(this.userHpEstimate)) {
+        this.suggestions = [under];
+        return;
+      }
+
+      let over = Math.ceil(x);
+      if (this.avg_hp(over) === Number(this.userHpEstimate)) {
+        this.suggestions = [over];
+        return;
+      }
+
+      this.suggestions = [under, ...(over === under ? [] : [over])];
+    },
+    avg_hp(numHitDie) {
+      return Math.floor(numHitDie * ((this.hitDieSize + 1) / 2 + this.conMod));
     },
     hit_point_string(numHitDie) {
       let con_contribution = numHitDie * this.conMod;
-
-      let avg =
-        Math.floor(numHitDie * ((this.hitDieSize + 1) / 2)) + con_contribution;
 
       let con_piece = "";
       if (con_contribution > 0) {
@@ -154,11 +235,22 @@ export default {
         con_piece = " - " + String(Math.abs(con_contribution));
       }
 
-      return avg + " (" + numHitDie + "d" + this.hitDieSize + con_piece + ")";
+      return (
+        this.avg_hp(numHitDie) +
+        " (" +
+        numHitDie +
+        "d" +
+        this.hitDieSize +
+        con_piece +
+        ")"
+      );
     },
     updateSelection(suggestion) {
       this.selection = this.selection === suggestion ? null : suggestion;
     },
+    updateAdvCon: debounce(function(value) {
+      this.adv_con = Number(value) || null;
+    }, 250),
   },
 };
 </script>
