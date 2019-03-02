@@ -59,6 +59,17 @@ export const alignmentChoices = Object.keys(alignmentDisplay).map(key => ({
     alignmentDisplay[key].slice(1),
 }));
 
+const expectedValue = (die_size, num = 1) => {
+  return Math.floor((num * (die_size + 1)) / 2);
+};
+
+export const dieSizes = [2, 4, 6, 8, 10, 12, 20, 100].map(sides => ({
+  text: "d" + sides,
+  value: sides,
+}));
+
+const calculateModifier = score => Math.floor(((score || 0) - 10) / 2);
+
 export class Statblock extends Model {
   static get modelName() {
     return modelName;
@@ -85,7 +96,6 @@ export class Statblock extends Model {
       armor_kind: null,
       hit_points: null,
       num_hit_die: 1,
-      avg_hp: null,
       hit_die_size: 4,
       speed: null,
       str: 10,
@@ -94,12 +104,6 @@ export class Statblock extends Model {
       int: 10,
       wis: 10,
       cha: 10,
-      str_mod: 0,
-      dex_mod: 0,
-      con_mod: 0,
-      int_mod: 0,
-      wis_mod: 0,
-      cha_mod: 0,
       saving_throws: null,
       skills: null,
       senses: null,
@@ -123,6 +127,33 @@ export class Statblock extends Model {
 
   get alignment_display() {
     return alignmentDisplay[this.alignment] || "";
+  }
+
+  get avg_hp() {
+    return Math.max(
+      expectedValue(this.hit_die_size, this.num_hit_die) +
+        this.num_hit_die * this.con_mod,
+      1
+    );
+  }
+
+  get str_mod() {
+    return calculateModifier(this.str);
+  }
+  get dex_mod() {
+    return calculateModifier(this.dex);
+  }
+  get con_mod() {
+    return calculateModifier(this.con);
+  }
+  get int_mod() {
+    return calculateModifier(this.int);
+  }
+  get wis_mod() {
+    return calculateModifier(this.wis);
+  }
+  get cha_mod() {
+    return calculateModifier(this.cha);
   }
 
   routes() {

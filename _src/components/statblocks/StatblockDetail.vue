@@ -14,17 +14,15 @@
         <v-form @submit.prevent v-model="formValid">
           <v-container grid-list-xl>
             <v-layout wrap>
-              <v-flex xs12 sm6>
+              <v-flex xs12>
+                <h1 class="headline">
+                  Visible Stats
+                </h1>
+              </v-flex>
+              <v-flex xs12>
                 <v-text-field
                   label="Name"
                   v-model="statblock.name"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field
-                  label="Generic name"
-                  hint="This will be used in action descriptions"
-                  v-model="statblock.generic_name"
                 ></v-text-field>
               </v-flex>
               <v-flex xs12 sm4>
@@ -48,6 +46,64 @@
                 ></v-select>
               </v-flex>
 
+              <v-flex xs12 sm6>
+                <v-text-field
+                  label="Armor class"
+                  v-model="statblock.armor_class"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <v-text-field
+                  label="Armor kind"
+                  v-model="statblock.armor_kind"
+                ></v-text-field>
+              </v-flex>
+
+              <v-flex xs12 sm6>
+                <v-text-field
+                  label="Number of hit dice"
+                  v-model="statblock.num_hit_die"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <v-select
+                  label="Hit die size"
+                  :items="dieSizes"
+                  v-model="statblock.hit_die_size"
+                ></v-select>
+              </v-flex>
+
+              <v-flex xs12>
+                <v-text-field
+                  label="Speed"
+                  v-model="statblock.speed"
+                ></v-text-field>
+              </v-flex>
+
+              <v-flex
+                xs4
+                md2
+                v-for="abl in ['Str', 'Dex', 'Con', 'Int', 'Wis', 'Cha']"
+                :key="abl"
+              >
+                <v-text-field
+                  :label="abl"
+                  v-model="statblock[abl.toLowerCase()]"
+                ></v-text-field>
+              </v-flex>
+
+              <v-flex xs12>
+                <v-text-field
+                  label="Saving throws"
+                  v-model="statblock.saving_throws"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12>
+                <v-text-field
+                  label="Skills"
+                  v-model="statblock.skills"
+                ></v-text-field>
+              </v-flex>
               <v-flex xs12>
                 <v-combobox
                   label="Damage vulnerabilities"
@@ -85,6 +141,12 @@
                 ></v-combobox>
               </v-flex>
               <v-flex xs12>
+                <v-text-field
+                  label="Senses"
+                  v-model="statblock.senses"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12>
                 <v-combobox
                   label="Languages"
                   chips
@@ -92,6 +154,31 @@
                   :items="languages"
                   v-model="statblock.languages"
                 ></v-combobox>
+              </v-flex>
+              <v-flex xs12>
+                <v-text-field
+                  label="Challenge rating"
+                  v-model="statblock.challenge"
+                ></v-text-field>
+              </v-flex>
+
+              <v-flex xs12>
+                <h1 class="headline">
+                  Hidden Stats
+                </h1>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <v-text-field
+                  label="Generic name"
+                  hint="This will be used in action descriptions"
+                  v-model="statblock.generic_name"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <v-text-field
+                  label="Proficiency"
+                  v-model="statblock.proficiency"
+                ></v-text-field>
               </v-flex>
             </v-layout>
           </v-container>
@@ -102,7 +189,7 @@
       </v-tab-item>
     </v-tabs-items>
 
-    <v-btn @click="statblock.vuex_save()">save</v-btn>
+    <v-btn @click="statblock.vuex_save($store)">save</v-btn>
     <v-btn @click="statblock.reset()">reset</v-btn>
   </div>
 </template>
@@ -115,6 +202,7 @@ import {
   damageTypes,
   conditions,
   languages,
+  dieSizes,
 } from "@/models/statblock";
 import StatblockView from "@/components/statblocks/StatblockView";
 
@@ -134,6 +222,7 @@ export default {
       damageTypes,
       conditions,
       languages,
+      dieSizes,
       whichTab: 0,
       formValid: false,
       statblock: new Statblock({ uuid: this.uuid }),

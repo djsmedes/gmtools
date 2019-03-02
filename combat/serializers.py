@@ -53,11 +53,10 @@ class StatblockSerializer(CampaignModelSerializer):
             "alignment",
             "armor_class",
             "armor_kind",
-            "hit_points",
 
+            "hit_points",
             "num_hit_die",
             "hit_die_size",
-            "avg_hp",
 
             "speed",
             "str",
@@ -66,12 +65,7 @@ class StatblockSerializer(CampaignModelSerializer):
             "int",
             "wis",
             "cha",
-            "str_mod",
-            "dex_mod",
-            "con_mod",
-            "int_mod",
-            "wis_mod",
-            "cha_mod",
+
             "saving_throws",
             "skills",
             "senses",
