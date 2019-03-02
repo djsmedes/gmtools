@@ -115,24 +115,11 @@ const size_2_die = {
   6: 20,
 };
 
-const die_2_size = {
-  4: 1,
-  6: 2,
-  8: 3,
-  10: 4,
-  12: 5,
-  20: 6,
-};
-
 export default {
   name: "CalcHitDieDialog",
   mixins: [functionalDialogMixin],
   props: {
-    creatureSizeDisplay: {
-      type: String,
-      required: true,
-    },
-    creatureHitDieSize: {
+    creatureSize: {
       type: Number,
       required: true,
     },
@@ -149,7 +136,7 @@ export default {
       suggestions: [],
       selection: null,
       advanced: false,
-      adv_size: die_2_size[this.creatureHitDieSize],
+      adv_size: this.creatureSize,
       adv_con: this.creatureCon,
     };
   },
@@ -182,11 +169,8 @@ export default {
           return "800px";
       }
     },
-    adv_hitDieSize() {
-      return size_2_die[this.adv_size];
-    },
     hitDieSize() {
-      return this.advanced ? this.adv_hitDieSize : this.creatureHitDieSize;
+      return size_2_die[this.advanced ? this.adv_size : this.creatureSize];
     },
     conMod() {
       return calculateModifier(this.advanced ? this.adv_con : this.creatureCon);

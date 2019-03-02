@@ -71,7 +71,6 @@
                 </v-btn>
               </v-flex>
 
-
               <v-flex xs12>
                 <v-text-field
                   label="Speed"
@@ -201,7 +200,6 @@ import {
   damageTypes,
   conditions,
   languages,
-  hitDieSizes,
 } from "@/models/statblock";
 import StatblockView from "@/components/statblocks/StatblockView";
 import CalcHitDieDialog from "@/components/statblocks/CalcHitDieDialog";
@@ -222,7 +220,6 @@ export default {
       damageTypes,
       conditions,
       languages,
-      hitDieSizes,
       whichTab: 0,
       formValid: false,
       statblock: new Statblock({ uuid: this.uuid }),
@@ -231,8 +228,7 @@ export default {
   methods: {
     async helpCalcHitDie() {
       let response = await this.$dialog(CalcHitDieDialog, {
-        creatureSizeDisplay: this.statblock.size_display,
-        creatureHitDieSize: this.statblock.hit_die_size,
+        creatureSize: this.statblock.size,
         creatureCon: this.statblock.con,
       });
       if (response) {
@@ -243,7 +239,9 @@ export default {
     },
   },
   async created() {
-    this.statblock.vuex_fetch(this.$store);
+    if (this.uuid) {
+      this.statblock.vuex_fetch(this.$store);
+    }
   },
 };
 </script>
