@@ -238,8 +238,6 @@ import {
 import StatblockView from "@/components/statblocks/StatblockView";
 import CalcHitDieDialog from "@/components/statblocks/CalcHitDieDialog";
 import CreaturePropDetailDialog from "@/components/statblocks/CreaturePropDetailDialog";
-import axios from "axios";
-import { generateUrl } from "@/utils/urls";
 import creatureprop from "@/models/creatureprop";
 import { mapGetters, mapActions } from "vuex";
 
@@ -262,7 +260,6 @@ export default {
       whichTab: 0,
       formValid: false,
       statblock: new Statblock({ uuid: this.uuid }),
-      p_creatureProps: [],
     };
   },
   computed: {
@@ -270,9 +267,8 @@ export default {
       getCreatureProp: creatureprop.getterTypes.BY_ID,
     }),
     creatureProps() {
-      return [...this.p_creatureProps]
-        .sort((a, b) => (a.manual_ordering || 0) - (b.manual_ordering || 0))
-        .map(item => this.getCreatureProp(item.creature_prop))
+      return this.statblock.creatureprop_set
+        .map(uuid => this.getCreatureProp(uuid))
         .filter(item => !!item);
     },
   },
@@ -292,25 +288,18 @@ export default {
       }
     },
     async editCreatureProp(uuid) {
-      let newProp = await this.$dialog(CreaturePropDetailDialog, {
+      let newPropUuid = await this.$dialog(CreaturePropDetailDialog, {
         uuid,
         parentStatblockUuid: this.uuid,
       });
-      if (newProp) {
-        this.p_creatureProps.push(newProp);
+      if (newPropUuid) {
+        this.statblock.creatureprop_set.push(newPropUuid);
       }
     },
   },
   async created() {
     if (this.uuid) {
       this.statblock.vuex_fetch(this.$store);
-      axios
-        .get(generateUrl(["statblockprop"]), {
-          params: {
-            statblock: this.uuid,
-          },
-        })
-        .then(response => (this.p_creatureProps = response.data));
       this.loadCreatureProps({ statblock: this.uuid });
     }
   },

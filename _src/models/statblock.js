@@ -103,6 +103,7 @@ export class Statblock extends Model {
       damage_immunities: [],
       condition_immunities: [],
       languages: [],
+      creatureprop_set: [],
     };
   }
 

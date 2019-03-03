@@ -142,7 +142,7 @@ export default {
           creature_prop: newCreatureProp.uuid,
           statblock: this.parentStatblockUuid,
         });
-        this.close(data);
+        this.close(data.creature_prop);
       }
     },
     // eslint-disable-next-line
