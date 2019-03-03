@@ -12,6 +12,8 @@
           <v-textarea
             label="Description"
             v-model="creatureprop.description"
+            rows="1"
+            auto-grow
           ></v-textarea>
         </v-flex>
       </v-layout>

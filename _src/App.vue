@@ -15,14 +15,6 @@
           flat
           v-if="isAuthenticated"
           class="no-text-dec hidden-xs-only"
-          :to="{ name: routeNames.COMBATANTS }"
-        >
-          Combatants
-        </v-btn>
-        <v-btn
-          flat
-          v-if="isAuthenticated"
-          class="no-text-dec hidden-xs-only"
           :to="{ name: routeNames.ENCOUNTERS }"
         >
           Encounters
@@ -31,9 +23,25 @@
           flat
           v-if="isAuthenticated"
           class="no-text-dec hidden-xs-only"
+          :to="{ name: routeNames.COMBATANTS }"
+        >
+          Combatants
+        </v-btn>
+        <v-btn
+          flat
+          v-if="isAuthenticated"
+          class="no-text-dec hidden-xs-only"
           :to="{ name: routeNames.STATBLOCKS }"
         >
           Statblocks
+        </v-btn>
+        <v-btn
+          flat
+          v-if="isAuthenticated"
+          class="no-text-dec hidden-xs-only"
+          :to="{ name: $routeNames.CREATUREPROPS }"
+        >
+          Creature Properties
         </v-btn>
       </v-toolbar-items>
 
