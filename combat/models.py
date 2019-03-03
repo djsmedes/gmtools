@@ -127,6 +127,9 @@ class Statblock(CampaignOwnedModel):
     def generic_name(self, value):
         self._generic_name = value
 
+    def __str__(self):
+        return self.name
+
 
 class CreatureProp(CampaignOwnedModel):
     ABILITY_SCORE_CHOICES = [(x, x) for x in ['str', 'dex', 'con', 'int', 'wis', 'cha']]
@@ -182,6 +185,9 @@ class CreatureProp(CampaignOwnedModel):
     hit_extra_damage_type = models.TextField(null=True, blank=True)
     # end attack fields #
 
+    def __str__(self):
+        return f"{self.title} ({self.uuid})"
+
 
 class StatblockProp(CampaignOwnedModel):
     creature_prop = models.ForeignKey(
@@ -193,3 +199,6 @@ class StatblockProp(CampaignOwnedModel):
         on_delete=models.CASCADE
     )
     manual_ordering = models.SmallIntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.creature_prop.title} of {self.statblock.name}"

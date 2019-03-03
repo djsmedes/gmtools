@@ -1,7 +1,13 @@
 from core.viewsets import CampaignModelViewSet, UserOwnedModelViewSet
 
-from .models import Combatant, GMScreenTab, Statblock
-from .serializers import CombatantSerializer, GMScreenTabSerializer, StatblockSerializer
+from .models import Combatant, GMScreenTab, Statblock, CreatureProp, StatblockProp
+from .serializers import (
+    CombatantSerializer,
+    GMScreenTabSerializer,
+    StatblockSerializer,
+    StatblockPropSerializer,
+    CreaturePropSerializer
+)
 
 
 class CombatantViewSet(CampaignModelViewSet):
@@ -17,3 +23,13 @@ class GMScreenTabViewSet(UserOwnedModelViewSet):
 class StatblockViewSet(CampaignModelViewSet):
     model = Statblock
     serializer_class = StatblockSerializer
+
+
+class CreaturePropViewSet(CampaignModelViewSet):
+    model = CreatureProp
+    serializer_class = CreaturePropSerializer
+
+
+class StatblockPropViewSet(CampaignModelViewSet):
+    model = StatblockProp
+    serializer_class = StatblockPropSerializer
