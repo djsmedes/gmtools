@@ -25,7 +25,7 @@
 import { CreatureProp } from "@/models/creatureprop";
 
 export default {
-  name: "StatblockDetail",
+  name: "CreaturePropDetail",
   props: {
     uuid: {
       type: String,

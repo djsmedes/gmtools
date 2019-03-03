@@ -184,27 +184,45 @@
                   Properties and Actions
                 </h1>
               </v-flex>
+              <v-flex xs12 class="pa-0">
+                <v-btn flat color="save" small>
+                  <v-icon left small>add</v-icon>
+                  add a property or action
+                </v-btn>
+              </v-flex>
               <v-flex xs12 v-for="prop in creatureProps" :key="prop.uuid">
-                <v-btn
-                  :to="{
-                    name: $routeNames.CREATUREPROP,
-                    params: { uuid: prop.creature_prop },
-                  }"
-                >
-                  {{ prop.fullData.title }}
+                <v-btn @click="editCreatureProp(prop.uuid)">
+                  {{ prop.title }}
                 </v-btn>
               </v-flex>
             </v-layout>
           </v-container>
         </v-form>
+        <v-layout>
+          <v-btn
+            @click="statblock.reset()"
+            flat
+            :disabled="!statblock.changed()"
+          >
+            <v-icon left>cancel</v-icon>
+            clear changes
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn
+            @click="statblock.vuex_save($store)"
+            color="save"
+            flat
+            :disabled="!statblock.changed()"
+          >
+            <v-icon left>save</v-icon>
+            save
+          </v-btn>
+        </v-layout>
       </v-tab-item>
       <v-tab-item>
         <statblock-view :value="statblock"></statblock-view>
       </v-tab-item>
     </v-tabs-items>
-
-    <v-btn @click="statblock.vuex_save($store)">save</v-btn>
-    <v-btn @click="statblock.reset()">reset</v-btn>
   </div>
 </template>
 
@@ -219,6 +237,7 @@ import {
 } from "@/models/statblock";
 import StatblockView from "@/components/statblocks/StatblockView";
 import CalcHitDieDialog from "@/components/statblocks/CalcHitDieDialog";
+import CreaturePropDetailDialog from "@/components/statblocks/CreaturePropDetailDialog";
 import axios from "axios";
 import { generateUrl } from "@/utils/urls";
 import creatureprop from "@/models/creatureprop";
@@ -253,10 +272,8 @@ export default {
     creatureProps() {
       return [...this.p_creatureProps]
         .sort((a, b) => (a.manual_ordering || 0) - (b.manual_ordering || 0))
-        .map(item => ({
-          ...item,
-          fullData: this.getCreatureProp(item.creature_prop) || {},
-        }));
+        .map(item => this.getCreatureProp(item.creature_prop))
+        .filter(item => !!item);
     },
   },
   methods: {
@@ -273,6 +290,9 @@ export default {
         this.statblock.con = response.con || this.statblock.con;
         this.statblock.size = response.size || this.statblock.size;
       }
+    },
+    async editCreatureProp(uuid) {
+      await this.$dialog(CreaturePropDetailDialog, { uuid });
     },
   },
   async created() {
