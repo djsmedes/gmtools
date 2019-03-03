@@ -131,11 +131,15 @@ export default {
   methods: {
     async saveAndClose(saveFunc) {
       let newCreatureProp = await saveFunc();
-      let { data } = await axios.post(generateUrl(["statblockprop"]), {
-        creature_prop: newCreatureProp.uuid,
-        statblock: this.parentStatblockUuid,
-      });
-      this.close(data);
+      if (this.uuid) {
+        this.close(null);
+      } else {
+        let { data } = await axios.post(generateUrl(["statblockprop"]), {
+          creature_prop: newCreatureProp.uuid,
+          statblock: this.parentStatblockUuid,
+        });
+        this.close(data);
+      }
     },
     onAutocompleteKeyPress($event) {
       this.queryCreaturePropAutocomplete();
