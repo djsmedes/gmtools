@@ -11,23 +11,33 @@ Vue.use(Router);
 
 export const routeNames = {
   HOME: "home",
+  CAMPAIGNS: "campaigns",
+
   COMBATANTS: "combatants",
   COMBATANT: "combatant",
   COMBATANT_CREATE: "combatantCreate",
-  CAMPAIGNS: "campaigns",
+
   ENCOUNTERS: "encounters",
   ENCOUNTER: "encounter",
   ENCOUNTER_CREATE: "encounterCreate",
+
   STATBLOCKS: "statblocks",
   STATBLOCK: "statblock",
   STATBLOCK_CREATE: "statblockCreate",
+
+  CREATUREPROPS: "creatureprops",
+  CREATUREPROP: "creatureprop",
+  CREATUREPROP_CREATE: "creaturepropCreate",
+
   GMSCREENTAB: "gmScreenTab",
   GMSCREENTAB_CREATE: "gmScreenTabCreate",
+
   ACCOUNT_SETTINGS: "accountSettings",
   LOGIN: "login",
   SIGNUP: "signup",
   NOT_FOUND: "notFound",
 };
+Vue.prototype.$routeNames = routeNames;
 
 const router = new Router({
   mode: "history",
@@ -100,10 +110,10 @@ const router = new Router({
       beforeEnter: loginRequired,
     },
     // {
-    //   path: "/encounters/new/",
-    //   name: routeNames.ENCOUNTER_CREATE,
+    //   path: "/statblocks/new/",
+    //   name: routeNames.STATBLOCK_CREATE,
     //   component: () =>
-    //     import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
+    //     import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/StatblockDetail"),
     //   beforeEnter: loginRequired,
     // },
     {
@@ -111,6 +121,28 @@ const router = new Router({
       name: routeNames.STATBLOCK,
       component: () =>
         import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/StatblockDetail"),
+      beforeEnter: loginRequired,
+      props: true,
+    },
+    {
+      path: "/creatureprops/",
+      name: routeNames.CREATUREPROPS,
+      component: () =>
+        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/CreaturePropList"),
+      beforeEnter: loginRequired,
+    },
+    // {
+    //   path: "/creatureprops/new/",
+    //   name: routeNames.CREATUREPROP_CREATE,
+    //   component: () =>
+    //     import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/CreaturePropDetail"),
+    //   beforeEnter: loginRequired,
+    // },
+    {
+      path: "/creatureprops/:uuid/",
+      name: routeNames.CREATUREPROP,
+      component: () =>
+        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/CreaturePropDetail"),
       beforeEnter: loginRequired,
       props: true,
     },

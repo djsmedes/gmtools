@@ -1,17 +1,15 @@
 <template>
   <object-list
-    :detail-view-name="routeNames.COMBATANT"
-    :create-view-name="routeNames.COMBATANT_CREATE"
+    :detail-view-name="$routeNames.COMBATANT"
+    :create-view-name="$routeNames.COMBATANT_CREATE"
     :object-list="combatants"
     :headers="headers"
-  >
-  </object-list>
+  ></object-list>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
 import ObjectList from "@/components/generic/ObjectList";
-import { routeNames } from "@/router";
 import combatant from "@/models/combatant";
 
 export default {
@@ -19,13 +17,11 @@ export default {
   components: { ObjectList },
   data() {
     return {
-      routeNames,
       headers: [
         {
           text: "Name",
           align: "left",
           value: "name",
-          func: item => item.name,
         },
       ],
     };

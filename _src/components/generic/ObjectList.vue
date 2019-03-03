@@ -12,7 +12,7 @@
         :to="{ name: detailViewName, params: { uuid: props.item.uuid } }"
       >
         <td v-for="header in headers" :key="header.text">
-          {{ header.func(props.item) }}
+          {{ props.item[header.value] }}
         </td>
       </router-link>
     </v-data-table>
@@ -40,7 +40,6 @@ export default {
             text: "Name",
             align: "left",
             value: "name",
-            func: item => item.name,
           },
         ];
       },
