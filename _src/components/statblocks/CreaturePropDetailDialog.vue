@@ -134,11 +134,11 @@ export default {
       if (this.uuid) {
         this.close(null);
       } else {
-        let { data } = await axios.post(generateUrl(["statblockprop"]), {
+        await axios.post(generateUrl(["statblockprop"]), {
           creature_prop: newCreatureProp.uuid,
           statblock: this.parentStatblockUuid,
         });
-        this.close(data.creature_prop);
+        this.close(newCreatureProp);
       }
     },
     // eslint-disable-next-line
