@@ -14,7 +14,7 @@ class MultiTenantedModelSerializer(serializers.ModelSerializer):
         for field_name, field in self.fields.items():
             if isinstance(field, PrimaryKeyRelatedField):
                 self.fields[field_name] = self.gen_uuid_field(field)
-            elif field._kwargs.get('child_relation'):
+            elif isinstance(field._kwargs.get('child_relation'), PrimaryKeyRelatedField):
                 kwargs = field._kwargs
                 kwargs['child_relation'] = self.gen_uuid_field(kwargs.pop('child_relation'))
                 self.fields[field_name] = type(field)(**kwargs)
