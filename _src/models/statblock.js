@@ -2,9 +2,7 @@ import { Model } from "vue-mc/vue-mc.es";
 import { generateUrl } from "@/utils/urls";
 import { getterTypes, mutationTypes } from "@/models/_constants";
 import { MCModule } from "@/models/_baseMCModule";
-
-// todo - put this somewhere more central and import it
-const mutateEmptyStringToNull = v => (v !== "" ? v : null);
+import { mutateEmptyStringToNull } from "@/models/_baseMCModule";
 
 const modelName = "statblock";
 

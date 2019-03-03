@@ -8,6 +8,8 @@ import {
   mutationTypes,
 } from "@/models/_constants";
 
+export const mutateEmptyStringToNull = v => (v !== "" ? v : null);
+
 export function array2ObjByUUID(array) {
   return array.reduce(
     (accumulator, currentVal) => ({
