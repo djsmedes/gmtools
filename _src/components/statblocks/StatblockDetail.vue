@@ -184,6 +184,7 @@
                 </h1>
               </v-flex>
             </v-layout>
+
             <v-list subheader class="elevation-1">
               <v-list-tile
                 class="text-uppercase"
@@ -198,24 +199,30 @@
                   l => l.items.length
                 )"
               >
-                <v-divider :key="propListItem.subheader"></v-divider>
-                <v-subheader :key="propListItem.subheader">{{
-                  propListItem.subheader
-                }}</v-subheader>
-                <v-list-tile
-                  v-for="prop in propListItem.items"
-                  :key="prop.uuid"
-                  @click="editCreatureProp(prop.uuid)"
+                <v-divider :key="propListItem.subheader + '_'"></v-divider>
+                <v-subheader :key="propListItem.subheader">
+                  {{ propListItem.subheader }}
+                </v-subheader>
+                <v-list
+                  :key="'_' + propListItem.subheader"
+                  v-sortable-list
+                  @sorted="objectSortOccurred($event, propListItem.propType)"
                 >
-                  <v-list-tile-action>
-                    <v-btn icon flat color="grey" style="cursor: row-resize" @click.stop>
-                      <v-icon>drag_handle</v-icon>
-                    </v-btn>
-                  </v-list-tile-action>
-                  <v-list-tile-title>
-                    {{ prop.title }}
-                  </v-list-tile-title>
-                </v-list-tile>
+                  <v-list-tile
+                    v-for="prop in propListItem.items"
+                    :key="prop.uuid"
+                    @click.stop
+                  >
+                    <v-list-tile-action class="sortHandle">
+                      <v-icon style="cursor: row-resize" color="grey">
+                        drag_handle
+                      </v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-title @click="editCreatureProp(prop.uuid)">
+                      {{ prop.title }}
+                    </v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
               </template>
             </v-list>
           </v-container>
@@ -262,6 +269,14 @@ import CalcHitDieDialog from "@/components/statblocks/CalcHitDieDialog";
 import CreaturePropDetailDialog from "@/components/statblocks/CreaturePropDetailDialog";
 import creatureprop, { propTypes } from "@/models/creatureprop";
 import { mapGetters, mapActions } from "vuex";
+import Sortable from "sortablejs";
+
+const propType2Key = {
+  [propTypes.PROPERTY]: "properties",
+  [propTypes.ACTION]: "actions",
+  [propTypes.REACTION]: "reactions",
+  [propTypes.LEGENDARY_ACTION]: "legendary_actions",
+};
 
 export default {
   name: "StatblockDetail",
@@ -288,36 +303,27 @@ export default {
     ...mapGetters(creatureprop.namespace, {
       getCreatureProp: creatureprop.getterTypes.BY_ID,
     }),
-    creatureProps() {
-      return this.statblock.creatureprop_set
-        .map(uuid => this.getCreatureProp(uuid))
-        .filter(item => !!item);
-    },
     creaturePropListItems() {
       return [
         {
           subheader: "Properties",
-          items: this.creatureProps.filter(
-            p => p.prop_type === propTypes.PROPERTY
-          ),
+          propType: propTypes.PROPERTY,
+          items: this.uuidsToCreatureProps(this.statblock.properties),
         },
         {
           subheader: "Actions",
-          items: this.creatureProps.filter(
-            p => p.prop_type === propTypes.ACTION
-          ),
+          propType: propTypes.ACTION,
+          items: this.uuidsToCreatureProps(this.statblock.actions),
         },
         {
           subheader: "Reactions",
-          items: this.creatureProps.filter(
-            p => p.prop_type === propTypes.REACTION
-          ),
+          propType: propTypes.REACTION,
+          items: this.uuidsToCreatureProps(this.statblock.reactions),
         },
         {
           subheader: "Legendary Actions",
-          items: this.creatureProps.filter(
-            p => p.prop_type === propTypes.LEGENDARY_ACTION
-          ),
+          propType: propTypes.LEGENDARY_ACTION,
+          items: this.uuidsToCreatureProps(this.statblock.legendary_actions),
         },
       ];
     },
@@ -326,6 +332,9 @@ export default {
     ...mapActions(creatureprop.namespace, {
       loadCreatureProps: creatureprop.actionTypes.QUERY_LIST,
     }),
+    uuidsToCreatureProps(uuid_list) {
+      return uuid_list.map(uuid => this.getCreatureProp(uuid)).filter(p => !!p);
+    },
     async helpCalcHitDie() {
       let response = await this.$dialog(CalcHitDieDialog, {
         creatureSize: this.statblock.size,
@@ -338,13 +347,34 @@ export default {
       }
     },
     async editCreatureProp(uuid) {
-      let newPropUuid = await this.$dialog(CreaturePropDetailDialog, {
+      let newProp = await this.$dialog(CreaturePropDetailDialog, {
         uuid,
         parentStatblockUuid: this.uuid,
       });
-      if (newPropUuid) {
-        this.statblock.creatureprop_set.push(newPropUuid);
+      if (newProp) {
+        let key = propType2Key[newProp.prop_type];
+        this.statblock[key].push(newProp.uuid);
       }
+    },
+    objectSortOccurred({ oldIndex, newIndex }, propType) {
+      let key = propType2Key[propType];
+      const moved = this.statblock[key].splice(oldIndex, 1)[0];
+      this.statblock[key].splice(newIndex, 0, moved);
+    },
+  },
+  directives: {
+    "sortable-list": {
+      bind(el, binding, vnode) {
+        const options = {
+          handle: ".sortHandle",
+          animation: 150,
+          onUpdate: function(event) {
+            vnode.child.$emit("sorted", event);
+          },
+        };
+
+        Sortable.create(el, options);
+      },
     },
   },
   async created() {
