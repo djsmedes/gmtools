@@ -47,7 +47,7 @@
                 or
               </v-flex>
               <v-flex xs9 class="text-xs-right">
-                <v-btn flat color="save" @click="windowPosition = 1">
+                <v-btn flat color="save" @click="advanceViaCreateNew">
                   create a new creature property
                   <v-icon right>arrow_forward</v-icon>
                 </v-btn>
@@ -129,6 +129,10 @@ export default {
     },
   },
   methods: {
+    advanceViaCreateNew() {
+      this.existing = null;
+      this.windowPosition = 1;
+    },
     async saveAndClose(saveFunc) {
       let newCreatureProp = await saveFunc();
       if (this.uuid) {
@@ -141,6 +145,7 @@ export default {
         this.close(data);
       }
     },
+    // eslint-disable-next-line
     onAutocompleteKeyPress($event) {
       this.queryCreaturePropAutocomplete();
     },
