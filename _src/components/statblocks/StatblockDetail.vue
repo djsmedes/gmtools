@@ -178,6 +178,22 @@
                   v-model="statblock.proficiency"
                 ></v-text-field>
               </v-flex>
+
+              <v-flex xs12>
+                <h1 class="headline">
+                  Properties and Actions
+                </h1>
+              </v-flex>
+              <v-flex xs12 v-for="prop in creatureProps" :key="prop.uuid">
+                <v-btn
+                  :to="{
+                    name: $routeNames.CREATUREPROP,
+                    params: { uuid: prop.creature_prop },
+                  }"
+                >
+                  {{ prop.fullData.title }}
+                </v-btn>
+              </v-flex>
             </v-layout>
           </v-container>
         </v-form>
@@ -203,6 +219,10 @@ import {
 } from "@/models/statblock";
 import StatblockView from "@/components/statblocks/StatblockView";
 import CalcHitDieDialog from "@/components/statblocks/CalcHitDieDialog";
+import axios from "axios";
+import { generateUrl } from "@/utils/urls";
+import creatureprop from "@/models/creatureprop";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "StatblockDetail",
@@ -223,9 +243,26 @@ export default {
       whichTab: 0,
       formValid: false,
       statblock: new Statblock({ uuid: this.uuid }),
+      p_creatureProps: [],
     };
   },
+  computed: {
+    ...mapGetters(creatureprop.namespace, {
+      getCreatureProp: creatureprop.getterTypes.BY_ID,
+    }),
+    creatureProps() {
+      return [...this.p_creatureProps]
+        .sort((a, b) => (a.manual_ordering || 0) - (b.manual_ordering || 0))
+        .map(item => ({
+          ...item,
+          fullData: this.getCreatureProp(item.creature_prop) || {},
+        }));
+    },
+  },
   methods: {
+    ...mapActions(creatureprop.namespace, {
+      loadCreatureProps: creatureprop.actionTypes.QUERY_LIST,
+    }),
     async helpCalcHitDie() {
       let response = await this.$dialog(CalcHitDieDialog, {
         creatureSize: this.statblock.size,
@@ -241,6 +278,14 @@ export default {
   async created() {
     if (this.uuid) {
       this.statblock.vuex_fetch(this.$store);
+      axios
+        .get(generateUrl(["statblockprop"]), {
+          params: {
+            statblock: this.uuid,
+          },
+        })
+        .then(response => (this.p_creatureProps = response.data));
+      this.loadCreatureProps({ statblock: this.uuid });
     }
   },
 };

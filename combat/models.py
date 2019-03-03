@@ -134,6 +134,12 @@ class Statblock(CampaignOwnedModel):
 class CreatureProp(CampaignOwnedModel):
     ABILITY_SCORE_CHOICES = [(x, x) for x in ['str', 'dex', 'con', 'int', 'wis', 'cha']]
 
+    statblock_set = models.ManyToManyField(
+        'combat.Statblock',
+        through='combat.StatblockProp',
+        blank=True,
+    )
+
     title = models.TextField()
     description = models.TextField(null=True, blank=True)
     save_dc_override = models.PositiveSmallIntegerField(null=True, blank=True)
