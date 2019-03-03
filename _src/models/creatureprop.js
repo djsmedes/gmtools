@@ -6,7 +6,7 @@ import { mutateEmptyStringToNull } from "@/models/_baseMCModule";
 
 const modelName = "creatureprop";
 
-const propTypes = {
+export const propTypes = {
   PROPERTY: 1,
   ACTION: 2,
   LEGENDARY_ACTION: 3,

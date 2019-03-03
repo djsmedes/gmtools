@@ -47,7 +47,7 @@
                 or
               </v-flex>
               <v-flex xs9 class="text-xs-right">
-                <v-btn flat color="save" @click="advanceViaCreateNew">
+                <v-btn flat color="save" @click="windowPosition = 1" :disabled="!!existing">
                   create a new creature property
                   <v-icon right>arrow_forward</v-icon>
                 </v-btn>
@@ -129,10 +129,6 @@ export default {
     },
   },
   methods: {
-    advanceViaCreateNew() {
-      this.existing = null;
-      this.windowPosition = 1;
-    },
     async saveAndClose(saveFunc) {
       let newCreatureProp = await saveFunc();
       if (this.uuid) {

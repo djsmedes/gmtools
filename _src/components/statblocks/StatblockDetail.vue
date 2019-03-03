@@ -178,24 +178,46 @@
                   v-model="statblock.proficiency"
                 ></v-text-field>
               </v-flex>
-
               <v-flex xs12>
                 <h1 class="headline">
                   Properties and Actions
                 </h1>
               </v-flex>
-              <v-flex xs12 class="pa-0">
-                <v-btn flat color="save" small @click="editCreatureProp(null)">
-                  <v-icon left small>add</v-icon>
-                  add a property or action
-                </v-btn>
-              </v-flex>
-              <v-flex xs12 v-for="prop in creatureProps" :key="prop.uuid">
-                <v-btn @click="editCreatureProp(prop.uuid)">
-                  {{ prop.title }}
-                </v-btn>
-              </v-flex>
             </v-layout>
+            <v-list subheader class="elevation-1">
+              <v-list-tile
+                class="text-uppercase"
+                color="save"
+                @click="editCreatureProp(null)"
+              >
+                <v-icon left color="save">add</v-icon>
+                add a property or action
+              </v-list-tile>
+              <template
+                v-for="propListItem in creaturePropListItems.filter(
+                  l => l.items.length
+                )"
+              >
+                <v-divider :key="propListItem.subheader"></v-divider>
+                <v-subheader :key="propListItem.subheader">{{
+                  propListItem.subheader
+                }}</v-subheader>
+                <v-list-tile
+                  v-for="prop in propListItem.items"
+                  :key="prop.uuid"
+                  @click="editCreatureProp(prop.uuid)"
+                >
+                  <v-list-tile-action>
+                    <v-btn icon flat color="grey" style="cursor: row-resize" @click.stop>
+                      <v-icon>drag_handle</v-icon>
+                    </v-btn>
+                  </v-list-tile-action>
+                  <v-list-tile-title>
+                    {{ prop.title }}
+                  </v-list-tile-title>
+                </v-list-tile>
+              </template>
+            </v-list>
           </v-container>
         </v-form>
         <v-layout>
@@ -238,7 +260,7 @@ import {
 import StatblockView from "@/components/statblocks/StatblockView";
 import CalcHitDieDialog from "@/components/statblocks/CalcHitDieDialog";
 import CreaturePropDetailDialog from "@/components/statblocks/CreaturePropDetailDialog";
-import creatureprop from "@/models/creatureprop";
+import creatureprop, { propTypes } from "@/models/creatureprop";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
@@ -270,6 +292,34 @@ export default {
       return this.statblock.creatureprop_set
         .map(uuid => this.getCreatureProp(uuid))
         .filter(item => !!item);
+    },
+    creaturePropListItems() {
+      return [
+        {
+          subheader: "Properties",
+          items: this.creatureProps.filter(
+            p => p.prop_type === propTypes.PROPERTY
+          ),
+        },
+        {
+          subheader: "Actions",
+          items: this.creatureProps.filter(
+            p => p.prop_type === propTypes.ACTION
+          ),
+        },
+        {
+          subheader: "Reactions",
+          items: this.creatureProps.filter(
+            p => p.prop_type === propTypes.REACTION
+          ),
+        },
+        {
+          subheader: "Legendary Actions",
+          items: this.creatureProps.filter(
+            p => p.prop_type === propTypes.LEGENDARY_ACTION
+          ),
+        },
+      ];
     },
   },
   methods: {
