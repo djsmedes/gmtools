@@ -1,5 +1,7 @@
-from core.viewsets import CampaignModelViewSet, UserOwnedModelViewSet, ParamFilterKwargHelper
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
+from core.viewsets import CampaignModelViewSet, UserOwnedModelViewSet, ParamFilterKwargHelper
 from .models import Combatant, GMScreenTab, Statblock, CreatureProp, StatblockProp
 from .serializers import (
     CombatantSerializer,
@@ -35,6 +37,16 @@ class CreaturePropViewSet(CampaignModelViewSet):
             validity_checker=lambda x: type(x) == str and len(x) == 22,
         )
     }
+
+    @action(methods=['get'], detail=False)
+    def autocomplete(self, request):
+        match_str: str = request.query_params.get('match')
+
+        response_data = [
+            {"text": cprop.title, "value": cprop.uuid}
+            for cprop in CreatureProp.objects.of_requester(request).filter(title__istartswith=match_str)
+        ]
+        return Response(response_data)
 
 
 class StatblockPropViewSet(CampaignModelViewSet):
