@@ -41,7 +41,7 @@ const attackTypeDisplay = Object.keys(attackTypes).reduce(
     return {
       ...memo,
       [attackTypes[curAttackType]]: String(curAttackType)
-        .replace("_", " ")
+        .replace(/_/g, " ")
         .toLowerCase(),
     };
   },

@@ -10,18 +10,19 @@
       <v-toolbar-title>Editing Creature Property</v-toolbar-title>
     </v-toolbar>
     <v-card tile>
-      <creature-prop-detail :uuid="uuid"></creature-prop-detail>
-      <v-card-actions>
-        <v-btn flat @click="close(false)">
-          <v-icon left>cancel</v-icon>
-          cancel
-        </v-btn>
-        <v-spacer></v-spacer>
-        <v-btn flat @click="close(returnValue)" color="save">
-          <v-icon left>save</v-icon>
-          save & close
-        </v-btn>
-      </v-card-actions>
+      <creature-prop-detail :uuid="uuid">
+        <template #actions="{ saveFunc }">
+          <v-btn flat @click="close(false)">
+            <v-icon left>cancel</v-icon>
+            cancel
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn flat @click="saveAndClose(saveFunc)" color="save">
+            <v-icon left>save</v-icon>
+            save & close
+          </v-btn>
+        </template>
+      </creature-prop-detail>
     </v-card>
   </v-dialog>
 </template>
@@ -54,6 +55,12 @@ export default {
         case "xl":
           return "800px";
       }
+    },
+  },
+  methods: {
+    async saveAndClose(saveFunc) {
+      await saveFunc();
+      this.close(true);
     },
   },
 };

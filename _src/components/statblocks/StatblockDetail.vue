@@ -185,7 +185,7 @@
                 </h1>
               </v-flex>
               <v-flex xs12 class="pa-0">
-                <v-btn flat color="save" small>
+                <v-btn flat color="save" small @click="editCreatureProp(null)">
                   <v-icon left small>add</v-icon>
                   add a property or action
                 </v-btn>
