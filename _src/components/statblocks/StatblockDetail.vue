@@ -292,7 +292,13 @@ export default {
       }
     },
     async editCreatureProp(uuid) {
-      await this.$dialog(CreaturePropDetailDialog, { uuid });
+      let newProp = await this.$dialog(CreaturePropDetailDialog, {
+        uuid,
+        parentStatblockUuid: this.uuid,
+      });
+      if (newProp) {
+        this.p_creatureProps.push(newProp);
+      }
     },
   },
   async created() {

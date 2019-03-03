@@ -137,12 +137,14 @@ export class CreatureProp extends Model {
       store.commit(modelName + "/" + mutationTypes.SET, {
         object: response.data,
       });
+      return response.data;
     } else {
       Object.keys(cached).reduce((_, key) => {
         this.set(key, cached[key]);
       });
       // must also apply this new active state to the saved state
       this.sync();
+      return cached;
     }
   }
 
@@ -151,6 +153,7 @@ export class CreatureProp extends Model {
     store.commit(modelName + "/" + mutationTypes.SET, {
       object: response.data,
     });
+    return response.data;
   }
 
   async vuex_delete(store) {

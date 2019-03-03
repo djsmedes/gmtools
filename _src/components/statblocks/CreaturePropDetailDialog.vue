@@ -30,6 +30,8 @@
 <script>
 import functionalDialogMixin from "@/mixins/functionalDialog";
 import CreaturePropDetail from "@/components/statblocks/CreaturePropDetail";
+import axios from "axios";
+import { generateUrl } from "@/utils/urls";
 
 export default {
   name: "CreaturePropDetailDialog",
@@ -39,6 +41,10 @@ export default {
     uuid: {
       type: String,
       default: null,
+    },
+    parentStatblockUuid: {
+      type: String,
+      required: true,
     },
   },
   computed: {
@@ -59,8 +65,12 @@ export default {
   },
   methods: {
     async saveAndClose(saveFunc) {
-      await saveFunc();
-      this.close(true);
+      let newCreatureProp = await saveFunc();
+      let { data } = await axios.post(generateUrl(["statblockprop"]), {
+        creature_prop: newCreatureProp.uuid,
+        statblock: this.parentStatblockUuid,
+      });
+      this.close(data);
     },
   },
 };
