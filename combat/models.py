@@ -126,3 +126,70 @@ class Statblock(CampaignOwnedModel):
     @generic_name.setter
     def generic_name(self, value):
         self._generic_name = value
+
+
+class CreatureProp(CampaignOwnedModel):
+    ABILITY_SCORE_CHOICES = [(x, x) for x in ['str', 'dex', 'con', 'int', 'wis', 'cha']]
+
+    title = models.TextField()
+    description = models.TextField(null=True, blank=True)
+    save_dc_override = models.PositiveSmallIntegerField(null=True, blank=True)
+    save_source_ability = models.CharField(max_length=3, choices=ABILITY_SCORE_CHOICES, null=True, blank=True)
+    save_ability = models.CharField(max_length=3, choices=ABILITY_SCORE_CHOICES, null=True, blank=True)
+
+    PROPERTY = 1
+    ACTION = 2
+    LEGENDARY_ACTION = 3
+    REACTION = 4
+    PROP_TYPE_CHOICES = [
+        (PROPERTY, 'creature property'),
+        (ACTION, 'action'),
+        (LEGENDARY_ACTION, 'legendary action'),
+        (REACTION, 'reaction'),
+    ]
+
+    prop_type = models.PositiveSmallIntegerField(choices=PROP_TYPE_CHOICES, default=ACTION, blank=True)
+
+    # attack fields (should all allow null since many props won't use them) #
+    MELEE_WEAPON_ATTACK = 1
+    RANGED_WEAPON_ATTACK = 2
+    MELEE_SPELL_ATTACK = 3
+    RANGED_SPELL_ATTACK = 4
+    ATTACK_TYPE_CHOICES = [
+        (MELEE_WEAPON_ATTACK, 'melee weapon attack'),
+        (RANGED_WEAPON_ATTACK, 'ranged weapon attack'),
+        (MELEE_SPELL_ATTACK, 'melee spell attack'),
+        (RANGED_SPELL_ATTACK, 'ranged spell attack'),
+    ]
+
+    attack_type = models.PositiveSmallIntegerField(choices=ATTACK_TYPE_CHOICES, null=True, blank=True)
+    uses_ability_mod = models.CharField(
+        max_length=3,
+        choices=ABILITY_SCORE_CHOICES,
+        null=True, blank=True
+    )
+    tohit_bonus_override = models.PositiveSmallIntegerField(null=True, blank=True)
+    reach_range = models.PositiveSmallIntegerField(null=True, blank=True)
+    range_second = models.PositiveSmallIntegerField(null=True, blank=True)
+    num_targets = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    hit_num_damage_dice = models.PositiveSmallIntegerField(null=True, blank=True)
+    hit_die_size = models.PositiveSmallIntegerField(null=True, blank=True)
+    hit_damage_type = models.TextField(null=True, blank=True)
+
+    hit_extra_damage_dice = models.PositiveSmallIntegerField(null=True, blank=True)
+    hit_extra_damage_die_size = models.PositiveSmallIntegerField(null=True, blank=True)
+    hit_extra_damage_type = models.TextField(null=True, blank=True)
+    # end attack fields #
+
+
+class StatblockProp(CampaignOwnedModel):
+    creature_prop = models.ForeignKey(
+        'combat.CreatureProp',
+        on_delete=models.CASCADE
+    )
+    statblock = models.ForeignKey(
+        'combat.Statblock',
+        on_delete=models.CASCADE
+    )
+    manual_ordering = models.SmallIntegerField(null=True, blank=True)
