@@ -36,7 +36,7 @@ const attackTypes = {
   RANGED_SPELL_ATTACK: 4,
 };
 
-const attackTypeDisplay = Object.keys(attackTypes).reduce(
+export const attackTypeDisplay = Object.keys(attackTypes).reduce(
   (memo, curAttackType) => {
     return {
       ...memo,

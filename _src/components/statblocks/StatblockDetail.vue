@@ -249,7 +249,13 @@
         </v-layout>
       </v-tab-item>
       <v-tab-item>
-        <statblock-view :value="statblock"></statblock-view>
+        <statblock-view
+          :creature="statblock"
+          :properties="statblockProperties"
+          :actions="statblockActions"
+          :reactions="statblockReactions"
+          :legendary_actions="statblockLegendaryActions"
+        ></statblock-view>
       </v-tab-item>
     </v-tabs-items>
   </div>
@@ -303,27 +309,39 @@ export default {
     ...mapGetters(creatureprop.namespace, {
       getCreatureProp: creatureprop.getterTypes.BY_ID,
     }),
+    statblockProperties() {
+      return this.uuidsToCreatureProps(this.statblock.properties);
+    },
+    statblockActions() {
+      return this.uuidsToCreatureProps(this.statblock.actions);
+    },
+    statblockReactions() {
+      return this.uuidsToCreatureProps(this.statblock.reactions);
+    },
+    statblockLegendaryActions() {
+      return this.uuidsToCreatureProps(this.statblock.legendary_actions);
+    },
     creaturePropListItems() {
       return [
         {
           subheader: "Properties",
           propType: propTypes.PROPERTY,
-          items: this.uuidsToCreatureProps(this.statblock.properties),
+          items: this.statblockProperties,
         },
         {
           subheader: "Actions",
           propType: propTypes.ACTION,
-          items: this.uuidsToCreatureProps(this.statblock.actions),
+          items: this.statblockActions,
         },
         {
           subheader: "Reactions",
           propType: propTypes.REACTION,
-          items: this.uuidsToCreatureProps(this.statblock.reactions),
+          items: this.statblockReactions,
         },
         {
           subheader: "Legendary Actions",
           propType: propTypes.LEGENDARY_ACTION,
-          items: this.uuidsToCreatureProps(this.statblock.legendary_actions),
+          items: this.statblockLegendaryActions,
         },
       ];
     },
@@ -363,7 +381,7 @@ export default {
     },
   },
   directives: {
-    "sortable-list": {
+    sortableList: {
       bind(el, binding, vnode) {
         const options = {
           handle: ".sortHandle",
