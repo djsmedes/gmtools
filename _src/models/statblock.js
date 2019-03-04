@@ -3,6 +3,7 @@ import { generateUrl } from "@/utils/urls";
 import { getterTypes, mutationTypes } from "@/models/_constants";
 import { MCModule } from "@/models/_baseMCModule";
 import { mutateEmptyStringToNull } from "@/models/_baseMCModule";
+import { average_roll } from "@/utils/dice";
 
 const modelName = "statblock";
 
@@ -72,10 +73,6 @@ export const alignmentChoices = Object.keys(alignmentDisplay).map(key => ({
     alignmentDisplay[key].charAt(0).toUpperCase() +
     alignmentDisplay[key].slice(1),
 }));
-
-const expectedValue = (die_size, num = 1) => {
-  return Math.floor((num * (die_size + 1)) / 2);
-};
 
 export const calculateModifier = score => Math.floor(((score || 0) - 10) / 2);
 
@@ -153,8 +150,11 @@ export class Statblock extends Model {
   }
   get avg_hp() {
     return Math.max(
-      expectedValue(this.hit_die_size, this.num_hit_die) +
-        this.num_hit_die * this.con_mod,
+      average_roll(
+        this.hit_die_size,
+        this.num_hit_die,
+        this.num_hit_die * this.con_mod
+      ),
       1
     );
   }
