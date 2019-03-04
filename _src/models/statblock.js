@@ -6,6 +6,23 @@ import { mutateEmptyStringToNull } from "@/models/_baseMCModule";
 
 const modelName = "statblock";
 
+const abilityScore2Fullname = {
+  str: "Strength",
+  dex: "Dexterity",
+  con: "Constitution",
+  int: "Intelligence",
+  wis: "Wisdom",
+  cha: "Charisma",
+};
+
+export const abilityScores = Object.keys(abilityScore2Fullname);
+
+export const abilityScoreChoices = Object.keys(abilityScore2Fullname).map(
+  key => ({ value: key, text: abilityScore2Fullname[key] })
+);
+
+export const abilityScoreDisplay = abbr => abilityScore2Fullname[abbr] || "";
+
 const size = {
   TINY: 1,
   SMALL: 2,

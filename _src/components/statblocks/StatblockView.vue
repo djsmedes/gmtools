@@ -18,12 +18,12 @@
     <v-flex>
       <v-layout>
         <v-flex
-          v-for="abl in ['str', 'dex', 'con', 'int', 'wis', 'cha']"
+          v-for="abl in abilityScores"
           :key="abl"
           xs2
           class="text-xs-center"
         >
-          <strong class="text-capitalize">{{ abl }}</strong>
+          <strong class="text-uppercase">{{ abl }}</strong>
           <br />
           {{ creature[abl] }} ({{
             creature[abl + "_mod"] >= 0
@@ -132,7 +132,11 @@
 </template>
 
 <script>
-import { Statblock } from "@/models/statblock";
+import { Statblock, abilityScores } from "@/models/statblock";
+
+function generateSavingThrowText(creature, property) {
+
+}
 
 export default {
   name: "StatblockView",
@@ -157,6 +161,11 @@ export default {
       type: Array,
       default: () => [],
     },
+  },
+  data() {
+    return {
+      abilityScores,
+    };
   },
   computed: {
     hit_point_string() {
