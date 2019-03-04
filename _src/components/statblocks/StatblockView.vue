@@ -102,6 +102,11 @@
       <v-flex>
         <p v-for="prop in actions" :key="prop.uuid">
           <strong>{{ prop.title }}.</strong>
+          <attack-template
+            v-if="prop.attack_type"
+            :creature="creature"
+            v-bind="prop"
+          ></attack-template>
           {{ prop.description | renderSpecifics(creature, prop) }}
         </p>
       </v-flex>
@@ -137,6 +142,7 @@ import {
   abilityScores,
   abilityScoreDisplay,
 } from "@/models/statblock";
+import AttackTemplate from "@/components/statblocks/AttackTemplate";
 
 function generateSavingThrowText(creature, property) {
   let dc =
@@ -154,6 +160,7 @@ function generateSavingThrowText(creature, property) {
 
 export default {
   name: "StatblockView",
+  components: { AttackTemplate },
   props: {
     creature: {
       type: Statblock,
