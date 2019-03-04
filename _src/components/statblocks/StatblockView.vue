@@ -132,10 +132,24 @@
 </template>
 
 <script>
-import { Statblock, abilityScores } from "@/models/statblock";
+import {
+  Statblock,
+  abilityScores,
+  abilityScoreDisplay,
+} from "@/models/statblock";
 
 function generateSavingThrowText(creature, property) {
+  let dc =
+    property.save_dc_override ||
+    8 + creature.proficiency + creature[property.save_source_ability + "_mod"];
 
+  return (
+    "DC " +
+    dc +
+    " " +
+    abilityScoreDisplay(property.save_ability) +
+    " saving throw"
+  );
 }
 
 export default {
@@ -195,16 +209,13 @@ export default {
       value = value.toString();
       return value.charAt(0).toUpperCase() + value.slice(1);
     },
-    renderSpecifics(value, creature, property = null) {
+    renderSpecifics(value, creature, property) {
       if (!value) return "";
       value = value.replace(/{creature}/g, creature.generic_name);
-      property = property || {};
-      if (property.save_dc_override) {
-        value = value.replace(/{dc}/g, property.save_dc_override);
-      }
-      if (property.save_ability) {
-        value = value.replace(/{ability}/g, property.save_ability);
-      }
+      value = value.replace(
+        /{saving throw}/g,
+        generateSavingThrowText(creature, property)
+      );
       return value;
     },
   },

@@ -162,6 +162,7 @@
         name="actions"
         :resetFunc="creatureprop.reset"
         :saveFunc="async () => creatureprop.vuex_save($store)"
+        :changedFunc="creatureprop.changed"
       >
         <v-btn
           flat

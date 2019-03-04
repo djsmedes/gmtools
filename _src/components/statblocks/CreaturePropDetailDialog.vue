@@ -47,7 +47,12 @@
                 or
               </v-flex>
               <v-flex xs9 class="text-xs-right">
-                <v-btn flat color="save" @click="windowPosition = 1" :disabled="!!existing">
+                <v-btn
+                  flat
+                  color="save"
+                  @click="windowPosition = 1"
+                  :disabled="!!existing"
+                >
                   create a new creature property
                   <v-icon right>arrow_forward</v-icon>
                 </v-btn>
@@ -60,13 +65,18 @@
             :uuid="selectedUuid"
             v-if="windowPosition === 1"
           >
-            <template #actions="{ saveFunc }">
+            <template #actions="{ saveFunc, changedFunc }">
               <v-btn flat @click="close(false)">
                 <v-icon left>cancel</v-icon>
-                cancel
+                cancel & close
               </v-btn>
               <v-spacer></v-spacer>
-              <v-btn flat @click="saveAndClose(saveFunc)" color="save">
+              <v-btn
+                flat
+                @click="saveAndClose(saveFunc)"
+                color="save"
+                :disabled="!changedFunc()"
+              >
                 <v-icon left>save</v-icon>
                 save & close
               </v-btn>
