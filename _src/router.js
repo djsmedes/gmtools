@@ -67,8 +67,9 @@ const router = new Router({
       path: "/combatants/:uuid/",
       name: routeNames.COMBATANT,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "@/components/encounters/CombatantDetail"),
+        import(/* webpackChunkName: "combatants" */ "@/components/encounters/CombatantDetailMC"),
       beforeEnter: loginRequired,
+      props: true,
     },
 
     {

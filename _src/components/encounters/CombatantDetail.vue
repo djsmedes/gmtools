@@ -36,6 +36,21 @@
           label="Loot"
           v-model="localCombatant.loot"
         ></v-textarea>
+        <v-autocomplete
+          label="Statblock"
+          hint="Start typing to search your saved statblocks"
+
+          hide-no-data
+          append-icon=""
+          :search-input.sync="statblockSearch"
+          :items="statblockAutocompleteMatches"
+          :loading="statblockAutocompleteLoading"
+          @keypress="onStatblockAutocompleteKeyPress"
+          @keyup.backspace="queryStatblockAutocomplete()"
+          @keyup.delete="queryStatblockAutocomplete()"
+          @paste.native="queryStatblockAutocomplete()"
+          clearable
+        ></v-autocomplete>
       </v-form>
     </v-card-text>
   </object-detail>
@@ -46,6 +61,10 @@ import ObjectDetail from "@/components/generic/ObjectDetail";
 import { mapGetters, mapActions } from "vuex";
 import combatant, { Combatant } from "@/models/combatant";
 import { routeNames } from "@/router";
+import debounce from "lodash/debounce";
+import { sleep } from "@/utils/time";
+import { generateUrl } from "@/utils/urls";
+import axios from "axios";
 
 export default {
   name: "CombatantDetail",
@@ -75,6 +94,9 @@ export default {
   data() {
     return {
       localCombatant: new Combatant(),
+      statblockSearch: "",
+      statblockAutocompleteMatches: [],
+      statblockAutocompleteLoading: false,
     };
   },
   computed: {
@@ -119,6 +141,30 @@ export default {
     reset() {
       this.localCombatant = new Combatant(this.combatant);
     },
+    // eslint-disable-next-line
+    onStatblockAutocompleteKeyPress($event) {
+      this.queryStatblockAutocomplete();
+    },
+    queryStatblockAutocomplete: debounce(async function() {
+      let match = (this.statblockSearch || "").trim();
+      if (match.length < 2) {
+        return;
+      }
+      this.statblockAutocompleteLoading = true;
+      try {
+        let result = await Promise.race([
+          axios.get(generateUrl(["statblock", "autocomplete"]), {
+            params: {
+              match,
+            },
+          }),
+          sleep(5000),
+        ]);
+        this.statblockAutocompleteMatches = result ? result.data : [];
+      } finally {
+        this.statblockAutocompleteLoading = false;
+      }
+    }, 300),
   },
   created() {
     this.loadCombatants();
