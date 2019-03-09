@@ -26,6 +26,16 @@ class StatblockViewSet(CampaignModelViewSet):
     model = Statblock
     serializer_class = StatblockSerializer
 
+    @action(methods=['get'], detail=False)
+    def autocomplete(self, request):
+        match_str: str = request.query_params.get('match', '')
+
+        response_data = [
+            {"text": sblock.name, "value": sblock.uuid}
+            for sblock in Statblock.objects.of_requester(request).filter(name__icontains=match_str)
+        ]
+        return Response(response_data)
+
 
 class CreaturePropViewSet(CampaignModelViewSet):
     model = CreatureProp

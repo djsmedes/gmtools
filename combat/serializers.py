@@ -1,20 +1,28 @@
 from rest_framework import serializers
 
-from core.serializers import CampaignModelSerializer, UserOwnedModelSerializer, ClientControlledJSONField
+from core.serializers import (
+    CampaignModelSerializer,
+    UserOwnedModelSerializer,
+    ClientControlledJSONField,
+)
 from .models import Combatant, GMScreenTab, Statblock, StatblockProp, CreatureProp
 
 
 class CombatantSerializer(CampaignModelSerializer):
     view_name = 'combatant-detail'
-    effects = ClientControlledJSONField(allow_null=True, required=False)
+    buffs = ClientControlledJSONField(allow_null=True, required=False)
+    debuffs = ClientControlledJSONField(allow_null=True, required=False)
+    others = ClientControlledJSONField(allow_null=True, required=False)
 
     class Meta:
         model = Combatant
         fields = (
             'name', 'initiative', 'initiative_bonus',
             'hp', 'max_hp', 'temp_hp',
-            'loot', 'effects',
-            'encounter', 'campaign', 'uuid'
+            'loot',
+            'buffs', 'debuffs', 'others',
+            'statblock',
+            'encounter', 'campaign', 'uuid',
         )
 
 
