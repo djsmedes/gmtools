@@ -16,7 +16,9 @@ class Combatant(CampaignOwnedModel):
     temp_hp = models.IntegerField(default=0, blank=True)
 
     loot = models.TextField(null=True, blank=True)
-    effects = models.TextField(null=True, blank=True)
+    buffs = models.TextField(null=True, blank=True)
+    debuffs = models.TextField(null=True, blank=True)
+    others = models.TextField(null=True, blank=True)
 
     encounter = models.ForeignKey(
         'plot.Encounter',
@@ -27,6 +29,12 @@ class Combatant(CampaignOwnedModel):
     player_editors = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name="editable_combatants"
+    )
+
+    statblock = models.ForeignKey(
+        'combat.Statblock',
+        on_delete=models.SET_NULL,
+        null=True
     )
 
     def __str__(self):
