@@ -91,7 +91,9 @@
 
     <v-flex v-if="properties.length">
       <p v-for="prop in properties" :key="prop.uuid">
-        <strong>{{ prop.title }}.</strong>
+        <em>
+          <strong>{{ prop.title }}.</strong>
+        </em>
         {{ prop.description | renderSpecifics(creature, prop) }}
       </p>
     </v-flex>
@@ -101,7 +103,9 @@
       <v-divider class="mb-2"></v-divider>
       <v-flex>
         <p v-for="prop in actions" :key="prop.uuid">
-          <strong>{{ prop.title }}.</strong>
+          <em>
+            <strong>{{ prop.title }}.</strong>
+          </em>
           <attack-template
             v-if="prop.attack_type"
             :creature="creature"
@@ -117,7 +121,9 @@
       <v-divider class="mb-2"></v-divider>
       <v-flex>
         <p v-for="prop in reactions" :key="prop.uuid">
-          <strong>{{ prop.title }}.</strong>
+          <em>
+            <strong>{{ prop.title }}.</strong>
+          </em>
           {{ prop.description | renderSpecifics(creature, prop) }}
         </p>
       </v-flex>
@@ -137,7 +143,9 @@
       </v-flex>
       <v-flex>
         <p v-for="prop in legendary_actions" :key="prop.uuid">
-          <strong>{{ prop.title }}.</strong>
+          <em>
+            <strong>{{ prop.title }}.</strong>
+          </em>
           {{ prop.description | renderSpecifics(creature, prop) }}
         </p>
       </v-flex>

@@ -1,6 +1,6 @@
 <template>
   <span>
-    {{ attackTypeDisplay[attack_type] | capitalize }}.
+    &nbsp;<em class="text-capitalize">{{ attackTypeDisplay[attack_type] }}:</em>
     {{ 0 > toHit ? "-" : "+" }}{{ Math.abs(toHit) }} to hit,
     <template v-if="range_second">
       range {{ reach_range }}/{{ range_second }}
