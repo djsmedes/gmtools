@@ -127,6 +127,15 @@
       <h6 class="title">Legendary Actions</h6>
       <v-divider class="mb-2"></v-divider>
       <v-flex>
+        <p>
+          The {{ creature.generic_name }} can take 3 legendary actions, choosing
+          from the options below. Only one legendary action option can be used
+          at a time and only at the end of another creature's turn. The
+          {{ creature.generic_name }} regains spent legendary actions at the
+          start of its turn.
+        </p>
+      </v-flex>
+      <v-flex>
         <p v-for="prop in legendary_actions" :key="prop.uuid">
           <strong>{{ prop.title }}.</strong>
           {{ prop.description | renderSpecifics(creature, prop) }}
