@@ -25,7 +25,7 @@
           :search-input.sync="statblockSearch"
           :items="statblockAutocompleteMatches"
           :loading="statblockAutocompleteLoading"
-          @keypress="onStatblockAutocompleteKeyPress"
+          @keypress="queryStatblockAutocomplete()"
           @keyup.backspace="queryStatblockAutocomplete()"
           @keyup.delete="queryStatblockAutocomplete()"
           @paste.native="queryStatblockAutocomplete()"
@@ -33,12 +33,36 @@
         ></v-autocomplete>
       </v-form>
     </v-card-text>
+    <v-layout>
+      <slot
+        name="actions"
+        :resetFunc="combatant.reset"
+        :saveFunc="async () => combatant.vuex_save($store)"
+        :changedFunc="combatant.changed"
+      >
+        <v-btn flat @click="combatant.reset()" :disabled="!combatant.changed()">
+          <v-icon left>cancel</v-icon>
+          clear changes
+        </v-btn>
+        <v-spacer></v-spacer>
+        <v-btn
+          flat
+          @click="combatant.vuex_save($store)"
+          color="save"
+          :disabled="!combatant.changed()"
+        >
+          <v-icon left>save</v-icon>
+          save
+        </v-btn>
+      </slot>
+    </v-layout>
   </v-card>
 </template>
 
 <script>
 import ObjectDetail from "@/components/generic/ObjectDetail";
 import { Combatant } from "@/models/combatant_mc";
+import { Statblock } from "@/models/statblock";
 import debounce from "lodash/debounce";
 import { sleep } from "@/utils/time";
 import { generateUrl } from "@/utils/urls";
@@ -58,15 +82,28 @@ export default {
       isViewMode: false,
       combatant: new Combatant({ uuid: this.uuid }),
       statblockSearch: "",
-      statblockAutocompleteMatches: [],
+      p_statblockAutocompleteMatches: [],
+      p_initialStatblock: new Statblock(),
       statblockAutocompleteLoading: false,
     };
   },
-  methods: {
-    // eslint-disable-next-line
-    onStatblockAutocompleteKeyPress($event) {
-      this.queryStatblockAutocomplete();
+  computed: {
+    statblockAutocompleteMatches: {
+      get() {
+        return Object.entries({
+          [this.p_initialStatblock.uuid]: this.p_initialStatblock.name,
+          ...this.p_statblockAutocompleteMatches,
+        }).map(([uuid, name]) => ({ value: uuid, text: name }));
+      },
+      set(val) {
+        this.p_statblockAutocompleteMatches = {
+          ...this.p_statblockAutocompleteMatches,
+          ...val,
+        };
+      },
     },
+  },
+  methods: {
     queryStatblockAutocomplete: debounce(async function() {
       let match = (this.statblockSearch || "").trim();
       if (match.length < 2) {
@@ -75,7 +112,7 @@ export default {
       this.statblockAutocompleteLoading = true;
       try {
         let result = await Promise.race([
-          axios.get(generateUrl(["statblock", "autocomplete"]), {
+          axios.get(generateUrl([Statblock.modelName, "autocomplete"]), {
             params: {
               match,
             },
@@ -88,9 +125,15 @@ export default {
       }
     }, 300),
   },
-  created() {
+  async created() {
     if (this.uuid) {
-      this.combatant.vuex_fetch(this.$store);
+      await this.combatant.vuex_fetch(this.$store);
+      if (this.combatant.statblock) {
+        this.statblockAutocompleteLoading = true;
+        this.p_initialStatblock.uuid = this.combatant.statblock;
+        await this.p_initialStatblock.vuex_fetch(this.$store);
+        this.statblockAutocompleteLoading = false;
+      }
     }
   },
 };

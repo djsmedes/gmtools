@@ -30,10 +30,10 @@ class StatblockViewSet(CampaignModelViewSet):
     def autocomplete(self, request):
         match_str: str = request.query_params.get('match', '')
 
-        response_data = [
-            {"text": sblock.name, "value": sblock.uuid}
+        response_data = {
+            str(sblock.uuid): sblock.name
             for sblock in Statblock.objects.of_requester(request).filter(name__icontains=match_str)
-        ]
+        }
         return Response(response_data)
 
 

@@ -62,5 +62,7 @@ class ClientControlledJSONField(serializers.Field):
         return json.loads(value)
 
     def to_internal_value(self, data):
-        # store empty JSON objects/lists as NULL
-        return json.dumps(data) or None
+        # store empty objects/lists as NULL
+        if not data:
+            return None
+        return json.dumps(data)
