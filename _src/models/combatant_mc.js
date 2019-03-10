@@ -36,9 +36,17 @@ export class Combatant extends VuexModel {
   }
 
   mutations() {
-    return Object.keys(this.defaults()).reduce((memo, key) => {
-      return { ...memo, [key]: mutateEmptyStringToNull };
-    }, {});
+    return Object.keys(this.defaults()).reduce(
+      (memo, key) => ({
+        ...memo,
+        [key]: [...(memo[key] || []), mutateEmptyStringToNull],
+      }),
+      {
+        buffs: [v => v || []],
+        debuffs: [v => v || []],
+        others: [v => v || []],
+      }
+    );
   }
 
   routes() {
