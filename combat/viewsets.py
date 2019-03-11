@@ -16,6 +16,13 @@ class CombatantViewSet(CampaignModelViewSet):
     model = Combatant
     serializer_class = CombatantSerializer
 
+    query_param_filters = {
+        "encounter": ParamFilterKwargHelper(
+            key="encounter__uuid__in",
+            validity_checker=lambda x: type(x) == str and len(x) == 22,
+        )
+    }
+
 
 class GMScreenTabViewSet(UserOwnedModelViewSet):
     model = GMScreenTab
