@@ -172,52 +172,7 @@
       </v-btn>
     </v-card-actions>
 
-    <v-dialog v-model="hpDialog" width="400">
-      <v-card>
-        <v-card-title class="headline grey lighten-2" primary-title>
-          {{ localCombatant.name }}
-        </v-card-title>
-        <v-form>
-          <v-container fluid>
-            <v-layout row wrap>
-              <v-flex xs4>
-                <v-text-field
-                  type="number"
-                  v-model="hpDialogHp"
-                  label="Current HP"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs4>
-                <v-text-field
-                  type="number"
-                  v-model="hpDialogMaxHp"
-                  label="Max HP"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs4>
-                <v-text-field
-                  type="number"
-                  v-model="hpDialogTempHp"
-                  label="Temp HP"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-form>
-        <v-divider></v-divider>
-        <v-card-actions>
-          <v-btn flat @click="saveHpDialog">
-            Save
-          </v-btn>
-          <v-btn flat @click="hpDialogHp = hpDialogMaxHp">
-            Full health
-          </v-btn>
-          <v-btn flat @click="closeHpDialog">
-            Cancel
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+
     <v-dialog v-model="initDialog" width="400" :persistent="!!initDialogRoll">
       <v-card>
         <v-card-title class="headline grey lighten-2" primary-title>
@@ -278,9 +233,10 @@
 import { Combatant } from "@/models/combatant";
 import { mapGetters } from "vuex";
 import auth from "@/auth";
+import CombatantHpDialog from "@/components/encounters/CombatantHPDialog";
 
 export default {
-  name: "Combatant",
+  name: "CombatantCard",
   props: {
     combatant: {
       type: Combatant,
@@ -306,10 +262,6 @@ export default {
     return {
       localCombatant: new Combatant(this.combatant),
       effectTypes: Combatant.effectTypes,
-      hpDialog: false,
-      hpDialogHp: 0,
-      hpDialogMaxHp: 0,
-      hpDialogTempHp: 0,
       initDialog: false,
       initDialogInit: 0,
       initDialogBonus: 0,
@@ -341,21 +293,19 @@ export default {
       this.localCombatant.hp += increment;
       this.updateFunc(this.localCombatant);
     },
-    openHpDialog() {
-      this.hpDialogHp = this.localCombatant.hp;
-      this.hpDialogMaxHp = this.localCombatant.max_hp;
-      this.hpDialogTempHp = this.localCombatant.temp_hp;
-      this.hpDialog = true;
-    },
-    async saveHpDialog() {
-      this.localCombatant.hp = this.hpDialogHp;
-      this.localCombatant.max_hp = this.hpDialogMaxHp;
-      this.localCombatant.temp_hp = this.hpDialogTempHp;
-      await this.updateFunc(this.localCombatant);
-      this.hpDialog = false;
-    },
-    closeHpDialog() {
-      this.hpDialog = false;
+    async openHpDialog() {
+      let returnVal = await this.$dialog(CombatantHpDialog, {
+        name: this.localCombatant.name,
+        hp: this.localCombatant.hp,
+        maxHp: this.localCombatant.max_hp,
+        tempHp: this.localCombatant.temp_hp,
+      });
+      if (returnVal) {
+        this.localCombatant.hp = returnVal.hp;
+        this.localCombatant.max_hp = returnVal.maxHp;
+        this.localCombatant.temp_hp = returnVal.tempHp;
+        await this.updateFunc(this.localCombatant);
+      }
     },
     openInitDialog() {
       this.initDialogInit = this.localCombatant.initiative;
