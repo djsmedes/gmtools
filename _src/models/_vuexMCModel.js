@@ -43,10 +43,10 @@ export class VuexModel extends Model {
   }
 
   async vuex_delete(store) {
-    let { response } = await this.delete();
-    store.commit(
-      this.constructor.modelName + "/" + mutationTypes.REMOVE,
-      response.data
-    );
+    let uuid = this.uuid;
+    await this.delete();
+    store.commit(this.constructor.modelName + "/" + mutationTypes.REMOVE, {
+      uuid,
+    });
   }
 }

@@ -104,8 +104,8 @@ export class MCModule {
             );
           }
         },
-        [this.mutationTypes.REMOVE]: (state, { objUuid }) => {
-          Vue.delete(state[this.stateKeys.OBJECTS], objUuid);
+        [this.mutationTypes.REMOVE]: (state, { uuid }) => {
+          Vue.delete(state[this.stateKeys.OBJECTS], uuid);
         },
       },
     };

@@ -4,7 +4,10 @@
       title="Combatant"
       :edit-mode.sync="editMode"
       @save="save"
+      :save-attrs="{ disabled: !combatant.changed() }"
       @cancel="cancel"
+      :delete-attrs="{ disabled: !combatant.uuid }"
+      @delete="tryDelete"
     >
       <v-form @submit.prevent>
         <v-text-field
@@ -51,6 +54,7 @@ import { sleep } from "@/utils/time";
 import { generateUrl } from "@/utils/urls";
 import axios from "axios";
 import ObjectDetailMC from "@/components/generic/ObjectDetailMC";
+import { ButtonOption } from "@/plugins/userChoiceDialog";
 
 export default {
   name: "CombatantDetail",
@@ -60,11 +64,15 @@ export default {
       type: String,
       default: null,
     },
+    extraAttrData: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {
       editMode: true,
-      combatant: new Combatant({ uuid: this.uuid }),
+      combatant: new Combatant({ uuid: this.uuid, ...this.extraAttrData }),
       statblockSearch: "",
       p_statblockAutocompleteMatches: [],
       p_initialStatblock: new Statblock(),
@@ -75,7 +83,9 @@ export default {
     statblockAutocompleteMatches: {
       get() {
         return Object.entries({
-          [this.p_initialStatblock.uuid]: this.p_initialStatblock.name,
+          ...(this.p_initialStatblock.uuid
+            ? { [this.p_initialStatblock.uuid]: this.p_initialStatblock.name }
+            : {}),
           ...this.p_statblockAutocompleteMatches,
         }).map(([uuid, name]) => ({ value: uuid, text: name }));
       },
@@ -89,12 +99,36 @@ export default {
   },
   methods: {
     async save() {
-      await this.combatant.vuex_save(this.$store);
+      this.$emit("save", await this.combatant.vuex_save(this.$store));
       this.editMode = false;
     },
     async cancel() {
       this.combatant.reset();
+      this.$emit("cancel");
       this.editMode = false;
+    },
+    async tryDelete() {
+      let reply = await this.$userChoice(
+        "Confirm delete",
+        `<p>Are you sure you want to delete ${this.combatant.name}?</p>`,
+        [
+          new ButtonOption({
+            returnVal: true,
+            text: `Yes, delete ${this.combatant.name}`,
+            attrs: { color: "delete" },
+          }),
+          new ButtonOption(),
+        ]
+      );
+      if (reply) {
+        await this.combatant.vuex_delete(this.$store);
+        // todo - this feels wrong
+        if (this.$route.name === this.$routeNames.COMBATANT) {
+          this.$router.push({ name: this.$routeNames.COMBATANTS });
+        } else {
+          this.$emit("deleted");
+        }
+      }
     },
     queryStatblockAutocomplete: debounce(async function() {
       let match = (this.statblockSearch || "").trim();

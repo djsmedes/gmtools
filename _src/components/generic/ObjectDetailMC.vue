@@ -27,12 +27,26 @@
     </v-container>
     <v-expand-transition>
       <v-layout v-if="editMode">
+        <v-btn
+          flat
+          color="delete"
+          @click="$emit('delete')"
+          v-bind="deleteAttrs"
+        >
+          <v-icon left>delete</v-icon>
+          delete
+        </v-btn>
         <v-spacer></v-spacer>
-        <v-btn flat color="save" @click="$emit('save')">
+        <v-btn flat color="save" @click="$emit('save')" v-bind="saveAttrs">
           <v-icon left>save</v-icon>
           save
         </v-btn>
-        <v-btn flat color="cancel" @click="$emit('cancel')">
+        <v-btn
+          flat
+          color="cancel"
+          @click="$emit('cancel')"
+          v-bind="cancelAttrs"
+        >
           <v-icon left>cancel</v-icon>
           cancel
         </v-btn>
@@ -51,6 +65,15 @@ export default {
     },
     title: {
       type: String,
+    },
+    deleteAttrs: {
+      type: Object,
+    },
+    saveAttrs: {
+      type: Object,
+    },
+    cancelAttrs: {
+      type: Object,
     },
   },
 };
