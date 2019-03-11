@@ -110,13 +110,13 @@ const router = new Router({
         import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/StatblockList"),
       beforeEnter: loginRequired,
     },
-    // {
-    //   path: "/statblocks/new/",
-    //   name: routeNames.STATBLOCK_CREATE,
-    //   component: () =>
-    //     import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/StatblockDetail"),
-    //   beforeEnter: loginRequired,
-    // },
+    {
+      path: "/statblocks/new/",
+      name: routeNames.STATBLOCK_CREATE,
+      component: () =>
+        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/StatblockDetail"),
+      beforeEnter: loginRequired,
+    },
     {
       path: "/statblocks/:uuid/",
       name: routeNames.STATBLOCK,

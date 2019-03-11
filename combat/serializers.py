@@ -103,6 +103,10 @@ class StatblockSerializer(CampaignModelSerializer):
                 if objs is not None:
                     self.initial_data["_" + key] = objs
 
+    def create(self, validated_data):
+        [validated_data.pop(key, None) for key in ["_properties", "_actions", "_reactions", "_legendary_actions"]]
+        return super().create(validated_data)
+
     def update(self, instance: Statblock, validated_data):
         keys_and_types = [
             ("_properties", CreatureProp.PROPERTY),

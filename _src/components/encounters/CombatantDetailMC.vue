@@ -1,16 +1,21 @@
 <template>
   <v-card>
-    <v-card-text>
+    <object-detail-m-c
+      title="Combatant"
+      :edit-mode.sync="editMode"
+      @save="save"
+      @cancel="cancel"
+    >
       <v-form @submit.prevent>
         <v-text-field
-          :disabled="isViewMode"
-          :class="{ 'disabled-means-display': isViewMode }"
+          :disabled="!editMode"
+          :class="{ 'disabled-means-display': !editMode }"
           label="Name"
           v-model="combatant.name"
         ></v-text-field>
         <v-textarea
-          :disabled="isViewMode"
-          :class="{ 'disabled-means-display': isViewMode }"
+          :disabled="!editMode"
+          :class="{ 'disabled-means-display': !editMode }"
           auto-grow
           :rows="1"
           label="Loot"
@@ -29,48 +34,27 @@
           @keyup.backspace="queryStatblockAutocomplete()"
           @keyup.delete="queryStatblockAutocomplete()"
           @paste.native="queryStatblockAutocomplete()"
-          clearable
+          :clearable="editMode"
+          :disabled="!editMode"
+          :class="{ 'disabled-means-display': !editMode }"
         ></v-autocomplete>
       </v-form>
-    </v-card-text>
-    <v-layout>
-      <slot
-        name="actions"
-        :resetFunc="combatant.reset"
-        :saveFunc="async () => combatant.vuex_save($store)"
-        :changedFunc="combatant.changed"
-      >
-        <v-btn flat @click="combatant.reset()" :disabled="!combatant.changed()">
-          <v-icon left>cancel</v-icon>
-          clear changes
-        </v-btn>
-        <v-spacer></v-spacer>
-        <v-btn
-          flat
-          @click="combatant.vuex_save($store)"
-          color="save"
-          :disabled="!combatant.changed()"
-        >
-          <v-icon left>save</v-icon>
-          save
-        </v-btn>
-      </slot>
-    </v-layout>
+    </object-detail-m-c>
   </v-card>
 </template>
 
 <script>
-import ObjectDetail from "@/components/generic/ObjectDetail";
 import { Combatant } from "@/models/combatant_mc";
 import { Statblock } from "@/models/statblock";
 import debounce from "lodash/debounce";
 import { sleep } from "@/utils/time";
 import { generateUrl } from "@/utils/urls";
 import axios from "axios";
+import ObjectDetailMC from "@/components/generic/ObjectDetailMC";
 
 export default {
   name: "CombatantDetail",
-  components: { ObjectDetail },
+  components: { ObjectDetailMC },
   props: {
     uuid: {
       type: String,
@@ -79,7 +63,7 @@ export default {
   },
   data() {
     return {
-      isViewMode: false,
+      editMode: true,
       combatant: new Combatant({ uuid: this.uuid }),
       statblockSearch: "",
       p_statblockAutocompleteMatches: [],
@@ -104,6 +88,14 @@ export default {
     },
   },
   methods: {
+    async save() {
+      await this.combatant.vuex_save(this.$store);
+      this.editMode = false;
+    },
+    async cancel() {
+      this.combatant.reset();
+      this.editMode = false;
+    },
     queryStatblockAutocomplete: debounce(async function() {
       let match = (this.statblockSearch || "").trim();
       if (match.length < 2) {
