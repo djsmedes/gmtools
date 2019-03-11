@@ -18,7 +18,7 @@
 
 <script>
 import functionalDialogMixin from "@/mixins/functionalDialog";
-import CombatantDetail from "@/components/encounters/CombatantDetailMC";
+import CombatantDetail from "@/components/encounters/CombatantDetail";
 
 export default {
   name: "CombatantDetailDialog",

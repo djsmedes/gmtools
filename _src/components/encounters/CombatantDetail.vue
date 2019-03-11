@@ -1,149 +1,134 @@
 <template>
-  <object-detail
-    :name="combatant.name || 'New Combatant'"
-    :start-editing="startEditing || (!$route.params.uuid && !combatantUuid)"
-    :save-func="
-      saveFunc ? () => saveFunc(localCombatant) : combatant.uuid ? save : create
-    "
-    :clear-func="
-      cancelFunc
-        ? () => cancelFunc(localCombatant)
-        : combatant.uuid
-        ? reset
-        : () => $router.go(-1)
-    "
-    :delete-func="
-      deleteFunc
-        ? () => deleteFunc(localCombatant)
-        : combatant.uuid
-        ? deleteSelf
-        : null
-    "
-  >
-    <v-card-text slot-scope="{ isViewMode }">
+  <v-card>
+    <object-detail-m-c
+      title="Combatant"
+      :edit-mode.sync="editMode"
+      @save="save"
+      :save-attrs="{ disabled: !combatant.changed() }"
+      @cancel="cancel"
+      :delete-attrs="{ disabled: !combatant.uuid }"
+      @delete="tryDelete"
+    >
       <v-form @submit.prevent>
         <v-text-field
-          :disabled="isViewMode"
-          :class="{ 'disabled-means-display': isViewMode }"
+          :disabled="!editMode"
+          :class="{ 'disabled-means-display': !editMode }"
           label="Name"
-          v-model="localCombatant.name"
+          v-model="combatant.name"
         ></v-text-field>
         <v-textarea
-          :disabled="isViewMode"
-          :class="{ 'disabled-means-display': isViewMode }"
+          :disabled="!editMode"
+          :class="{ 'disabled-means-display': !editMode }"
           auto-grow
           :rows="1"
           label="Loot"
-          v-model="localCombatant.loot"
+          v-model="combatant.loot"
         ></v-textarea>
         <v-autocomplete
           label="Statblock"
           hint="Start typing to search your saved statblocks"
-
+          v-model="combatant.statblock"
           hide-no-data
           append-icon=""
           :search-input.sync="statblockSearch"
           :items="statblockAutocompleteMatches"
           :loading="statblockAutocompleteLoading"
-          @keypress="onStatblockAutocompleteKeyPress"
+          @keypress="queryStatblockAutocomplete()"
           @keyup.backspace="queryStatblockAutocomplete()"
           @keyup.delete="queryStatblockAutocomplete()"
           @paste.native="queryStatblockAutocomplete()"
-          clearable
+          :clearable="editMode"
+          :disabled="!editMode"
+          :class="{ 'disabled-means-display': !editMode }"
         ></v-autocomplete>
       </v-form>
-    </v-card-text>
-  </object-detail>
+    </object-detail-m-c>
+  </v-card>
 </template>
 
 <script>
-import ObjectDetail from "@/components/generic/ObjectDetail";
-import { mapGetters, mapActions } from "vuex";
-import combatant, { Combatant } from "@/models/combatant";
-import { routeNames } from "@/router";
+import { Combatant } from "@/models/combatant_mc";
+import { Statblock } from "@/models/statblock";
 import debounce from "lodash/debounce";
 import { sleep } from "@/utils/time";
 import { generateUrl } from "@/utils/urls";
 import axios from "axios";
+import ObjectDetailMC from "@/components/generic/ObjectDetailMC";
+import { ButtonOption } from "@/plugins/userChoiceDialog";
 
 export default {
   name: "CombatantDetail",
-  components: { ObjectDetail },
+  components: { ObjectDetailMC },
   props: {
-    combatantUuid: {
+    uuid: {
       type: String,
       default: null,
     },
-    saveFunc: {
-      type: Function,
-      default: null,
-    },
-    cancelFunc: {
-      type: Function,
-      default: null,
-    },
-    deleteFunc: {
-      type: Function,
-      default: null,
-    },
-    startEditing: {
-      type: Boolean,
-      default: false,
+    extraAttrData: {
+      type: Object,
+      default: () => {},
     },
   },
   data() {
     return {
-      localCombatant: new Combatant(),
+      editMode: true,
+      combatant: new Combatant({ uuid: this.uuid, ...this.extraAttrData }),
       statblockSearch: "",
-      statblockAutocompleteMatches: [],
+      p_statblockAutocompleteMatches: [],
+      p_initialStatblock: new Statblock(),
       statblockAutocompleteLoading: false,
     };
   },
   computed: {
-    combatant() {
-      let uuid = this.combatantUuid || this.$route.params.uuid;
-      return this.getCombatant(uuid);
-    },
-    ...mapGetters(combatant.namespace, {
-      getCombatant: combatant.getterTypes.BY_ID,
-    }),
-  },
-  watch: {
-    combatant: {
-      handler() {
-        this.reset();
+    statblockAutocompleteMatches: {
+      get() {
+        return Object.entries({
+          ...(this.p_initialStatblock.uuid
+            ? { [this.p_initialStatblock.uuid]: this.p_initialStatblock.name }
+            : {}),
+          ...this.p_statblockAutocompleteMatches,
+        }).map(([uuid, name]) => ({ value: uuid, text: name }));
       },
-      immediate: true,
+      set(val) {
+        this.p_statblockAutocompleteMatches = {
+          ...this.p_statblockAutocompleteMatches,
+          ...val,
+        };
+      },
     },
   },
   methods: {
-    ...mapActions(combatant.namespace, {
-      loadCombatants: combatant.actionTypes.LIST,
-      deleteCombatant: combatant.actionTypes.DESTROY,
-      updateCombatant: combatant.actionTypes.UPDATE,
-      createCombatant: combatant.actionTypes.CREATE,
-    }),
-    async deleteSelf() {
-      await this.deleteCombatant(this.combatant.uuid);
-      this.$router.push({ name: routeNames.COMBATANTS });
-    },
     async save() {
-      await this.updateCombatant(this.localCombatant);
-      this.reset();
+      this.$emit("save", await this.combatant.vuex_save(this.$store));
+      this.editMode = false;
     },
-    async create() {
-      let rObj = await this.createCombatant(this.localCombatant);
-      this.$router.replace({
-        name: routeNames.COMBATANT,
-        params: { uuid: rObj.uuid },
-      });
+    async cancel() {
+      this.combatant.reset();
+      this.$emit("cancel");
+      this.editMode = false;
     },
-    reset() {
-      this.localCombatant = new Combatant(this.combatant);
-    },
-    // eslint-disable-next-line
-    onStatblockAutocompleteKeyPress($event) {
-      this.queryStatblockAutocomplete();
+    async tryDelete() {
+      let reply = await this.$userChoice(
+        "Confirm delete",
+        `<p>Are you sure you want to delete ${this.combatant.name}?</p>`,
+        [
+          new ButtonOption({
+            returnVal: true,
+            text: `Yes, delete ${this.combatant.name}`,
+            attrs: { color: "delete" },
+          }),
+          new ButtonOption(),
+        ]
+      );
+      if (reply) {
+        await this.combatant.vuex_delete(this.$store);
+        // todo - this feels wrong
+        if (this.$route.name === this.$routeNames.COMBATANT) {
+          this.$router.push({ name: this.$routeNames.COMBATANTS });
+        } else {
+          this.$emit("deleted");
+        }
+      }
     },
     queryStatblockAutocomplete: debounce(async function() {
       let match = (this.statblockSearch || "").trim();
@@ -153,7 +138,7 @@ export default {
       this.statblockAutocompleteLoading = true;
       try {
         let result = await Promise.race([
-          axios.get(generateUrl(["statblock", "autocomplete"]), {
+          axios.get(generateUrl([Statblock.modelName, "autocomplete"]), {
             params: {
               match,
             },
@@ -166,8 +151,16 @@ export default {
       }
     }, 300),
   },
-  created() {
-    this.loadCombatants();
+  async created() {
+    if (this.uuid) {
+      await this.combatant.vuex_fetch(this.$store);
+      if (this.combatant.statblock) {
+        this.statblockAutocompleteLoading = true;
+        this.p_initialStatblock.uuid = this.combatant.statblock;
+        await this.p_initialStatblock.vuex_fetch(this.$store);
+        this.statblockAutocompleteLoading = false;
+      }
+    }
   },
 };
 </script>
