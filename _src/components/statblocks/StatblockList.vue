@@ -1,6 +1,7 @@
 <template>
   <object-list
     :detail-view-name="routeNames.STATBLOCK"
+    :create-view-name="routeNames.STATBLOCK_CREATE"
     :object-list="statblocks"
   ></object-list>
 </template>
