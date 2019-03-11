@@ -185,46 +185,52 @@
               </v-flex>
             </v-layout>
 
-            <v-list subheader class="elevation-1">
-              <v-list-tile
-                class="text-uppercase"
-                color="save"
-                @click="editCreatureProp(null)"
-              >
-                <v-icon left color="save">add</v-icon>
-                add a property or action
-              </v-list-tile>
-              <template
-                v-for="propListItem in creaturePropListItems.filter(
-                  l => l.items.length
-                )"
-              >
-                <v-divider :key="propListItem.subheader + '_'"></v-divider>
-                <v-subheader :key="propListItem.subheader">
-                  {{ propListItem.subheader }}
-                </v-subheader>
-                <v-list
-                  :key="'_' + propListItem.subheader"
-                  v-sortable-list
-                  @sorted="objectSortOccurred($event, propListItem.propType)"
+            <v-expand-transition mode="out-in">
+              <v-list subheader class="elevation-1" v-if="statblock.uuid">
+                <v-list-tile
+                  class="text-uppercase"
+                  color="save"
+                  @click="editCreatureProp(null)"
                 >
-                  <v-list-tile
-                    v-for="prop in propListItem.items"
-                    :key="prop.uuid"
-                    @click.stop
+                  <v-icon left color="save">add</v-icon>
+                  add a property or action
+                </v-list-tile>
+                <template
+                  v-for="propListItem in creaturePropListItems.filter(
+                    l => l.items.length
+                  )"
+                >
+                  <v-divider :key="propListItem.subheader + '_'"></v-divider>
+                  <v-subheader :key="propListItem.subheader">
+                    {{ propListItem.subheader }}
+                  </v-subheader>
+                  <v-list
+                    :key="'_' + propListItem.subheader"
+                    v-sortable-list
+                    @sorted="objectSortOccurred($event, propListItem.propType)"
                   >
-                    <v-list-tile-action class="sortHandle">
-                      <v-icon style="cursor: row-resize" color="grey">
-                        drag_handle
-                      </v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-title @click="editCreatureProp(prop.uuid)">
-                      {{ prop.title }}
-                    </v-list-tile-title>
-                  </v-list-tile>
-                </v-list>
-              </template>
-            </v-list>
+                    <v-list-tile
+                      v-for="prop in propListItem.items"
+                      :key="prop.uuid"
+                      @click.stop
+                    >
+                      <v-list-tile-action class="sortHandle">
+                        <v-icon style="cursor: row-resize" color="grey">
+                          drag_handle
+                        </v-icon>
+                      </v-list-tile-action>
+                      <v-list-tile-title @click="editCreatureProp(prop.uuid)">
+                        {{ prop.title }}
+                      </v-list-tile-title>
+                    </v-list-tile>
+                  </v-list>
+                </template>
+              </v-list>
+              <div v-else class="grey--text">
+                You can begin adding properties and actions once you have
+                created this statblock by saving it for the first time.
+              </div>
+            </v-expand-transition>
           </v-container>
         </v-form>
         <v-layout>
@@ -238,7 +244,7 @@
           </v-btn>
           <v-spacer></v-spacer>
           <v-btn
-            @click="statblock.vuex_save($store)"
+            @click="save"
             color="save"
             flat
             :disabled="!statblock.changed()"
@@ -350,6 +356,16 @@ export default {
     ...mapActions(creatureprop.namespace, {
       loadCreatureProps: creatureprop.actionTypes.QUERY_LIST,
     }),
+    async save() {
+      let creatingNew = !this.statblock.uuid;
+      await this.statblock.vuex_save(this.$store);
+      if (creatingNew) {
+        this.$router.replace({
+          name: this.$routeNames.STATBLOCK,
+          params: { uuid: this.statblock.uuid },
+        });
+      }
+    },
     uuidsToCreatureProps(uuid_list) {
       return uuid_list.map(uuid => this.getCreatureProp(uuid)).filter(p => !!p);
     },
