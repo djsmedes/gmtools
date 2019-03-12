@@ -171,61 +171,6 @@
         >+{{ largeHPIncrement }}
       </v-btn>
     </v-card-actions>
-
-
-    <v-dialog v-model="initDialog" width="400" :persistent="!!initDialogRoll">
-      <v-card>
-        <v-card-title class="headline grey lighten-2" primary-title>
-          {{ localCombatant.name }}
-        </v-card-title>
-        <v-form v-if="!initDialogRoll">
-          <v-container fluid>
-            <v-layout row wrap>
-              <v-flex xs6>
-                <v-text-field
-                  @focus="initDialogBonus = ''"
-                  type="number"
-                  pattern="\d*"
-                  v-model="initDialogBonus"
-                  label="Initiative Bonus"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs6>
-                <v-text-field
-                  @focus="initDialogInit = ''"
-                  type="number"
-                  pattern="\d*"
-                  v-model="initDialogInit"
-                  label="Initiative"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-form>
-        <v-card-text v-else-if="initDialogRoll < 0" class="text-xs-center">
-          <v-progress-circular indeterminate></v-progress-circular>
-        </v-card-text>
-        <v-card-text v-else>
-          <span class="title"
-            >You rolled: {{ initDialogRoll + Number(initDialogBonus) }} ({{
-              initDialogRoll
-            }}
-            + {{ Number(initDialogBonus) }})</span
-          >
-        </v-card-text>
-        <v-card-actions>
-          <v-btn flat @click="saveInitDialog">
-            Save
-          </v-btn>
-          <v-btn flat :disabled="!!initDialogRoll" @click="rollInitiative">
-            Roll
-          </v-btn>
-          <v-btn flat @click="closeInitDialog">
-            {{ !!initDialogRoll ? "Ignore" : "Cancel" }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-card>
 </template>
 
@@ -234,6 +179,7 @@ import { Combatant } from "@/models/combatant";
 import { mapGetters } from "vuex";
 import auth from "@/auth";
 import CombatantHpDialog from "@/components/encounters/CombatantHPDialog";
+import CombatantInitiativeDialog from "@/components/encounters/CombatantInitiativeDialog";
 
 export default {
   name: "CombatantCard",
@@ -262,10 +208,6 @@ export default {
     return {
       localCombatant: new Combatant(this.combatant),
       effectTypes: Combatant.effectTypes,
-      initDialog: false,
-      initDialogInit: 0,
-      initDialogBonus: 0,
-      initDialogRoll: 0,
     };
   },
   watch: {
@@ -307,35 +249,23 @@ export default {
         await this.updateFunc(this.localCombatant);
       }
     },
-    openInitDialog() {
-      this.initDialogInit = this.localCombatant.initiative;
-      this.initDialogBonus = this.localCombatant.initiative_bonus;
-      this.initDialogRoll = 0;
-      this.initDialog = true;
-    },
-    rollInitiative() {
-      this.initDialogRoll = -1;
-      setTimeout(() => {
-        this.initDialogRoll = ((Math.random() * 20) | 0) + 1;
-        this.initDialogInit =
-          this.initDialogRoll + Number(this.initDialogBonus);
-      }, 1000);
-    },
-    async saveInitDialog() {
-      this.localCombatant.initiative = Number(this.initDialogInit);
-      this.localCombatant.initiative_bonus = Number(this.initDialogBonus);
-      await this.updateFunc(this.localCombatant);
-      this.closeInitDialog();
-    },
-    closeInitDialog() {
-      this.initDialog = false;
+    async openInitDialog() {
+      let returnVal = await this.$dialog(CombatantInitiativeDialog, {
+        name: this.localCombatant.name,
+        initiative: this.localCombatant.initiative,
+        initiativeBonus: this.localCombatant.initiative_bonus,
+      });
+      if (returnVal) {
+        this.localCombatant.initiative = returnVal.initiative;
+        this.localCombatant.initiative_bonus = returnVal.initiativeBonus;
+        await this.updateFunc(this.localCombatant);
+      }
     },
     removeEffect(effectType, index) {
       this.localCombatant.effects[effectType].splice(index, 1);
       this.updateFunc(this.localCombatant);
     },
   },
-  created() {},
 };
 </script>
 
