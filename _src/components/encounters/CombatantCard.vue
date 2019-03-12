@@ -2,35 +2,21 @@
   <v-card
     @click.native="$emit('click', combatant.uuid)"
     :raised="active"
-    :class="[
-      {
-        bloodied:
-          !effectMode &&
-          localCombatant.hp < localCombatant.max_hp / 2 &&
-          0 < localCombatant.hp,
-      },
-      { unconscious: !effectMode && 0 >= localCombatant.hp },
-      { 'selected-buff': active && effectMode === effectTypes.BUFF },
-      { 'selected-debuff': active && effectMode === effectTypes.DEBUFF },
-      { 'selected-other': active && effectMode === effectTypes.OTHER },
-    ]"
-    class="combatant-card"
+    :class="cardClasses"
   >
     <v-card-title class="pb-0 pt-2">
       <v-container fluid class="pa-0 ma-0">
         <v-layout row align-center>
           <v-flex xs9>
             <h3 class="headline mb-0 text-truncate">
-              {{ localCombatant.name }}
+              {{ combatant.name }}
             </h3>
           </v-flex>
           <v-flex xs3>
             <v-btn icon @click.stop="openInitDialog" :disabled="!!effectMode">
               <v-badge overlap left color="transparent">
                 <v-avatar slot="badge" size="12">
-                  <span class="black--text">{{
-                    localCombatant.initiative
-                  }}</span>
+                  <span class="black--text">{{ combatant.initiative }}</span>
                 </v-avatar>
                 <v-icon large>directions_run</v-icon>
               </v-badge>
@@ -46,18 +32,18 @@
       <v-container fluid class="pa-0">
         <v-layout row wrap>
           <v-chip
-            v-if="localCombatant.temp_hp > 0"
+            v-if="combatant.temp_hp > 0"
             @click.stop="openHpDialog"
             close
-            @input="localCombatant.temp_hp = 0"
+            @input="combatant.temp_hp = 0"
           >
             <v-avatar class="white">
               <v-progress-circular
                 :rotate="-90"
-                :value="hpPercentage(localCombatant.temp_hp)"
+                :value="hpPercentage(combatant.temp_hp)"
                 color="yellow darken-2"
               >
-                <span class="body-2">{{ localCombatant.temp_hp }}</span>
+                <span class="body-2">{{ combatant.temp_hp }}</span>
               </v-progress-circular>
             </v-avatar>
             <span class="text-truncate font-weight-medium effect-text">
@@ -67,10 +53,10 @@
         </v-layout>
         <v-layout row wrap>
           <v-chip
-            v-for="(buff, index) in localCombatant.effects[effectTypes.BUFF]"
+            v-for="(buff, index) in combatant.buffs"
             :key="index"
-            :close="!!updateFunc"
-            @input="removeEffect(effectTypes.BUFF, index)"
+            close
+            @input="removeEffect(combatant.buffs, index)"
           >
             <v-avatar color="green">
               <v-icon small style="color: #fff;">trending_up</v-icon>
@@ -82,12 +68,10 @@
         </v-layout>
         <v-layout row wrap>
           <v-chip
-            v-for="(debuff, index) in localCombatant.effects[
-              effectTypes.DEBUFF
-            ]"
+            v-for="(debuff, index) in combatant.debuffs"
             :key="index"
-            :close="!!updateFunc"
-            @input="removeEffect(effectTypes.DEBUFF, index)"
+            close
+            @input="removeEffect(combatant.debuffs, index)"
           >
             <v-avatar color="red">
               <v-icon small style="color: #fff;">trending_down</v-icon>
@@ -99,10 +83,10 @@
         </v-layout>
         <v-layout row wrap>
           <v-chip
-            v-for="(other, index) in localCombatant.effects[effectTypes.OTHER]"
+            v-for="(other, index) in combatant.others"
             :key="index"
-            :close="!!updateFunc"
-            @input="removeEffect(effectTypes.OTHER, index)"
+            close
+            @input="removeEffect(combatant.others, index)"
           >
             <v-avatar color="grey">
               <v-icon small style="color: #fff;">trending_flat</v-icon>
@@ -122,18 +106,20 @@
         icon
         flat
         class="ma-0"
-        @click="updateHp(-1 * largeHPIncrement)"
+        @click="combatantHp -= largeHPIncrement"
         :disabled="!!effectMode"
-        >-{{ largeHPIncrement }}
+      >
+        -{{ largeHPIncrement }}
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn
         icon
         flat
         class="ma-0"
-        @click="updateHp(-1)"
+        @click="combatantHp -= 1"
         :disabled="!!effectMode"
-        >-1
+      >
+        -1
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn
@@ -146,10 +132,10 @@
       >
         <v-progress-circular
           :rotate="-90"
-          :value="hpPercentage(localCombatant.hp)"
+          :value="hpPercentage(combatant.hp)"
           color="red darken-2"
         >
-          <span class="body-2">{{ localCombatant.hp }}</span>
+          <span class="body-2">{{ combatant.hp }}</span>
         </v-progress-circular>
       </v-btn>
       <v-spacer></v-spacer>
@@ -157,47 +143,47 @@
         icon
         flat
         class="ma-0"
-        @click="updateHp(1)"
+        @click="combatantHp += 1"
         :disabled="!!effectMode"
-        >+1
+      >
+        +1
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn
         icon
         flat
         class="ma-0"
-        @click="updateHp(largeHPIncrement)"
+        @click="combatantHp += largeHPIncrement"
         :disabled="!!effectMode"
-        >+{{ largeHPIncrement }}
+      >
+        +{{ largeHPIncrement }}
       </v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
-import { Combatant } from "@/models/combatant";
+import combatant, { Combatant } from "@/models/combatant_mc";
 import { mapGetters } from "vuex";
 import auth from "@/auth";
 import CombatantHpDialog from "@/components/encounters/CombatantHPDialog";
 import CombatantInitiativeDialog from "@/components/encounters/CombatantInitiativeDialog";
+import debounce from "lodash/debounce";
 
 export default {
   name: "CombatantCard",
   props: {
-    combatant: {
-      type: Combatant,
-      default: () => new Combatant(),
+    uuid: {
+      type: String,
+      default: null,
     },
     effectMode: {
-      default: Combatant.effectTypes.NONE,
+      type: String,
+      default: "",
     },
     active: {
       type: Boolean,
       default: false,
-    },
-    updateFunc: {
-      type: Function,
-      default: null,
     },
     largeHPIncrement: {
       type: Number,
@@ -206,14 +192,13 @@ export default {
   },
   data() {
     return {
-      localCombatant: new Combatant(this.combatant),
-      effectTypes: Combatant.effectTypes,
+      combatant: new Combatant({ uuid: this.uuid }),
     };
   },
   watch: {
-    combatant: {
+    vuexCombatant: {
       handler(newCombatant) {
-        this.localCombatant = new Combatant(newCombatant);
+        this.combatant.update(newCombatant);
       },
     },
   },
@@ -221,49 +206,87 @@ export default {
     ...mapGetters(auth.namespace, {
       currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN,
     }),
+    ...mapGetters(combatant.namespace, {
+      getCombatant: combatant.getterTypes.BY_ID,
+    }),
+    vuexCombatant() {
+      return this.getCombatant(this.uuid) || {};
+    },
+    cardClasses() {
+      return [
+        { "combatant-card": true },
+        {
+          bloodied:
+            !this.effectMode &&
+            this.combatant.hp < this.combatant.max_hp / 2 &&
+            0 < this.combatant.hp,
+        },
+        { unconscious: !this.effectMode && 0 >= this.combatant.hp },
+        {
+          "selected-buff": this.active && this.effectMode === "buffs",
+        },
+        {
+          "selected-debuff": this.active && this.effectMode === "debuffs",
+        },
+        {
+          "selected-other": this.active && this.effectMode === "others",
+        },
+      ];
+    },
+    combatantHp: {
+      get() {
+        return this.combatant.hp;
+      },
+      set(val) {
+        this.combatant.hp = val;
+        this.updateSelfDebounced();
+      },
+    },
+  },
+  async created() {
+    await this.combatant.vuex_fetch(this.$store);
   },
   methods: {
-    hpPercentage(hp) {
-      let boundedLower = hp < 0 ? 0 : hp;
-      let boundedUpper =
-        boundedLower < this.localCombatant.max_hp
-          ? boundedLower
-          : this.localCombatant.max_hp;
-      return (100 * boundedUpper) / this.localCombatant.max_hp;
+    updateSelf() {
+      this.$ws.put({ [combatant.namespace]: [this.combatant] });
     },
-    updateHp(increment) {
-      this.localCombatant.hp += increment;
-      this.updateFunc(this.localCombatant);
+    updateSelfDebounced: debounce(function() {
+      this.updateSelf();
+    }, 500),
+    hpPercentage(hp) {
+      let lBound = Math.max(hp, 0);
+      let uBound = Math.min(lBound, this.combatant.max_hp);
+      return (100 * uBound) / this.combatant.max_hp;
     },
     async openHpDialog() {
       let returnVal = await this.$dialog(CombatantHpDialog, {
-        name: this.localCombatant.name,
-        hp: this.localCombatant.hp,
-        maxHp: this.localCombatant.max_hp,
-        tempHp: this.localCombatant.temp_hp,
+        name: this.combatant.name,
+        hp: this.combatant.hp,
+        maxHp: this.combatant.max_hp,
+        tempHp: this.combatant.temp_hp,
       });
       if (returnVal) {
-        this.localCombatant.hp = returnVal.hp;
-        this.localCombatant.max_hp = returnVal.maxHp;
-        this.localCombatant.temp_hp = returnVal.tempHp;
-        await this.updateFunc(this.localCombatant);
+        this.combatant.hp = returnVal.hp;
+        this.combatant.max_hp = returnVal.maxHp;
+        this.combatant.temp_hp = returnVal.tempHp;
+        this.updateSelf();
       }
     },
     async openInitDialog() {
       let returnVal = await this.$dialog(CombatantInitiativeDialog, {
-        name: this.localCombatant.name,
-        initiative: this.localCombatant.initiative,
-        initiativeBonus: this.localCombatant.initiative_bonus,
+        name: this.combatant.name,
+        initiative: this.combatant.initiative,
+        initiativeBonus: this.combatant.initiative_bonus,
       });
       if (returnVal) {
-        this.localCombatant.initiative = returnVal.initiative;
-        this.localCombatant.initiative_bonus = returnVal.initiativeBonus;
-        await this.updateFunc(this.localCombatant);
+        this.combatant.initiative = returnVal.initiative;
+        this.combatant.initiative_bonus = returnVal.initiativeBonus;
+        this.updateSelf();
       }
     },
-    removeEffect(effectType, index) {
-      this.localCombatant.effects[effectType].splice(index, 1);
-      this.updateFunc(this.localCombatant);
+    removeEffect(toRemoveFrom, index) {
+      toRemoveFrom.splice(index, 1);
+      this.updateSelf();
     },
   },
 };

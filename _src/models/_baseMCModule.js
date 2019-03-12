@@ -96,11 +96,7 @@ export class MCModule {
             });
           } else if (objAry) {
             objAry.map(obj =>
-              Vue.set(
-                state[this.stateKeys.OBJECTS],
-                obj.uuid,
-                new this.modelClass(obj)
-              )
+              Vue.set(state[this.stateKeys.OBJECTS], obj.uuid, obj)
             );
           }
         },

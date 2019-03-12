@@ -96,10 +96,9 @@
             :key="combatant.uuid"
           >
             <combatant-card
-              :combatant="combatant"
+              :uuid="combatant.uuid"
               :effect-mode="applyingEffectType"
               :active="combatantsToApply.includes(combatant.uuid)"
-              :update-func="updateOneCombatant"
               :large-h-p-increment="combatantLargeHPIncrement"
               @click="toggleCombatantWillApply($event)"
             />
