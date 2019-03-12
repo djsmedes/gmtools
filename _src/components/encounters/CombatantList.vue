@@ -10,7 +10,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import ObjectList from "@/components/generic/ObjectList";
-import combatant from "@/models/combatant_mc";
+import combatant from "@/models/combatant";
 
 export default {
   name: "CombatantList",

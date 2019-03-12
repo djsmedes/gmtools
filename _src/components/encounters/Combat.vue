@@ -229,12 +229,10 @@ import CombatantCard from "@/components/encounters/CombatantCard";
 import Screen from "@/components/gmscreen/GMScreen";
 import ScreenTab from "@/components/gmscreen/GMScreenTab";
 import EncounterChooser from "@/components/encounters/EncounterChooser";
-import { Combatant as CombatantOld } from "@/models/combatant";
-import combatant, { Combatant } from "@/models/combatant_mc";
+import combatant, { Combatant } from "@/models/combatant";
 import campaign from "@/models/campaign";
 import encounter, { Encounter } from "@/models/encounter";
 import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
-import cloneDeep from "lodash/cloneDeep";
 import auth from "@/auth";
 import { routeNames } from "@/router";
 
@@ -248,7 +246,12 @@ export default {
       applyingEffectType: "",
       effectToApply: "",
       combatantsToApply: [],
-      effectTypes: CombatantOld.effectTypes,
+      effectTypes: {
+        NONE: "",
+        BUFF: "buffs",
+        DEBUFF: "debuffs",
+        OTHER: "others",
+      },
       fab: false,
       activeTab: -1,
       combatantLargeHPIncrement: 5,

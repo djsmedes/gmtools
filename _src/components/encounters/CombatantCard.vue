@@ -163,7 +163,7 @@
 </template>
 
 <script>
-import combatant, { Combatant } from "@/models/combatant_mc";
+import combatant, { Combatant } from "@/models/combatant";
 import { mapGetters } from "vuex";
 import auth from "@/auth";
 import CombatantHpDialog from "@/components/encounters/CombatantHPDialog";

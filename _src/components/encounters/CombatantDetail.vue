@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { Combatant } from "@/models/combatant_mc";
+import { Combatant } from "@/models/combatant";
 import { Statblock } from "@/models/statblock";
 import debounce from "lodash/debounce";
 import { sleep } from "@/utils/time";

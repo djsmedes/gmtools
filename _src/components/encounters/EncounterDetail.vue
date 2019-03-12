@@ -72,7 +72,7 @@ import ObjectDetail from "@/components/generic/ObjectDetail";
 import CombatantDetailDialog from "@/components/encounters/CombatantDetailDialog";
 import { mapGetters, mapActions } from "vuex";
 import encounter, { Encounter } from "@/models/encounter";
-import combatant from "@/models/combatant_mc";
+import combatant from "@/models/combatant";
 import { routeNames } from "@/router";
 import { needLoading, doneLoading } from "@/utils/loading";
 
