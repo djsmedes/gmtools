@@ -93,7 +93,7 @@ import functionalDialogMixin from "@/mixins/functionalDialog";
 import CreaturePropDetail from "@/components/statblocks/CreaturePropDetail";
 import axios from "axios";
 import { generateUrl } from "@/utils/urls";
-import { debounce } from "lodash-es";
+import debounce from "lodash/debounce";
 import { sleep } from "@/utils/time";
 
 export default {

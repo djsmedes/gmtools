@@ -104,7 +104,7 @@
 <script>
 import functionalDialogMixin from "@/mixins/functionalDialog";
 import { calculateModifier, sizeChoices } from "@/models/statblock";
-import { debounce } from "lodash-es";
+import debounce from "lodash/debounce";
 
 const size_2_die = {
   1: 4,
