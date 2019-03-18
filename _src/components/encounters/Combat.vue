@@ -96,12 +96,11 @@
             :key="combatant.uuid"
           >
             <combatant-card
-              :combatant="combatant"
+              :uuid="combatant.uuid"
               :effect-mode="applyingEffectType"
               :active="combatantsToApply.includes(combatant.uuid)"
-              :update-func="updateOneCombatant"
               :large-h-p-increment="combatantLargeHPIncrement"
-              @click="toggleCombatantWillApply($event)"
+              @click="toggleCombatantWillApply"
             />
           </v-flex>
         </v-layout>
@@ -234,8 +233,6 @@ import combatant, { Combatant } from "@/models/combatant";
 import campaign from "@/models/campaign";
 import encounter, { Encounter } from "@/models/encounter";
 import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
-import cloneDeep from "lodash/cloneDeep";
-import debounce from "lodash/debounce";
 import auth from "@/auth";
 import { routeNames } from "@/router";
 
@@ -246,10 +243,15 @@ export default {
     return {
       routeNames,
 
-      applyingEffectType: Combatant.effectTypes.NONE,
+      applyingEffectType: "",
       effectToApply: "",
       combatantsToApply: [],
-      effectTypes: Combatant.effectTypes,
+      effectTypes: {
+        NONE: "",
+        BUFF: "buffs",
+        DEBUFF: "debuffs",
+        OTHER: "others",
+      },
       fab: false,
       activeTab: -1,
       combatantLargeHPIncrement: 5,
@@ -311,29 +313,31 @@ export default {
       }
     },
     enterApplyBuffMode() {
-      this.applyingEffectType = Combatant.effectTypes.BUFF;
+      this.applyingEffectType = "buffs";
     },
     enterApplyDebuffMode() {
-      this.applyingEffectType = Combatant.effectTypes.DEBUFF;
+      this.applyingEffectType = "debuffs";
     },
     enterApplyOtherMode() {
-      this.applyingEffectType = Combatant.effectTypes.OTHER;
+      this.applyingEffectType = "others";
     },
     exitApplyEffectMode() {
-      this.applyingEffectType = Combatant.effectTypes.NONE;
+      this.applyingEffectType = "";
       this.effectToApply = "";
       this.combatantsToApply = [];
     },
     async saveAppliedEffects() {
-      let combatantObjs = [];
       if (this.effectToApply.length) {
-        for (let uuid of this.combatantsToApply) {
-          combatantObjs.push(cloneDeep(this.getCombatant(uuid)));
-          combatantObjs[combatantObjs.length - 1].effects[
-            this.applyingEffectType
-          ].push(this.effectToApply);
-        }
-        await this.$ws.put({ [combatant.namespace]: combatantObjs });
+        let combatantObjs = this.combatantsToApply.map(
+          uuid => new Combatant({ uuid: uuid })
+        );
+        await Promise.all(combatantObjs.map(c => c.vuex_fetch(this.$store)));
+        await this.$ws.put({
+          [combatant.namespace]: combatantObjs.map(c => {
+            c[this.applyingEffectType].push(this.effectToApply);
+            return c;
+          }),
+        });
       }
       this.exitApplyEffectMode();
     },
@@ -348,10 +352,6 @@ export default {
       });
       this.changeEncounterDialog = false;
     },
-    updateOneCombatant: debounce(function(cbt) {
-      // debounced because the way this update happens is via clicking a +1 button
-      this.$ws.put({ [combatant.namespace]: [cbt] });
-    }, 500),
     async changeTabIndex(direction) {
       let newIndex = this.activeTab + direction;
       let tabList = [...this.tabs];

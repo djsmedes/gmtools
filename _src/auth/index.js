@@ -100,7 +100,7 @@ export const store = {
           return err.response.data;
         } else if (
           err.response &&
-          err.response.status === 401 &&
+          [401, 403].includes(err.response.status) &&
           err.response.data &&
           err.response.data.detail === "Invalid token."
         ) {

@@ -1,6 +1,30 @@
 <template>
   <v-card>
-    <v-data-table :headers="headers" :items="objectList">
+    <v-toolbar dense flat color="grey lighten-3">
+      <v-toolbar-title>
+        <v-text-field
+          placeholder="Search"
+          prepend-icon="search"
+          v-model="search"
+        ></v-text-field>
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn
+        v-if="!!createViewName"
+        flat
+        :to="{ name: createViewName }"
+        color="edit"
+      >
+        <v-icon left>add</v-icon>
+        Create new
+      </v-btn>
+    </v-toolbar>
+    <v-data-table
+      :headers="headers"
+      :items="objectList"
+      :rows-per-page-items="[25, 50]"
+      :search="search"
+    >
       <router-link
         tag="tr"
         slot="items"
@@ -8,15 +32,10 @@
         :to="{ name: detailViewName, params: { uuid: props.item.uuid } }"
       >
         <td v-for="header in headers" :key="header.text">
-          {{ header.func(props.item) }}
+          {{ props.item[header.value] }}
         </td>
       </router-link>
     </v-data-table>
-    <v-card-actions>
-      <v-btn v-if="!!createViewName" flat :to="{ name: createViewName }">
-        Create new
-      </v-btn>
-    </v-card-actions>
   </v-card>
 </template>
 
@@ -36,11 +55,15 @@ export default {
             text: "Name",
             align: "left",
             value: "name",
-            func: item => item.name,
           },
         ];
       },
     },
+  },
+  data() {
+    return {
+      search: "",
+    };
   },
 };
 </script>

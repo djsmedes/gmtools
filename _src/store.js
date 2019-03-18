@@ -2,8 +2,10 @@ import Vue from "vue";
 import Vuex from "vuex";
 import campaign from "@/models/campaign";
 import combatant from "@/models/combatant";
+import creatureprop from "@/models/creatureprop";
 import encounter from "@/models/encounter";
 import gmscreentab from "@/models/gmscreentab";
+import statblock from "@/models/statblock";
 import user from "@/models/user";
 import auth from "@/auth";
 
@@ -43,8 +45,10 @@ export default new Vuex.Store({
     [auth.namespace]: auth.store,
     [campaign.namespace]: campaign.store,
     [combatant.namespace]: combatant.store,
+    [creatureprop.namespace]: creatureprop.store,
     [encounter.namespace]: encounter.store,
     [gmscreentab.namespace]: gmscreentab.store,
+    [statblock.namespace]: statblock.store,
     [user.namespace]: user.store,
   },
 });

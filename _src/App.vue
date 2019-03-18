@@ -15,6 +15,14 @@
           flat
           v-if="isAuthenticated"
           class="no-text-dec hidden-xs-only"
+          :to="{ name: routeNames.ENCOUNTERS }"
+        >
+          Encounters
+        </v-btn>
+        <v-btn
+          flat
+          v-if="isAuthenticated"
+          class="no-text-dec hidden-xs-only"
           :to="{ name: routeNames.COMBATANTS }"
         >
           Combatants
@@ -23,12 +31,22 @@
           flat
           v-if="isAuthenticated"
           class="no-text-dec hidden-xs-only"
-          :to="{ name: routeNames.ENCOUNTERS }"
+          :to="{ name: routeNames.STATBLOCKS }"
         >
-          Encounters
+          Statblocks
+        </v-btn>
+        <v-btn
+          flat
+          v-if="isAuthenticated"
+          class="no-text-dec hidden-xs-only"
+          :to="{ name: $routeNames.CREATUREPROPS }"
+        >
+          Creature Properties
         </v-btn>
       </v-toolbar-items>
+
       <v-spacer></v-spacer>
+
       <v-toolbar-items v-if="!isAuthenticated">
         <v-btn flat class="no-text-dec" :to="{ name: routeNames.LOGIN }">
           Sign in
@@ -100,11 +118,28 @@
     </v-toolbar>
 
     <v-content style="position: relative">
-      <display-when-loaded>
-        <v-container>
-          <router-view v-if="isRequested" />
-        </v-container>
-      </display-when-loaded>
+      <v-container v-show="!$store.getters.isLoading">
+        <router-view v-if="isRequested" />
+      </v-container>
+      <v-dialog
+        :value="$store.getters.isLoading"
+        hide-overlay
+        persistent
+        :width="64 + 32"
+      >
+        <v-card color="grey darken-3" dark>
+          <v-card-text>
+            <v-progress-circular
+              :size="64"
+              :width="8"
+              :transition="false"
+              indeterminate
+              color="white"
+              class="mb-0"
+            ></v-progress-circular>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
     </v-content>
   </v-app>
 </template>
@@ -113,10 +148,8 @@
 import { mapGetters, mapActions } from "vuex";
 import auth from "@/auth";
 import { routeNames } from "@/router";
-import DisplayWhenLoaded from "@/components/generic/DisplayWhenLoaded";
 
 export default {
-  components: { DisplayWhenLoaded },
   data() {
     return {
       routeNames,

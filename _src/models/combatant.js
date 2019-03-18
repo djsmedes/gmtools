@@ -1,70 +1,74 @@
-import { Model } from "./_baseModel";
-import { CampaignDependentVuexModule } from "./_needsCampaignModule";
+import { VuexModel } from "@/models/_vuexMCModel";
+import { generateUrl } from "@/utils/urls";
+import { MCModule } from "@/models/_baseMCModule";
+import { mutateEmptyStringToNull } from "@/models/_baseMCModule";
 
-export class Combatant extends Model {
+const modelName = "combatant";
+
+export class Combatant extends VuexModel {
   static get modelName() {
-    return "combatant";
+    return modelName;
   }
 
-  constructor({
-    uuid = null,
-    campaign = "",
-    name = "",
-    initiative = 0,
-    initiative_bonus = 0,
-    hp = 0,
-    max_hp = 0,
-    temp_hp = 0,
-    effects = {},
-    loot = "",
-    encounter = null,
-  } = {}) {
-    super();
-    this.uuid = uuid;
-    this.name = name;
-    this.campaign = campaign;
-    this.initiative = initiative;
-    this.initiative_bonus = initiative_bonus;
-    this.hp = hp;
-    this.max_hp = max_hp;
-    this.temp_hp = temp_hp;
-    this.effects = effects;
-    this.loot = loot;
-    this.encounter = encounter;
-  }
-
-  get effects() {
-    return this._effects;
-  }
-
-  set effects(val) {
-    this._effects = val || {};
-    if (typeof this._effects[Combatant.effectTypes.BUFF] === "undefined") {
-      this._effects[Combatant.effectTypes.BUFF] = [];
-    }
-    if (typeof this._effects[Combatant.effectTypes.DEBUFF] === "undefined") {
-      this._effects[Combatant.effectTypes.DEBUFF] = [];
-    }
-    if (typeof this._effects[Combatant.effectTypes.OTHER] === "undefined") {
-      this._effects[Combatant.effectTypes.OTHER] = [];
-    }
-  }
-
-  static get effectTypes() {
+  options() {
     return {
-      NONE: "",
-      BUFF: "buffs",
-      DEBUFF: "debuffs",
-      OTHER: "others",
+      identifier: "uuid",
     };
   }
-}
 
-class CombatantVuexModule extends CampaignDependentVuexModule {
-  constructor() {
-    super();
-    this.modelClass = Combatant;
+  defaults() {
+    return {
+      uuid: null,
+      campaign: null,
+      encounter: null,
+      name: null,
+      initiative: 0,
+      initiative_bonus: 0,
+      hp: 0,
+      max_hp: 0,
+      temp_hp: 0,
+      loot: null,
+      buffs: [],
+      debuffs: [],
+      others: [],
+      statblock: null,
+    };
+  }
+
+  mutations() {
+    return Object.keys(this.defaults()).reduce(
+      (memo, key) => ({
+        ...memo,
+        [key]: [...(memo[key] || []), mutateEmptyStringToNull],
+      }),
+      {
+        buffs: [v => v || []],
+        debuffs: [v => v || []],
+        others: [v => v || []],
+      }
+    );
+  }
+
+  routes() {
+    return {
+      fetch: generateUrl([modelName, this.uuid]),
+      delete: generateUrl([modelName, this.uuid]),
+    };
+  }
+
+  getSaveURL() {
+    return generateUrl([modelName, ...(this.uuid ? [this.uuid] : [])]);
+  }
+
+  getSaveMethod() {
+    return this.uuid ? "PUT" : "POST";
   }
 }
 
-export default new CombatantVuexModule();
+class CombatantModule extends MCModule {
+  constructor() {
+    super(modelName);
+  }
+}
+
+export default new CombatantModule();
