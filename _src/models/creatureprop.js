@@ -1,6 +1,5 @@
-import { Model } from "vue-mc/vue-mc.es";
+import { VuexModel } from "./_vuexMCModel";
 import { generateUrl } from "@/utils/urls";
-import { getterTypes, mutationTypes } from "@/models/_constants";
 import { MCModule } from "@/models/_baseMCModule";
 import { mutateEmptyStringToNull } from "@/models/_baseMCModule";
 
@@ -55,7 +54,7 @@ export const attackTypeChoices = Object.keys(attackTypeDisplay).map(key => ({
     attackTypeDisplay[key].slice(1),
 }));
 
-export class CreatureProp extends Model {
+export class CreatureProp extends VuexModel {
   static get modelName() {
     return modelName;
   }
@@ -120,45 +119,6 @@ export class CreatureProp extends Model {
 
   getSaveMethod() {
     return this.uuid ? "PUT" : "POST";
-  }
-
-  async vuex_fetch(store) {
-    if (!this.uuid) {
-      if (process.env.NODE_ENV !== "production") {
-        // eslint-disable-next-line
-        console.warn(modelName + " tried to call fetch with no uuid.");
-      }
-    }
-
-    let cached = store.getters[modelName + "/" + getterTypes.BY_ID](this.uuid);
-
-    if (cached === undefined) {
-      let { response } = await this.fetch();
-      store.commit(modelName + "/" + mutationTypes.SET, {
-        object: response.data,
-      });
-      return response.data;
-    } else {
-      Object.keys(cached).reduce((_, key) => {
-        this.set(key, cached[key]);
-      });
-      // must also apply this new active state to the saved state
-      this.sync();
-      return cached;
-    }
-  }
-
-  async vuex_save(store) {
-    let { response } = await this.save();
-    store.commit(modelName + "/" + mutationTypes.SET, {
-      object: response.data,
-    });
-    return response.data;
-  }
-
-  async vuex_delete(store) {
-    let { response } = await this.delete();
-    store.commit(modelName + "/" + mutationTypes.REMOVE, response.data);
   }
 }
 

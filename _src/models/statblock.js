@@ -1,9 +1,8 @@
-import { Model } from "vue-mc/vue-mc.es";
 import { generateUrl } from "@/utils/urls";
-import { getterTypes, mutationTypes } from "@/models/_constants";
 import { MCModule } from "@/models/_baseMCModule";
 import { mutateEmptyStringToNull } from "@/models/_baseMCModule";
 import { average_roll } from "@/utils/dice";
+import { VuexModel } from "@/models/_vuexMCModel";
 
 const modelName = "statblock";
 
@@ -76,7 +75,7 @@ export const alignmentChoices = Object.keys(alignmentDisplay).map(key => ({
 
 export const calculateModifier = score => Math.floor(((score || 0) - 10) / 2);
 
-export class Statblock extends Model {
+export class Statblock extends VuexModel {
   static get modelName() {
     return modelName;
   }
@@ -194,45 +193,6 @@ export class Statblock extends Model {
 
   getSaveMethod() {
     return this.uuid ? "PUT" : "POST";
-  }
-
-  async vuex_fetch(store) {
-    if (!this.uuid) {
-      if (process.env.NODE_ENV !== "production") {
-        // eslint-disable-next-line
-        console.warn(modelName + " tried to call fetch with no uuid.");
-      }
-    }
-
-    let cached = store.getters[modelName + "/" + getterTypes.BY_ID](this.uuid);
-
-    if (cached === undefined) {
-      let { response } = await this.fetch();
-      store.commit(modelName + "/" + mutationTypes.SET, {
-        object: response.data,
-      });
-    } else {
-      Object.keys(cached).reduce((_, key) => {
-        this.set(key, cached[key]);
-      });
-      // must also apply this new active state to the saved state
-      this.sync();
-    }
-  }
-
-  async vuex_save(store) {
-    let { response } = await this.save();
-    store.commit(Statblock.modelName + "/" + mutationTypes.SET, {
-      object: response.data,
-    });
-  }
-
-  async vuex_delete(store) {
-    let { response } = await this.delete();
-    store.commit(
-      Statblock.modelName + "/" + mutationTypes.REMOVE,
-      response.data
-    );
   }
 }
 
