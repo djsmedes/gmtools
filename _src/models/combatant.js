@@ -2,6 +2,7 @@ import { VuexModel } from "@/models/_vuexMCModel";
 import { generateUrl } from "@/utils/urls";
 import { MCModule } from "@/models/_baseMCModule";
 import { mutateEmptyStringToNull } from "@/models/_baseMCModule";
+import store from "@/store";
 
 const modelName = "combatant";
 
@@ -13,6 +14,7 @@ export class Combatant extends VuexModel {
   options() {
     return {
       identifier: "uuid",
+      store: store,
     };
   }
 

@@ -1,9 +1,40 @@
 import { Model } from "vue-mc/vue-mc.es";
 import { getterTypes, mutationTypes } from "@/models/_constants";
 
+const defineModelStore = (() => {
+  const definedFor = {};
+  return (store, modelName) => {
+    if (!definedFor[modelName]) {
+      if (store) {
+        definedFor[modelName] = true;
+        store.registerModule("$_vue-mc_" + modelName, {
+          namespaced: true,
+          state: {
+            foo: 0,
+          },
+          getters: {
+            foo: state => state.foo,
+          },
+          mutations: {
+            addToFoo: (state, payload) => (state.foo += payload),
+          },
+        });
+      }
+    } else {
+      return store;
+    }
+  };
+})();
+
 export class VuexModel extends Model {
   static get modelName() {
     return "";
+  }
+
+  constructor(attributes = {}, collection = null, options = {}) {
+    super(attributes, collection, options);
+
+    defineModelStore(this.getOption("store"), this.constructor.modelName);
   }
 
   async vuex_fetch(store) {

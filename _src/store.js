@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import campaign from "@/models/campaign";
-import combatant from "@/models/combatant";
+// import combatant from "@/models/combatant";
 import creatureprop from "@/models/creatureprop";
 import encounter from "@/models/encounter";
 import gmscreentab from "@/models/gmscreentab";
@@ -44,7 +44,7 @@ export default new Vuex.Store({
   modules: {
     [auth.namespace]: auth.store,
     [campaign.namespace]: campaign.store,
-    [combatant.namespace]: combatant.store,
+    // [combatant.namespace]: combatant.store,
     [creatureprop.namespace]: creatureprop.store,
     [encounter.namespace]: encounter.store,
     [gmscreentab.namespace]: gmscreentab.store,

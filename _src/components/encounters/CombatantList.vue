@@ -10,7 +10,7 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import ObjectList from "@/components/generic/ObjectList";
-import combatant from "@/models/combatant";
+import combatant, { Combatant } from "@/models/combatant";
 
 export default {
   name: "CombatantList",
@@ -28,16 +28,22 @@ export default {
   },
   computed: {
     ...mapGetters(combatant.namespace, {
-      combatants: combatant.getterTypes.LIST,
+      // combatants: combatant.getterTypes.LIST,
     }),
+    combatants() {
+      return []
+    }
   },
   methods: {
     ...mapActions(combatant.namespace, {
-      loadCombatants: combatant.actionTypes.LIST,
+      // loadCombatants: combatant.actionTypes.LIST,
     }),
   },
   created() {
-    this.loadCombatants();
+    // this.loadCombatants();
+    let foo = new Combatant();
+    this.$store.commit("$_vue-mc_combatant/addToFoo", 2);
+    this.$store.commit("$_vue-mc_combatant/addToFoo", 2);
   },
 };
 </script>
