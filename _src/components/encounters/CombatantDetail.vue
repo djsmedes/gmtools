@@ -153,7 +153,7 @@ export default {
   },
   async created() {
     if (this.uuid) {
-      await this.combatant.vuex_fetch(this.$store);
+      await this.combatant.fetch();
       if (this.combatant.statblock) {
         this.statblockAutocompleteLoading = true;
         this.p_initialStatblock.uuid = this.combatant.statblock;

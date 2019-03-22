@@ -1,20 +1,19 @@
+import { Collection } from "vue-mc/vue-mc.es";
 import { VuexModel } from "@/models/_vuexMCModel";
-import { generateUrl } from "@/utils/urls";
+import { generateUrl2 as generateUrl } from "@/utils/urls";
 import { MCModule } from "@/models/_baseMCModule";
 import { mutateEmptyStringToNull } from "@/models/_baseMCModule";
 import store from "@/store";
+import toPairs from "lodash/toPairs";
+import fromPairs from "lodash/fromPairs";
 
 const modelName = "combatant";
 
 export class Combatant extends VuexModel {
-  static get modelName() {
-    return modelName;
-  }
-
   options() {
     return {
       identifier: "uuid",
-      store: store,
+      store,
     };
   }
 
@@ -53,17 +52,39 @@ export class Combatant extends VuexModel {
 
   routes() {
     return {
-      fetch: generateUrl([modelName, this.uuid]),
-      delete: generateUrl([modelName, this.uuid]),
+      fetch: generateUrl(modelName, this.uuid),
+      delete: generateUrl(modelName, this.uuid),
     };
   }
 
   getSaveURL() {
-    return generateUrl([modelName, ...(this.uuid ? [this.uuid] : [])]);
+    return this.uuid
+      ? generateUrl(modelName, this.uuid)
+      : generateUrl(modelName);
   }
 
   getSaveMethod() {
     return this.uuid ? "PUT" : "POST";
+  }
+}
+
+export class CombatantList extends Collection {
+  options() {
+    return {
+      model: Combatant,
+      store,
+    };
+  }
+
+  routes() {
+    return {
+      fetch: generateUrl(modelName),
+    };
+  }
+
+  getFetchQuery() {
+    let pairs = toPairs(this.getOption("storeFilter"));
+    return fromPairs(pairs.map(pair => [pair[0], pair[1] || ""]));
   }
 }
 

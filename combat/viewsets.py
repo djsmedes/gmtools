@@ -1,7 +1,8 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from core.viewsets import CampaignModelViewSet, UserOwnedModelViewSet, ParamFilterKwargHelper
+from core.viewsets import CampaignModelViewSet, UserOwnedModelViewSet, ParamFilterKwargHelper, FKParamFilterKwargHelper
+from plot.models import Encounter
 from .models import Combatant, GMScreenTab, Statblock, CreatureProp, StatblockProp
 from .serializers import (
     CombatantSerializer,
@@ -17,10 +18,7 @@ class CombatantViewSet(CampaignModelViewSet):
     serializer_class = CombatantSerializer
 
     query_param_filters = {
-        "encounter": ParamFilterKwargHelper(
-            key="encounter__uuid__in",
-            validity_checker=lambda x: type(x) == str and len(x) == 22,
-        )
+        "encounter": FKParamFilterKwargHelper(Encounter, 'encounter')
     }
 
 
