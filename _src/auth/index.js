@@ -1,10 +1,16 @@
 import Vue from "vue";
 import userModule, { User } from "@/models/user";
 import campaignModule, { Campaign } from "@/models/campaign";
-import { array2ObjByUUID } from "@/models/_baseModule";
 import * as Cookies from "js-cookie";
 import axios from "axios";
 import { generateUrl } from "@/utils/urls";
+
+function array2ObjByUUID(array, objConstructor) {
+  return array.reduce((accumulator, currentVal) => {
+    accumulator[currentVal.uuid] = new objConstructor(currentVal);
+    return accumulator;
+  }, {});
+}
 
 export const namespace = "auth";
 

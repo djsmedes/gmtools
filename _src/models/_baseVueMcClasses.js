@@ -40,7 +40,7 @@ export class Model extends MCModel {
 
   mutations() {
     return Object.keys(this.defaults()).reduce((memo, key) => {
-      return { ...memo, [key]: mutateEmptyStringToNull };
+      return { ...memo, [key]: [mutateEmptyStringToNull] };
     }, {});
   }
 

@@ -1,20 +1,10 @@
-import { Collection } from "vue-mc/vue-mc.es";
-import { VuexModel } from "@/models/_vuexMCModel";
-import { generateUrl2 as generateUrl } from "@/utils/urls";
-import { MCModule } from "@/models/_baseMCModule";
-import { mutateEmptyStringToNull } from "@/models/_baseMCModule";
-import store from "@/store";
-import toPairs from "lodash/toPairs";
-import fromPairs from "lodash/fromPairs";
+import { Model, Collection } from "./_baseVueMcClasses";
 
 const modelName = "combatant";
 
-export class Combatant extends VuexModel {
-  options() {
-    return {
-      identifier: "uuid",
-      store,
-    };
+export class Combatant extends Model {
+  static get modelName() {
+    return modelName;
   }
 
   defaults() {
@@ -37,61 +27,28 @@ export class Combatant extends VuexModel {
   }
 
   mutations() {
-    return Object.keys(this.defaults()).reduce(
-      (memo, key) => ({
-        ...memo,
-        [key]: [...(memo[key] || []), mutateEmptyStringToNull],
-      }),
-      {
-        buffs: [v => v || []],
-        debuffs: [v => v || []],
-        others: [v => v || []],
-      }
+    return Object.entries(super.mutations()).reduce(
+      (accumulator, [key, value]) => {
+        if (["buffs", "debuffs", "others"].includes(key)) {
+          return { ...accumulator, [key]: [...value, v => v || []] };
+        } else {
+          return { ...accumulator, [key]: value };
+        }
+      },
+      {}
     );
-  }
-
-  routes() {
-    return {
-      fetch: generateUrl(modelName, this.uuid),
-      delete: generateUrl(modelName, this.uuid),
-    };
-  }
-
-  getSaveURL() {
-    return this.uuid
-      ? generateUrl(modelName, this.uuid)
-      : generateUrl(modelName);
-  }
-
-  getSaveMethod() {
-    return this.uuid ? "PUT" : "POST";
   }
 }
 
 export class CombatantList extends Collection {
+  static get modelName() {
+    return modelName;
+  }
+
   options() {
     return {
+      ...super.options(),
       model: Combatant,
-      store,
     };
   }
-
-  routes() {
-    return {
-      fetch: generateUrl(modelName),
-    };
-  }
-
-  getFetchQuery() {
-    let pairs = toPairs(this.getOption("storeFilter"));
-    return fromPairs(pairs.map(pair => [pair[0], pair[1] || ""]));
-  }
 }
-
-class CombatantModule extends MCModule {
-  constructor() {
-    super(modelName);
-  }
-}
-
-export default new CombatantModule();

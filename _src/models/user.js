@@ -1,24 +1,20 @@
-import { Model } from "./_baseModel";
-import { ModelVuexModule } from "@/models/_baseModule";
+import { Model, Collection } from "./_baseVueMcClasses";
+
+const modelName = "user";
 
 export class User extends Model {
   static get modelName() {
-    return "user";
+    return modelName;
   }
 
-  constructor({
-    uuid = null,
-    email = "",
-    first_name = "",
-    last_name = "",
-    current_campaign = "",
-  } = {}) {
-    super();
-    this.uuid = uuid;
-    this.email = email;
-    this.first_name = first_name;
-    this.last_name = last_name;
-    this.current_campaign = current_campaign;
+  defaults() {
+    return {
+      uuid: null,
+      email: "",
+      first_name: "",
+      last_name: "",
+      current_campaign: "",
+    };
   }
 
   get name() {
@@ -26,11 +22,15 @@ export class User extends Model {
   }
 }
 
-class UserVuexModule extends ModelVuexModule {
-  constructor() {
-    super();
-    this.modelClass = User;
+export class UserList extends Collection {
+  static get modelName() {
+    return modelName;
+  }
+
+  options() {
+    return {
+      ...super.options(),
+      model: User,
+    };
   }
 }
-
-export default new UserVuexModule();

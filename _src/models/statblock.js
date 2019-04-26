@@ -1,8 +1,5 @@
-import { generateUrl } from "@/utils/urls";
-import { MCModule } from "@/models/_baseMCModule";
-import { mutateEmptyStringToNull } from "@/models/_baseMCModule";
+import { Model, Collection } from "@/models/_baseVueMcClasses";
 import { average_roll } from "@/utils/dice";
-import { VuexModel } from "@/models/_vuexMCModel";
 
 const modelName = "statblock";
 
@@ -75,15 +72,9 @@ export const alignmentChoices = Object.keys(alignmentDisplay).map(key => ({
 
 export const calculateModifier = score => Math.floor(((score || 0) - 10) / 2);
 
-export class Statblock extends VuexModel {
+export class Statblock extends Model {
   static get modelName() {
     return modelName;
-  }
-
-  options() {
-    return {
-      identifier: "uuid",
-    };
   }
 
   defaults() {
@@ -121,12 +112,6 @@ export class Statblock extends VuexModel {
       reactions: [],
       legendary_actions: [],
     };
-  }
-
-  mutations() {
-    return Object.keys(this.defaults()).reduce((memo, key) => {
-      return { ...memo, [key]: mutateEmptyStringToNull };
-    }, {});
   }
 
   get size_display() {
@@ -177,32 +162,20 @@ export class Statblock extends VuexModel {
     return calculateModifier(this.cha);
   }
 
-  routes() {
+}
+
+export class StatblockList extends Collection {
+  static get modelName() {
+    return modelName;
+  }
+
+  options() {
     return {
-      fetch: generateUrl([Statblock.modelName, this.uuid]),
-      delete: generateUrl([Statblock.modelName, this.uuid]),
+      ...super.options(),
+      model: Statblock,
     };
   }
-
-  getSaveURL() {
-    return generateUrl([
-      Statblock.modelName,
-      ...(this.uuid ? [this.uuid] : []),
-    ]);
-  }
-
-  getSaveMethod() {
-    return this.uuid ? "PUT" : "POST";
-  }
 }
-
-class StatblockModule extends MCModule {
-  constructor() {
-    super(modelName);
-  }
-}
-
-export default new StatblockModule();
 
 export const damageTypes = [
   "bludgeoning",

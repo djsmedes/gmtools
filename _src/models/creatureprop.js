@@ -1,7 +1,5 @@
-import { VuexModel } from "./_vuexMCModel";
-import { generateUrl } from "@/utils/urls";
-import { MCModule } from "@/models/_baseMCModule";
-import { mutateEmptyStringToNull } from "@/models/_baseMCModule";
+import { Model, Collection } from "@/models/_baseVueMcClasses";
+import { Combatant } from "@/models/combatant";
 
 const modelName = "creatureprop";
 
@@ -54,15 +52,9 @@ export const attackTypeChoices = Object.keys(attackTypeDisplay).map(key => ({
     attackTypeDisplay[key].slice(1),
 }));
 
-export class CreatureProp extends VuexModel {
+export class CreatureProp extends Model {
   static get modelName() {
     return modelName;
-  }
-
-  options() {
-    return {
-      identifier: "uuid",
-    };
   }
 
   defaults() {
@@ -92,12 +84,6 @@ export class CreatureProp extends VuexModel {
     };
   }
 
-  mutations() {
-    return Object.keys(this.defaults()).reduce((memo, key) => {
-      return { ...memo, [key]: mutateEmptyStringToNull };
-    }, {});
-  }
-
   get prop_type_display() {
     return propTypeDisplay[this.prop_type] || "";
   }
@@ -105,27 +91,17 @@ export class CreatureProp extends VuexModel {
   get attack_type_display() {
     return attackTypeDisplay[this.attack_type] || "";
   }
+}
 
-  routes() {
+export class CreaturePropList extends Collection {
+  static get modelName() {
+    return modelName;
+  }
+
+  options() {
     return {
-      fetch: generateUrl([modelName, this.uuid]),
-      delete: generateUrl([modelName, this.uuid]),
+      ...super.options(),
+      model: CreatureProp,
     };
   }
-
-  getSaveURL() {
-    return generateUrl([modelName, ...(this.uuid ? [this.uuid] : [])]);
-  }
-
-  getSaveMethod() {
-    return this.uuid ? "PUT" : "POST";
-  }
 }
-
-class CreaturePropModule extends MCModule {
-  constructor() {
-    super(modelName);
-  }
-}
-
-export default new CreaturePropModule();
