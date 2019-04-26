@@ -35,13 +35,12 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import auth from "@/auth";
+import { actionTypes as authActions } from "@/auth/vuexKeys";
 import { FIELD_REQUIRED } from "@/strings/errors";
 import { routeNames } from "@/router";
 
 export default {
-  name: "Login",
+  name: "AuthLogin",
   props: {
     successRoute: {
       default: () => ({ name: routeNames.HOME }),
@@ -63,12 +62,9 @@ export default {
     };
   },
   methods: {
-    ...mapActions({
-      login: auth.actionTypes.LOGIN,
-    }),
     async submit() {
       if (this.$refs.form.validate()) {
-        let errors = await this.login({
+        let errors = await this.dispatch(authActions.LOGIN, {
           email: this.email.value,
           password: this.password.value,
         });

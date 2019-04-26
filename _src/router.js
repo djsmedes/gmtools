@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Combat from "@/components/encounters/Combat";
+import Combat from "@/views/CombatView";
 import {
   userRequired,
   loginRequired,
@@ -168,7 +168,7 @@ const router = new Router({
       path: "/login/",
       name: routeNames.LOGIN,
       component: () =>
-        import(/* webpackChunkName: "misc" */ "@/components/auth/Login"),
+        import(/* webpackChunkName: "misc" */ "@/views/AuthLogin"),
       props: true,
       beforeEnter: loggedInExcluded,
     },
@@ -176,7 +176,7 @@ const router = new Router({
       path: "/signup/",
       name: routeNames.SIGNUP,
       component: () =>
-        import(/* webpackChunkName: "misc" */ "@/components/auth/SignUp"),
+        import(/* webpackChunkName: "misc" */ "@/views/AuthSignUp"),
       beforeEnter: loggedInExcluded,
     },
     {

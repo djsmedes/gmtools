@@ -101,7 +101,7 @@
 
     <v-divider></v-divider>
 
-    <v-card-actions v-if="$can('gm', currentCampaign)">
+    <v-card-actions>
       <v-btn
         icon
         flat
@@ -163,7 +163,7 @@
 </template>
 
 <script>
-import { Combatant } from "@/models/combatant";
+import { Combatant } from "@/models";
 import CombatantHpDialog from "@/components/encounters/CombatantHPDialog";
 import CombatantInitiativeDialog from "@/components/encounters/CombatantInitiativeDialog";
 import debounce from "lodash/debounce";
@@ -192,13 +192,6 @@ export default {
     return {
       combatant: new Combatant({ uuid: this.uuid }),
     };
-  },
-  watch: {
-    vuexCombatant: {
-      handler(newCombatant) {
-        this.combatant.update(newCombatant);
-      },
-    },
   },
   computed: {
     cardClasses() {
@@ -233,7 +226,7 @@ export default {
     },
   },
   async created() {
-    await this.combatant.vuex_fetch(this.$store);
+    await this.combatant.fetch();
   },
   methods: {
     updateSelf() {

@@ -42,8 +42,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import auth from "@/auth";
+import { actionTypes as authActions } from "@/auth/vuexKeys";
 import { FIELD_REQUIRED } from "@/strings/errors";
 
 export default {
@@ -72,12 +71,9 @@ export default {
     };
   },
   methods: {
-    ...mapActions({
-      signup: auth.actionTypes.SIGNUP,
-    }),
     async submit() {
       if (this.$refs.form.validate()) {
-        let errors = await this.signup({
+        let errors = await this.dispatch(authActions.SIGNUP, {
           email: this.email.value,
           password1: this.password1.value,
           password2: this.password2.value,

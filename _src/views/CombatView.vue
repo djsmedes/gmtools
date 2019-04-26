@@ -93,7 +93,7 @@
             lg3
             xl2
             v-for="combatant in combatantsByInitiative"
-            :key="combatant.uuid"
+            :key="combatant._uid"
           >
             <combatant-card
               :uuid="combatant.uuid"
@@ -108,7 +108,7 @@
     </v-expand-transition>
 
     <v-card v-if="$can('gm', currentCampaign)" class="hidden-sm-and-down">
-      <screen :items="tabs" v-model="activeTab">
+      <gm-screen :items="tabs.models" v-model="activeTab">
         <template slot="toolbar-left">
           <v-btn
             flat
@@ -150,18 +150,18 @@
             v-if="tab.uuid"
             flat
             icon
-            :to="{ name: routeNames.GMSCREENTAB, params: { uuid: tab.uuid } }"
+            :to="{ name: $routeNames.GMSCREENTAB, params: { uuid: tab.uuid } }"
           >
             <v-icon>edit</v-icon>
           </v-btn>
           <v-btn v-else flat icon disabled>
             <v-icon>edit</v-icon>
           </v-btn>
-          <v-btn flat icon :to="{ name: routeNames.GMSCREENTAB_CREATE }">
+          <v-btn flat icon :to="{ name: $routeNames.GMSCREENTAB_CREATE }">
             <v-icon>add</v-icon>
           </v-btn>
         </template>
-      </screen>
+      </gm-screen>
       <v-form v-if="activeTab === -1" @submit.prevent>
         <v-container grid-list-md>
           <v-layout row wrap>
@@ -224,17 +224,26 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
 import CombatantCard from "@/components/encounters/CombatantCard";
 import Screen from "@/components/gmscreen/GMScreen";
-import ScreenTab from "@/components/gmscreen/GMScreenTab";
 import EncounterChooser from "@/components/encounters/EncounterChooser";
-import { Combatant, Encounter, GMScreenTab } from "@/models";
-import auth from "@/auth";
+import {
+  Campaign,
+  Combatant,
+  CombatantList,
+  Encounter,
+  GMScreenTab,
+  GMScreenTabList,
+  currentCampaign as getCurrentCampaign,
+} from "@/models";
 
 export default {
-  name: "Combat",
-  components: { CombatantCard, Screen, ScreenTab, EncounterChooser },
+  name: "CombatView",
+  components: {
+    CombatantCard,
+    "gm-screen": Screen,
+    EncounterChooser,
+  },
   data() {
     return {
       applyingEffectType: "",
@@ -251,24 +260,29 @@ export default {
       combatantLargeHPIncrement: 5,
 
       changeEncounterDialog: false,
-      localEncounter: new Encounter(),
+      currentCampaign: getCurrentCampaign(),
+      combatants: new CombatantList([], {
+        storeFilter: { encounter: getCurrentCampaign().active_encounter },
+      }),
+      pcCombatants: new CombatantList([], { storeFilter: { encounter: null } }),
+      tabs: new GMScreenTabList(),
     };
   },
   computed: {
     combatantsByInitiative() {
-      return [
-        ...this.combatants.filter(
-          c =>
-            c.encounter === null ||
-            c.encounter === this.currentCampaign.active_encounter
-        ),
-      ].sort((a, b) => b.initiative - a.initiative);
+      return [...this.combatants.models, ...this.pcCombatants.models].sort(
+        (a, b) => b.initiative - a.initiative
+      );
     },
     tab() {
       return this.tabs[this.activeTab] || new GMScreenTab();
     },
     currentEncounter() {
-      return this.getEncounter(this.currentCampaign.active_encounter);
+      let encounter = new Encounter({
+        uuid: this.currentCampaign.active_encounter,
+      });
+      encounter.fetch();
+      return encounter;
     },
   },
   methods: {
@@ -313,7 +327,7 @@ export default {
     },
     async changeActiveEncounter(newEncounterUuid) {
       await this.$ws.put({
-        [Combatant.modelName]: [
+        [Campaign.modelName]: [
           {
             ...this.currentCampaign,
             active_encounter: newEncounterUuid,
@@ -324,40 +338,32 @@ export default {
     },
     async changeTabIndex(direction) {
       let newIndex = this.activeTab + direction;
-      let tabList = [...this.tabs];
+      let tabList = [...this.tabs.models];
       if (newIndex < 0 || newIndex >= tabList.length) {
         return;
       }
       let tab = tabList.splice(this.activeTab, 1)[0];
       tabList.splice(newIndex, 0, tab);
-      let index = 0;
-      await Promise.all(
-        tabList.reduce((acc, cur) => {
-          if (cur.order !== index) {
-            acc.push(this.updateTab({ ...cur, order: index }));
-          }
-          index += 1;
-          return acc;
-        }, [])
-      );
+      let promises = [];
+      tabList.forEach((tab, index) => {
+        if (tab.order !== index) {
+          tab.order = index;
+          promises.push(tab.save());
+        }
+      });
+      await Promise.all(promises);
       this.activeTab = newIndex;
     },
     async completeEncounter() {
-      await Promise.all([
-        this.updateEncounter(
-          new Encounter({
-            ...this.currentEncounter,
-            completion_date: new Date(),
-          })
-        ),
-        this.changeActiveEncounter(null),
-      ]);
+      let encounter = this.currentEncounter;
+      encounter.completion_date = new Date();
+      await Promise.all([encounter.save(), this.changeActiveEncounter(null)]);
     },
   },
   created() {
-    this.loadCombatants();
-    this.loadEncounters();
-    this.loadTabs();
+    this.combatants.fetch();
+    this.pcCombatants.fetch();
+    this.tabs.fetch();
   },
 };
 </script>
