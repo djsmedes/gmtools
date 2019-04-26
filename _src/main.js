@@ -45,9 +45,11 @@ Vue.use(abilitiesPlugin, ability);
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
-axios.defaults.headers["common"] = {
+axios.defaults.headers.common = {
+  ...axios.defaults.headers.common,
   ...store.getters[namespace + "/" + getterTypes.AUTH_HEADER],
 };
+
 
 const vm = new Vue({
   router,
