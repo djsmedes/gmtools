@@ -6,38 +6,38 @@
           flat
           exact
           class="title no-text-dec"
-          :to="{ name: routeNames.HOME }"
+          :to="{ name: $routeNames.HOME }"
         >
           <span class="hidden-xs-only">GMTOOLS</span>
           <v-icon dark class="hidden-sm-and-up">home</v-icon>
         </v-btn>
         <v-btn
           flat
-          v-if="isAuthenticated"
+          v-if="user.isAuthenticated"
           class="no-text-dec hidden-xs-only"
-          :to="{ name: routeNames.ENCOUNTERS }"
+          :to="{ name: $routeNames.ENCOUNTERS }"
         >
           Encounters
         </v-btn>
         <v-btn
           flat
-          v-if="isAuthenticated"
+          v-if="user.isAuthenticated"
           class="no-text-dec hidden-xs-only"
-          :to="{ name: routeNames.COMBATANTS }"
+          :to="{ name: $routeNames.COMBATANTS }"
         >
           Combatants
         </v-btn>
         <v-btn
           flat
-          v-if="isAuthenticated"
+          v-if="user.isAuthenticated"
           class="no-text-dec hidden-xs-only"
-          :to="{ name: routeNames.STATBLOCKS }"
+          :to="{ name: $routeNames.STATBLOCKS }"
         >
           Statblocks
         </v-btn>
         <v-btn
           flat
-          v-if="isAuthenticated"
+          v-if="user.isAuthenticated"
           class="no-text-dec hidden-xs-only"
           :to="{ name: $routeNames.CREATUREPROPS }"
         >
@@ -47,11 +47,11 @@
 
       <v-spacer></v-spacer>
 
-      <v-toolbar-items v-if="!isAuthenticated">
-        <v-btn flat class="no-text-dec" :to="{ name: routeNames.LOGIN }">
+      <v-toolbar-items v-if="!user.isAuthenticated">
+        <v-btn flat class="no-text-dec" :to="{ name: $routeNames.LOGIN }">
           Sign in
         </v-btn>
-        <v-btn flat class="no-text-dec" :to="{ name: routeNames.SIGNUP }">
+        <v-btn flat class="no-text-dec" :to="{ name: $routeNames.SIGNUP }">
           Sign up
         </v-btn>
       </v-toolbar-items>
@@ -81,7 +81,7 @@
               </span>
             </v-list-tile>
             <v-divider class="mt-1 mb-1"></v-divider>
-            <v-list-tile :to="{ name: routeNames.CAMPAIGNS }">
+            <v-list-tile :to="{ name: $routeNames.CAMPAIGNS }">
               <v-list-tile-action>
                 <v-icon>recent_actors</v-icon>
               </v-list-tile-action>
@@ -91,7 +91,7 @@
                 </v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
-            <v-list-tile :to="{ name: routeNames.ACCOUNT_SETTINGS }">
+            <v-list-tile :to="{ name: $routeNames.ACCOUNT_SETTINGS }">
               <v-list-tile-action>
                 <v-icon>build</v-icon>
               </v-list-tile-action>
@@ -118,9 +118,7 @@
     </v-toolbar>
 
     <v-content style="position: relative">
-      <v-container v-show="!$store.getters.isLoading">
-        <router-view v-if="isRequested" />
-      </v-container>
+      <router-view v-show="!$store.getters.isLoading" />
       <v-dialog
         :value="$store.getters.isLoading"
         hide-overlay
@@ -145,31 +143,19 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import auth from "@/auth";
-import { routeNames } from "@/router";
+import { actionTypes as authActions } from "@/auth/vuexKeys";
+import { authUser } from "@/models";
 
 export default {
   data() {
     return {
-      routeNames,
+      user: authUser(),
     };
   },
-  computed: {
-    ...mapGetters(auth.namespace, {
-      user: auth.getterTypes.AUTH_USER,
-      currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN,
-      isAuthenticated: auth.getterTypes.IS_USER_AUTHENTICATED,
-      isRequested: auth.getterTypes.WAS_AUTH_USER_REQUESTED,
-    }),
-  },
   methods: {
-    ...mapActions(auth.namespace, {
-      logoutUser: auth.actionTypes.LOGOUT,
-    }),
-    logout() {
-      this.logoutUser();
-      this.$router.push({ name: routeNames.LOGIN });
+    async logout() {
+      await this.dispatch(authActions.LOGOUT);
+      this.$router.push({ name: this.$routeNames.LOGIN });
     },
   },
 };

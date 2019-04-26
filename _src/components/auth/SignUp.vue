@@ -43,8 +43,7 @@
 
 <script>
 import { mapActions } from "vuex";
-import auth from "@/auth/index";
-import { routeNames } from "@/router";
+import auth from "@/auth";
 import { FIELD_REQUIRED } from "@/strings/errors";
 
 export default {
@@ -73,7 +72,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(auth.namespace, {
+    ...mapActions({
       signup: auth.actionTypes.SIGNUP,
     }),
     async submit() {
@@ -84,7 +83,7 @@ export default {
           password2: this.password2.value,
         });
         if (!errors) {
-          this.$router.push({ name: routeNames.HOME }); // todo - welcome page
+          this.$router.push({ name: this.$routeNames.HOME }); // todo - welcome page
         } else {
           this.nonFieldErrors = errors.non_field_errors;
           this.email.errors = errors.email;

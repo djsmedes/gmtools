@@ -37,8 +37,8 @@
 <script>
 import { mapActions } from "vuex";
 import auth from "@/auth";
-import { routeNames } from "@/router";
 import { FIELD_REQUIRED } from "@/strings/errors";
+import { routeNames } from "@/router";
 
 export default {
   name: "Login",
@@ -63,7 +63,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(auth.namespace, {
+    ...mapActions({
       login: auth.actionTypes.LOGIN,
     }),
     async submit() {

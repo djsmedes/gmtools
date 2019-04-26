@@ -229,20 +229,14 @@ import CombatantCard from "@/components/encounters/CombatantCard";
 import Screen from "@/components/gmscreen/GMScreen";
 import ScreenTab from "@/components/gmscreen/GMScreenTab";
 import EncounterChooser from "@/components/encounters/EncounterChooser";
-import combatant, { Combatant } from "@/models/combatant";
-import campaign from "@/models/campaign";
-import encounter, { Encounter } from "@/models/encounter";
-import gmscreentab, { GMScreenTab } from "@/models/gmscreentab";
+import { Combatant, Encounter, GMScreenTab } from "@/models";
 import auth from "@/auth";
-import { routeNames } from "@/router";
 
 export default {
   name: "Combat",
   components: { CombatantCard, Screen, ScreenTab, EncounterChooser },
   data() {
     return {
-      routeNames,
-
       applyingEffectType: "",
       effectToApply: "",
       combatantsToApply: [],
@@ -261,19 +255,6 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(combatant.namespace, {
-      combatants: combatant.getterTypes.LIST,
-      getCombatant: combatant.getterTypes.BY_ID,
-    }),
-    ...mapGetters(auth.namespace, {
-      currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN,
-    }),
-    ...mapGetters(encounter.namespace, {
-      getEncounter: encounter.getterTypes.BY_ID,
-    }),
-    ...mapGetters(gmscreentab.namespace, {
-      tabs: gmscreentab.getterTypes.LIST,
-    }),
     combatantsByInitiative() {
       return [
         ...this.combatants.filter(
@@ -291,17 +272,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions(encounter.namespace, {
-      loadEncounters: encounter.actionTypes.LIST,
-      updateEncounter: encounter.actionTypes.UPDATE,
-    }),
-    ...mapActions(gmscreentab.namespace, {
-      loadTabs: gmscreentab.actionTypes.LIST,
-      updateTab: gmscreentab.actionTypes.UPDATE,
-    }),
-    ...mapActions(combatant.namespace, {
-      loadCombatants: combatant.actionTypes.LIST,
-    }),
     toggleCombatantWillApply(uuid) {
       if (!this.applyingEffectType) return;
       if (this.combatantsToApply.includes(uuid)) {
@@ -331,9 +301,9 @@ export default {
         let combatantObjs = this.combatantsToApply.map(
           uuid => new Combatant({ uuid: uuid })
         );
-        await Promise.all(combatantObjs.map(c => c.vuex_fetch(this.$store)));
+        await Promise.all(combatantObjs.map(c => c.fetch()));
         await this.$ws.put({
-          [combatant.namespace]: combatantObjs.map(c => {
+          [Combatant.modelName]: combatantObjs.map(c => {
             c[this.applyingEffectType].push(this.effectToApply);
             return c;
           }),
@@ -343,7 +313,7 @@ export default {
     },
     async changeActiveEncounter(newEncounterUuid) {
       await this.$ws.put({
-        [campaign.namespace]: [
+        [Combatant.modelName]: [
           {
             ...this.currentCampaign,
             active_encounter: newEncounterUuid,

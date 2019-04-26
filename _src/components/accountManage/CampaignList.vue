@@ -72,11 +72,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import { routeNames } from "@/router";
-import campaign, { Campaign } from "@/models/campaign";
+import { Campaign } from "@/models";
 import CampaignDetail from "@/components/accountManage/CampaignDetail";
-import auth from "@/auth";
 import Invitations from "@/components/accountManage/Invitations";
 import { sleep } from "@/utils/time";
 import NewCampaign from "@/components/accountManage/NewCampaign";
@@ -86,18 +83,11 @@ export default {
   components: { Invitations, CampaignDetail },
   data() {
     return {
-      routeNames,
       p_campaignUnderEdit: null,
       showCampaigns: true,
     };
   },
   computed: {
-    ...mapGetters(campaign.namespace, {
-      allCampaigns: campaign.getterTypes.LIST,
-    }),
-    ...mapGetters(auth.namespace, {
-      currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN,
-    }),
     campaignUnderEdit: {
       get() {
         return [...this.campaigns, this.currentCampaign]
@@ -118,10 +108,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions(campaign.namespace, {
-      loadCampaigns: campaign.actionTypes.LIST,
-      createCampaign: campaign.actionTypes.CREATE,
-    }),
     async setCurrentCampaign(uuid) {
       this.showCampaigns = false;
       let error = await Promise.race([

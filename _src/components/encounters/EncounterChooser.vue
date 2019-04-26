@@ -35,10 +35,6 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import encounter from "@/models/encounter";
-import auth from "@/auth";
-
 export default {
   name: "EncounterChooser",
   props: {
@@ -66,22 +62,9 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(encounter.namespace, {
-      encounters: encounter.getterTypes.LIST,
-      completedEncounters: encounter.getterTypes.LIST_COMPLETED,
-      getEncounter: encounter.getterTypes.BY_ID,
-    }),
-    ...mapGetters(auth.namespace, {
-      currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN,
-    }),
     currentEncounter() {
       return this.getEncounter(this.currentCampaign.active_encounter);
     },
-  },
-  methods: {
-    ...mapActions(encounter.namespace, {
-      loadEncountersQuery: encounter.actionTypes.QUERY_LIST,
-    }),
   },
 };
 </script>

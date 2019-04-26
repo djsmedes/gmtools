@@ -1,31 +1,30 @@
 import store from "@/store";
 import auth from "@/auth";
 import { routeNames } from "@/router";
-
-const wasUserRequested = () =>
-  store.getters[
-    auth.namespace + "/" + auth.getterTypes.WAS_AUTH_USER_REQUESTED
-  ];
-
-const isUserAuthenticated = () =>
-  store.getters[auth.namespace + "/" + auth.getterTypes.IS_USER_AUTHENTICATED];
+import { getAuthUser } from "@/models";
 
 export async function userRequired(to, from, next) {
-  if (!wasUserRequested()) {
-    await store.dispatch(auth.namespace + "/" + auth.actionTypes.GET_USER);
+  if (store.state[auth.stateKeys.AUTH_USER] === undefined) {
+    await store.dispatch(auth.actionTypes.GET_USER);
   }
   next();
 }
 
-export function loginRequired(to, from, next) {
-  isUserAuthenticated()
-    ? next()
-    : next({
-        name: routeNames.LOGIN,
-        params: { successRoute: { ...to } },
-      });
+export async function loginRequired(to, from, next) {
+  if ((await getAuthUser()).isAuthenticated) {
+    next();
+  } else {
+    next({
+      name: routeNames.LOGIN,
+      params: { successRoute: { ...to } },
+    });
+  }
 }
 
-export function loggedInExcluded(to, from, next) {
-  !isUserAuthenticated() ? next() : next({ name: routeNames.HOME });
+export async function loggedInExcluded(to, from, next) {
+  if ((await getAuthUser()).isAuthenticated) {
+    next({ name: routeNames.HOME });
+  } else {
+    next();
+  }
 }

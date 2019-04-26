@@ -163,9 +163,7 @@
 </template>
 
 <script>
-import combatant, { Combatant } from "@/models/combatant";
-import { mapGetters } from "vuex";
-import auth from "@/auth";
+import { Combatant } from "@/models/combatant";
 import CombatantHpDialog from "@/components/encounters/CombatantHPDialog";
 import CombatantInitiativeDialog from "@/components/encounters/CombatantInitiativeDialog";
 import debounce from "lodash/debounce";
@@ -203,15 +201,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(auth.namespace, {
-      currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN,
-    }),
-    ...mapGetters(combatant.namespace, {
-      getCombatant: combatant.getterTypes.BY_ID,
-    }),
-    vuexCombatant() {
-      return this.getCombatant(this.uuid) || {};
-    },
     cardClasses() {
       return [
         { "combatant-card": true },
@@ -248,7 +237,7 @@ export default {
   },
   methods: {
     updateSelf() {
-      this.$ws.put({ [combatant.namespace]: [this.combatant] });
+      this.$ws.put({ [Combatant.modelName]: [this.combatant] });
     },
     updateSelfDebounced: debounce(function() {
       this.updateSelf();

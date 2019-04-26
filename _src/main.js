@@ -6,7 +6,7 @@ import App from "@/App";
 import router from "@/router";
 import store from "@/store";
 import axios from "axios";
-import { namespace, stateKeys, getterTypes, mutationTypes } from "@/auth";
+import { stateKeys, getterTypes, mutationTypes } from "@/auth/vuexKeys";
 import { ModuleSocket } from "@/utils/websockets";
 import { ability } from "@/utils/ability";
 import { abilitiesPlugin } from "@casl/vue";
@@ -47,9 +47,8 @@ axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 axios.defaults.headers.common = {
   ...axios.defaults.headers.common,
-  ...store.getters[namespace + "/" + getterTypes.AUTH_HEADER],
+  ...store.getters[getterTypes.AUTH_HEADER],
 };
-
 
 const vm = new Vue({
   router,
@@ -61,13 +60,13 @@ Vue.prototype.$ws = new ModuleSocket(vm);
 
 store.subscribe((mutation, state) => {
   switch (mutation.type) {
-    case namespace + "/" + mutationTypes.SET_AUTH_USER:
-      if (state[namespace][stateKeys.AUTH_USER]) {
+    case mutationTypes.SET_AUTH_USER:
+      if (state[stateKeys.AUTH_USER]) {
         vm.$connect();
         ability.update(mutation.payload.permissions);
       }
       break;
-    case namespace + "/" + mutationTypes.CLEAR_AUTH_USER:
+    case mutationTypes.CLEAR_AUTH_USER:
       ability.update([]);
       if (typeof vm.$disconnect === "function") vm.$disconnect();
       break;

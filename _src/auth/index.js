@@ -1,54 +1,11 @@
 import Vue from "vue";
-import userModule, { User } from "@/models/user";
-import campaignModule, { Campaign } from "@/models/campaign";
 import * as Cookies from "js-cookie";
 import axios from "axios";
-import { generateUrl } from "@/utils/urls";
-
-function array2ObjByUUID(array, objConstructor) {
-  return array.reduce((accumulator, currentVal) => {
-    accumulator[currentVal.uuid] = new objConstructor(currentVal);
-    return accumulator;
-  }, {});
-}
-
-export const namespace = "auth";
-
-export const stateKeys = {
-  TOKEN: "authToken",
-  AUTH_USER: "authUser",
-  PASS_RESET_USER_KEY: "passResetUserKey",
-  PASS_RESET_TOKEN: "passResetToken",
-};
-
-export const getterTypes = {
-  AUTH_HEADER: "authHeader",
-  AUTH_USER: "authUser",
-  WAS_AUTH_USER_REQUESTED: "wasAuthUserRequested",
-  IS_USER_AUTHENTICATED: "isUserAuthenticated",
-  CURRENT_CAMPAIGN: "currentCampaign",
-};
-
-export const actionTypes = {
-  GET_USER: "getUser",
-  SET_AUTH_USER: "setAuthUser",
-  SIGNUP: "signUp",
-  LOGIN: "getToken",
-  LOGOUT: "removeToken",
-};
-
-export const mutationTypes = {
-  SET_USER: "setUser",
-  SET_AUTH_USER: "setAuthUser",
-  CLEAR_AUTH_USER: "clearAuthUser",
-  SET_TOKEN: "setAuth",
-  REMOVE_TOKEN: "removeAuth",
-  SET_PASS_RESET_DATA: "setPassResetData",
-  CLEAR_PASS_RESET_DATA: "clearPassResetData",
-};
+import { generateUrl2 as generateUrl } from "@/utils/urls";
+import { actionTypes, stateKeys, mutationTypes, getterTypes } from "./vuexKeys";
 
 export const store = {
-  namespaced: true,
+  namespaced: false,
   state: {},
   getters: {
     [getterTypes.AUTH_HEADER]: () => {
@@ -59,47 +16,15 @@ export const store = {
         return {};
       }
     },
-    [getterTypes.AUTH_USER]: (state, getters, rootState, rootGetters) => {
-      if (!getters[getterTypes.WAS_AUTH_USER_REQUESTED]) {
-        return;
-      }
-      let userByIdGetterName =
-        userModule.namespace + "/" + userModule.getterTypes.BY_ID;
-      return rootGetters[userByIdGetterName](state[stateKeys.AUTH_USER]);
-    },
-    [getterTypes.CURRENT_CAMPAIGN]: (
-      state,
-      getters,
-      rootState,
-      rootGetters
-    ) => {
-      let user = getters[getterTypes.AUTH_USER];
-      if (!user) return new Campaign();
-      let campaignUuid = user.current_campaign;
-      if (!campaignUuid) return new Campaign();
-      let campaignByIdGetterName =
-        campaignModule.namespace + "/" + campaignModule.getterTypes.BY_ID;
-      return rootGetters[campaignByIdGetterName](campaignUuid);
-    },
-    [getterTypes.WAS_AUTH_USER_REQUESTED]: state => {
-      return typeof state[stateKeys.AUTH_USER] !== "undefined";
-    },
-    [getterTypes.IS_USER_AUTHENTICATED]: (state, getters) => {
-      let user = getters[getterTypes.AUTH_USER];
-      if (typeof user === "undefined") return false;
-      return user.email.length !== 0;
-    },
   },
   actions: {
     [actionTypes.LOGIN]: async ({ commit, dispatch }, { email, password }) => {
       try {
-        let { data } = await axios.post(generateUrl(["token-auth"]), {
+        let { data } = await axios.post(generateUrl("token-auth"), {
           username: email,
           password: password,
         });
-        let { token } = data;
-
-        commit(mutationTypes.SET_TOKEN, { token });
+        commit(mutationTypes.SET_TOKEN, data);
         await dispatch(actionTypes.GET_USER);
       } catch (err) {
         if (err.response && err.response.status === 400) {
@@ -118,21 +43,16 @@ export const store = {
     },
     [actionTypes.GET_USER]: async ({ commit, dispatch }) => {
       try {
-        let { data } = await axios.get(generateUrl(["request-user"]));
+        let { data } = await axios.get(generateUrl("request-user"));
         let { user, campaigns } = data;
 
         dispatch(actionTypes.SET_AUTH_USER, user);
-        let campaignSetListKey =
-          campaignModule.namespace +
-          "/" +
-          campaignModule.mutationTypes.SET_LIST;
-        commit(
-          campaignSetListKey,
-          {
-            objList: array2ObjByUUID(campaigns, Campaign),
-          },
-          { root: true }
+        // eslint-disable-next-line
+        console.warn(
+          "auth GET_USER is still getting campaigns for some reason",
+          JSON.stringify(campaigns, null, 2)
         );
+        // todo - save campaign here?
       } catch (err) {
         // eslint-disable-next-line
         if (process.env.NODE_ENV !== "production") console.warn(err);
@@ -144,6 +64,8 @@ export const store = {
           err.response.data.detail === "Invalid token."
         ) {
           commit(mutationTypes.REMOVE_TOKEN);
+        } else {
+          throw err;
         }
       }
     },
@@ -152,13 +74,7 @@ export const store = {
         commit(mutationTypes.CLEAR_AUTH_USER);
       } else {
         commit(mutationTypes.SET_AUTH_USER, user);
-        commit(
-          userModule.namespace + "/" + userModule.mutationTypes.SET,
-          { object: new User(user) },
-          {
-            root: true,
-          }
-        );
+        commit(mutationTypes.SET_CURRENT_CAMPAIGN, user.current_campaign);
       }
     },
     [actionTypes.LOGOUT]: ({ commit }) => {
@@ -171,7 +87,7 @@ export const store = {
       { email, password1, password2 }
     ) => {
       try {
-        let { data } = await axios.post(generateUrl(["signup"]), {
+        let { data } = await axios.post(generateUrl("signup"), {
           email,
           password1,
           password2,
@@ -196,6 +112,9 @@ export const store = {
     [mutationTypes.CLEAR_AUTH_USER](state) {
       Vue.set(state, stateKeys.AUTH_USER, "");
     },
+    [mutationTypes.SET_CURRENT_CAMPAIGN](state, uuid) {
+      Vue.set(state, stateKeys.CURRENT_CAMPAIGN, uuid);
+    },
     [mutationTypes.SET_TOKEN](state, { token }) {
       Cookies.set(stateKeys.TOKEN, token, {
         expires: 7,
@@ -215,11 +134,9 @@ export const store = {
 };
 
 export default {
-  namespace,
   stateKeys,
   getterTypes,
   actionTypes,
   mutationTypes,
   store,
-  User,
 };
