@@ -1,4 +1,5 @@
 import uuid from "uuid/v4";
+import uniqueId from "lodash/uniqueId";
 
 class WebSocketRequest {
   constructor({ verb = null, id = null, data = null } = {}) {
@@ -15,15 +16,28 @@ export class ModuleSocket {
     this.counter = 0;
     this.uuid = uuid();
     this.replyCallbackMap = {};
-    this.vm.$store.watch(
-      state => state.lastReplyId,
-      value => {
-        if (this.replyCallbackMap[value] !== undefined) {
-          this.replyCallbackMap[value]();
-          delete this.replyCallbackMap[value];
-        }
+    this.messageListeners = {};
+  }
+
+  initialize() {
+    this.vm.$socket.onmessage = message => {
+      let { action, data, namespace, replyTo, status } = JSON.parse(
+        message.data
+      );
+
+      if (this.replyCallbackMap[replyTo] !== undefined) {
+        this.replyCallbackMap[replyTo](data);
+        delete this.replyCallbackMap[replyTo];
+      } else {
+        Object.values(this.messageListeners).forEach(listener =>
+          listener({
+            action,
+            data,
+            namespace,
+          })
+        );
       }
-    );
+    };
   }
 
   request(verb, data) {
@@ -49,5 +63,11 @@ export class ModuleSocket {
 
   async delete(data) {
     return await this.request("DELETE", data);
+  }
+
+  addMessageListener(cb) {
+    let id = uniqueId();
+    this.messageListeners[id] = cb;
+    return () => delete this.messageListeners[id];
   }
 }

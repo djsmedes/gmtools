@@ -107,7 +107,7 @@
       </v-container>
     </v-expand-transition>
 
-    <v-card v-if="$can('gm', currentCampaign)" class="hidden-sm-and-down">
+    <v-card class="hidden-sm-and-down">
       <gm-screen :items="tabs.models" v-model="activeTab">
         <template slot="toolbar-left">
           <v-btn
@@ -266,6 +266,7 @@ export default {
       }),
       pcCombatants: new CombatantList([], { storeFilter: { encounter: null } }),
       tabs: new GMScreenTabList(),
+      listenersToTearDown: [],
     };
   },
   computed: {
@@ -364,6 +365,15 @@ export default {
     this.combatants.fetch();
     this.pcCombatants.fetch();
     this.tabs.fetch();
+
+    this.listenersToTearDown.push(
+      this.$ws.addMessageListener(message => {
+        console.log("from listener", message);
+      })
+    );
+  },
+  beforeDestroy() {
+    this.listenersToTearDown.forEach(teardownFunc => teardownFunc());
   },
 };
 </script>

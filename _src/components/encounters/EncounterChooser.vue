@@ -14,7 +14,9 @@
         <v-select
           label="Active encounter"
           :items="
-            showCompleted ? [...encounters, ...completedEncounters] : encounters
+            showCompleted
+              ? [...encounters.models, ...completedEncounters.models]
+              : encounters.models
           "
           item-value="uuid"
           item-text="name"
@@ -35,6 +37,8 @@
 </template>
 
 <script>
+import { Encounter, EncounterList, currentCampaign } from "@/models";
+
 export default {
   name: "EncounterChooser",
   props: {
@@ -48,6 +52,12 @@ export default {
       selectedEncounter: null,
       showCompleted: false,
       lazyLoadedCompleted: false,
+      encounters: new EncounterList(),
+      completedEncounters: new EncounterList([], {
+        storeFilter: {
+          completed_after: "0001-01-01",
+        },
+      }),
     };
   },
   watch: {
@@ -56,15 +66,22 @@ export default {
     },
     showCompleted(val) {
       if (!this.lazyLoadedCompleted && val) {
-        this.loadEncountersQuery({ completed_after: "0001-01-01" });
+        this.completedEncounters.fetch();
         this.lazyLoadedCompleted = true;
       }
     },
   },
   computed: {
     currentEncounter() {
-      return this.getEncounter(this.currentCampaign.active_encounter);
+      let encounter = new Encounter({
+        uuid: currentCampaign().active_encounter,
+      });
+      encounter.fetch();
+      return encounter;
     },
+  },
+  created() {
+    this.encounters.fetch();
   },
 };
 </script>

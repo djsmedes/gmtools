@@ -38,7 +38,6 @@ Vue.use(VueNativeSock, "//" + window.location.host + "/ws/combat/", {
   connectManually: true,
   format: "json",
   reconnection: true,
-  store: store,
 });
 
 Vue.use(abilitiesPlugin, ability);
@@ -63,6 +62,7 @@ store.subscribe((mutation, state) => {
     case mutationTypes.SET_AUTH_USER:
       if (state[stateKeys.AUTH_USER]) {
         vm.$connect();
+        vm.$ws.initialize();
         ability.update(mutation.payload.permissions);
       }
       break;
