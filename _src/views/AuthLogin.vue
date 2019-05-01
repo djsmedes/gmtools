@@ -64,7 +64,7 @@ export default {
   methods: {
     async submit() {
       if (this.$refs.form.validate()) {
-        let errors = await this.dispatch(authActions.LOGIN, {
+        let errors = await this.$store.dispatch(authActions.LOGIN, {
           email: this.email.value,
           password: this.password.value,
         });
