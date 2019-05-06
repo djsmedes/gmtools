@@ -41,12 +41,6 @@ import { Encounter, EncounterList, currentCampaign } from "@/models";
 
 export default {
   name: "EncounterChooser",
-  props: {
-    reset: {
-      type: Boolean,
-      default: false,
-    },
-  },
   data() {
     return {
       selectedEncounter: null,
@@ -61,9 +55,6 @@ export default {
     };
   },
   watch: {
-    reset(newVal) {
-      if (newVal) this.selectedEncounter = this.currentEncounter;
-    },
     showCompleted(val) {
       if (!this.lazyLoadedCompleted && val) {
         this.completedEncounters.fetch();

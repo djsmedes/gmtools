@@ -171,9 +171,9 @@ import debounce from "lodash/debounce";
 export default {
   name: "CombatantCard",
   props: {
-    uuid: {
-      type: String,
-      default: null,
+    combatant: {
+      type: Combatant,
+      required: true,
     },
     effectMode: {
       type: String,
@@ -187,11 +187,6 @@ export default {
       type: Number,
       default: 5,
     },
-  },
-  data() {
-    return {
-      combatant: new Combatant({ uuid: this.uuid }),
-    };
   },
   computed: {
     cardClasses() {

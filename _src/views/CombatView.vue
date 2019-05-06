@@ -96,7 +96,7 @@
             :key="combatant._uid"
           >
             <combatant-card
-              :uuid="combatant.uuid"
+              :combatant="combatant"
               :effect-mode="applyingEffectType"
               :active="combatantsToApply.includes(combatant.uuid)"
               :large-h-p-increment="combatantLargeHPIncrement"
@@ -316,15 +316,6 @@ export default {
       }
       this.exitApplyEffectMode();
     },
-    async tryChangeEncounter() {
-      let newEncounterUuid = await this.$dialog(ChangeEncounterDialog);
-      if (newEncounterUuid) {
-        this.currentCampaign.active_encounter = newEncounterUuid;
-        await this.$ws.put({
-          [Campaign.modelName]: [this.currentCampaign],
-        });
-      }
-    },
     async changeTabIndex(direction) {
       let newIndex = this.activeTab + direction;
       let tabList = [...this.tabs.models];
@@ -343,6 +334,18 @@ export default {
       await Promise.all(promises);
       this.activeTab = newIndex;
     },
+    async changeActiveEncounter(uuid) {
+      this.currentCampaign.active_encounter = uuid;
+      await this.$ws.put({
+        [Campaign.modelName]: [this.currentCampaign],
+      });
+    },
+    async tryChangeEncounter() {
+      let newEncounterUuid = await this.$dialog(ChangeEncounterDialog);
+      if (newEncounterUuid) {
+        this.changeActiveEncounter(newEncounterUuid);
+      }
+    },
     async completeEncounter() {
       let encounter = this.currentEncounter;
       encounter.completion_date = new Date();
@@ -355,7 +358,18 @@ export default {
 
     this.listenersToTearDown.push(
       this.$ws.addMessageListener(message => {
-        console.log("from listener", message);
+        let { action, namespace, data } = message;
+        let objectList = null;
+        switch (namespace) {
+          case "combatant":
+            objectList = this.combatantsByInitiative;
+            break;
+        }
+        data.forEach(obj => {
+          let corresponding = objectList.find(tst => tst.uuid === obj.uuid);
+          corresponding.update(obj);
+          corresponding.sync();
+        });
       })
     );
   },

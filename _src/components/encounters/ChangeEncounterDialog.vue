@@ -3,7 +3,7 @@
     <v-btn slot="activator" flat>
       Change
     </v-btn>
-    <encounter-chooser :reset="changeEncounterDialog">
+    <encounter-chooser>
       <template slot="actions" slot-scope="{ selectedEncounter }">
         <v-btn flat @click="close(selectedEncounter.uuid)">
           Save
