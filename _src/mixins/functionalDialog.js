@@ -1,8 +1,15 @@
-export default {
+export const functionalDialogMixin = {
   data() {
     return {
       dialog: false,
     };
+  },
+  watch: {
+    dialog(newVal) {
+      if (!newVal) {
+        this.$emit("close", null);
+      }
+    },
   },
   methods: {
     open() {
@@ -14,3 +21,5 @@ export default {
     },
   },
 };
+
+export default functionalDialogMixin;

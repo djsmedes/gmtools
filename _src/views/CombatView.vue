@@ -176,25 +176,10 @@
               </h6>
             </v-flex>
             <v-flex xs12>
-              <v-dialog width="500" v-model="changeEncounterDialog">
-                <v-btn slot="activator" flat>
-                  Change
-                </v-btn>
-                <encounter-chooser :reset="changeEncounterDialog">
-                  <template slot="actions" slot-scope="{ selectedEncounter }">
-                    <v-btn
-                      flat
-                      @click="changeActiveEncounter(selectedEncounter.uuid)"
-                    >
-                      Save
-                    </v-btn>
-                    <v-btn flat @click="changeEncounterDialog = false">
-                      Cancel
-                    </v-btn>
-                  </template>
-                </encounter-chooser>
-              </v-dialog>
-              <v-btn @click="completeEncounter" flat>
+              <v-btn flat @click="tryChangeEncounter">
+                Change
+              </v-btn>
+              <v-btn flat @click="completeEncounter">
                 Complete
               </v-btn>
             </v-flex>
@@ -226,7 +211,7 @@
 <script>
 import CombatantCard from "@/components/encounters/CombatantCard";
 import Screen from "@/components/gmscreen/GMScreen";
-import EncounterChooser from "@/components/encounters/EncounterChooser";
+import ChangeEncounterDialog from "@/components/encounters/ChangeEncounterDialog";
 import {
   Campaign,
   Combatant,
@@ -242,7 +227,6 @@ export default {
   components: {
     CombatantCard,
     "gm-screen": Screen,
-    EncounterChooser,
   },
   data() {
     return {
@@ -259,7 +243,6 @@ export default {
       activeTab: -1,
       combatantLargeHPIncrement: 5,
 
-      changeEncounterDialog: false,
       currentCampaign: getCurrentCampaign(),
       pcCombatants: new CombatantList([], { storeFilter: { encounter: null } }),
       tabs: new GMScreenTabList(),
@@ -333,12 +316,14 @@ export default {
       }
       this.exitApplyEffectMode();
     },
-    async changeActiveEncounter(newEncounterUuid) {
-      this.currentCampaign.active_encounter = newEncounterUuid;
-      await this.$ws.put({
-        [Campaign.modelName]: [this.currentCampaign],
-      });
-      this.changeEncounterDialog = false;
+    async tryChangeEncounter() {
+      let newEncounterUuid = await this.$dialog(ChangeEncounterDialog);
+      if (newEncounterUuid) {
+        this.currentCampaign.active_encounter = newEncounterUuid;
+        await this.$ws.put({
+          [Campaign.modelName]: [this.currentCampaign],
+        });
+      }
     },
     async changeTabIndex(direction) {
       let newIndex = this.activeTab + direction;
