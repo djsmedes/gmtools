@@ -25,17 +25,16 @@ export class ModuleSocket {
         message.data
       );
 
+      Object.values(this.messageListeners).forEach(listener =>
+        listener({
+          action,
+          data,
+          namespace,
+        })
+      );
       if (this.replyCallbackMap[replyTo] !== undefined) {
-        this.replyCallbackMap[replyTo](data);
+        this.replyCallbackMap[replyTo]();
         delete this.replyCallbackMap[replyTo];
-      } else {
-        Object.values(this.messageListeners).forEach(listener =>
-          listener({
-            action,
-            data,
-            namespace,
-          })
-        );
       }
     };
   }

@@ -261,9 +261,6 @@ export default {
 
       changeEncounterDialog: false,
       currentCampaign: getCurrentCampaign(),
-      combatants: new CombatantList([], {
-        storeFilter: { encounter: getCurrentCampaign().active_encounter },
-      }),
       pcCombatants: new CombatantList([], { storeFilter: { encounter: null } }),
       tabs: new GMScreenTabList(),
       listenersToTearDown: [],
@@ -284,6 +281,16 @@ export default {
       });
       encounter.fetch();
       return encounter;
+    },
+    combatants() {
+      let collection = new CombatantList();
+      if (this.currentEncounter.uuid) {
+        collection.setOption("storeFilter", {
+          encounter: this.currentEncounter.uuid,
+        });
+        collection.fetch();
+      }
+      return collection;
     },
   },
   methods: {
@@ -327,13 +334,9 @@ export default {
       this.exitApplyEffectMode();
     },
     async changeActiveEncounter(newEncounterUuid) {
+      this.currentCampaign.active_encounter = newEncounterUuid;
       await this.$ws.put({
-        [Campaign.modelName]: [
-          {
-            ...this.currentCampaign,
-            active_encounter: newEncounterUuid,
-          },
-        ],
+        [Campaign.modelName]: [this.currentCampaign],
       });
       this.changeEncounterDialog = false;
     },
@@ -362,7 +365,6 @@ export default {
     },
   },
   created() {
-    this.combatants.fetch();
     this.pcCombatants.fetch();
     this.tabs.fetch();
 
