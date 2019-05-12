@@ -182,7 +182,7 @@ const router = new Router({
       path: "/account/",
       name: routeNames.ACCOUNT_SETTINGS,
       component: () =>
-        import(/* webpackChunkName: "misc" */ "@/components/auth/AccountOverview"),
+        import(/* webpackChunkName: "misc" */ "@/views/AuthAccountOverview"),
       beforeEnter: loginRequired,
     },
 
