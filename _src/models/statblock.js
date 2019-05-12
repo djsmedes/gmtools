@@ -161,7 +161,6 @@ export class Statblock extends Model {
   get cha_mod() {
     return calculateModifier(this.cha);
   }
-
 }
 
 export class StatblockList extends Collection {

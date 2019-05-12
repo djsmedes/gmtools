@@ -1,5 +1,4 @@
 import { Model, Collection } from "@/models/_baseVueMcClasses";
-import { Combatant } from "@/models/combatant";
 
 const modelName = "creatureprop";
 
