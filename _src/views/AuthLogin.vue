@@ -37,13 +37,12 @@
 <script>
 import { actionTypes as authActions } from "@/auth/vuexKeys";
 import { FIELD_REQUIRED } from "@/strings/errors";
-import { routeNames } from "@/router";
 
 export default {
   name: "AuthLogin",
   props: {
     successRoute: {
-      default: () => ({ name: routeNames.HOME }),
+      default: () => ({ name: this.$routeNames.HOME }),
     },
   },
   data() {

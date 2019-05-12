@@ -221,9 +221,11 @@ import {
   GMScreenTabList,
   currentCampaign as getCurrentCampaign,
 } from "@/models";
+import { wsMessageMixin } from "@/mixins";
 
 export default {
   name: "CombatView",
+  mixins: [wsMessageMixin],
   components: {
     CombatantCard,
     "gm-screen": Screen,
@@ -246,7 +248,6 @@ export default {
       currentCampaign: getCurrentCampaign(),
       pcCombatants: new CombatantList([], { storeFilter: { encounter: null } }),
       tabs: new GMScreenTabList(),
-      listenersToTearDown: [],
     };
   },
   computed: {
@@ -351,30 +352,24 @@ export default {
       encounter.completion_date = new Date();
       await Promise.all([encounter.save(), this.changeActiveEncounter(null)]);
     },
+    onWsMessage(message) {
+      let { action, namespace, data } = message;
+      let objectList = null;
+      switch (namespace) {
+        case "combatant":
+          objectList = this.combatantsByInitiative;
+          break;
+      }
+      data.forEach(obj => {
+        let corresponding = objectList.find(tst => tst.uuid === obj.uuid);
+        corresponding.update(obj);
+        corresponding.sync();
+      });
+    },
   },
   created() {
     this.pcCombatants.fetch();
     this.tabs.fetch();
-
-    this.listenersToTearDown.push(
-      this.$ws.addMessageListener(message => {
-        let { action, namespace, data } = message;
-        let objectList = null;
-        switch (namespace) {
-          case "combatant":
-            objectList = this.combatantsByInitiative;
-            break;
-        }
-        data.forEach(obj => {
-          let corresponding = objectList.find(tst => tst.uuid === obj.uuid);
-          corresponding.update(obj);
-          corresponding.sync();
-        });
-      })
-    );
-  },
-  beforeDestroy() {
-    this.listenersToTearDown.forEach(teardownFunc => teardownFunc());
   },
 };
 </script>
