@@ -5,7 +5,7 @@ from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_201_CREATED
 from rest_framework.authtoken.models import Token
 
 from .models import User, Campaign
-from .serializers import UserWithPermsSerializer, CampaignSerializer
+from .serializers import CampaignSerializer, UserSerializer
 
 
 class UserView(APIView):
@@ -15,7 +15,7 @@ class UserView(APIView):
         resp_data = {'user': {}, 'campaigns': []}
 
         if request.user.is_authenticated:
-            resp_data['user'] = UserWithPermsSerializer(
+            resp_data['user'] = UserSerializer(
                 instance=request.user,
                 context={'request': request}
             ).data
@@ -65,7 +65,7 @@ class SignupApiView(APIView):
 
         return Response(
             {
-                'user': UserWithPermsSerializer(instance=user, context={'request': request}).data,
+                'user': UserSerializer(instance=user, context={'request': request}).data,
                 'token': token.key
             },
             status=HTTP_201_CREATED

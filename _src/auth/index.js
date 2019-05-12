@@ -47,12 +47,7 @@ export const store = {
         let { user, campaigns } = data;
 
         dispatch(actionTypes.SET_AUTH_USER, user);
-        // eslint-disable-next-line
-        console.warn(
-          "auth GET_USER is still getting campaigns for some reason",
-          JSON.stringify(campaigns, null, 2)
-        );
-        // todo - save campaign here?
+        return { user, campaigns };
       } catch (err) {
         // eslint-disable-next-line
         if (process.env.NODE_ENV !== "production") console.warn(err);
