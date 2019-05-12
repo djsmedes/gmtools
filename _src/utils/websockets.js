@@ -20,10 +20,21 @@ export class ModuleSocket {
   }
 
   initialize() {
+    this.vm.$connect();
     this.vm.$socket.onmessage = message => {
       let { action, data, namespace, replyTo, status } = JSON.parse(
         message.data
       );
+
+      let { resolve, reject } = this.replyCallbackMap[replyTo] || {
+        resolve: () => {},
+        reject: () => {},
+      };
+
+      if (status >= 400) {
+        reject(data);
+        return;
+      }
 
       Object.values(this.messageListeners).forEach(listener =>
         listener({
@@ -32,18 +43,24 @@ export class ModuleSocket {
           namespace,
         })
       );
-      if (this.replyCallbackMap[replyTo] !== undefined) {
-        this.replyCallbackMap[replyTo]();
-        delete this.replyCallbackMap[replyTo];
-      }
+      resolve();
     };
   }
 
   request(verb, data) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       this.counter += 1;
       let id = this.uuid + "-" + this.counter;
-      this.replyCallbackMap[id] = obj => resolve(obj);
+      this.replyCallbackMap[id] = {
+        resolve: obj => {
+          delete this.replyCallbackMap[id];
+          resolve(obj);
+        },
+        reject: obj => {
+          delete this.replyCallbackMap[id];
+          reject(obj);
+        },
+      };
       this.vm.$socket.sendObj(new WebSocketRequest({ id, verb, data }));
     });
   }

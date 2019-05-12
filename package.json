@@ -12,7 +12,6 @@
   "dependencies": {
     "@babel/polyfill": "^7.4.3",
     "@casl/ability": "^3.0.2",
-    "@casl/vue": "^0.5.1",
     "@encamp/vue-mc": "^1.1.1",
     "axios": "^0.18.0",
     "debounce-promise": "^3.1.0",
