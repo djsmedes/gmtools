@@ -8,6 +8,8 @@ export const stateKeys = {
 
 export const getterTypes = {
   AUTH_HEADER: "authHeader",
+  AUTH_USER_UUID: "authUserUuid",
+  CURRENT_CAMPAIGN_UUID: "currentCampaignUuid",
 };
 
 export const actionTypes = {

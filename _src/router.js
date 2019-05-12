@@ -75,8 +75,7 @@ const router = new Router({
     {
       path: "/campaigns/",
       name: routeNames.CAMPAIGNS,
-      component: () =>
-        import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignList"),
+      component: () => import("@/views/CampaignListView"),
       beforeEnter: loginRequired,
     },
 

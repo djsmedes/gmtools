@@ -1,19 +1,18 @@
 import store from "@/store";
-import auth from "@/auth";
+import { stateKeys } from "@/auth/vuexKeys";
+import { authActions } from "@/auth";
 import { routeNames } from "@/router";
-import { authUser, User, CampaignList } from "@/models";
+import { getAuthUser } from "@/models";
 
 export async function userRequired(to, from, next) {
-  if (store.state[auth.stateKeys.AUTH_USER] === undefined) {
-    let { user, campaigns } = await store.dispatch(auth.actionTypes.GET_USER);
-    if (user) new User(user).sync();
-    if (campaigns) new CampaignList(campaigns).sync();
+  if (store.state.auth[stateKeys.AUTH_USER] === undefined) {
+    await store.dispatch(authActions.GET_USER);
   }
   next();
 }
 
 export function loginRequired(to, from, next) {
-  if (authUser().isAuthenticated) {
+  if (getAuthUser().isAuthenticated) {
     next();
   } else {
     next({
@@ -24,7 +23,7 @@ export function loginRequired(to, from, next) {
 }
 
 export function loggedInExcluded(to, from, next) {
-  if (authUser().isAuthenticated) {
+  if (getAuthUser().isAuthenticated) {
     next({ name: routeNames.HOME });
   } else {
     next();

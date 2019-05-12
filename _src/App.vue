@@ -143,14 +143,26 @@
 </template>
 
 <script>
-import { actionTypes as authActions } from "@/auth/vuexKeys";
-import { authUser } from "@/models";
+import { authActions } from "@/auth";
+import { getAuthUser, getCurrentCampaign, User, Campaign } from "@/models";
 
 export default {
   data() {
     return {
-      user: authUser(),
+      user: new User(),
+      currentCampaign: new Campaign(),
     };
+  },
+  created() {
+    const unsubscribe = this.$store.subscribeAction({
+      after: action => {
+        if (action.type === authActions.GET_USER) {
+          this.user = getAuthUser();
+          this.currentCampaign = getCurrentCampaign();
+          unsubscribe();
+        }
+      },
+    });
   },
   methods: {
     async logout() {

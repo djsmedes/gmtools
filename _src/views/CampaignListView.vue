@@ -10,8 +10,8 @@
           </v-toolbar>
           <v-fade-transition mode="out-in">
             <campaign-detail
-              :key="currentCampaign.uuid"
-              :uuid="currentCampaign.uuid"
+              :key="currentCampaign._uid"
+              :campaign="currentCampaign"
               @focus="campaignUnderEdit = currentCampaign.uuid"
               @blur="
                 campaignUnderEdit =
@@ -22,7 +22,6 @@
               :disabled="
                 campaignUnderEdit && campaignUnderEdit !== currentCampaign.uuid
               "
-              :is-current-campaign="true"
             ></campaign-detail>
           </v-fade-transition>
         </v-flex>
@@ -49,11 +48,11 @@
             xs12
             md6
             lg4
-            :key="campaign.uuid"
+            :key="campaign._uid"
             class="campaign-list-item"
           >
             <campaign-detail
-              :uuid="campaign.uuid"
+              :campaign="campaign"
               @set-active="setCurrentCampaign"
               @focus="campaignUnderEdit = campaign.uuid"
               @blur="
@@ -72,19 +71,21 @@
 </template>
 
 <script>
-import { Campaign } from "@/models";
-import CampaignDetail from "@/components/accountManage/CampaignDetail";
+import { getCurrentCampaign, Campaign, CampaignList } from "@/models";
+import CampaignDetail from "@/views/CampaignDetail";
 import Invitations from "@/components/accountManage/Invitations";
 import { sleep } from "@/utils/time";
 import NewCampaign from "@/components/accountManage/NewCampaign";
 
 export default {
-  name: "CampaignList",
+  name: "CampaignListView",
   components: { Invitations, CampaignDetail },
   data() {
     return {
       p_campaignUnderEdit: null,
       showCampaigns: true,
+      allCampaigns: new CampaignList(),
+      currentCampaign: getCurrentCampaign(),
     };
   },
   computed: {
@@ -99,7 +100,7 @@ export default {
       },
     },
     campaigns() {
-      return this.allCampaigns.filter(
+      return this.allCampaigns.models.filter(
         c => c.uuid !== this.currentCampaign.uuid
       );
     },
@@ -126,12 +127,13 @@ export default {
     async tryCreate() {
       let name = await this.$dialog(NewCampaign);
       if (name) {
-        await this.createCampaign(new Campaign({ name }));
+        let newCampaign = new Campaign({ name }, this.allCampaigns);
+        await newCampaign.save();
       }
     },
   },
   created() {
-    this.loadCampaigns();
+    this.allCampaigns.fetch();
   },
 };
 </script>

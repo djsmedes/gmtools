@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { Encounter, EncounterList, currentCampaign } from "@/models";
+import { Encounter, EncounterList, getCurrentCampaign } from "@/models";
 
 export default {
   name: "EncounterChooser",
@@ -65,7 +65,7 @@ export default {
   computed: {
     currentEncounter() {
       let encounter = new Encounter({
-        uuid: currentCampaign().active_encounter,
+        uuid: getCurrentCampaign().active_encounter,
       });
       encounter.fetch();
       return encounter;

@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { actionTypes as authActions } from "@/auth/vuexKeys";
+import { authActions } from "@/auth";
 import { FIELD_REQUIRED } from "@/strings/errors";
 
 export default {

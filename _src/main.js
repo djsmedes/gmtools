@@ -6,7 +6,8 @@ import App from "@/App";
 import router from "@/router";
 import store from "@/store";
 import axios from "axios";
-import { stateKeys, getterTypes, mutationTypes } from "@/auth/vuexKeys";
+import { authGetters, authMutations } from "@/auth";
+import { stateKeys } from "@/auth/vuexKeys";
 import { ModuleSocket } from "@/utils/websockets";
 import { dialogPlugin } from "@/plugins/userChoiceDialog";
 import { showSnackPlugin } from "@/plugins/showSnack";
@@ -42,7 +43,7 @@ axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 axios.defaults.headers.common = {
   ...axios.defaults.headers.common,
-  ...store.getters[getterTypes.AUTH_HEADER],
+  ...store.getters[authGetters.AUTH_HEADER],
 };
 
 const vm = new Vue({
@@ -55,14 +56,14 @@ Vue.prototype.$ws = new ModuleSocket(vm);
 
 store.subscribe((mutation, state) => {
   switch (mutation.type) {
-    case mutationTypes.SET_AUTH_USER:
+    case authMutations.SET_AUTH_USER:
       if (state[stateKeys.AUTH_USER]) {
         vm.$ws.initialize();
       } else {
         vm.$ws.terminate();
       }
       break;
-    case mutationTypes.CLEAR_AUTH_USER:
+    case authMutations.CLEAR_AUTH_USER:
       vm.$ws.terminate();
       break;
   }

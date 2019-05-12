@@ -20,16 +20,16 @@
       <v-icon small right>call_made</v-icon>
     </v-btn>
     <v-card-text v-if="editMode">
-      <v-text-field label="Name" v-model="localCampaign.name"></v-text-field>
+      <v-text-field label="Name" v-model="campaign.name"></v-text-field>
     </v-card-text>
     <v-list v-else>
       <v-subheader>
         GMs
       </v-subheader>
-      <v-list-tile v-for="userUuid in campaign.gm_set" :key="userUuid">
+      <v-list-tile v-for="user in gmList" :key="user._uid">
         <v-list-tile-content>
           <v-list-tile-title>
-            {{ getUser(userUuid).name }}
+            {{ user.name }}
           </v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
@@ -37,10 +37,10 @@
       <v-subheader>
         Players
       </v-subheader>
-      <v-list-tile v-for="userUuid in campaign.player_set" :key="userUuid">
+      <v-list-tile v-for="user in playerList" :key="user._uid">
         <v-list-tile-content>
           <v-list-tile-title>
-            {{ getUser(userUuid).name }}
+            {{ user.name }}
           </v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
@@ -120,69 +120,58 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import campaign, { Campaign } from "@/models/campaign";
-import userModule from "@/models/user";
-import { routeNames } from "@/router";
+import { getCurrentCampaign, Campaign, UserList } from "@/models";
 import { ButtonOption } from "@/plugins/userChoiceDialog";
 import InvitePlayers from "@/components/accountManage/InvitePlayers";
-import axios from "axios";
+import axios from "axios/index";
+import { generateUrl2 } from "@/utils/urls";
 
 export default {
   name: "CampaignDetail",
   props: {
-    uuid: {
-      type: String,
-      default: null,
+    campaign: {
+      type: Campaign,
+      required: true,
     },
     disabled: {
-      type: Boolean,
-      default: false,
-    },
-    isCurrentCampaign: {
       type: Boolean,
       default: false,
     },
   },
   data() {
     return {
-      localCampaign: null,
+      users: new UserList(),
+      currentCampaign: getCurrentCampaign(),
       editMode: false,
     };
+  },
+  computed: {
+    gmList() {
+      return this.users.models.filter(u =>
+        this.campaign.gm_set.includes(u.uuid)
+      );
+    },
+    playerList() {
+      return this.users.models.filter(u =>
+        this.campaign.player_set.includes(u.uuid)
+      );
+    },
+    isCurrentCampaign() {
+      return this.campaign.uuid === this.currentCampaign.uuid;
+    },
   },
   watch: {
     editMode: {
       handler(isEditMode) {
         if (isEditMode) {
           this.$emit("focus");
-          this.localCampaign = new Campaign(this.campaign);
         } else {
-          this.localCampaign = null;
           this.$emit("blur");
         }
       },
     },
   },
-  computed: {
-    campaign() {
-      return this.getCampaign(this.uuid);
-    },
-    ...mapGetters(campaign.namespace, {
-      getCampaign: campaign.getterTypes.BY_ID,
-    }),
-    ...mapGetters(userModule.namespace, {
-      getUser: userModule.getterTypes.BY_ID,
-    }),
-  },
   methods: {
-    ...mapActions(campaign.namespace, {
-      loadCampaigns: campaign.actionTypes.LIST,
-      deleteCampaign: campaign.actionTypes.DESTROY,
-      updateCampaign: campaign.actionTypes.UPDATE,
-    }),
-    ...mapActions(userModule.namespace, {
-      loadUsers: userModule.actionTypes.LIST,
-    }),
     async tryDelete() {
       let choice = await this.$userChoice(
         "Confirm delete",
@@ -197,7 +186,7 @@ export default {
         ]
       );
       if (choice) {
-        await this.deleteCampaign(this.campaign.uuid);
+        await this.campaign.delete();
       }
     },
     async tryLeave() {
@@ -216,11 +205,13 @@ export default {
         ]
       );
       if (choice) {
-        await axios.post(campaign.getDetailUrl(this.campaign.uuid, ["leave"]));
+        await axios.post(
+          generateUrl2(Campaign.modelName, this.campaign.uuid, "leave")
+        );
       }
     },
     async save() {
-      await this.updateCampaign(this.localCampaign);
+      await this.campaign.save();
       this.editMode = false;
     },
     async invitePlayers() {
@@ -232,12 +223,7 @@ export default {
     },
   },
   created() {
-    this.loadCampaigns().then(() => {
-      if (this.$route.params.uuid && !this.campaign.uuid) {
-        this.$router.replace({ name: routeNames.NOT_FOUND });
-      }
-    });
-    this.loadUsers();
+    this.users.fetch();
   },
 };
 </script>

@@ -162,7 +162,7 @@ import {
   Combatant,
   CombatantList,
   Encounter,
-  currentCampaign as getCurrentCampaign,
+  getCurrentCampaign,
 } from "@/models";
 import { wsMessageMixin } from "@/mixins";
 

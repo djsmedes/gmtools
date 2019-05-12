@@ -3,9 +3,24 @@ import * as Cookies from "js-cookie";
 import axios from "axios";
 import { generateUrl2 as generateUrl } from "@/utils/urls";
 import { actionTypes, stateKeys, mutationTypes, getterTypes } from "./vuexKeys";
+import store from "@/store";
+import fromPairs from "lodash/fromPairs";
+import { User, CampaignList } from "@/models";
 
-export const store = {
-  namespaced: false,
+export const authGetters = fromPairs(
+  Object.entries(getterTypes).map(([key, value]) => [key, "auth/" + value])
+);
+
+export const authActions = fromPairs(
+  Object.entries(actionTypes).map(([key, value]) => [key, "auth/" + value])
+);
+
+export const authMutations = fromPairs(
+  Object.entries(mutationTypes).map(([key, value]) => [key, "auth/" + value])
+);
+
+const authModule = {
+  namespaced: true,
   state: {},
   getters: {
     [getterTypes.AUTH_HEADER]: () => {
@@ -15,6 +30,12 @@ export const store = {
       } else {
         return {};
       }
+    },
+    [getterTypes.AUTH_USER_UUID]: state => {
+      return state[stateKeys.AUTH_USER];
+    },
+    [getterTypes.CURRENT_CAMPAIGN_UUID]: state => {
+      return state[stateKeys.CURRENT_CAMPAIGN];
     },
   },
   actions: {
@@ -45,9 +66,9 @@ export const store = {
       try {
         let { data } = await axios.get(generateUrl("request-user"));
         let { user, campaigns } = data;
-
         dispatch(actionTypes.SET_AUTH_USER, user);
-        return { user, campaigns };
+        if (user) new User(user).sync();
+        if (campaigns) new CampaignList(campaigns).sync();
       } catch (err) {
         // eslint-disable-next-line
         if (process.env.NODE_ENV !== "production") console.warn(err);
@@ -128,10 +149,4 @@ export const store = {
   },
 };
 
-export default {
-  stateKeys,
-  getterTypes,
-  actionTypes,
-  mutationTypes,
-  store,
-};
+store.registerModule("auth", authModule);
