@@ -47,6 +47,10 @@ export class ModuleSocket {
     };
   }
 
+  terminate() {
+    if (typeof this.vm.$disconnect === "function") this.vm.$disconnect();
+  }
+
   request(verb, data) {
     return new Promise((resolve, reject) => {
       this.counter += 1;

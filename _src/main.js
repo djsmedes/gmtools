@@ -58,10 +58,12 @@ store.subscribe((mutation, state) => {
     case mutationTypes.SET_AUTH_USER:
       if (state[stateKeys.AUTH_USER]) {
         vm.$ws.initialize();
+      } else {
+        vm.$ws.terminate();
       }
       break;
     case mutationTypes.CLEAR_AUTH_USER:
-      if (typeof vm.$disconnect === "function") vm.$disconnect();
+      vm.$ws.terminate();
       break;
   }
 });
