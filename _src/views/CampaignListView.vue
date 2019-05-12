@@ -1,6 +1,6 @@
 <template>
   <v-expand-transition mode="out-in">
-    <v-container v-if="campaigns.length" grid-list-xl>
+    <v-container fluid v-if="campaigns.length" grid-list-xl>
       <v-layout wrap>
         <v-flex xs12 md6 lg4>
           <v-toolbar dense color="transparent" flat class="pa-0">

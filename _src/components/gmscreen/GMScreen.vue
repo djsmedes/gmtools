@@ -78,7 +78,6 @@ export default {
     return {
       tabList: new GMScreenTabList(),
       activeTab: 0,
-      tabsSliderStyle: "",
     };
   },
   computed: {
@@ -89,27 +88,31 @@ export default {
       return this.tabList.models[this.activeTab - 1] || new GMScreenTab();
     },
   },
-  created() {
-    this.tabList.fetch();
+  async created() {
+    await this.tabList.fetch();
+    this.tabList.sort("order");
   },
   methods: {
     async changeTabIndex(direction) {
-      let newIndex = this.activeTab + direction;
+      // caution: touching this is ASKING for an off-by-one error
+      let oldIndex = this.activeTab - 1;
+      let newIndex = oldIndex + direction;
       let tabList = [...this.tabList.models];
       if (newIndex < 0 || newIndex >= tabList.length) {
         return;
       }
-      let tab = tabList.splice(this.activeTab, 1)[0];
+      let tab = tabList.splice(oldIndex, 1)[0];
       tabList.splice(newIndex, 0, tab);
       let promises = [];
       tabList.forEach((tab, index) => {
-        if (tab.order !== index - 1) {
-          tab.order = index - 1;
+        if (tab.order !== index + 1) {
+          tab.order = index + 1;
           promises.push(tab.save());
         }
       });
       await Promise.all(promises);
-      this.activeTab = newIndex;
+      this.tabList.sort("order");
+      this.activeTab = newIndex + 1;
     },
   },
 };

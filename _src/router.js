@@ -151,14 +151,14 @@ const router = new Router({
       path: "/gmscreentabs/new/",
       name: routeNames.GMSCREENTAB_CREATE,
       component: () =>
-        import(/* webpackChunkName: "misc" */ "@/components/gmscreen/GMScreenTabDetail"),
+        import(/* webpackChunkName: "misc" */ "@/views/GMScreenTabDetail"),
       beforeEnter: loginRequired,
     },
     {
       path: "/gmscreentabs/:uuid/",
       name: routeNames.GMSCREENTAB,
       component: () =>
-        import(/* webpackChunkName: "misc" */ "@/components/gmscreen/GMScreenTabDetail"),
+        import(/* webpackChunkName: "misc" */ "@/views/GMScreenTabDetail"),
       beforeEnter: loginRequired,
       props: true,
     },
