@@ -59,8 +59,11 @@ export default {
     };
   },
   watch: {
-    dialog(val) {
-      if (val) this.$nextTick(this.$refs.firstField.focus);
+    async dialog(val) {
+      if (val) {
+        await this.$nextTick();
+        this.$refs.firstField.focus();
+      }
     },
   },
   computed: {
