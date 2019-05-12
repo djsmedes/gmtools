@@ -107,102 +107,47 @@
       </v-container>
     </v-expand-transition>
 
-    <v-card class="hidden-sm-and-down">
-      <gm-screen :items="tabs.models" v-model="activeTab">
-        <template slot="toolbar-left">
-          <v-btn
-            flat
-            icon
-            :input-value="activeTab === -1"
-            @click="activeTab = -1"
-          >
-            <v-icon>settings</v-icon>
-          </v-btn>
-        </template>
-        <template slot="toolbar-right">
-          <v-btn
-            flat
-            icon
-            :disabled="activeTab <= 0"
-            @click="changeTabIndex(-1)"
-          >
-            <v-icon>arrow_left</v-icon>
-          </v-btn>
-          <span
-            class="body-2 text-uppercase"
-            :style="
-              activeTab === -1
-                ? 'opacity: 0.7; cursor: default;'
-                : 'cursor: default;'
-            "
-          >
-            Reorder
-          </span>
-          <v-btn
-            flat
-            icon
-            :disabled="activeTab >= tabs.length - 1 || activeTab < 0"
-            @click="changeTabIndex(1)"
-          >
-            <v-icon>arrow_right</v-icon>
-          </v-btn>
-          <v-btn
-            v-if="tab.uuid"
-            flat
-            icon
-            :to="{ name: $routeNames.GMSCREENTAB, params: { uuid: tab.uuid } }"
-          >
-            <v-icon>edit</v-icon>
-          </v-btn>
-          <v-btn v-else flat icon disabled>
-            <v-icon>edit</v-icon>
-          </v-btn>
-          <v-btn flat icon :to="{ name: $routeNames.GMSCREENTAB_CREATE }">
-            <v-icon>add</v-icon>
-          </v-btn>
-        </template>
-      </gm-screen>
-      <v-form v-if="activeTab === -1" @submit.prevent>
-        <v-container grid-list-md>
-          <v-layout row wrap>
-            <v-flex xs12>
-              <h6 class="title">
-                <span class="grey--text text--darken-1 font-weight-light">
-                  Encounter:
-                </span>
-                <span class="text--black">
-                  {{ currentEncounter.name || "--" }}
-                </span>
-              </h6>
-            </v-flex>
-            <v-flex xs12>
-              <v-btn flat @click="tryChangeEncounter">
-                Change
-              </v-btn>
-              <v-btn flat @click="completeEncounter">
-                Complete
-              </v-btn>
-            </v-flex>
-          </v-layout>
-          <v-layout row wrap>
-            <v-flex md4 lg3 xl2>
-              <v-switch
-                v-model.number="combatantLargeHPIncrement"
-                :false-value="5"
-                :true-value="10"
-              >
-                <template slot="label">
-                  Larger damage increment
-                </template>
-              </v-switch>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-form>
-      <v-card-text class="hidden-md-and-up">
-        The GM screen is hidden on small screens.
-      </v-card-text>
-    </v-card>
+    <gm-screen class="hidden-sm-and-down">
+      <template #pageSettings>
+        <v-form @submit.prevent>
+          <v-container grid-list-md>
+            <v-layout row wrap>
+              <v-flex xs12>
+                <h6 class="title">
+                  <span class="grey--text text--darken-1 font-weight-light">
+                    Encounter:
+                  </span>
+                  <span class="text--black">
+                    {{ currentEncounter.name || "--" }}
+                  </span>
+                </h6>
+              </v-flex>
+              <v-flex xs12>
+                <v-btn flat @click="tryChangeEncounter">
+                  Change
+                </v-btn>
+                <v-btn flat @click="completeEncounter">
+                  Complete
+                </v-btn>
+              </v-flex>
+            </v-layout>
+            <v-layout row wrap>
+              <v-flex md4 lg3 xl2>
+                <v-switch
+                  v-model.number="combatantLargeHPIncrement"
+                  :false-value="5"
+                  :true-value="10"
+                >
+                  <template slot="label">
+                    Larger damage increment
+                  </template>
+                </v-switch>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-form>
+      </template>
+    </gm-screen>
 
     <div style="height: 88px;"></div>
   </div>
@@ -217,8 +162,6 @@ import {
   Combatant,
   CombatantList,
   Encounter,
-  GMScreenTab,
-  GMScreenTabList,
   currentCampaign as getCurrentCampaign,
 } from "@/models";
 import { wsMessageMixin } from "@/mixins";
@@ -242,12 +185,10 @@ export default {
         OTHER: "others",
       },
       fab: false,
-      activeTab: -1,
       combatantLargeHPIncrement: 5,
 
       currentCampaign: getCurrentCampaign(),
       pcCombatants: new CombatantList([], { storeFilter: { encounter: null } }),
-      tabs: new GMScreenTabList(),
     };
   },
   computed: {
@@ -255,9 +196,6 @@ export default {
       return [...this.combatants.models, ...this.pcCombatants.models].sort(
         (a, b) => b.initiative - a.initiative
       );
-    },
-    tab() {
-      return this.tabs[this.activeTab] || new GMScreenTab();
     },
     currentEncounter() {
       let encounter = new Encounter({
@@ -317,24 +255,6 @@ export default {
       }
       this.exitApplyEffectMode();
     },
-    async changeTabIndex(direction) {
-      let newIndex = this.activeTab + direction;
-      let tabList = [...this.tabs.models];
-      if (newIndex < 0 || newIndex >= tabList.length) {
-        return;
-      }
-      let tab = tabList.splice(this.activeTab, 1)[0];
-      tabList.splice(newIndex, 0, tab);
-      let promises = [];
-      tabList.forEach((tab, index) => {
-        if (tab.order !== index) {
-          tab.order = index;
-          promises.push(tab.save());
-        }
-      });
-      await Promise.all(promises);
-      this.activeTab = newIndex;
-    },
     async changeActiveEncounter(uuid) {
       this.currentCampaign.active_encounter = uuid;
       await this.$ws.put({
@@ -369,7 +289,6 @@ export default {
   },
   created() {
     this.pcCombatants.fetch();
-    this.tabs.fetch();
   },
 };
 </script>
