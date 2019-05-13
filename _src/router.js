@@ -106,21 +106,21 @@ const router = new Router({
       path: "/statblocks/",
       name: routeNames.STATBLOCKS,
       component: () =>
-        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/StatblockList"),
+        import(/* webpackChunkName: "statblocks" */ "@/views/StatblockList"),
       beforeEnter: loginRequired,
     },
     {
       path: "/statblocks/new/",
       name: routeNames.STATBLOCK_CREATE,
       component: () =>
-        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/StatblockDetail"),
+        import(/* webpackChunkName: "statblocks" */ "@/views/StatblockDetail"),
       beforeEnter: loginRequired,
     },
     {
       path: "/statblocks/:uuid/",
       name: routeNames.STATBLOCK,
       component: () =>
-        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/StatblockDetail"),
+        import(/* webpackChunkName: "statblocks" */ "@/views/StatblockDetail"),
       beforeEnter: loginRequired,
       props: true,
     },

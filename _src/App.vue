@@ -118,7 +118,9 @@
     </v-toolbar>
 
     <v-content style="position: relative">
-      <router-view v-show="!$store.getters.isLoading" />
+      <v-container>
+        <router-view v-show="!$store.getters.isLoading" />
+      </v-container>
       <v-dialog
         :value="$store.getters.isLoading"
         hide-overlay
