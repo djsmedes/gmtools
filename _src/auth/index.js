@@ -7,16 +7,27 @@ import store from "@/store";
 import fromPairs from "lodash/fromPairs";
 import { User, CampaignList } from "@/models";
 
+const moduleName = "auth";
+
 export const authGetters = fromPairs(
-  Object.entries(getterTypes).map(([key, value]) => [key, "auth/" + value])
+  Object.entries(getterTypes).map(([key, value]) => [
+    key,
+    moduleName + "/" + value,
+  ])
 );
 
 export const authActions = fromPairs(
-  Object.entries(actionTypes).map(([key, value]) => [key, "auth/" + value])
+  Object.entries(actionTypes).map(([key, value]) => [
+    key,
+    moduleName + "/" + value,
+  ])
 );
 
 export const authMutations = fromPairs(
-  Object.entries(mutationTypes).map(([key, value]) => [key, "auth/" + value])
+  Object.entries(mutationTypes).map(([key, value]) => [
+    key,
+    moduleName + "/" + value,
+  ])
 );
 
 const authModule = {
@@ -149,4 +160,4 @@ const authModule = {
   },
 };
 
-store.registerModule("auth", authModule);
+store.registerModule(moduleName, authModule);
