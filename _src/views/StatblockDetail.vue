@@ -366,9 +366,10 @@ export default {
       }
     },
     uuidsToCreatureProps(uuid_list) {
-      return this.creatureProps.models.filter(cp =>
-        uuid_list.includes(cp.uuid)
-      );
+      // start with uuid_list and map from it to preserve order
+      return uuid_list
+        .map(uuid => this.creatureProps.find({ uuid }))
+        .filter(cp => cp);
     },
     async helpCalcHitDie() {
       let response = await this.$dialog(CalcHitDieDialog, {
