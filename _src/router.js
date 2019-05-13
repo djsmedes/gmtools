@@ -128,7 +128,7 @@ const router = new Router({
       path: "/creatureprops/",
       name: routeNames.CREATUREPROPS,
       component: () =>
-        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/CreaturePropList"),
+        import(/* webpackChunkName: "statblocks" */ "@/views/CreaturePropList"),
       beforeEnter: loginRequired,
     },
     // {
@@ -142,7 +142,7 @@ const router = new Router({
       path: "/creatureprops/:uuid/",
       name: routeNames.CREATUREPROP,
       component: () =>
-        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/CreaturePropDetail"),
+        import(/* webpackChunkName: "statblocks" */ "@/views/CreaturePropDetail"),
       beforeEnter: loginRequired,
       props: true,
     },

@@ -383,6 +383,8 @@ export default {
       }
     },
     async editCreatureProp(uuid) {
+      // todo - changing types will not be updated until refresh
+
       let newProp = await this.$dialog(CreaturePropDetailDialog, {
         uuid,
         parentStatblockUuid: this.uuid,

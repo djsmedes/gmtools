@@ -1,21 +1,21 @@
 <template>
   <object-list
     :detail-view-name="$routeNames.CREATUREPROP"
-    :object-list="objects"
+    :object-list="creatureProps.models"
     :headers="headers"
   ></object-list>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
 import ObjectList from "@/components/generic/ObjectList";
-import creatureprop from "@/models/creatureprop";
+import { CreaturePropList } from "@/models";
 
 export default {
   name: "StatblockList",
   components: { ObjectList },
   data() {
     return {
+      creatureProps: new CreaturePropList(),
       headers: [
         {
           text: "Title",
@@ -25,18 +25,8 @@ export default {
       ],
     };
   },
-  computed: {
-    ...mapGetters(creatureprop.namespace, {
-      objects: creatureprop.getterTypes.LIST,
-    }),
-  },
-  methods: {
-    ...mapActions(creatureprop.namespace, {
-      loadObjects: creatureprop.actionTypes.LIST,
-    }),
-  },
   created() {
-    this.loadObjects();
+    this.creatureProps.fetch();
   },
 };
 </script>
