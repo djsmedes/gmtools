@@ -19,6 +19,7 @@ Vue.use(Vuetify, {
     primary: "#1976D2",
     edit: "#1976D2",
     save: "#1976D2",
+    go: "#1976D2",
     cancel: "#424242",
     delete: "#FF5252",
     secondary: "#424242",

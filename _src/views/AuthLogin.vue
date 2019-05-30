@@ -1,21 +1,13 @@
 <template>
-  <v-card :width="400" class="mx-auto">
-    <v-form ref="form" @submit.stop.prevent="submit">
+  <v-card :width="500" class="mx-auto">
+    <v-form ref="form" @submit.stop.prevent="submit" v-model="formValid">
       <v-card-text>
-        <v-alert
-          v-for="(err, index) in nonFieldErrors"
-          :key="index"
-          :value="true"
-          type="error"
-        >
-          {{ err }}
-        </v-alert>
-
         <v-text-field
           v-model="email.value"
           :error-messages="email.errors"
           :rules="email.rules"
           label="Email"
+          autofocus
         ></v-text-field>
         <v-text-field
           v-model="password.value"
@@ -26,8 +18,15 @@
         ></v-text-field>
       </v-card-text>
       <v-card-actions>
-        <v-btn flat type="submit">
+        <template v-if="nonFieldErrors.length">
+          <v-alert :value="true" type="error" outline>
+            {{ nonFieldErrors[0] }}
+          </v-alert>
+        </template>
+        <v-spacer></v-spacer>
+        <v-btn flat type="submit" color="go" :disabled="!formValid">
           Sign in
+          <v-icon right>arrow_forward</v-icon>
         </v-btn>
       </v-card-actions>
     </v-form>
@@ -49,6 +48,7 @@ export default {
   },
   data() {
     return {
+      formValid: false,
       nonFieldErrors: [],
       email: {
         value: "",
