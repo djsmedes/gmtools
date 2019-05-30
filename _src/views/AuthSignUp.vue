@@ -73,7 +73,7 @@ export default {
   methods: {
     async submit() {
       if (this.$refs.form.validate()) {
-        let errors = await this.dispatch(authActions.SIGNUP, {
+        let errors = await this.$store.dispatch(authActions.SIGNUP, {
           email: this.email.value,
           password1: this.password1.value,
           password2: this.password2.value,

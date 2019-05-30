@@ -5,9 +5,10 @@ import { generateUrl2 as generateUrl } from "@/utils/urls";
 import { actionTypes, stateKeys, mutationTypes, getterTypes } from "./vuexKeys";
 import store from "@/store";
 import fromPairs from "lodash/fromPairs";
-import { User, CampaignList } from "@/models";
+import { User, CampaignList, Campaign } from "@/models";
 
 const moduleName = "auth";
+export const authModuleName = moduleName;
 
 export const authGetters = fromPairs(
   Object.entries(getterTypes).map(([key, value]) => [
@@ -45,8 +46,20 @@ const authModule = {
     [getterTypes.AUTH_USER_UUID]: state => {
       return state[stateKeys.AUTH_USER];
     },
+    [getterTypes.AUTH_USER]: (state, getters) => {
+      let user = new User({ uuid: getters[getterTypes.AUTH_USER_UUID] });
+      user.reset();
+      return user;
+    },
     [getterTypes.CURRENT_CAMPAIGN_UUID]: state => {
       return state[stateKeys.CURRENT_CAMPAIGN];
+    },
+    [getterTypes.CURRENT_CAMPAIGN]: (state, getters) => {
+      let campaign = new Campaign({
+        uuid: getters[getterTypes.CURRENT_CAMPAIGN_UUID],
+      });
+      campaign.reset();
+      return campaign;
     },
   },
   actions: {

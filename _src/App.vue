@@ -13,7 +13,7 @@
         </v-btn>
         <v-btn
           flat
-          v-if="user.isAuthenticated"
+          v-if="authUser.isAuthenticated"
           class="no-text-dec hidden-xs-only"
           :to="{ name: $routeNames.ENCOUNTERS }"
         >
@@ -21,7 +21,7 @@
         </v-btn>
         <v-btn
           flat
-          v-if="user.isAuthenticated"
+          v-if="authUser.isAuthenticated"
           class="no-text-dec hidden-xs-only"
           :to="{ name: $routeNames.COMBATANTS }"
         >
@@ -29,7 +29,7 @@
         </v-btn>
         <v-btn
           flat
-          v-if="user.isAuthenticated"
+          v-if="authUser.isAuthenticated"
           class="no-text-dec hidden-xs-only"
           :to="{ name: $routeNames.STATBLOCKS }"
         >
@@ -37,7 +37,7 @@
         </v-btn>
         <v-btn
           flat
-          v-if="user.isAuthenticated"
+          v-if="authUser.isAuthenticated"
           class="no-text-dec hidden-xs-only"
           :to="{ name: $routeNames.CREATUREPROPS }"
         >
@@ -47,7 +47,7 @@
 
       <v-spacer></v-spacer>
 
-      <v-toolbar-items v-if="!user.isAuthenticated">
+      <v-toolbar-items v-if="!authUser.isAuthenticated">
         <v-btn flat class="no-text-dec" :to="{ name: $routeNames.LOGIN }">
           Sign in
         </v-btn>
@@ -72,7 +72,7 @@
           <v-list subheader>
             <v-list-tile class="grey--text">
               <span>
-                Signed in as <strong>{{ user.name }}</strong>
+                Signed in as <strong>{{ authUser.name }}</strong>
               </span>
             </v-list-tile>
             <v-list-tile class="grey--text">
@@ -146,29 +146,13 @@
 
 <script>
 import { authActions } from "@/auth";
-import { getAuthUser, getCurrentCampaign, User, Campaign } from "@/models";
+import { authUserMixin } from "@/mixins";
 
 export default {
-  data() {
-    return {
-      user: new User(),
-      currentCampaign: new Campaign(),
-    };
-  },
-  created() {
-    const unsubscribe = this.$store.subscribeAction({
-      after: action => {
-        if (action.type === authActions.GET_USER) {
-          this.user = getAuthUser();
-          this.currentCampaign = getCurrentCampaign();
-          unsubscribe();
-        }
-      },
-    });
-  },
+  mixins: [authUserMixin],
   methods: {
     async logout() {
-      await this.dispatch(authActions.LOGOUT);
+      await this.$store.dispatch(authActions.LOGOUT);
       this.$router.push({ name: this.$routeNames.LOGIN });
     },
   },
