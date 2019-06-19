@@ -83,21 +83,21 @@ const router = new Router({
       path: "/encounters/",
       name: routeNames.ENCOUNTERS,
       component: () =>
-        import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterList"),
+        import(/* webpackChunkName: "encounters" */ "@/views/EncounterList"),
       beforeEnter: loginRequired,
     },
     {
       path: "/encounters/new/",
       name: routeNames.ENCOUNTER_CREATE,
       component: () =>
-        import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
+        import(/* webpackChunkName: "encounters" */ "@/views/EncounterDetail"),
       beforeEnter: loginRequired,
     },
     {
       path: "/encounters/:uuid/",
       name: routeNames.ENCOUNTER,
       component: () =>
-        import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
+        import(/* webpackChunkName: "encounters" */ "@/views/EncounterDetail"),
       beforeEnter: loginRequired,
       props: true,
     },
