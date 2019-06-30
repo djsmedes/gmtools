@@ -6,7 +6,7 @@ import App from "@/App";
 import router from "@/router";
 import store from "@/store";
 import axios from "axios";
-import { authGetters, authMutations } from "@/auth";
+import { authMutations, authModuleName } from "@/auth";
 import { stateKeys } from "@/auth/vuexKeys";
 import { ModuleSocket } from "@/utils/websockets";
 import { dialogPlugin } from "@/plugins/userChoiceDialog";
@@ -42,10 +42,6 @@ Vue.use(VueNativeSock, "//" + window.location.host + "/ws/combat/", {
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
-axios.defaults.headers.common = {
-  ...axios.defaults.headers.common,
-  ...store.getters[authGetters.AUTH_HEADER],
-};
 
 const vm = new Vue({
   router,
@@ -58,7 +54,7 @@ Vue.prototype.$ws = new ModuleSocket(vm);
 store.subscribe((mutation, state) => {
   switch (mutation.type) {
     case authMutations.SET_AUTH_USER:
-      if (state[stateKeys.AUTH_USER]) {
+      if (state[authModuleName][stateKeys.AUTH_USER]) {
         vm.$ws.initialize();
       } else {
         vm.$ws.terminate();

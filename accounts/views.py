@@ -1,6 +1,5 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_201_CREATED
 from rest_framework.authtoken.models import Token
 
@@ -9,7 +8,6 @@ from .serializers import CampaignSerializer, UserSerializer
 
 
 class UserView(APIView):
-    authentication_classes = [TokenAuthentication]
 
     def get(self, request, *args, **kwargs):
         resp_data = {'user': {}, 'campaigns': []}

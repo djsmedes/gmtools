@@ -1,5 +1,5 @@
 import Vue from "vue";
-import * as Cookies from "js-cookie";
+import { remove as removeCookie } from "js-cookie";
 import axios from "axios";
 import { generateUrl2 as generateUrl } from "@/utils/urls";
 import { actionTypes, stateKeys, mutationTypes, getterTypes } from "./vuexKeys";
@@ -7,6 +7,7 @@ import store from "@/store";
 import fromPairs from "lodash/fromPairs";
 import { User, CampaignList, Campaign } from "@/models";
 
+const AUTH_TOKEN_NAME = "authToken";
 const moduleName = "auth";
 export const authModuleName = moduleName;
 
@@ -35,14 +36,6 @@ const authModule = {
   namespaced: true,
   state: {},
   getters: {
-    [getterTypes.AUTH_HEADER]: () => {
-      let token = Cookies.get(stateKeys.TOKEN);
-      if (token) {
-        return { Authorization: "Token " + token };
-      } else {
-        return {};
-      }
-    },
     [getterTypes.AUTH_USER_UUID]: state => {
       return state[stateKeys.AUTH_USER];
     },
@@ -65,11 +58,10 @@ const authModule = {
   actions: {
     [actionTypes.LOGIN]: async ({ commit, dispatch }, { email, password }) => {
       try {
-        let { data } = await axios.post(generateUrl("token-auth"), {
+        await axios.post(generateUrl("token-auth"), {
           username: email,
           password: password,
         });
-        commit(mutationTypes.SET_TOKEN, data);
         await dispatch(actionTypes.GET_USER);
       } catch (err) {
         if (err.response && err.response.status === 400) {
@@ -86,11 +78,16 @@ const authModule = {
         }
       }
     },
-    [actionTypes.GET_USER]: async ({ commit, dispatch }) => {
+    [actionTypes.GET_USER]: async ({ commit }) => {
       try {
         let { data } = await axios.get(generateUrl("request-user"));
         let { user, campaigns } = data;
-        dispatch(actionTypes.SET_AUTH_USER, user);
+        if (!user.uuid) {
+          commit(mutationTypes.CLEAR_AUTH_USER);
+        } else {
+          commit(mutationTypes.SET_AUTH_USER, user);
+          commit(mutationTypes.SET_CURRENT_CAMPAIGN, user.current_campaign);
+        }
         if (user) new User(user).sync();
         if (campaigns) new CampaignList(campaigns).sync();
       } catch (err) {
@@ -109,33 +106,22 @@ const authModule = {
         }
       }
     },
-    [actionTypes.SET_AUTH_USER]: ({ commit }, user) => {
-      if (!user.uuid) {
-        commit(mutationTypes.CLEAR_AUTH_USER);
-      } else {
-        commit(mutationTypes.SET_AUTH_USER, user);
-        commit(mutationTypes.SET_CURRENT_CAMPAIGN, user.current_campaign);
-      }
-    },
     [actionTypes.LOGOUT]: ({ commit }) => {
       commit(mutationTypes.REMOVE_TOKEN);
-      commit(mutationTypes.CLEAR_AUTH_USER);
-      // todo - clear basically all other data out of vuex
+      window.location.reload();
     },
     [actionTypes.SIGNUP]: async (
-      { commit, dispatch },
+      { dispatch },
       { email, password1, password2 }
     ) => {
       try {
-        let { data } = await axios.post(generateUrl("signup"), {
+        await axios.post(generateUrl("signup"), {
           email,
           password1,
           password2,
         });
-        let { user, token } = data;
 
-        commit(mutationTypes.SET_TOKEN, { token });
-        dispatch(actionTypes.SET_AUTH_USER, user);
+        dispatch(actionTypes.GET_USER);
       } catch (err) {
         if (err.response && err.response.status === 400) {
           return err.response.data;
@@ -155,20 +141,8 @@ const authModule = {
     [mutationTypes.SET_CURRENT_CAMPAIGN](state, uuid) {
       Vue.set(state, stateKeys.CURRENT_CAMPAIGN, uuid);
     },
-    [mutationTypes.SET_TOKEN](state, { token }) {
-      Cookies.set(stateKeys.TOKEN, token, {
-        expires: 7,
-        secure: process.env.NODE_ENV === "production",
-      });
-      axios.defaults.headers["common"] = {
-        Authorization: "Token " + token,
-      };
-    },
     [mutationTypes.REMOVE_TOKEN]() {
-      Cookies.remove(stateKeys.TOKEN);
-      axios.defaults.headers["common"] = {
-        Authorization: "",
-      };
+      removeCookie(AUTH_TOKEN_NAME);
     },
   },
 };

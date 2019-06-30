@@ -1,11 +1,11 @@
 import store from "@/store";
 import { stateKeys } from "@/auth/vuexKeys";
-import { authActions } from "@/auth";
+import { authActions, authModuleName } from "@/auth";
 import { routeNames } from "@/router";
 import { getAuthUser } from "@/models";
 
 export async function userRequired(to, from, next) {
-  if (store.state.auth[stateKeys.AUTH_USER] === undefined) {
+  if (store.state[authModuleName][stateKeys.AUTH_USER] === undefined) {
     await store.dispatch(authActions.GET_USER);
   }
   next();
