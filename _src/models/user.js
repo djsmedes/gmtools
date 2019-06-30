@@ -23,6 +23,10 @@ export class User extends Model {
     return this.first_name + " " + this.last_name;
   }
 
+  get $name() {
+    return this.$.first_name + " " + this.$.last_name;
+  }
+
   get isAuthenticated() {
     return Boolean(this.email);
   }
@@ -43,8 +47,6 @@ export class UserList extends Collection {
 
 /**
  * SYNCHRONOUS call to get the currently logged in user
- *   will not work until getAuthUser has been called once, but that should happen
- *   when the app boots - prefer THIS function most of the time
  *
  * @return {User}
  */

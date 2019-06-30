@@ -64,9 +64,7 @@ const authModule = {
         });
         await dispatch(actionTypes.GET_USER);
       } catch (err) {
-        if (err.response && err.response.status === 400) {
-          return err.response.data;
-        } else if (
+        if (
           err.response &&
           [401, 403].includes(err.response.status) &&
           err.response.data &&
@@ -120,14 +118,9 @@ const authModule = {
           password1,
           password2,
         });
-
-        dispatch(actionTypes.GET_USER);
+        await dispatch(actionTypes.GET_USER);
       } catch (err) {
-        if (err.response && err.response.status === 400) {
-          return err.response.data;
-        } else {
-          throw err;
-        }
+        throw err;
       }
     },
   },

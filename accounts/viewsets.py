@@ -65,7 +65,7 @@ class CampaignViewSet(ModelViewSet):
                     "Either delete the entire campaign or promote another player "
                     "to GM before leaving."
                 )
-            }, status=403)
+            }, status=400)
 
         campaign_role.delete()
         return Response(data={"detail": "You have left the campaign."})

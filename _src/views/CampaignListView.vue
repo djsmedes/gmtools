@@ -71,21 +71,22 @@
 </template>
 
 <script>
-import { getCurrentCampaign, Campaign, CampaignList } from "@/models";
+import { Campaign, CampaignList } from "@/models";
 import CampaignDetail from "@/views/CampaignDetail";
 import Invitations from "@/components/accountManage/Invitations";
 import { sleep } from "@/utils/time";
 import NewCampaign from "@/components/accountManage/NewCampaign";
+import { authUserMixin } from "@/mixins";
 
 export default {
   name: "CampaignListView",
+  mixins: [authUserMixin],
   components: { Invitations, CampaignDetail },
   data() {
     return {
       p_campaignUnderEdit: null,
       showCampaigns: true,
       allCampaigns: new CampaignList(),
-      currentCampaign: getCurrentCampaign(),
     };
   },
   computed: {

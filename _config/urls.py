@@ -2,7 +2,7 @@ from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
 
 from accounts.viewsets import UserViewSet, CampaignViewSet, InvitationViewSet
-from accounts.views import UserView, SignupApiView
+from accounts.views import UserView
 from combat.viewsets import (
     CombatantViewSet,
     GMScreenTabViewSet,
@@ -11,7 +11,7 @@ from combat.viewsets import (
     StatblockPropViewSet,
 )
 from plot.viewsets import EncounterViewSet
-from core.auth import CsrfRotatingTemplateView as TemplateView, login_view
+from core.auth import CsrfRotatingTemplateView as TemplateView, login_view, signup_view, password_requirements
 
 router = DefaultRouter()
 
@@ -68,7 +68,8 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/token-auth/', login_view, name='token-auth'),
     path('api/request-user/', UserView.as_view(), name='request-user-detail'),
-    path('api/signup/', SignupApiView.as_view(), name='api-signup'),
+    path('api/signup/', signup_view, name='api-signup'),
+    path('api/password-reqs/', password_requirements, name='password-reqs'),
 ]
 
 urlpatterns += [

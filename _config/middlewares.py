@@ -11,7 +11,6 @@ from uuid import UUID
 from accounts.models import Campaign, CampaignRole
 
 
-
 AUTH_TOKEN_COOKIE_KEY = 'authToken'
 
 
@@ -45,9 +44,9 @@ class AuthenticationMiddleware:
         try:
             auth = token_auth_checker.authenticate(request)
             if auth is None:
-                tokenKey = request.COOKIES.get('authToken')
-                if tokenKey is not None:
-                    auth = token_auth_checker.authenticate_credentials(tokenKey)
+                token_key = request.COOKIES.get('authToken')
+                if token_key is not None:
+                    auth = token_auth_checker.authenticate_credentials(token_key)
             if auth is not None:
                 user = auth[0]
         except drf_exceptions.AuthenticationFailed:
@@ -88,11 +87,14 @@ def get_campaign_from_request(request):
             #   500 error in that case
             raise InvalidUserCampaignPair
     else:  # org_uuid is None
+        current_campaign_id = request.user.current_campaign_id
+        if current_campaign_id is None:
+            return None, False
         try:
             campaign_role = CampaignRole.objects.select_related(
                 'campaign'
             ).get(
-                campaign_id=request.user.current_campaign_id,
+                campaign_id=current_campaign_id,
                 user=request.user
             )
         except CampaignRole.DoesNotExist:

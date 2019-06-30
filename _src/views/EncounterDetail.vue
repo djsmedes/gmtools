@@ -73,7 +73,6 @@
 import ObjectDetail from "@/components/generic/ObjectDetail";
 import CombatantDetailDialog from "@/components/encounters/CombatantDetailDialog";
 import { Encounter, CombatantList } from "@/models";
-import { needLoading, doneLoading } from "@/utils/loading";
 
 export default {
   name: "EncounterDetail",
@@ -110,9 +109,9 @@ export default {
     },
   },
   async created() {
-    needLoading();
+    this.$store.commit("needLoading");
     await Promise.all([this.encounter.fetch(), this.combatants.fetch()]);
-    doneLoading();
+    this.$store.commit("doneLoading");
   },
 };
 </script>

@@ -120,14 +120,16 @@
 </template>
 
 <script>
-import { getCurrentCampaign, Campaign, UserList } from "@/models";
+import { Campaign, UserList } from "@/models";
 import { ButtonOption } from "@/plugins/userChoiceDialog";
 import InvitePlayers from "@/components/accountManage/InvitePlayers";
 import axios from "axios/index";
 import { generateUrl2 } from "@/utils/urls";
+import { authUserMixin } from "@/mixins";
 
 export default {
   name: "CampaignDetail",
+  mixins: [authUserMixin],
   props: {
     campaign: {
       type: Campaign,
@@ -141,7 +143,6 @@ export default {
   data() {
     return {
       users: new UserList(),
-      currentCampaign: getCurrentCampaign(),
       editMode: false,
     };
   },

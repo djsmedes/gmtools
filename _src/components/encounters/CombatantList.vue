@@ -2,7 +2,7 @@
   <object-list
     :detail-view-name="$routeNames.COMBATANT"
     :create-view-name="$routeNames.COMBATANT_CREATE"
-    :object-list="combatants.getModels()"
+    :object-list="combatants.models"
     :headers="headers"
   ></object-list>
 </template>

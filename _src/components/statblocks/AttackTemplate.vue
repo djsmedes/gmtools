@@ -66,6 +66,7 @@ export default {
     average_roll,
   },
   filters: {
+    // todo - make this global? look at efficiency both time and space depending on where defined
     capitalize(value) {
       if (!value) return "";
       value = value.toString();
