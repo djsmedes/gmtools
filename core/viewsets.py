@@ -82,6 +82,7 @@ class GetParamFilterableMixin(ModelViewSet):
 
 class MultiTenantedViewSet(GetParamFilterableMixin, ModelViewSet):
     """An ABSTRACT class, which other model viewsets should inherit from"""
+    # todo: does this need to be removed?
     model = None
     lookup_field = 'uuid'
 
@@ -140,7 +141,7 @@ class CampaignModelViewSet(MultiTenantedViewSet):
         assert self.request.user.is_authenticated, (
             'Log in to create objects.'
         )
-        campaign = self.request.user.current_campaign
+        campaign = self.request.campaign
         assert campaign, (
             'Choose a campaign to create objects.'
         )
