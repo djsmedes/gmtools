@@ -2,9 +2,11 @@ from django.db.models import Q
 from django.utils.functional import cached_property
 from django.http.response import HttpResponseForbidden
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 
 
 class ParamFilterKwargHelper:
+    # todo - ream this shit out
     def __init__(self, key, validity_checker=None):
         self.key = key
         if validity_checker is None:
@@ -23,6 +25,7 @@ class ParamFilterKwargHelper:
 
 
 class FKParamFilterKwargHelper:
+    # todo - ream this shit out
     def __init__(self, model, db_name_for_model):
         self.model = model
         self.db_name_for_model = db_name_for_model
@@ -85,6 +88,7 @@ class MultiTenantedViewSet(GetParamFilterableMixin, ModelViewSet):
     # todo: does this need to be removed?
     model = None
     lookup_field = 'uuid'
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         qs = self.model.objects.of_requester(self.request)
