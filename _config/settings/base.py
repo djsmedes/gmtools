@@ -109,7 +109,7 @@ DATABASES = {
         'NAME': None,
     }
 }
-DATABASES['default'].update(dj_database_url.config(conn_max_age=500))
+DATABASES['default'].update(dj_database_url.config())
 
 
 # Password validation
