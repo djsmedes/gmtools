@@ -6,6 +6,7 @@ import {
   loginRequired,
   loggedInExcluded,
 } from "@/auth/navigationGuards";
+import store from "@/store";
 
 Vue.use(Router);
 
@@ -36,6 +37,8 @@ export const routeNames = {
   LOGIN: "login",
   SIGNUP: "signup",
   NOT_FOUND: "notFound",
+
+  SPOTIFY_RESPONSE: "spotifyResponse",
 };
 Vue.prototype.$routeNames = routeNames;
 
@@ -184,6 +187,23 @@ const router = new Router({
       component: () =>
         import(/* webpackChunkName: "misc" */ "@/views/AuthAccountOverview"),
       beforeEnter: loginRequired,
+    },
+
+    {
+      path: "/spotify-response/",
+      name: routeNames.SPOTIFY_RESPONSE,
+      beforeEnter: (to, from, next) => {
+        let params = to.hash
+          .slice(1)
+          .split("&")
+          .reduce((accumulator, curr) => {
+            let [key, val] = curr.split("=");
+            accumulator[key] = val;
+            return accumulator;
+          }, {});
+        store.commit("setSpotifyAuth", params);
+        next({ name: routeNames.HOME });
+      },
     },
 
     {

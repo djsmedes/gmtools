@@ -146,7 +146,7 @@
             </v-layout>
             <v-layout wrap>
               <v-flex>
-<!--                todo spotify -->
+                <spotify-controller></spotify-controller>
               </v-flex>
             </v-layout>
           </v-container>
@@ -170,11 +170,13 @@ import {
   getCurrentCampaign,
 } from "@/models";
 import { wsMessageMixin } from "@/mixins";
+import SpotifyController from "@/components/gmscreen/SpotifyController";
 
 export default {
   name: "CombatView",
   mixins: [wsMessageMixin],
   components: {
+    SpotifyController,
     CombatantCard,
     "gm-screen": Screen,
   },
