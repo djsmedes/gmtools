@@ -109,7 +109,7 @@
           <attack-template
             v-if="prop.attack_type"
             :creature="creature"
-            v-bind="prop"
+            :creature-prop="prop"
           ></attack-template>
           {{ prop.description | renderSpecifics(creature, prop) }}
         </p>
@@ -154,11 +154,7 @@
 </template>
 
 <script>
-import {
-  Statblock,
-  abilityScores,
-  abilityScoreDisplay,
-} from "@/models/statblock";
+import { Statblock, abilityScores, abilityScoreDisplay } from "@/models";
 import AttackTemplate from "@/components/statblocks/AttackTemplate";
 
 function generateSavingThrowText(creature, property) {

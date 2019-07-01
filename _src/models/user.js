@@ -1,36 +1,58 @@
-import { Model } from "./_baseModel";
-import { ModelVuexModule } from "@/models/_baseModule";
+import { Model, Collection } from "./_baseVueMcClasses";
+import store from "@/store";
+import { authGetters } from "@/auth";
+
+const modelName = "user";
 
 export class User extends Model {
   static get modelName() {
-    return "user";
+    return modelName;
   }
 
-  constructor({
-    uuid = null,
-    email = "",
-    first_name = "",
-    last_name = "",
-    current_campaign = "",
-  } = {}) {
-    super();
-    this.uuid = uuid;
-    this.email = email;
-    this.first_name = first_name;
-    this.last_name = last_name;
-    this.current_campaign = current_campaign;
+  defaults() {
+    return {
+      uuid: null,
+      email: "",
+      first_name: "",
+      last_name: "",
+      current_campaign: "",
+    };
   }
 
   get name() {
     return this.first_name + " " + this.last_name;
   }
-}
 
-class UserVuexModule extends ModelVuexModule {
-  constructor() {
-    super();
-    this.modelClass = User;
+  get $name() {
+    return this.$.first_name + " " + this.$.last_name;
+  }
+
+  get isAuthenticated() {
+    return Boolean(this.email);
   }
 }
 
-export default new UserVuexModule();
+export class UserList extends Collection {
+  static get modelName() {
+    return modelName;
+  }
+
+  options() {
+    return {
+      ...super.options(),
+      model: User,
+    };
+  }
+}
+
+/**
+ * SYNCHRONOUS call to get the currently logged in user
+ *
+ * @return {User}
+ */
+export function getAuthUser() {
+  let uuid = store.getters[authGetters.AUTH_USER_UUID];
+  let user = new User({ uuid });
+  user.reset();
+  return user;
+}

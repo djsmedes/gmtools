@@ -1,8 +1,7 @@
 <template>
   <v-dialog
     v-model="dialog"
-    :max-width="width"
-    :fullscreen="$vuetify.breakpoint.xsOnly"
+    v-bind="sizeAttrs"
     persistent
     @keydown.esc="close(null)"
   >

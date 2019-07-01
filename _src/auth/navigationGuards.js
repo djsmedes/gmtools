@@ -1,31 +1,31 @@
 import store from "@/store";
-import auth from "@/auth";
+import { stateKeys } from "@/auth/vuexKeys";
+import { authActions, authModuleName } from "@/auth";
 import { routeNames } from "@/router";
-
-const wasUserRequested = () =>
-  store.getters[
-    auth.namespace + "/" + auth.getterTypes.WAS_AUTH_USER_REQUESTED
-  ];
-
-const isUserAuthenticated = () =>
-  store.getters[auth.namespace + "/" + auth.getterTypes.IS_USER_AUTHENTICATED];
+import { getAuthUser } from "@/models";
 
 export async function userRequired(to, from, next) {
-  if (!wasUserRequested()) {
-    await store.dispatch(auth.namespace + "/" + auth.actionTypes.GET_USER);
+  if (store.state[authModuleName][stateKeys.AUTH_USER] === undefined) {
+    await store.dispatch(authActions.GET_USER);
   }
   next();
 }
 
 export function loginRequired(to, from, next) {
-  isUserAuthenticated()
-    ? next()
-    : next({
-        name: routeNames.LOGIN,
-        params: { successRoute: { ...to } },
-      });
+  if (getAuthUser().isAuthenticated) {
+    next();
+  } else {
+    next({
+      name: routeNames.LOGIN,
+      params: { successRoute: { ...to } },
+    });
+  }
 }
 
 export function loggedInExcluded(to, from, next) {
-  !isUserAuthenticated() ? next() : next({ name: routeNames.HOME });
+  if (getAuthUser().isAuthenticated) {
+    next({ name: routeNames.HOME });
+  } else {
+    next();
+  }
 }

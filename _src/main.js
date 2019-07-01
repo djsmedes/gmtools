@@ -6,10 +6,9 @@ import App from "@/App";
 import router from "@/router";
 import store from "@/store";
 import axios from "axios";
-import { namespace, stateKeys, getterTypes, mutationTypes } from "@/auth";
+import { authMutations, authModuleName } from "@/auth";
+import { stateKeys } from "@/auth/vuexKeys";
 import { ModuleSocket } from "@/utils/websockets";
-import { ability } from "@/utils/ability";
-import { abilitiesPlugin } from "@casl/vue";
 import { dialogPlugin } from "@/plugins/userChoiceDialog";
 import { showSnackPlugin } from "@/plugins/showSnack";
 
@@ -20,6 +19,7 @@ Vue.use(Vuetify, {
     primary: "#1976D2",
     edit: "#1976D2",
     save: "#1976D2",
+    go: "#1976D2",
     cancel: "#424242",
     delete: "#FF5252",
     secondary: "#424242",
@@ -38,16 +38,10 @@ Vue.use(VueNativeSock, "//" + window.location.host + "/ws/combat/", {
   connectManually: true,
   format: "json",
   reconnection: true,
-  store: store,
 });
-
-Vue.use(abilitiesPlugin, ability);
 
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
-axios.defaults.headers["common"] = {
-  ...store.getters[namespace + "/" + getterTypes.AUTH_HEADER],
-};
 
 const vm = new Vue({
   router,
@@ -59,15 +53,15 @@ Vue.prototype.$ws = new ModuleSocket(vm);
 
 store.subscribe((mutation, state) => {
   switch (mutation.type) {
-    case namespace + "/" + mutationTypes.SET_AUTH_USER:
-      if (state[namespace][stateKeys.AUTH_USER]) {
-        vm.$connect();
-        ability.update(mutation.payload.permissions);
+    case authMutations.SET_AUTH_USER:
+      if (state[authModuleName][stateKeys.AUTH_USER]) {
+        vm.$ws.initialize();
+      } else {
+        vm.$ws.terminate();
       }
       break;
-    case namespace + "/" + mutationTypes.CLEAR_AUTH_USER:
-      ability.update([]);
-      if (typeof vm.$disconnect === "function") vm.$disconnect();
+    case authMutations.CLEAR_AUTH_USER:
+      vm.$ws.terminate();
       break;
   }
 });

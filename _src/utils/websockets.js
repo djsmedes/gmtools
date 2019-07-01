@@ -1,4 +1,5 @@
 import uuid from "uuid/v4";
+import uniqueId from "lodash/uniqueId";
 
 class WebSocketRequest {
   constructor({ verb = null, id = null, data = null } = {}) {
@@ -15,22 +16,55 @@ export class ModuleSocket {
     this.counter = 0;
     this.uuid = uuid();
     this.replyCallbackMap = {};
-    this.vm.$store.watch(
-      state => state.lastReplyId,
-      value => {
-        if (this.replyCallbackMap[value] !== undefined) {
-          this.replyCallbackMap[value]();
-          delete this.replyCallbackMap[value];
-        }
+    this.messageListeners = {};
+  }
+
+  initialize() {
+    this.vm.$connect();
+    this.vm.$socket.onmessage = message => {
+      let { action, data, namespace, replyTo, status } = JSON.parse(
+        message.data
+      );
+
+      let { resolve, reject } = this.replyCallbackMap[replyTo] || {
+        resolve: () => {},
+        reject: () => {},
+      };
+
+      if (status >= 400) {
+        reject(data);
+        return;
       }
-    );
+
+      Object.values(this.messageListeners).forEach(listener =>
+        listener({
+          action,
+          data,
+          namespace,
+        })
+      );
+      resolve();
+    };
+  }
+
+  terminate() {
+    if (typeof this.vm.$disconnect === "function") this.vm.$disconnect();
   }
 
   request(verb, data) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       this.counter += 1;
       let id = this.uuid + "-" + this.counter;
-      this.replyCallbackMap[id] = obj => resolve(obj);
+      this.replyCallbackMap[id] = {
+        resolve: obj => {
+          delete this.replyCallbackMap[id];
+          resolve(obj);
+        },
+        reject: obj => {
+          delete this.replyCallbackMap[id];
+          reject(obj);
+        },
+      };
       this.vm.$socket.sendObj(new WebSocketRequest({ id, verb, data }));
     });
   }
@@ -49,5 +83,11 @@ export class ModuleSocket {
 
   async delete(data) {
     return await this.request("DELETE", data);
+  }
+
+  addMessageListener(cb) {
+    let id = uniqueId();
+    this.messageListeners[id] = cb;
+    return () => delete this.messageListeners[id];
   }
 }

@@ -66,7 +66,7 @@ export default {
     },
     extraAttrData: {
       type: Object,
-      default: () => {},
+      default: () => ({}),
     },
   },
   data() {
@@ -99,7 +99,7 @@ export default {
   },
   methods: {
     async save() {
-      this.$emit("save", await this.combatant.vuex_save(this.$store));
+      this.$emit("save", await this.combatant.save());
       this.editMode = false;
     },
     async cancel() {
@@ -121,7 +121,7 @@ export default {
         ]
       );
       if (reply) {
-        await this.combatant.vuex_delete(this.$store);
+        await this.combatant.delete();
         // todo - this feels wrong
         if (this.$route.name === this.$routeNames.COMBATANT) {
           this.$router.push({ name: this.$routeNames.COMBATANTS });
@@ -153,11 +153,11 @@ export default {
   },
   async created() {
     if (this.uuid) {
-      await this.combatant.vuex_fetch(this.$store);
+      await this.combatant.fetch();
       if (this.combatant.statblock) {
         this.statblockAutocompleteLoading = true;
         this.p_initialStatblock.uuid = this.combatant.statblock;
-        await this.p_initialStatblock.vuex_fetch(this.$store);
+        await this.p_initialStatblock.fetch();
         this.statblockAutocompleteLoading = false;
       }
     }

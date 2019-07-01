@@ -1,56 +1,43 @@
 <template>
   <span>
-    &nbsp;<em class="text-capitalize">{{ attackTypeDisplay[attack_type] }}:</em>
+    &nbsp;<em class="text-capitalize">{{ attackTypeDisplay[creatureProp.attack_type] }}:</em>
     {{ 0 > toHit ? "-" : "+" }}{{ Math.abs(toHit) }} to hit,
-    <template v-if="range_second">
-      range {{ reach_range }}/{{ range_second }}
+    <template v-if="creatureProp.range_second">
+      range {{ creatureProp.reach_range }}/{{ creatureProp.range_second }}
     </template>
     <template v-else>
-      reach {{ reach_range }}
+      reach {{ creatureProp.reach_range }}
     </template>
-    ft., {{ num_targets }} {{ num_targets === 1 ? "target" : "targets" }}. Hit:
+    ft., {{ creatureProp.num_targets }}
+    {{ creatureProp.num_targets === 1 ? "target" : "targets" }}. Hit:
     {{
       average_roll(
-        hit_die_size,
-        hit_num_damage_dice,
-        creature[uses_ability_mod + "_mod"]
+        creatureProp.hit_die_size,
+        creatureProp.hit_num_damage_dice,
+        creature[creatureProp.uses_ability_mod + "_mod"]
       )
     }}
-    ({{ hit_num_damage_dice }}d{{ hit_die_size }}{{ constantDamageDisplay }})
-    {{ hit_damage_type }}
-    <template v-if="hit_extra_damage_dice">
+    ({{ creatureProp.hit_num_damage_dice }}d{{ creatureProp.hit_die_size }}{{ constantDamageDisplay }})
+    {{ creatureProp.hit_damage_type }}
+    <template v-if="creatureProp.hit_extra_damage_dice">
       damage plus
-      {{ average_roll(hit_extra_damage_die_size, hit_extra_damage_dice) }} ({{
-        hit_extra_damage_dice
-      }}d{{ hit_extra_damage_die_size }})
-      {{ hit_extra_damage_type }}
+      {{ average_roll(creatureProp.hit_extra_damage_die_size, creatureProp.hit_extra_damage_dice) }}
+      ({{ creatureProp.hit_extra_damage_dice }}d{{ creatureProp.hit_extra_damage_die_size }})
+      {{ creatureProp.hit_extra_damage_type }}
     </template>
     damage.
   </span>
 </template>
 
 <script>
-import { Statblock } from "@/models/statblock";
-import { attackTypeDisplay } from "@/models/creatureprop";
+import { Statblock, CreatureProp, attackTypeDisplay } from "@/models";
 import { average_roll } from "@/utils/dice";
 
 export default {
   name: "AttackTemplate",
   props: {
     creature: Statblock,
-
-    attack_type: null,
-    uses_ability_mod: null,
-    tohit_bonus_override: null,
-    reach_range: null,
-    range_second: null,
-    num_targets: null,
-    hit_num_damage_dice: null,
-    hit_die_size: null,
-    hit_damage_type: null,
-    hit_extra_damage_dice: null,
-    hit_extra_damage_die_size: null,
-    hit_extra_damage_type: null,
+    creatureProp: CreatureProp,
   },
   data() {
     return {
@@ -60,17 +47,17 @@ export default {
   computed: {
     toHit() {
       return (
-        this.tohit_bonus_override ||
+        this.creatureProp.tohit_bonus_override ||
         this.creature.proficiency +
-          this.creature[this.uses_ability_mod + "_mod"]
+          this.creature[this.creatureProp.uses_ability_mod + "_mod"]
       );
     },
     constantDamageDisplay() {
-      if (this.creature[this.uses_ability_mod + "_mod"] > 0) {
-        return " + " + this.creature[this.uses_ability_mod + "_mod"];
+      if (this.creature[this.creatureProp.uses_ability_mod + "_mod"] > 0) {
+        return " + " + this.creature[this.creatureProp.uses_ability_mod + "_mod"];
       }
-      if (this.creature[this.uses_ability_mod + "_mod"] < 0) {
-        return " - " + Math.abs(this.creature[this.uses_ability_mod + "_mod"]);
+      if (this.creature[this.creatureProp.uses_ability_mod + "_mod"] < 0) {
+        return " - " + Math.abs(this.creature[this.creatureProp.uses_ability_mod + "_mod"]);
       }
       return "";
     },
@@ -79,6 +66,7 @@ export default {
     average_roll,
   },
   filters: {
+    // todo - make this global? look at efficiency both time and space depending on where defined
     capitalize(value) {
       if (!value) return "";
       value = value.toString();

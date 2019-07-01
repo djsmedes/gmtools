@@ -275,12 +275,12 @@ import {
   damageTypes,
   conditions,
   languages,
-} from "@/models/statblock";
+  propTypes,
+  CreaturePropList,
+} from "@/models";
 import StatblockView from "@/components/statblocks/StatblockView";
 import CalcHitDieDialog from "@/components/statblocks/CalcHitDieDialog";
 import CreaturePropDetailDialog from "@/components/statblocks/CreaturePropDetailDialog";
-import creatureprop, { propTypes } from "@/models/creatureprop";
-import { mapGetters, mapActions } from "vuex";
 import Sortable from "sortablejs";
 
 const propType2Key = {
@@ -309,12 +309,14 @@ export default {
       whichTab: 0,
       formValid: false,
       statblock: new Statblock({ uuid: this.uuid }),
+      creatureProps: new CreaturePropList([], {
+        storeFilter: {
+          statblock: this.uuid,
+        },
+      }),
     };
   },
   computed: {
-    ...mapGetters(creatureprop.namespace, {
-      getCreatureProp: creatureprop.getterTypes.BY_ID,
-    }),
     statblockProperties() {
       return this.uuidsToCreatureProps(this.statblock.properties);
     },
@@ -353,12 +355,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions(creatureprop.namespace, {
-      loadCreatureProps: creatureprop.actionTypes.QUERY_LIST,
-    }),
     async save() {
       let creatingNew = !this.statblock.uuid;
-      await this.statblock.vuex_save(this.$store);
+      await this.statblock.save();
       if (creatingNew) {
         this.$router.replace({
           name: this.$routeNames.STATBLOCK,
@@ -367,7 +366,10 @@ export default {
       }
     },
     uuidsToCreatureProps(uuid_list) {
-      return uuid_list.map(uuid => this.getCreatureProp(uuid)).filter(p => !!p);
+      // start with uuid_list and map from it to preserve order
+      return uuid_list
+        .map(uuid => this.creatureProps.find({ uuid }))
+        .filter(cp => cp);
     },
     async helpCalcHitDie() {
       let response = await this.$dialog(CalcHitDieDialog, {
@@ -381,6 +383,8 @@ export default {
       }
     },
     async editCreatureProp(uuid) {
+      // todo - changing types will not be updated until refresh
+
       let newProp = await this.$dialog(CreaturePropDetailDialog, {
         uuid,
         parentStatblockUuid: this.uuid,
@@ -413,8 +417,8 @@ export default {
   },
   async created() {
     if (this.uuid) {
-      this.statblock.vuex_fetch(this.$store);
-      this.loadCreatureProps({ statblock: this.uuid });
+      this.statblock.fetch();
+      this.creatureProps.fetch();
     }
   },
 };

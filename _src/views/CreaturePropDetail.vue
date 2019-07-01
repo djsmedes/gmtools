@@ -161,7 +161,7 @@
       <slot
         name="actions"
         :resetFunc="creatureprop.reset"
-        :saveFunc="async () => creatureprop.vuex_save($store)"
+        :saveFunc="creatureprop.save"
         :changedFunc="creatureprop.changed"
       >
         <v-btn
@@ -175,7 +175,7 @@
         <v-spacer></v-spacer>
         <v-btn
           flat
-          @click="creatureprop.vuex_save($store)"
+          @click="creatureprop.save()"
           color="save"
           :disabled="!creatureprop.changed()"
         >
@@ -189,11 +189,12 @@
 
 <script>
 import {
+  abilityScoreChoices,
+  damageTypes,
   propTypeChoices,
   attackTypeChoices,
   CreatureProp,
-} from "@/models/creatureprop";
-import { abilityScoreChoices, damageTypes } from "@/models/statblock";
+} from "@/models";
 
 const dieSizeChoices = [1, 4, 6, 8, 10, 12, 20].map(v => ({
   text: "d" + v,
@@ -239,7 +240,7 @@ export default {
   },
   async created() {
     if (this.uuid) {
-      this.creatureprop.vuex_fetch(this.$store);
+      await this.creatureprop.fetch();
       this.dynamicSaveDC = !!this.creatureprop.save_source_ability;
       this.hitExtra =
         !!this.creatureprop.hit_extra_damage_type ||

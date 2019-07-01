@@ -12,6 +12,7 @@ export function showSnackPlugin(Vue) {
       },
     });
     snack.$mount();
+    // has to be under "app" to get default styles
     document.getElementById("app").appendChild(snack.$el);
     snack.open();
 

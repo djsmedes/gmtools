@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Combat from "@/components/encounters/Combat";
+import Combat from "@/views/CombatView";
 import {
   userRequired,
   loginRequired,
@@ -75,8 +75,7 @@ const router = new Router({
     {
       path: "/campaigns/",
       name: routeNames.CAMPAIGNS,
-      component: () =>
-        import(/* webpackChunkName: "campaigns" */ "@/components/accountManage/CampaignList"),
+      component: () => import("@/views/CampaignListView"),
       beforeEnter: loginRequired,
     },
 
@@ -84,21 +83,21 @@ const router = new Router({
       path: "/encounters/",
       name: routeNames.ENCOUNTERS,
       component: () =>
-        import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterList"),
+        import(/* webpackChunkName: "encounters" */ "@/views/EncounterList"),
       beforeEnter: loginRequired,
     },
     {
       path: "/encounters/new/",
       name: routeNames.ENCOUNTER_CREATE,
       component: () =>
-        import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
+        import(/* webpackChunkName: "encounters" */ "@/views/EncounterDetail"),
       beforeEnter: loginRequired,
     },
     {
       path: "/encounters/:uuid/",
       name: routeNames.ENCOUNTER,
       component: () =>
-        import(/* webpackChunkName: "encounters" */ "@/components/encounters/EncounterDetail"),
+        import(/* webpackChunkName: "encounters" */ "@/views/EncounterDetail"),
       beforeEnter: loginRequired,
       props: true,
     },
@@ -107,21 +106,21 @@ const router = new Router({
       path: "/statblocks/",
       name: routeNames.STATBLOCKS,
       component: () =>
-        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/StatblockList"),
+        import(/* webpackChunkName: "statblocks" */ "@/views/StatblockList"),
       beforeEnter: loginRequired,
     },
     {
       path: "/statblocks/new/",
       name: routeNames.STATBLOCK_CREATE,
       component: () =>
-        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/StatblockDetail"),
+        import(/* webpackChunkName: "statblocks" */ "@/views/StatblockDetail"),
       beforeEnter: loginRequired,
     },
     {
       path: "/statblocks/:uuid/",
       name: routeNames.STATBLOCK,
       component: () =>
-        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/StatblockDetail"),
+        import(/* webpackChunkName: "statblocks" */ "@/views/StatblockDetail"),
       beforeEnter: loginRequired,
       props: true,
     },
@@ -129,7 +128,7 @@ const router = new Router({
       path: "/creatureprops/",
       name: routeNames.CREATUREPROPS,
       component: () =>
-        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/CreaturePropList"),
+        import(/* webpackChunkName: "statblocks" */ "@/views/CreaturePropList"),
       beforeEnter: loginRequired,
     },
     // {
@@ -143,7 +142,7 @@ const router = new Router({
       path: "/creatureprops/:uuid/",
       name: routeNames.CREATUREPROP,
       component: () =>
-        import(/* webpackChunkName: "statblocks" */ "@/components/statblocks/CreaturePropDetail"),
+        import(/* webpackChunkName: "statblocks" */ "@/views/CreaturePropDetail"),
       beforeEnter: loginRequired,
       props: true,
     },
@@ -152,14 +151,14 @@ const router = new Router({
       path: "/gmscreentabs/new/",
       name: routeNames.GMSCREENTAB_CREATE,
       component: () =>
-        import(/* webpackChunkName: "misc" */ "@/components/gmscreen/GMScreenTabDetail"),
+        import(/* webpackChunkName: "misc" */ "@/views/GMScreenTabDetail"),
       beforeEnter: loginRequired,
     },
     {
       path: "/gmscreentabs/:uuid/",
       name: routeNames.GMSCREENTAB,
       component: () =>
-        import(/* webpackChunkName: "misc" */ "@/components/gmscreen/GMScreenTabDetail"),
+        import(/* webpackChunkName: "misc" */ "@/views/GMScreenTabDetail"),
       beforeEnter: loginRequired,
       props: true,
     },
@@ -168,7 +167,7 @@ const router = new Router({
       path: "/login/",
       name: routeNames.LOGIN,
       component: () =>
-        import(/* webpackChunkName: "misc" */ "@/components/auth/Login"),
+        import(/* webpackChunkName: "misc" */ "@/views/AuthLogin"),
       props: true,
       beforeEnter: loggedInExcluded,
     },
@@ -176,14 +175,14 @@ const router = new Router({
       path: "/signup/",
       name: routeNames.SIGNUP,
       component: () =>
-        import(/* webpackChunkName: "misc" */ "@/components/auth/SignUp"),
+        import(/* webpackChunkName: "misc" */ "@/views/AuthSignUp"),
       beforeEnter: loggedInExcluded,
     },
     {
       path: "/account/",
       name: routeNames.ACCOUNT_SETTINGS,
       component: () =>
-        import(/* webpackChunkName: "misc" */ "@/components/auth/AccountOverview"),
+        import(/* webpackChunkName: "misc" */ "@/views/AuthAccountOverview"),
       beforeEnter: loginRequired,
     },
 

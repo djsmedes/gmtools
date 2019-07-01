@@ -1,104 +1,70 @@
 import Vue from "vue";
-import userModule, { User } from "@/models/user";
-import campaignModule, { Campaign } from "@/models/campaign";
-import { array2ObjByUUID } from "@/models/_baseModule";
-import * as Cookies from "js-cookie";
+import { remove as removeCookie } from "js-cookie";
 import axios from "axios";
-import { generateUrl } from "@/utils/urls";
+import { generateUrl2 as generateUrl } from "@/utils/urls";
+import { actionTypes, stateKeys, mutationTypes, getterTypes } from "./vuexKeys";
+import store from "@/store";
+import fromPairs from "lodash/fromPairs";
+import { User, CampaignList, Campaign } from "@/models";
 
-export const namespace = "auth";
+const AUTH_TOKEN_NAME = "authToken";
+const moduleName = "auth";
+export const authModuleName = moduleName;
 
-export const stateKeys = {
-  TOKEN: "authToken",
-  AUTH_USER: "authUser",
-  PASS_RESET_USER_KEY: "passResetUserKey",
-  PASS_RESET_TOKEN: "passResetToken",
-};
+export const authGetters = fromPairs(
+  Object.entries(getterTypes).map(([key, value]) => [
+    key,
+    moduleName + "/" + value,
+  ])
+);
 
-export const getterTypes = {
-  AUTH_HEADER: "authHeader",
-  AUTH_USER: "authUser",
-  WAS_AUTH_USER_REQUESTED: "wasAuthUserRequested",
-  IS_USER_AUTHENTICATED: "isUserAuthenticated",
-  CURRENT_CAMPAIGN: "currentCampaign",
-};
+export const authActions = fromPairs(
+  Object.entries(actionTypes).map(([key, value]) => [
+    key,
+    moduleName + "/" + value,
+  ])
+);
 
-export const actionTypes = {
-  GET_USER: "getUser",
-  SET_AUTH_USER: "setAuthUser",
-  SIGNUP: "signUp",
-  LOGIN: "getToken",
-  LOGOUT: "removeToken",
-};
+export const authMutations = fromPairs(
+  Object.entries(mutationTypes).map(([key, value]) => [
+    key,
+    moduleName + "/" + value,
+  ])
+);
 
-export const mutationTypes = {
-  SET_USER: "setUser",
-  SET_AUTH_USER: "setAuthUser",
-  CLEAR_AUTH_USER: "clearAuthUser",
-  SET_TOKEN: "setAuth",
-  REMOVE_TOKEN: "removeAuth",
-  SET_PASS_RESET_DATA: "setPassResetData",
-  CLEAR_PASS_RESET_DATA: "clearPassResetData",
-};
-
-export const store = {
+const authModule = {
   namespaced: true,
   state: {},
   getters: {
-    [getterTypes.AUTH_HEADER]: () => {
-      let token = Cookies.get(stateKeys.TOKEN);
-      if (token) {
-        return { Authorization: "Token " + token };
-      } else {
-        return {};
-      }
+    [getterTypes.AUTH_USER_UUID]: state => {
+      return state[stateKeys.AUTH_USER];
     },
-    [getterTypes.AUTH_USER]: (state, getters, rootState, rootGetters) => {
-      if (!getters[getterTypes.WAS_AUTH_USER_REQUESTED]) {
-        return;
-      }
-      let userByIdGetterName =
-        userModule.namespace + "/" + userModule.getterTypes.BY_ID;
-      return rootGetters[userByIdGetterName](state[stateKeys.AUTH_USER]);
+    [getterTypes.AUTH_USER]: (state, getters) => {
+      let user = new User({ uuid: getters[getterTypes.AUTH_USER_UUID] });
+      user.reset();
+      return user;
     },
-    [getterTypes.CURRENT_CAMPAIGN]: (
-      state,
-      getters,
-      rootState,
-      rootGetters
-    ) => {
-      let user = getters[getterTypes.AUTH_USER];
-      if (!user) return new Campaign();
-      let campaignUuid = user.current_campaign;
-      if (!campaignUuid) return new Campaign();
-      let campaignByIdGetterName =
-        campaignModule.namespace + "/" + campaignModule.getterTypes.BY_ID;
-      return rootGetters[campaignByIdGetterName](campaignUuid);
+    [getterTypes.CURRENT_CAMPAIGN_UUID]: state => {
+      return state[stateKeys.CURRENT_CAMPAIGN];
     },
-    [getterTypes.WAS_AUTH_USER_REQUESTED]: state => {
-      return typeof state[stateKeys.AUTH_USER] !== "undefined";
-    },
-    [getterTypes.IS_USER_AUTHENTICATED]: (state, getters) => {
-      let user = getters[getterTypes.AUTH_USER];
-      if (typeof user === "undefined") return false;
-      return user.email.length !== 0;
+    [getterTypes.CURRENT_CAMPAIGN]: (state, getters) => {
+      let campaign = new Campaign({
+        uuid: getters[getterTypes.CURRENT_CAMPAIGN_UUID],
+      });
+      campaign.reset();
+      return campaign;
     },
   },
   actions: {
     [actionTypes.LOGIN]: async ({ commit, dispatch }, { email, password }) => {
       try {
-        let { data } = await axios.post(generateUrl(["token-auth"]), {
+        await axios.post(generateUrl("token-auth"), {
           username: email,
           password: password,
         });
-        let { token } = data;
-
-        commit(mutationTypes.SET_TOKEN, { token });
         await dispatch(actionTypes.GET_USER);
       } catch (err) {
-        if (err.response && err.response.status === 400) {
-          return err.response.data;
-        } else if (
+        if (
           err.response &&
           [401, 403].includes(err.response.status) &&
           err.response.data &&
@@ -110,23 +76,18 @@ export const store = {
         }
       }
     },
-    [actionTypes.GET_USER]: async ({ commit, dispatch }) => {
+    [actionTypes.GET_USER]: async ({ commit }) => {
       try {
-        let { data } = await axios.get(generateUrl(["request-user"]));
+        let { data } = await axios.get(generateUrl("request-user"));
         let { user, campaigns } = data;
-
-        dispatch(actionTypes.SET_AUTH_USER, user);
-        let campaignSetListKey =
-          campaignModule.namespace +
-          "/" +
-          campaignModule.mutationTypes.SET_LIST;
-        commit(
-          campaignSetListKey,
-          {
-            objList: array2ObjByUUID(campaigns, Campaign),
-          },
-          { root: true }
-        );
+        if (!user.uuid) {
+          commit(mutationTypes.CLEAR_AUTH_USER);
+        } else {
+          commit(mutationTypes.SET_AUTH_USER, user);
+          commit(mutationTypes.SET_CURRENT_CAMPAIGN, user.current_campaign);
+        }
+        if (user) new User(user).sync();
+        if (campaigns) new CampaignList(campaigns).sync();
       } catch (err) {
         // eslint-disable-next-line
         if (process.env.NODE_ENV !== "production") console.warn(err);
@@ -138,48 +99,28 @@ export const store = {
           err.response.data.detail === "Invalid token."
         ) {
           commit(mutationTypes.REMOVE_TOKEN);
+        } else {
+          throw err;
         }
-      }
-    },
-    [actionTypes.SET_AUTH_USER]: ({ commit }, user) => {
-      if (!user.uuid) {
-        commit(mutationTypes.CLEAR_AUTH_USER);
-      } else {
-        commit(mutationTypes.SET_AUTH_USER, user);
-        commit(
-          userModule.namespace + "/" + userModule.mutationTypes.SET,
-          { object: new User(user) },
-          {
-            root: true,
-          }
-        );
       }
     },
     [actionTypes.LOGOUT]: ({ commit }) => {
       commit(mutationTypes.REMOVE_TOKEN);
-      commit(mutationTypes.CLEAR_AUTH_USER);
-      // todo - clear basically all other data out of vuex
+      window.location.reload();
     },
     [actionTypes.SIGNUP]: async (
-      { commit, dispatch },
+      { dispatch },
       { email, password1, password2 }
     ) => {
       try {
-        let { data } = await axios.post(generateUrl(["signup"]), {
+        await axios.post(generateUrl("signup"), {
           email,
           password1,
           password2,
         });
-        let { user, token } = data;
-
-        commit(mutationTypes.SET_TOKEN, { token });
-        dispatch(actionTypes.SET_AUTH_USER, user);
+        await dispatch(actionTypes.GET_USER);
       } catch (err) {
-        if (err.response && err.response.status === 400) {
-          return err.response.data;
-        } else {
-          throw err;
-        }
+        throw err;
       }
     },
   },
@@ -190,30 +131,13 @@ export const store = {
     [mutationTypes.CLEAR_AUTH_USER](state) {
       Vue.set(state, stateKeys.AUTH_USER, "");
     },
-    [mutationTypes.SET_TOKEN](state, { token }) {
-      Cookies.set(stateKeys.TOKEN, token, {
-        expires: 7,
-        secure: process.env.NODE_ENV === "production",
-      });
-      axios.defaults.headers["common"] = {
-        Authorization: "Token " + token,
-      };
+    [mutationTypes.SET_CURRENT_CAMPAIGN](state, uuid) {
+      Vue.set(state, stateKeys.CURRENT_CAMPAIGN, uuid);
     },
     [mutationTypes.REMOVE_TOKEN]() {
-      Cookies.remove(stateKeys.TOKEN);
-      axios.defaults.headers["common"] = {
-        Authorization: "",
-      };
+      removeCookie(AUTH_TOKEN_NAME);
     },
   },
 };
 
-export default {
-  namespace,
-  stateKeys,
-  getterTypes,
-  actionTypes,
-  mutationTypes,
-  store,
-  User,
-};
+store.registerModule(moduleName, authModule);

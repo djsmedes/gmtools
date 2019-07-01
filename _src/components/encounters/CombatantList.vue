@@ -2,15 +2,14 @@
   <object-list
     :detail-view-name="$routeNames.COMBATANT"
     :create-view-name="$routeNames.COMBATANT_CREATE"
-    :object-list="combatants"
+    :object-list="combatants.models"
     :headers="headers"
   ></object-list>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
 import ObjectList from "@/components/generic/ObjectList";
-import combatant from "@/models/combatant";
+import { CombatantList } from "@/models/combatant";
 
 export default {
   name: "CombatantList",
@@ -24,20 +23,13 @@ export default {
           value: "name",
         },
       ],
+      combatants: new CombatantList([], {
+        storeFilter: { encounter: null },
+      }),
     };
   },
-  computed: {
-    ...mapGetters(combatant.namespace, {
-      combatants: combatant.getterTypes.LIST,
-    }),
-  },
-  methods: {
-    ...mapActions(combatant.namespace, {
-      loadCombatants: combatant.actionTypes.LIST,
-    }),
-  },
   created() {
-    this.loadCombatants();
+    this.combatants.fetch();
   },
 };
 </script>

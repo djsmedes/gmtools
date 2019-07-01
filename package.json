@@ -10,27 +10,26 @@
     "build+report": "vue-cli-service build --report"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.2.5",
-    "@casl/ability": "^3.0.1",
-    "@casl/vue": "^0.5.1",
+    "@babel/polyfill": "^7.4.3",
+    "@casl/ability": "^3.0.2",
+    "@encamp/vue-mc": "^1.1.1",
     "axios": "^0.18.0",
     "debounce-promise": "^3.1.0",
     "js-cookie": "^2.2.0",
     "lodash": "^4.17.11",
-    "marked": "^0.6.1",
-    "sortablejs": "^1.8.4",
+    "marked": "^0.6.2",
+    "sortablejs": "^1.9.0",
     "uuid": "^3.3.2",
-    "vue": "^2.6.9",
-    "vue-mc": "^0.5.0",
-    "vue-native-websocket": "^2.0.12",
-    "vue-router": "^3.0.2",
-    "vuetify": "^1.5.6",
+    "vue": "^2.6.10",
+    "vue-native-websocket": "^2.0.13",
+    "vue-router": "^3.0.6",
+    "vuetify": "^1.5.13",
     "vuex": "^3.1.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.5.1",
-    "@vue/cli-plugin-eslint": "^3.5.1",
-    "@vue/cli-service": "^3.5.1",
+    "@vue/cli-plugin-babel": "^3.6.0",
+    "@vue/cli-plugin-eslint": "^3.6.0",
+    "@vue/cli-service": "^3.6.0",
     "@vue/eslint-config-prettier": "^4.0.1",
     "css-loader": "^2.1.1",
     "node-sass": "^4.11.0",
@@ -39,8 +38,8 @@
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "vue-cli-plugin-vuetify": "^0.4.6",
-    "vue-template-compiler": "^2.6.9",
-    "vuetify-loader": "^1.2.1"
+    "vue-template-compiler": "^2.6.10",
+    "vuetify-loader": "^1.2.2"
   },
   "postcss": {
     "plugins": {

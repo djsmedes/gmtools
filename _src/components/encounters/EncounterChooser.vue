@@ -14,7 +14,9 @@
         <v-select
           label="Active encounter"
           :items="
-            showCompleted ? [...encounters, ...completedEncounters] : encounters
+            showCompleted
+              ? [...encounters.models, ...completedEncounters.models]
+              : encounters.models
           "
           item-value="uuid"
           item-text="name"
@@ -35,53 +37,42 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import encounter from "@/models/encounter";
-import auth from "@/auth";
+import { Encounter, EncounterList, getCurrentCampaign } from "@/models";
 
 export default {
   name: "EncounterChooser",
-  props: {
-    reset: {
-      type: Boolean,
-      default: false,
-    },
-  },
   data() {
     return {
       selectedEncounter: null,
       showCompleted: false,
       lazyLoadedCompleted: false,
+      encounters: new EncounterList(),
+      completedEncounters: new EncounterList([], {
+        storeFilter: {
+          completed_after: "0001-01-01",
+        },
+      }),
     };
   },
   watch: {
-    reset(newVal) {
-      if (newVal) this.selectedEncounter = this.currentEncounter;
-    },
     showCompleted(val) {
       if (!this.lazyLoadedCompleted && val) {
-        this.loadEncountersQuery({ completed_after: "0001-01-01" });
+        this.completedEncounters.fetch();
         this.lazyLoadedCompleted = true;
       }
     },
   },
   computed: {
-    ...mapGetters(encounter.namespace, {
-      encounters: encounter.getterTypes.LIST,
-      completedEncounters: encounter.getterTypes.LIST_COMPLETED,
-      getEncounter: encounter.getterTypes.BY_ID,
-    }),
-    ...mapGetters(auth.namespace, {
-      currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN,
-    }),
     currentEncounter() {
-      return this.getEncounter(this.currentCampaign.active_encounter);
+      let encounter = new Encounter({
+        uuid: getCurrentCampaign().active_encounter,
+      });
+      encounter.fetch();
+      return encounter;
     },
   },
-  methods: {
-    ...mapActions(encounter.namespace, {
-      loadEncountersQuery: encounter.actionTypes.QUERY_LIST,
-    }),
+  created() {
+    this.encounters.fetch();
   },
 };
 </script>

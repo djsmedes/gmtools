@@ -1,10 +1,12 @@
-import re
+from django.db.models import Q
 from django.utils.functional import cached_property
 from django.http.response import HttpResponseForbidden
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 
 
 class ParamFilterKwargHelper:
+    # todo - ream this shit out
     def __init__(self, key, validity_checker=None):
         self.key = key
         if validity_checker is None:
@@ -21,12 +23,33 @@ class ParamFilterKwargHelper:
                 ]
         }
 
-    @staticmethod
-    def is_uuid4(tst):
-        return re.fullmatch(
-            r'[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}',
-            tst
-        )
+
+class FKParamFilterKwargHelper:
+    # todo - ream this shit out
+    def __init__(self, model, db_name_for_model):
+        self.model = model
+        self.db_name_for_model = db_name_for_model
+
+    def get_q_object(self, param_value_list):
+        model_ids = [
+            self.model.objects.get(uuid=p).id
+            for p in param_value_list
+            if type(p) == str and len(p) == 22
+        ]
+        q = Q(pk__in=[])
+        if len(model_ids) > 1:
+            q |= Q(**{
+                f"{self.db_name_for_model}_id__in": model_ids
+            })
+        elif model_ids:
+            q |= Q(**{
+                f"{self.db_name_for_model}_id": model_ids[0]
+            })
+        if '' in param_value_list:
+            q |= Q(**{
+                f"{self.db_name_for_model}_id": None
+            })
+        return q
 
 
 class GetParamFilterableMixin(ModelViewSet):
@@ -43,10 +66,17 @@ class GetParamFilterableMixin(ModelViewSet):
         try:
             for param in self.request.query_params:
                 if param in self._query_param_filters:
-                    f_kwargs = self._query_param_filters[param].get_kwargs(
-                        self.request.query_params.getlist(param)
-                    )
-                    queryset = queryset.filter(**f_kwargs).distinct()
+                    q_param_filterer = self._query_param_filters[param]
+                    if hasattr(q_param_filterer, 'get_kwargs'):
+                        f_kwargs = q_param_filterer.get_kwargs(
+                            self.request.query_params.getlist(param)
+                        )
+                        queryset = queryset.filter(**f_kwargs).distinct()
+                    elif hasattr(q_param_filterer, 'get_q_object'):
+                        q_object = q_param_filterer.get_q_object(
+                            self.request.query_params.getlist(param)
+                        )
+                        queryset = queryset.filter(q_object).distinct()
         except Exception as e:
             print(e)
         finally:
@@ -55,8 +85,10 @@ class GetParamFilterableMixin(ModelViewSet):
 
 class MultiTenantedViewSet(GetParamFilterableMixin, ModelViewSet):
     """An ABSTRACT class, which other model viewsets should inherit from"""
+    # todo: does this need to be removed?
     model = None
     lookup_field = 'uuid'
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         qs = self.model.objects.of_requester(self.request)
@@ -113,7 +145,7 @@ class CampaignModelViewSet(MultiTenantedViewSet):
         assert self.request.user.is_authenticated, (
             'Log in to create objects.'
         )
-        campaign = self.request.user.current_campaign
+        campaign = self.request.campaign
         assert campaign, (
             'Choose a campaign to create objects.'
         )

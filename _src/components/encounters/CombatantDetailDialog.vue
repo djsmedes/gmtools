@@ -31,7 +31,7 @@ export default {
     },
     extraAttrData: {
       type: Object,
-      default: () => {},
+      default: () => ({}),
     },
   },
   computed: {

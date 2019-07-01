@@ -90,9 +90,9 @@
 
 <script>
 import functionalDialogMixin from "@/mixins/functionalDialog";
-import CreaturePropDetail from "@/components/statblocks/CreaturePropDetail";
+import CreaturePropDetail from "@/views/CreaturePropDetail";
 import axios from "axios";
-import { generateUrl } from "@/utils/urls";
+import { generateUrl2 } from "@/utils/urls";
 import debounce from "lodash/debounce";
 import { sleep } from "@/utils/time";
 
@@ -144,7 +144,7 @@ export default {
       if (this.uuid) {
         this.close(null);
       } else {
-        await axios.post(generateUrl(["statblockprop"]), {
+        await axios.post(generateUrl2("statblockprop"), {
           creature_prop: newCreatureProp.uuid,
           statblock: this.parentStatblockUuid,
         });
@@ -163,7 +163,7 @@ export default {
       this.autocompleteLoading = true;
       try {
         let result = await Promise.race([
-          axios.get(generateUrl(["creatureprop", "autocomplete"]), {
+          axios.get(generateUrl2("creatureprop", "autocomplete"), {
             params: {
               match,
             },

@@ -101,7 +101,7 @@
 
     <v-divider></v-divider>
 
-    <v-card-actions v-if="$can('gm', currentCampaign)">
+    <v-card-actions>
       <v-btn
         icon
         flat
@@ -163,9 +163,7 @@
 </template>
 
 <script>
-import combatant, { Combatant } from "@/models/combatant";
-import { mapGetters } from "vuex";
-import auth from "@/auth";
+import { Combatant } from "@/models";
 import CombatantHpDialog from "@/components/encounters/CombatantHPDialog";
 import CombatantInitiativeDialog from "@/components/encounters/CombatantInitiativeDialog";
 import debounce from "lodash/debounce";
@@ -173,9 +171,9 @@ import debounce from "lodash/debounce";
 export default {
   name: "CombatantCard",
   props: {
-    uuid: {
-      type: String,
-      default: null,
+    combatant: {
+      type: Combatant,
+      required: true,
     },
     effectMode: {
       type: String,
@@ -190,28 +188,7 @@ export default {
       default: 5,
     },
   },
-  data() {
-    return {
-      combatant: new Combatant({ uuid: this.uuid }),
-    };
-  },
-  watch: {
-    vuexCombatant: {
-      handler(newCombatant) {
-        this.combatant.update(newCombatant);
-      },
-    },
-  },
   computed: {
-    ...mapGetters(auth.namespace, {
-      currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN,
-    }),
-    ...mapGetters(combatant.namespace, {
-      getCombatant: combatant.getterTypes.BY_ID,
-    }),
-    vuexCombatant() {
-      return this.getCombatant(this.uuid) || {};
-    },
     cardClasses() {
       return [
         { "combatant-card": true },
@@ -244,11 +221,11 @@ export default {
     },
   },
   async created() {
-    await this.combatant.vuex_fetch(this.$store);
+    await this.combatant.fetch();
   },
   methods: {
     updateSelf() {
-      this.$ws.put({ [combatant.namespace]: [this.combatant] });
+      this.$ws.put({ [Combatant.modelName]: [this.combatant] });
     },
     updateSelfDebounced: debounce(function() {
       this.updateSelf();

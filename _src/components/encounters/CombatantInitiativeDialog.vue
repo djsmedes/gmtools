@@ -87,6 +87,7 @@ export default {
     async rollInitiative() {
       this.rolling = true;
       await sleep(750);
+      // todo - die roll function
       this.roll = ((Math.random() * 20) | 0) + 1;
       this.returnVal.initiative = this.roll + this.initiativeBonus;
       this.rolling = false;

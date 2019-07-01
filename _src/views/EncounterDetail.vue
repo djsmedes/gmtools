@@ -2,11 +2,13 @@
   <object-detail
     @enter-edit-mode="viewMode = false"
     @enter-view-mode="viewMode = true"
-    :name="localEncounter.name"
-    :start-editing="!encounter.uuid"
-    :save-func="encounter.uuid ? save : create"
-    :clear-func="encounter.uuid ? reset : () => $router.go(-1)"
-    :delete-func="encounter.uuid ? deleteSelf : null"
+    :name="encounter.name"
+    :start-editing="encounter.isNew()"
+    :save-func="encounter.save"
+    :clear-func="
+      encounter.isExisting() ? encounter.reset : () => $router.go(-1)
+    "
+    :delete-func="encounter.isExisting() ? deleteSelf : null"
   >
     <v-container slot-scope="{ isViewMode }" grid-list-lg>
       <v-layout row wrap>
@@ -15,13 +17,13 @@
             :disabled="isViewMode"
             :class="{ 'disabled-means-display': isViewMode }"
             label="Name"
-            v-model="localEncounter.name"
+            v-model="encounter.name"
           ></v-text-field>
         </v-flex>
       </v-layout>
 
       <v-data-iterator
-        :items="combatants"
+        :items="combatants.models"
         :pagination.sync="combatantPagination"
         hide-actions
         no-data-text="No combatants"
@@ -49,9 +51,9 @@
             <v-list dense>
               <v-list-tile>
                 <v-list-tile-content>Loot:</v-list-tile-content>
-                <v-list-tile-content class="align-end">{{
-                  item.loot
-                }}</v-list-tile-content>
+                <v-list-tile-content class="align-end">
+                  {{ item.loot }}
+                </v-list-tile-content>
               </v-list-tile>
             </v-list>
           </v-card>
@@ -70,11 +72,7 @@
 <script>
 import ObjectDetail from "@/components/generic/ObjectDetail";
 import CombatantDetailDialog from "@/components/encounters/CombatantDetailDialog";
-import { mapGetters, mapActions } from "vuex";
-import encounter, { Encounter } from "@/models/encounter";
-import combatant from "@/models/combatant";
-import { routeNames } from "@/router";
-import { needLoading, doneLoading } from "@/utils/loading";
+import { Encounter, CombatantList } from "@/models";
 
 export default {
   name: "EncounterDetail",
@@ -87,54 +85,20 @@ export default {
   },
   data() {
     return {
-      localEncounter: new Encounter(),
+      encounter: new Encounter({ uuid: this.uuid }),
+      combatants: new CombatantList([], {
+        storeFilter: { encounter: this.uuid },
+      }),
       combatantPagination: {
         rowsPerPage: -1,
       },
       viewMode: true,
     };
   },
-  computed: {
-    encounter() {
-      return this.getEncounter(this.uuid);
-    },
-    ...mapGetters(encounter.namespace, {
-      getEncounter: encounter.getterTypes.BY_ID,
-    }),
-    ...mapGetters(combatant.namespace, {
-      allCombatants: combatant.getterTypes.LIST,
-    }),
-    combatants() {
-      return this.allCombatants.filter(c => c.encounter === this.uuid);
-    },
-  },
   methods: {
-    ...mapActions(encounter.namespace, {
-      loadEncounter: encounter.actionTypes.RETRIEVE,
-      deleteEncounter: encounter.actionTypes.DESTROY,
-      updateEncounter: encounter.actionTypes.UPDATE,
-      createEncounter: encounter.actionTypes.CREATE,
-    }),
-    ...mapActions(combatant.namespace, {
-      loadCombatants: combatant.actionTypes.QUERY_LIST,
-    }),
     async deleteSelf() {
-      await this.deleteEncounter(this.encounter.uuid);
-      this.$router.push({ name: routeNames.ENCOUNTERS });
-    },
-    async save() {
-      await this.updateEncounter(this.localEncounter);
-      this.reset();
-    },
-    async create() {
-      let rObj = await this.createEncounter(this.localEncounter);
-      this.$router.replace({
-        name: routeNames.ENCOUNTER,
-        params: { uuid: rObj.uuid },
-      });
-    },
-    reset() {
-      this.localEncounter = new Encounter(this.encounter);
+      await this.encounter.delete();
+      this.$router.push({ name: this.$routeNames.ENCOUNTERS });
     },
     async openCombatantDialog(combatantUuid) {
       await this.$dialog(CombatantDetailDialog, {
@@ -145,13 +109,9 @@ export default {
     },
   },
   async created() {
-    needLoading();
-    await Promise.all([
-      this.loadEncounter({ uuid: this.uuid }),
-      this.loadCombatants({ encounter: this.uuid }),
-    ]);
-    this.reset();
-    doneLoading();
+    this.$store.commit("needLoading");
+    await Promise.all([this.encounter.fetch(), this.combatants.fetch()]);
+    this.$store.commit("doneLoading");
   },
 };
 </script>

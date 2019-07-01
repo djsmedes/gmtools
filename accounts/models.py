@@ -1,8 +1,15 @@
 import datetime
 from django.db import models
 from django.conf import settings
-from authtools.models import AbstractEmailUser
+from authtools.models import AbstractEmailUser, UserManager
 from django_smalluuid.models import SmallUUIDField, uuid_default
+
+
+class CaseInsensitiveEmailUserManager(UserManager):
+    def get_by_natural_key(self, username):
+        return self.get(**{
+            f'{self.model.USERNAME_FIELD}__iexact': username
+        })
 
 
 class User(AbstractEmailUser):
@@ -10,6 +17,8 @@ class User(AbstractEmailUser):
 
     first_name = models.CharField(max_length=31, null=True, blank=True)
     last_name = models.CharField(max_length=31, null=True, blank=True)
+
+    objects = CaseInsensitiveEmailUserManager()
 
     current_campaign = models.ForeignKey(
         'accounts.Campaign',

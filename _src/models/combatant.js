@@ -1,19 +1,10 @@
-import { VuexModel } from "@/models/_vuexMCModel";
-import { generateUrl } from "@/utils/urls";
-import { MCModule } from "@/models/_baseMCModule";
-import { mutateEmptyStringToNull } from "@/models/_baseMCModule";
+import { Model, Collection } from "./_baseVueMcClasses";
 
 const modelName = "combatant";
 
-export class Combatant extends VuexModel {
+export class Combatant extends Model {
   static get modelName() {
     return modelName;
-  }
-
-  options() {
-    return {
-      identifier: "uuid",
-    };
   }
 
   defaults() {
@@ -36,39 +27,28 @@ export class Combatant extends VuexModel {
   }
 
   mutations() {
-    return Object.keys(this.defaults()).reduce(
-      (memo, key) => ({
-        ...memo,
-        [key]: [...(memo[key] || []), mutateEmptyStringToNull],
-      }),
-      {
-        buffs: [v => v || []],
-        debuffs: [v => v || []],
-        others: [v => v || []],
-      }
+    return Object.entries(super.mutations()).reduce(
+      (accumulator, [key, value]) => {
+        if (["buffs", "debuffs", "others"].includes(key)) {
+          return { ...accumulator, [key]: [...value, v => v || []] };
+        } else {
+          return { ...accumulator, [key]: value };
+        }
+      },
+      {}
     );
   }
+}
 
-  routes() {
+export class CombatantList extends Collection {
+  static get modelName() {
+    return modelName;
+  }
+
+  options() {
     return {
-      fetch: generateUrl([modelName, this.uuid]),
-      delete: generateUrl([modelName, this.uuid]),
+      ...super.options(),
+      model: Combatant,
     };
   }
-
-  getSaveURL() {
-    return generateUrl([modelName, ...(this.uuid ? [this.uuid] : [])]);
-  }
-
-  getSaveMethod() {
-    return this.uuid ? "PUT" : "POST";
-  }
 }
-
-class CombatantModule extends MCModule {
-  constructor() {
-    super(modelName);
-  }
-}
-
-export default new CombatantModule();

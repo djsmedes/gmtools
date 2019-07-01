@@ -1,6 +1,6 @@
 <template>
   <v-expand-transition mode="out-in">
-    <v-container v-if="campaigns.length" grid-list-xl>
+    <v-container fluid v-if="campaigns.length" grid-list-xl>
       <v-layout wrap>
         <v-flex xs12 md6 lg4>
           <v-toolbar dense color="transparent" flat class="pa-0">
@@ -10,8 +10,8 @@
           </v-toolbar>
           <v-fade-transition mode="out-in">
             <campaign-detail
-              :key="currentCampaign.uuid"
-              :uuid="currentCampaign.uuid"
+              :key="currentCampaign._uid"
+              :campaign="currentCampaign"
               @focus="campaignUnderEdit = currentCampaign.uuid"
               @blur="
                 campaignUnderEdit =
@@ -22,7 +22,6 @@
               :disabled="
                 campaignUnderEdit && campaignUnderEdit !== currentCampaign.uuid
               "
-              :is-current-campaign="true"
             ></campaign-detail>
           </v-fade-transition>
         </v-flex>
@@ -49,11 +48,11 @@
             xs12
             md6
             lg4
-            :key="campaign.uuid"
+            :key="campaign._uid"
             class="campaign-list-item"
           >
             <campaign-detail
-              :uuid="campaign.uuid"
+              :campaign="campaign"
               @set-active="setCurrentCampaign"
               @focus="campaignUnderEdit = campaign.uuid"
               @blur="
@@ -72,32 +71,25 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import { routeNames } from "@/router";
-import campaign, { Campaign } from "@/models/campaign";
-import CampaignDetail from "@/components/accountManage/CampaignDetail";
-import auth from "@/auth";
+import { Campaign, CampaignList } from "@/models";
+import CampaignDetail from "@/views/CampaignDetail";
 import Invitations from "@/components/accountManage/Invitations";
 import { sleep } from "@/utils/time";
 import NewCampaign from "@/components/accountManage/NewCampaign";
+import { authUserMixin } from "@/mixins";
 
 export default {
-  name: "CampaignList",
+  name: "CampaignListView",
+  mixins: [authUserMixin],
   components: { Invitations, CampaignDetail },
   data() {
     return {
-      routeNames,
       p_campaignUnderEdit: null,
       showCampaigns: true,
+      allCampaigns: new CampaignList(),
     };
   },
   computed: {
-    ...mapGetters(campaign.namespace, {
-      allCampaigns: campaign.getterTypes.LIST,
-    }),
-    ...mapGetters(auth.namespace, {
-      currentCampaign: auth.getterTypes.CURRENT_CAMPAIGN,
-    }),
     campaignUnderEdit: {
       get() {
         return [...this.campaigns, this.currentCampaign]
@@ -109,7 +101,7 @@ export default {
       },
     },
     campaigns() {
-      return this.allCampaigns.filter(
+      return this.allCampaigns.models.filter(
         c => c.uuid !== this.currentCampaign.uuid
       );
     },
@@ -118,10 +110,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions(campaign.namespace, {
-      loadCampaigns: campaign.actionTypes.LIST,
-      createCampaign: campaign.actionTypes.CREATE,
-    }),
     async setCurrentCampaign(uuid) {
       this.showCampaigns = false;
       let error = await Promise.race([
@@ -140,12 +128,13 @@ export default {
     async tryCreate() {
       let name = await this.$dialog(NewCampaign);
       if (name) {
-        await this.createCampaign(new Campaign({ name }));
+        let newCampaign = new Campaign({ name }, this.allCampaigns);
+        await newCampaign.save();
       }
     },
   },
   created() {
-    this.loadCampaigns();
+    this.allCampaigns.fetch();
   },
 };
 </script>

@@ -1,4 +1,4 @@
-import { Model } from "./_baseModel";
+import { Model, Collection } from "./_baseVueMcClasses";
 import { generateUrl } from "@/utils/urls";
 import axios from "axios";
 
@@ -11,23 +11,29 @@ export class Invitation extends Model {
     return modelName;
   }
 
-  constructor({
-    uuid = null,
-    campaign_name = "",
-    campaign = null,
-    joiner = null,
-    approver = null,
-    joiner_external_identifier = "",
-    approver_external_identifier = "",
-  } = {}) {
-    super();
-    this.uuid = uuid;
-    this.campaign_name = campaign_name;
-    this.campaign = campaign;
-    this.joiner = joiner;
-    this.approver = approver;
-    this.joiner_external_identifier = joiner_external_identifier;
-    this.approver_external_identifier = approver_external_identifier;
+  defaults() {
+    return {
+      uuid: null,
+      campaign_name: "",
+      campaign: null,
+      joiner: null,
+      approver: null,
+      joiner_external_identifier: "",
+      approver_external_identifier: "",
+    };
+  }
+}
+
+export class InvitationList extends Collection {
+  static get modelName() {
+    return modelName;
+  }
+
+  options() {
+    return {
+      ...super.options(),
+      model: Invitation,
+    };
   }
 }
 

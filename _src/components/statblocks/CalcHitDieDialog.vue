@@ -204,7 +204,7 @@ export default {
         return;
       }
 
-      this.suggestions = [under, ...(over === under ? [] : [over])];
+      this.suggestions = over === under ? [under] : [under, over];
     },
     avg_hp(numHitDie) {
       return Math.floor(numHitDie * ((this.hitDieSize + 1) / 2 + this.conMod));

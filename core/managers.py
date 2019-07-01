@@ -28,7 +28,7 @@ class CampaignModelManager(models.Manager):
         :param: request -- django request
         :rtype: Queryset
         """
-        return self.of_user(request.user)
+        return self.of_campaign(request.campaign)
 
 
 class UserModelManager(models.Manager):
