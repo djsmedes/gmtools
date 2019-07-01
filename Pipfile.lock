@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "76acf605f3ea819ec09e39386b81c41f06e812de9ed02fc59163ea58113ae889"
+            "sha256": "43c159b887b2611b62ecd43a38ed60d795d00fc204ba340b7e4074141121b874"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -151,18 +151,19 @@
         },
         "dj-database-url": {
             "hashes": [
-                "sha256:7f4c78d2a090df8dfaf56d5d3ff7bbee17360436e4879558317e2314424864cd"
+                "sha256:4aeaeb1f573c74835b0686a2b46b85990571159ffc21aa57ecd4d1e1cb334163",
+                "sha256:851785365761ebe4994a921b433062309eb882fedd318e1b0fcecc607ed02da9"
             ],
             "index": "pypi",
-            "version": "==0.4.1"
+            "version": "==0.5.0"
         },
         "django": {
             "hashes": [
-                "sha256:58819ca72a13b963c16383687421261657abe5754aad9ad66166a921dd17559f",
-                "sha256:62644444551e8e6fd36600e741a4d24dd2b4b58acf7bae8847a8da952468d771"
+                "sha256:753d30d3eb078064d2ddadfea65083c9848074a7f93d7b4dc7fa6b1380d278f5",
+                "sha256:7cb67e8b934fab23b6daed7144da52e8a25a47eba7f360ca43d2b448506b01ad"
             ],
             "index": "pypi",
-            "version": "==2.2b1"
+            "version": "==2.2.2"
         },
         "django-authtools": {
             "hashes": [
@@ -189,11 +190,11 @@
         },
         "gunicorn": {
             "hashes": [
-                "sha256:723234ea1fa8dff370ab69830ba8bc37469a7cba13fd66055faeef24085e6530",
-                "sha256:813f6916d18a4c8e90efde72f419308b357692f81333cb1125f80013d22fb618"
+                "sha256:aa8e0b40b4157b36a5df5e599f45c9c76d6af43845ba3b3b0efe2c70473c2471",
+                "sha256:fa2662097c66f920f53f70621c6c58ca4a3c4d3434205e608e121b5b3b71f4f3"
             ],
             "index": "pypi",
-            "version": "==19.6.0"
+            "version": "==19.9.0"
         },
         "hiredis": {
             "hashes": [
@@ -368,11 +369,11 @@
         },
         "whitenoise": {
             "hashes": [
-                "sha256:13e5d6673c7c0805c73037b7745e027141a8e39c5b6ba669b631c8fb3d05b06e",
-                "sha256:bf6488a3c7c947385d663bcf24957a4f1b5d3c215e86ec121eb5f3b7670ed693"
+                "sha256:118ab3e5f815d380171b100b05b76de2a07612f422368a201a9ffdeefb2251c1",
+                "sha256:42133ddd5229eeb6a0c9899496bdbe56c292394bf8666da77deeb27454c0456a"
             ],
             "index": "pypi",
-            "version": "==3.2"
+            "version": "==4.1.2"
         },
         "zope.interface": {
             "hashes": [
