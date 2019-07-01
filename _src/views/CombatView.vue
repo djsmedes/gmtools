@@ -144,6 +144,11 @@
                 </v-switch>
               </v-flex>
             </v-layout>
+            <v-layout wrap>
+              <v-flex>
+<!--                todo spotify -->
+              </v-flex>
+            </v-layout>
           </v-container>
         </v-form>
       </template>
