@@ -7,10 +7,10 @@ name = "pypi"
 python_version = '3.6'
 
 [packages]
-dj-database-url = "==0.4.1"
-django = "==2.2b1"
-gunicorn = "==19.6.0"
-whitenoise = "==3.2"
+dj-database-url = ">=0.4.1"
+django = ">=2.2b1"
+gunicorn = ">=19.6.0"
+whitenoise = ">=3.2"
 "psycopg2-binary" = "*"
 djangorestframework = "*"
 rules = "*"
