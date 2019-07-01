@@ -24,7 +24,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import axios from "axios";
+import baseAxios from "axios";
 
 export default {
   name: "SpotifyController",
@@ -47,17 +47,18 @@ export default {
     ...mapGetters({
       spotifyAuth: "spotifyAuth",
     }),
-    isSpotifyAuthorized() {
-      return Boolean(this.spotifyAuth.access_token);
-    },
-    spotifyAuthHeaderConfig() {
-      return {
+    axios() {
+      return baseAxios.create({
+        baseURL: "https://api.spotify.com/v1/me",
         headers: {
           Authorization: `${this.spotifyAuth.token_type} ${
             this.spotifyAuth.access_token
           }`,
         },
-      };
+      });
+    },
+    isSpotifyAuthorized() {
+      return Boolean(this.spotifyAuth.access_token);
     },
     authUrl() {
       let base = "https://accounts.spotify.com/authorize";
@@ -91,35 +92,21 @@ export default {
   },
   methods: {
     async getDevices() {
-      let { data } = await axios.get(
-        "https://api.spotify.com/v1/me/player/devices",
-        this.spotifyAuthHeaderConfig
-      );
+      let { data } = await this.axios.get("/player/devices");
       this.devices = data.devices;
     },
     async play() {
-      let response = await axios.put(
-        `https://api.spotify.com/v1/me/player/play?device_id=${
-          this.selectedDeviceId
-        }`,
-        {},
-        this.spotifyAuthHeaderConfig
+      let response = await this.axios.put(
+        `/player/play?device_id=${this.selectedDeviceId}`
       );
     },
     async getPlayingInfo() {
-      let response = await axios.get(
-        "https://api.spotify.com/v1/me/player",
-        this.spotifyAuthHeaderConfig
-      );
+      let response = await this.axios.get("/player");
       this.selectedDeviceId = response.data.device.id;
     },
     async pause() {
-      let response = await axios.put(
-        `https://api.spotify.com/v1/me/player/pause?device_id=${
-          this.selectedDeviceId
-        }`,
-        {},
-        this.spotifyAuthHeaderConfig
+      let response = await this.axios.put(
+        `/player/pause?device_id=${this.selectedDeviceId}`
       );
     },
   },
