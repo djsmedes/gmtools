@@ -44,9 +44,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({
-      spotifyAuth: "spotifyAuth",
-    }),
+    ...mapGetters(["spotifyAuth"]),
     axios() {
       return baseAxios.create({
         baseURL: "https://api.spotify.com/v1/me",
@@ -58,7 +56,7 @@ export default {
       });
     },
     isSpotifyAuthorized() {
-      return Boolean(this.spotifyAuth.access_token);
+      return Boolean(this.spotifyAuth && this.spotifyAuth.access_token);
     },
     authUrl() {
       let base = "https://accounts.spotify.com/authorize";
