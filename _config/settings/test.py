@@ -7,11 +7,12 @@ if get_env_variable('LOCAL', False):
     ]
 else:
     ALLOWED_HOSTS += [
-        '.gmtools-test.herokuapp.com'
+        '.gmtools-test.herokuapp.com',
+        '.gmtools-prod.herokuapp.com',
     ]
     ALLOWED_HOSTS += [
         f'.gmtools-test-pr-{num}.herokuapp.com' for num in range(
-            1, 51
+            1, 999
         )
     ]
     SECURE_SSL_REDIRECT = True
