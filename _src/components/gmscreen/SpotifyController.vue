@@ -8,6 +8,9 @@
         item-text="name"
         @focus="getDevices"
       ></v-select>
+      <v-btn @click="choosePlaylists">
+        Choose playlists
+      </v-btn>
       <v-select
         v-model="selectedDeviceId"
         :items="playlists"
@@ -32,15 +35,10 @@
 <script>
 import { mapGetters } from "vuex";
 import baseAxios from "axios";
+import SpotifyPlaylistSelectionDialog from "@/components/gmscreen/SpotifyPlaylistSelectionDialog";
 
 export default {
   name: "SpotifyController",
-  props: {
-    foo: {
-      type: String,
-      default: "foo",
-    },
-  },
   data() {
     return {
       client_id: "4c7dbd05cc7548beb32c02c5ba65994e",
@@ -122,6 +120,11 @@ export default {
       let response = await this.axios.put(
         `/me/player/pause?device_id=${this.selectedDeviceId}`
       );
+    },
+    async choosePlaylists() {
+      let reply = await this.$dialog(SpotifyPlaylistSelectionDialog, {
+        axios: this.axios,
+      });
     },
   },
 };
