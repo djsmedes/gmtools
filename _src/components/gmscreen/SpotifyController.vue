@@ -8,6 +8,13 @@
         item-text="name"
         @focus="getDevices"
       ></v-select>
+      <v-select
+        v-model="selectedDeviceId"
+        :items="playlists"
+        item-value="id"
+        item-text="name"
+        @focus="getPlaylists"
+      ></v-select>
       <v-btn icon @click="play">
         <v-icon>play_arrow</v-icon>
       </v-btn>
@@ -39,6 +46,8 @@ export default {
       client_id: "4c7dbd05cc7548beb32c02c5ba65994e",
       last_response: {},
       devices: [],
+      playlists: [],
+      selectedPlaylists: [],
       selectedDeviceId: null,
       isPlaying: false,
     };
@@ -47,7 +56,7 @@ export default {
     ...mapGetters(["spotifyAuth"]),
     axios() {
       return baseAxios.create({
-        baseURL: "https://api.spotify.com/v1/me",
+        baseURL: "https://api.spotify.com/v1",
         headers: {
           Authorization: `${this.spotifyAuth.token_type} ${
             this.spotifyAuth.access_token
@@ -90,12 +99,19 @@ export default {
   },
   methods: {
     async getDevices() {
-      let { data } = await this.axios.get("/player/devices");
+      let { data } = await this.axios.get("/me/player/devices");
       this.devices = data.devices;
+    },
+    async getPlaylists() {
+      let { data } = await this.axios.get("/me/playlists?limit=50");
+      this.playlists = data.items;
     },
     async play() {
       let response = await this.axios.put(
-        `/player/play?device_id=${this.selectedDeviceId}`
+        `/me/player/play?device_id=${this.selectedDeviceId}`,
+        {
+          context_uri: "spotify:user:djsmedes:playlist:5KJsn1QRw6JHAlVSg3LJ0j",
+        }
       );
     },
     async getPlayingInfo() {
@@ -104,7 +120,7 @@ export default {
     },
     async pause() {
       let response = await this.axios.put(
-        `/player/pause?device_id=${this.selectedDeviceId}`
+        `/me/player/pause?device_id=${this.selectedDeviceId}`
       );
     },
   },
