@@ -192,18 +192,8 @@ const router = new Router({
     {
       path: "/spotify-response/",
       name: routeNames.SPOTIFY_RESPONSE,
-      beforeEnter: (to, from, next) => {
-        let params = to.hash
-          .slice(1)
-          .split("&")
-          .reduce((accumulator, curr) => {
-            let [key, val] = curr.split("=");
-            accumulator[key] = val;
-            return accumulator;
-          }, {});
-        store.commit("setSpotifyAuth", params);
-        next({ name: routeNames.HOME });
-      },
+      component: () =>
+        import(/* webpackChunkName: "misc" */ "@/views/SpotifyAuth"),
     },
 
     {

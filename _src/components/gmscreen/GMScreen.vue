@@ -59,7 +59,7 @@
     <v-tabs-items :value="activeTab">
       <v-tab-item v-for="(item, index) in tabs" :key="index">
         <slot :item="item">
-          <slot v-if="!activeTab" name="pageSettings"></slot>
+          <slot v-if="!index" name="pageSettings"></slot>
           <screen-tab v-else :content="item.content"></screen-tab>
         </slot>
       </v-tab-item>

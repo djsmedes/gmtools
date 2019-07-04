@@ -28,20 +28,21 @@
         <v-icon>pause</v-icon>
       </v-btn>
     </template>
-    <a v-else :href="authUrl">Authenticate</a>
+    <a :href="spotifyAuthUrl">Authenticate</a>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import baseAxios from "axios";
+import { mapGetters, mapMutations } from "vuex";
+import axios from "axios";
 import SpotifyPlaylistSelectionDialog from "@/components/gmscreen/SpotifyPlaylistSelectionDialog";
+import { epochNow } from "@/utils/time";
+import { generateUrl2 } from "@/utils/urls";
 
 export default {
   name: "SpotifyController",
   data() {
     return {
-      client_id: "4c7dbd05cc7548beb32c02c5ba65994e",
       last_response: {},
       devices: [],
       playlists: [],
@@ -51,43 +52,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["spotifyAuth"]),
-    axios() {
-      return baseAxios.create({
-        baseURL: "https://api.spotify.com/v1",
-        headers: {
-          Authorization: `${this.spotifyAuth.token_type} ${
-            this.spotifyAuth.access_token
-          }`,
-        },
-      });
-    },
+    ...mapGetters(["spotifyAuth", "spotifyAuthUrl"]),
     isSpotifyAuthorized() {
       return Boolean(this.spotifyAuth && this.spotifyAuth.access_token);
-    },
-    authUrl() {
-      let base = "https://accounts.spotify.com/authorize";
-      let query_params = {
-        client_id: this.client_id,
-        response_type: "token",
-        redirect_uri: "http://localhost:8080/spotify-response/",
-        state: "this is state",
-        scope: [
-          "user-read-playback-state",
-          "user-read-currently-playing",
-          "user-modify-playback-state",
-          "playlist-read-collaborative",
-          "playlist-read-private",
-        ].join(" "),
-        show_dialog: true,
-      };
-      let toBeEncoded = Object.entries(query_params).reduce(
-        (accumulator, [key, val], index) => {
-          return accumulator + (index ? "&" : "?") + key + "=" + val;
-        },
-        base
-      );
-      return encodeURI(toBeEncoded);
     },
   },
   created() {
@@ -96,28 +63,74 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(["setSpotifyAuth"]),
+    async request(axiosConfig) {
+      let config = {
+        ...axiosConfig,
+        baseURL: "https://api.spotify.com/v1",
+        headers: {
+          Authorization: `${this.spotifyAuth.token_type} ${
+            this.spotifyAuth.access_token
+          }`,
+        },
+      };
+
+      if (epochNow() > parseInt(this.spotifyAuth.expires_at)) {
+        // do refresh
+      } else {
+        try {
+          return await axios(config);
+        } catch (err) {
+          if (
+            err.response &&
+            err.response.status === 401 &&
+            err.response.message === "The access token expired"
+          ) {
+            // do refresh
+          } else {
+            throw err;
+          }
+        }
+      }
+
+      let { data } = await axios.post(generateUrl2("spotify-auth"), {
+        refresh_token: this.spotifyAuth.refresh_token,
+      });
+      this.setSpotifyAuth(data);
+
+      return await axios(config);
+    },
     async getDevices() {
-      let { data } = await this.axios.get("/me/player/devices");
+      let { data } = await this.request({
+        method: "get",
+        url: "/me/player/devices",
+      });
       this.devices = data.devices;
+      for (let device of this.devices) {
+        if (device.is_active) {
+          this.selectedDeviceId = device.id;
+          break;
+        }
+      }
     },
     async getPlaylists() {
       let { data } = await this.axios.get("/me/playlists?limit=50");
       this.playlists = data.items;
     },
+    async getPlayingInfo() {
+      let { data } = await this.axios.get("/player");
+      this.selectedDeviceId = data.device.id;
+    },
     async play() {
-      let response = await this.axios.put(
+      await this.axios.put(
         `/me/player/play?device_id=${this.selectedDeviceId}`,
         {
           context_uri: "spotify:user:djsmedes:playlist:5KJsn1QRw6JHAlVSg3LJ0j",
         }
       );
     },
-    async getPlayingInfo() {
-      let response = await this.axios.get("/player");
-      this.selectedDeviceId = response.data.device.id;
-    },
     async pause() {
-      let response = await this.axios.put(
+      await this.axios.put(
         `/me/player/pause?device_id=${this.selectedDeviceId}`
       );
     },

@@ -12,6 +12,7 @@ from combat.viewsets import (
 )
 from plot.viewsets import EncounterViewSet
 from core.auth import CsrfRotatingTemplateView as TemplateView, login_view, signup_view, password_requirements
+from vendor.spotify.views import spotify_auth
 
 router = DefaultRouter()
 
@@ -70,6 +71,7 @@ urlpatterns = [
     path('api/request-user/', UserView.as_view(), name='request-user-detail'),
     path('api/signup/', signup_view, name='api-signup'),
     path('api/password-reqs/', password_requirements, name='password-reqs'),
+    path('api/spotify-auth/', spotify_auth, name='spotify-auth'),
 ]
 
 urlpatterns += [

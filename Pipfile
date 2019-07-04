@@ -18,6 +18,7 @@ django-authtools = "*"
 django-smalluuid = "*"
 channels = "*"
 channels-redis = "*"
+requests = "*"
 
 [dev-packages]
 
