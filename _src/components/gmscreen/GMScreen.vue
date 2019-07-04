@@ -7,17 +7,12 @@
         <v-tab
           v-for="(item, index) in tabs"
           :key="index"
-          :ref="'tab_' + index"
           :disabled="item.disabled"
         >
-          <slot :item="item" name="title">
-            <template v-if="index">
-              {{ item.title }}
-            </template>
-            <template v-else>
-              <v-icon>settings</v-icon>
-            </template>
-          </slot>
+          <template v-if="index">
+            {{ item.title }}
+          </template>
+          <v-icon v-else>settings</v-icon>
         </v-tab>
       </v-tabs>
       <v-spacer></v-spacer>
@@ -58,10 +53,8 @@
     </v-toolbar>
     <v-tabs-items :value="activeTab">
       <v-tab-item v-for="(item, index) in tabs" :key="index">
-        <slot :item="item">
-          <slot v-if="!index" name="pageSettings"></slot>
-          <screen-tab v-else :content="item.content"></screen-tab>
-        </slot>
+        <slot v-if="!index" name="pageSettings" :index="index"></slot>
+        <screen-tab v-else :content="item.content"></screen-tab>
       </v-tab-item>
     </v-tabs-items>
   </v-card>

@@ -45,14 +45,12 @@
 <script>
 import debounce from "lodash/debounce";
 import ScreenTab from "@/components/gmscreen/GMScreenTab";
-import Screen from "@/components/gmscreen/GMScreen";
 import { GMScreenTab } from "@/models";
 import { ButtonOption } from "@/plugins/userChoiceDialog";
 
 export default {
   name: "MarkdownEditor",
   components: {
-    "gm-screen": Screen,
     "gm-screen-tab": ScreenTab,
   },
   props: {
