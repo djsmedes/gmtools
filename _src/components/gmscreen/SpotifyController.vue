@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <v-container>
+    <pre>
+      {{ JSON.stringify(playingInfo, null, 2) }}
+    </pre>
+
     <template v-if="isSpotifyAuthorized">
       <v-select
         v-model="selectedDeviceId"
@@ -11,13 +15,6 @@
       <v-btn @click="choosePlaylists">
         Choose playlists
       </v-btn>
-      <v-select
-        v-model="selectedDeviceId"
-        :items="playlists"
-        item-value="id"
-        item-text="name"
-        @focus="getPlaylists"
-      ></v-select>
       <v-btn icon @click="play">
         <v-icon>play_arrow</v-icon>
       </v-btn>
@@ -29,7 +26,7 @@
       </v-btn>
     </template>
     <a :href="spotifyAuthUrl">Authenticate</a>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -43,12 +40,13 @@ export default {
   name: "SpotifyController",
   data() {
     return {
-      last_response: {},
+      playingInfo: {},
       devices: [],
       playlists: [],
       selectedPlaylists: [],
       selectedDeviceId: null,
       isPlaying: false,
+      getNextTrackInfoCbId: null,
     };
   },
   computed: {
@@ -116,19 +114,50 @@ export default {
         }
       }
     },
-    async getPlaylists() {
+    async getPlaylist(id) {
       let { data } = await this.request({
         method: "get",
-        url: "/me/playlists?limit=50",
+        url: `/playlists/${id}`,
       });
       this.playlists = data.items;
     },
     async getPlayingInfo() {
-      let { data } = await this.request({
+      let response = await this.request({
         method: "get",
-        url: "/player",
+        url: "/me/player",
       });
-      this.selectedDeviceId = data.device.id;
+      let data = response.status === 204 ? {} : response.data;
+      let {
+        device,
+        shuffle_state,
+        repeat_state,
+        progress_ms,
+        item: track,
+        is_playing,
+        actions,
+      } = data;
+      let { duration_ms, name: track_name, artists: track_artists } = track;
+      let [{ name: track_artist_name }] = track_artists;
+      this.selectedDeviceId = device.id;
+      this.playingInfo = {
+        shuffle_state,
+        repeat_state,
+        progress_ms,
+        duration_ms,
+        track_name,
+        track_artist_name,
+        is_playing,
+        actions,
+      };
+      if (this.getNextTrackInfoCbId) {
+        clearTimeout(this.getNextTrackInfoCbId);
+      }
+      if (is_playing) {
+        this.getNextTrackInfoCbId = setTimeout(
+          this.getPlayingInfo,
+          duration_ms - progress_ms + 500
+        );
+      }
     },
     async play() {
       await this.request({
