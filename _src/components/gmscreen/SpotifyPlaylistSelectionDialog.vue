@@ -227,10 +227,8 @@ export default {
       for (let playlist of this.playlists) {
         let selectedIndex = findIndex(selected, { id: playlist.id });
         if (selectedIndex !== -1) {
-          let [selectedPlaylist] = selected.splice(selectedIndex, 1);
-          if (selectedPlaylist) {
-            output.push(selectedPlaylist);
-          }
+          selected.splice(selectedIndex, 1);
+          output.push(playlist);
         }
       }
       return [...output, ...selected];
