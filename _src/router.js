@@ -6,7 +6,6 @@ import {
   loginRequired,
   loggedInExcluded,
 } from "@/auth/navigationGuards";
-import store from "@/store";
 
 Vue.use(Router);
 

@@ -273,11 +273,14 @@ export default {
       await Promise.all([encounter.save(), this.changeActiveEncounter(null)]);
     },
     onWsMessage(message) {
-      let { action, namespace, data } = message;
+      let { /* action, */ namespace, data } = message;
       let objectList = null;
       switch (namespace) {
         case "combatant":
           objectList = this.combatantsByInitiative;
+          break;
+        case "encounter":
+          // do something with encounter
           break;
       }
       data.forEach(obj => {

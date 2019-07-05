@@ -65,7 +65,7 @@ export default {
   methods: {
     ...mapMutations(["setSpotifyAuth"]),
     async spotifyAxios(config) {
-      return axios({
+      return await axios({
         ...config,
         baseURL: "https://api.spotify.com/v1",
         headers: {
@@ -77,17 +77,19 @@ export default {
     },
     async request(config) {
       if (epochNow() > parseInt(this.spotifyAuth.expires_at)) {
-        // do refresh
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line
+          console.log("Spotify access token expired, caught before triggering a 401.")
+        }
       } else {
         try {
           return await this.spotifyAxios(config);
         } catch (err) {
-          if (
-            err.response &&
-            err.response.status === 401 &&
-            err.response.message === "The access token expired"
-          ) {
-            // do refresh
+          if (err.response && err.response.status === 401) {
+            if (process.env.NODE_ENV !== "production") {
+              // eslint-disable-next-line
+              console.log("Spotify access token expired, 401 triggered.")
+            }
           } else {
             throw err;
           }

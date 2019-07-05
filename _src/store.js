@@ -7,12 +7,15 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     loadingCount: 0,
+    spotifyAuth: (() => {
+      let spotifyAuth = localStorage.getItem("spotifyAuth");
+      return spotifyAuth && JSON.parse(spotifyAuth);
+    })(),
   },
   getters: {
     isLoading: state => state.loadingCount > 0,
-    spotifyAuth: () => {
-      let spotifyAuth = localStorage.getItem("spotifyAuth") || "{}";
-      return JSON.parse(spotifyAuth);
+    spotifyAuth: state => {
+      return state.spotifyAuth || {};
     },
     spotifyAuthUrl: () => {
       let base = "https://accounts.spotify.com/authorize";
@@ -51,6 +54,7 @@ export default new Vuex.Store({
         expires_at: epochNow() + Number(payload.expires_in),
       };
       localStorage.setItem("spotifyAuth", JSON.stringify(newAuth));
+      state.spotifyAuth = newAuth;
     },
     clearSpotifyAuth: () => {
       localStorage.removeItem("spotifyAuth");

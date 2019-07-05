@@ -8,7 +8,7 @@
           <v-icon>close</v-icon>
         </v-btn>
       </v-toolbar>
-      <div style="overflow: auto; max-height: calc(100vh - 300px)">
+      <v-container style="overflow: auto; max-height: calc(100vh - 300px)">
         <v-data-table
           :items="playlists"
           v-model="selected"
@@ -48,7 +48,7 @@
             </tr>
           </template>
         </v-data-table>
-      </div>
+      </v-container>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn :disabled="!selected.length" @click="close(selected)">

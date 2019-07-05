@@ -39,7 +39,7 @@ export default {
   async created() {
     let redirect_uri =
       window.location.protocol + "//" + window.location.host + this.$route.path;
-    let { code, state, error } = this.$route.query;
+    let { code /*, state, error */ } = this.$route.query;
 
     if (!code) {
       this.error = true;
