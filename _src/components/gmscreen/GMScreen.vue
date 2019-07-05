@@ -1,29 +1,24 @@
 <template>
   <v-card>
     <v-toolbar dark color="grey darken-3" dense>
+      <v-btn icon @click="foo = 1">
+        <v-icon>settings</v-icon>
+      </v-btn>
       <v-tabs v-model="activeTab" color="transparent" show-arrows>
         <v-tabs-slider color="white"></v-tabs-slider>
 
-        <v-tab
-          v-for="(item, index) in tabs"
-          :key="index"
-          :disabled="item.disabled"
-        >
-          <template v-if="index">
-            {{ item.title }}
-          </template>
-          <v-icon v-else>settings</v-icon>
+        <v-tab v-for="(item, index) in tabList.models" :key="index">
+          {{ item.title }}
         </v-tab>
       </v-tabs>
       <v-spacer></v-spacer>
-      <v-btn flat icon :disabled="activeTab <= 1" @click="changeTabIndex(-1)">
+      <v-btn flat icon :disabled="activeTab <= 0" @click="changeTabIndex(-1)">
         <v-icon>arrow_left</v-icon>
       </v-btn>
       <span
         class="body-2 text-uppercase"
         :style="{
           cursor: 'default',
-          opacity: !activeTab ? '0.7' : undefined,
         }"
       >
         Reorder
@@ -31,7 +26,7 @@
       <v-btn
         flat
         icon
-        :disabled="activeTab >= tabs.length - 1 || !activeTab"
+        :disabled="activeTab >= tabList.models.length - 1"
         @click="changeTabIndex(1)"
       >
         <v-icon>arrow_right</v-icon>
@@ -52,9 +47,8 @@
       </v-btn>
     </v-toolbar>
     <v-tabs-items :value="activeTab">
-      <v-tab-item v-for="(item, index) in tabs" :key="index">
-        <slot v-if="!index" name="pageSettings" :index="index"></slot>
-        <screen-tab v-else :content="item.content"></screen-tab>
+      <v-tab-item v-for="(item, index) in tabList.models" :key="index">
+        <screen-tab :content="item.content"></screen-tab>
       </v-tab-item>
     </v-tabs-items>
   </v-card>
@@ -74,11 +68,8 @@ export default {
     };
   },
   computed: {
-    tabs() {
-      return [0, ...this.tabList.models];
-    },
     tab() {
-      return this.tabList.models[this.activeTab - 1] || new GMScreenTab();
+      return this.tabList.models[this.activeTab] || new GMScreenTab();
     },
   },
   async created() {
@@ -87,25 +78,27 @@ export default {
   },
   methods: {
     async changeTabIndex(direction) {
-      // caution: touching this is ASKING for an off-by-one error
-      let oldIndex = this.activeTab - 1;
+      let oldIndex = this.activeTab;
       let newIndex = oldIndex + direction;
-      let tabList = [...this.tabList.models];
-      if (newIndex < 0 || newIndex >= tabList.length) {
+      if (newIndex < 0 || newIndex >= this.tabList.models.length) {
         return;
       }
-      let tab = tabList.splice(oldIndex, 1)[0];
-      tabList.splice(newIndex, 0, tab);
       let promises = [];
-      tabList.forEach((tab, index) => {
-        if (tab.order !== index + 1) {
-          tab.order = index + 1;
+      this.tabList.models.forEach((tab, index) => {
+        if (index === oldIndex) {
+          tab.order = newIndex;
+        } else if (index === newIndex) {
+          tab.order = oldIndex;
+        } else {
+          tab.order = index;
+        }
+        if (tab.changed()) {
           promises.push(tab.save());
         }
       });
       await Promise.all(promises);
       this.tabList.sort("order");
-      this.activeTab = newIndex + 1;
+      this.activeTab = newIndex;
     },
   },
 };
