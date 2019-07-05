@@ -51,7 +51,7 @@
       </div>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn :disabled="!selected.length" @click="save(selected)">
+        <v-btn :disabled="!selected.length" @click="close(selected)">
           Save
         </v-btn>
       </v-card-actions>
@@ -66,9 +66,13 @@ export default {
   name: "SpotifyPlaylistSelectionDialog",
   mixins: [functionalDialogMixin],
   props: {
-    axios: {
+    request: {
       type: Function,
       required: true,
+    },
+    preSelected: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -79,6 +83,9 @@ export default {
     };
   },
   computed: {
+    preSelectedIds() {
+      return this.preSelected.map(item => item.id);
+    },
     areAllLoaded() {
       return this.playlists.length === this.totalPlaylistCount;
     },
@@ -88,21 +95,16 @@ export default {
   },
   methods: {
     async loadMore() {
-      let { data } = await this.axios(
-        `/me/playlists?limit=10&offset=${this.playlists.length}`
-      );
-      this.playlists.push(...data.items);
-      this.totalPlaylistCount = data.total;
-    },
-    getImageSrc(playlist) {
-      let src;
-      for (let image of playlist.images) {
-        src = image.url;
-        if (image.width < 600) {
-          break;
+      let { data } = await this.request({
+        method: "get",
+        url: `/me/playlists?limit=10&offset=${this.playlists.length}`,
+      });
+      for (let playlist of data.items) {
+        if (!this.preSelectedIds.includes(playlist.id)) {
+          this.playlists.push(playlist);
         }
       }
-      return src;
+      this.totalPlaylistCount = data.total;
     },
   },
 };

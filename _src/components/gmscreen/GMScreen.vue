@@ -1,12 +1,7 @@
 <template>
-  <v-card>
-    <v-toolbar dark color="grey darken-3" dense>
-      <v-btn icon @click="foo = 1">
-        <v-icon>settings</v-icon>
-      </v-btn>
-      <v-tabs v-model="activeTab" color="transparent" show-arrows>
-        <v-tabs-slider color="white"></v-tabs-slider>
-
+  <div>
+    <v-toolbar color="grey lighten-3" dense flat>
+      <v-tabs v-model="activeTab" color="transparent" slider-color="black">
         <v-tab v-for="(item, index) in tabList.models" :key="index">
           {{ item.title }}
         </v-tab>
@@ -51,7 +46,7 @@
         <screen-tab :content="item.content"></screen-tab>
       </v-tab-item>
     </v-tabs-items>
-  </v-card>
+  </div>
 </template>
 
 <script>

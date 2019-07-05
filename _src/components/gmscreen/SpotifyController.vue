@@ -64,22 +64,23 @@ export default {
   },
   methods: {
     ...mapMutations(["setSpotifyAuth"]),
-    async request(axiosConfig) {
-      let config = {
-        ...axiosConfig,
+    async spotifyAxios(config) {
+      return axios({
+        ...config,
         baseURL: "https://api.spotify.com/v1",
         headers: {
           Authorization: `${this.spotifyAuth.token_type} ${
             this.spotifyAuth.access_token
           }`,
         },
-      };
-
+      });
+    },
+    async request(config) {
       if (epochNow() > parseInt(this.spotifyAuth.expires_at)) {
         // do refresh
       } else {
         try {
-          return await axios(config);
+          return await this.spotifyAxios(config);
         } catch (err) {
           if (
             err.response &&
@@ -98,7 +99,7 @@ export default {
       });
       this.setSpotifyAuth(data);
 
-      return await axios(config);
+      return await this.spotifyAxios(config);
     },
     async getDevices() {
       let { data } = await this.request({
@@ -114,30 +115,42 @@ export default {
       }
     },
     async getPlaylists() {
-      let { data } = await this.axios.get("/me/playlists?limit=50");
+      let { data } = await this.request({
+        method: "get",
+        url: "/me/playlists?limit=50",
+      });
       this.playlists = data.items;
     },
     async getPlayingInfo() {
-      let { data } = await this.axios.get("/player");
+      let { data } = await this.request({
+        method: "get",
+        url: "/player",
+      });
       this.selectedDeviceId = data.device.id;
     },
     async play() {
-      await this.axios.put(
-        `/me/player/play?device_id=${this.selectedDeviceId}`,
-        {
+      await this.request({
+        method: "put",
+        url: `/me/player/play?device_id=${this.selectedDeviceId}`,
+        data: {
           context_uri: "spotify:user:djsmedes:playlist:5KJsn1QRw6JHAlVSg3LJ0j",
-        }
-      );
+        },
+      });
     },
     async pause() {
-      await this.axios.put(
-        `/me/player/pause?device_id=${this.selectedDeviceId}`
-      );
+      await this.request({
+        method: "put",
+        url: `/me/player/pause?device_id=${this.selectedDeviceId}`,
+      });
     },
     async choosePlaylists() {
       let reply = await this.$dialog(SpotifyPlaylistSelectionDialog, {
-        axios: this.axios,
+        request: this.request,
+        preSelected: this.selectedPlaylists,
       });
+      if (reply) {
+        this.selectedPlaylists = reply;
+      }
     },
   },
 };

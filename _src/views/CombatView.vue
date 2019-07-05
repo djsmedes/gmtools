@@ -107,59 +107,47 @@
       </v-container>
     </v-expand-transition>
 
-    <gm-screen class="hidden-sm-and-down">
-      <template #prepend-tabs>
-        <v-icon>
-          settings
-        </v-icon>
+    <combat-control-center class="hidden-sm-and-down">
+      <template #settings>
+        <v-form @submit.prevent>
+          <v-container grid-list-md>
+            <v-layout row wrap>
+              <v-flex xs12>
+                <h6 class="title">
+                  <span class="grey--text text--darken-1 font-weight-light">
+                    Encounter:
+                  </span>
+                  <span class="text--black">
+                    {{ currentEncounter.name || "--" }}
+                  </span>
+                </h6>
+              </v-flex>
+              <v-flex xs12>
+                <v-btn flat @click="tryChangeEncounter">
+                  Change
+                </v-btn>
+                <v-btn flat @click="completeEncounter">
+                  Complete
+                </v-btn>
+              </v-flex>
+            </v-layout>
+            <v-layout row wrap>
+              <v-flex md4 lg3 xl2>
+                <v-switch
+                  v-model.number="combatantLargeHPIncrement"
+                  :false-value="5"
+                  :true-value="10"
+                >
+                  <template slot="label">
+                    Larger damage increment
+                  </template>
+                </v-switch>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-form>
       </template>
-      <template #prepend-tab-items>
-        <v-tab-item>
-          <v-form @submit.prevent>
-            <v-container grid-list-md>
-              <v-layout row wrap>
-                <v-flex xs12>
-                  <h6 class="title">
-                    <span class="grey--text text--darken-1 font-weight-light">
-                      Encounter:
-                    </span>
-                    <span class="text--black">
-                      {{ currentEncounter.name || "--" }}
-                    </span>
-                  </h6>
-                </v-flex>
-                <v-flex xs12>
-                  <v-btn flat @click="tryChangeEncounter">
-                    Change
-                  </v-btn>
-                  <v-btn flat @click="completeEncounter">
-                    Complete
-                  </v-btn>
-                </v-flex>
-              </v-layout>
-              <v-layout row wrap>
-                <v-flex md4 lg3 xl2>
-                  <v-switch
-                    v-model.number="combatantLargeHPIncrement"
-                    :false-value="5"
-                    :true-value="10"
-                  >
-                    <template slot="label">
-                      Larger damage increment
-                    </template>
-                  </v-switch>
-                </v-flex>
-              </v-layout>
-              <v-layout wrap>
-                <v-flex>
-                  <spotify-controller></spotify-controller>
-                </v-flex>
-              </v-layout>
-            </v-container>
-          </v-form>
-        </v-tab-item>
-      </template>
-    </gm-screen>
+    </combat-control-center>
 
     <div style="height: 88px;"></div>
   </div>
@@ -167,7 +155,6 @@
 
 <script>
 import CombatantCard from "@/components/encounters/CombatantCard";
-import Screen from "@/components/gmscreen/GMScreen";
 import ChangeEncounterDialog from "@/components/encounters/ChangeEncounterDialog";
 import {
   Campaign,
@@ -177,15 +164,14 @@ import {
   getCurrentCampaign,
 } from "@/models";
 import { wsMessageMixin } from "@/mixins";
-import SpotifyController from "@/components/gmscreen/SpotifyController";
+import CombatControlCenter from "@/components/gmscreen/CombatControlCenter";
 
 export default {
   name: "CombatView",
   mixins: [wsMessageMixin],
   components: {
-    SpotifyController,
+    CombatControlCenter,
     CombatantCard,
-    "gm-screen": Screen,
   },
   data() {
     return {
