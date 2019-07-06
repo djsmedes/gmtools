@@ -162,7 +162,7 @@
         <v-flex grow style="flex-basis: 0">
           <v-list class="py-0">
             <v-subheader class="pt-0 pr-0" d-flex>
-              Devices
+              Playback Devices
               <v-spacer></v-spacer>
               <v-btn icon flat color="edit" @click="getDevices">
                 <v-icon>autorenew</v-icon>
@@ -559,7 +559,7 @@ export default {
         ]
       );
       if (reply) {
-        // todo - delete user stored playlist data
+        localStorage.removeItem("gmtools_spotify_playlists");
         this.clearSpotifyAuth();
       }
     },
