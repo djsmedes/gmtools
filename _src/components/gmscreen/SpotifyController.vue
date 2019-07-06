@@ -11,7 +11,7 @@
       <v-layout v-if="isSpotifyAuthorized">
         <v-flex grow style="flex-basis: 0">
           <v-list class="py-0">
-            <v-subheader class="pt-0" d-flex>
+            <v-subheader class="pt-0 pr-0" d-flex>
               Playlists
               <v-spacer></v-spacer>
               <v-btn icon flat color="edit" @click="choosePlaylists">
@@ -21,11 +21,7 @@
             <div :style="`overflow: auto; max-height: ${height - 48}px`">
               <v-hover v-for="playlist in playlists" :key="playlist.id">
                 <template #default="{ hover }">
-                  <v-list-tile
-                    :style="{
-                      background: hover ? 'rgba(0, 0, 0, 0.04)' : undefined,
-                    }"
-                  >
+                  <v-list-tile @click="play(playlist.id)">
                     <v-list-tile-content>
                       <v-list-tile-title
                         class="text-truncate"
@@ -38,10 +34,10 @@
                         {{ playlist.name }}
                       </v-list-tile-title>
                     </v-list-tile-content>
-                    <v-list-tile-action v-show="hover">
-                      <v-btn icon flat color="green" @click="play(playlist.id)">
-                        <v-icon>play_arrow</v-icon>
-                      </v-btn>
+                    <v-list-tile-action>
+                      <v-icon :color="hover ? 'green' : 'grey lighten-3'">
+                        play_arrow
+                      </v-icon>
                     </v-list-tile-action>
                   </v-list-tile>
                 </template>
@@ -165,31 +161,36 @@
         </v-flex>
         <v-flex grow style="flex-basis: 0">
           <v-list class="py-0">
-            <v-subheader class="pt-0" d-flex>
+            <v-subheader class="pt-0 pr-0" d-flex>
               Devices
               <v-spacer></v-spacer>
               <v-btn icon flat color="edit" @click="getDevices">
-                <v-icon>refresh</v-icon>
+                <v-icon>autorenew</v-icon>
               </v-btn>
             </v-subheader>
             <div :style="`overflow: auto; max-height: ${height - 48}px`">
-              <v-list-tile
-                v-for="device in devices"
-                :key="device.id"
-                @click="setPlaybackDevice(device.id)"
-              >
-                <v-list-tile-content>
-                  <v-list-tile-title
-                    class="text-truncate"
-                    :class="{
-                      'font-weight-bold': selectedDeviceId === device.id,
-                      'green--text': selectedDeviceId === device.id,
-                    }"
-                  >
-                    {{ device.name }}
-                  </v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
+              <v-hover v-for="device in devices" :key="device.id">
+                <template #default="{ hover }">
+                  <v-list-tile @click="setPlaybackDevice(device.id)">
+                    <v-list-tile-content>
+                      <v-list-tile-title
+                        class="text-truncate"
+                        :class="{
+                          'font-weight-bold': selectedDeviceId === device.id,
+                          'green--text': selectedDeviceId === device.id,
+                        }"
+                      >
+                        {{ device.name }}
+                      </v-list-tile-title>
+                    </v-list-tile-content>
+                    <v-list-tile-action>
+                      <v-icon :color="hover ? 'green' : 'grey lighten-3'">
+                        play_arrow
+                      </v-icon>
+                    </v-list-tile-action>
+                  </v-list-tile>
+                </template>
+              </v-hover>
             </div>
           </v-list>
         </v-flex>
@@ -220,6 +221,8 @@ import SpotifyPlaylistSelectionDialog from "@/components/gmscreen/SpotifyPlaylis
 import { epochNow, sleep } from "@/utils/time";
 import { generateUrl2 } from "@/utils/urls";
 import { ButtonOption } from "@/plugins/userChoiceDialog";
+import find from "lodash/find";
+import findIndex from "lodash/findIndex";
 
 export default {
   name: "SpotifyController",
@@ -260,6 +263,7 @@ export default {
   created() {
     if (this.isSpotifyAuthorized) {
       this.getDevices();
+      this.getPlayingInfo();
       let playlistsJSON = localStorage.getItem("gmtools_spotify_playlists");
       this.playlists = playlistsJSON ? JSON.parse(playlistsJSON) : [];
     }
@@ -295,6 +299,12 @@ export default {
               // eslint-disable-next-line
               console.log("Spotify access token expired, 401 triggered.")
             }
+          } else if (
+            err.response &&
+            err.response.status === 404 &&
+            err.response.data.error.reason === "NO_ACTIVE_DEVICE"
+          ) {
+            this.recoverFromNoDevice();
           } else {
             throw err;
           }
@@ -308,7 +318,7 @@ export default {
 
       return await this.spotifyAxios(config);
     },
-    async delay(ms = 500) {
+    async delay(ms = 1000) {
       this.isDelay = true;
       await sleep(ms);
       this.isDelay = false;
@@ -319,6 +329,7 @@ export default {
         url: "/me/player/devices",
       });
       this.devices = data.devices;
+      this.selectedDeviceId = null;
       for (let device of this.devices) {
         if (device.is_active) {
           this.selectedDeviceId = device.id;
@@ -326,14 +337,53 @@ export default {
         }
       }
     },
+    async recoverFromNoDevice() {
+      let msg;
+      let device = find(this.devices, { id: this.selectedDeviceId });
+      if (!device) {
+        this.selectedDeviceId = null;
+        msg = "Select a device first";
+      } else {
+        await this.getDevices();
+        if (!this.selectedDeviceId) {
+          msg = `${
+            device.name
+          } could not be found. Reopen the Spotify app, then refresh the device list.`;
+        } else {
+          this.setPlaybackDevice(device.id);
+        }
+      }
+      if (msg) {
+        this.$showSnack(msg);
+      }
+    },
     async setPlaybackDevice(deviceId) {
-      await this.request({
-        method: "put",
-        url: "/me/player",
-        data: { device_ids: [deviceId] },
-      });
-      await this.delay();
-      return this.getPlayingInfo();
+      try {
+        await this.request({
+          method: "put",
+          url: "/me/player",
+          data: { device_ids: [deviceId] },
+        });
+        await this.delay();
+        return this.getPlayingInfo();
+      } catch (err) {
+        if (err.response && err.response.status === 404) {
+          let attemptedDeviceIndex = findIndex(this.devices, { id: deviceId });
+          if (attemptedDeviceIndex !== -1) {
+            let [attemptedDevice] = this.devices.splice(
+              attemptedDeviceIndex,
+              1
+            );
+            this.$showSnack(
+              `${
+                attemptedDevice.name
+              } could not be found. Reopen the Spotify app, then refresh the device list.`
+            );
+          }
+        } else {
+          throw err;
+        }
+      }
     },
     async getPlaylist(id) {
       let { data } = await this.request({
@@ -343,6 +393,9 @@ export default {
       console.log(data);
     },
     async getPlayingInfo() {
+      if (this.getNextTrackInfoCbId) {
+        clearTimeout(this.getNextTrackInfoCbId);
+      }
       let response = await this.request({
         method: "get",
         url: "/me/player",
@@ -358,42 +411,56 @@ export default {
         actions,
         context,
       } = data;
-      let { type: context_type, uri: context_uri } = context;
-      if (context_type === "playlist") {
-        let [playlist_id] = context_uri.match(/[^:]+$/);
-        this.selectedPlaylistId = playlist_id;
-      } else {
-        this.selectedPlaylistId = null;
+
+      let track_info = {};
+      if (track) {
+        let {
+          duration_ms,
+          name: track_name,
+          artists: track_artists,
+          album,
+        } = track;
+        let [{ name: track_artist_name }] = track_artists;
+        let img_url = this.getImgSrc(album);
+
+        track_info = {
+          duration_ms,
+          track_name,
+          track_artist_name,
+          img_url,
+        };
+
+        if (
+          is_playing &&
+          duration_ms !== undefined &&
+          progress_ms !== undefined
+        ) {
+          this.getNextTrackInfoCbId = setTimeout(
+            this.getPlayingInfo,
+            duration_ms - progress_ms + 1000
+          );
+        }
       }
-      let {
-        duration_ms,
-        name: track_name,
-        artists: track_artists,
-        album,
-      } = track;
-      let [{ name: track_artist_name }] = track_artists;
-      let img_url = this.getImgSrc(album);
-      this.selectedDeviceId = device.id;
+
+      if (context) {
+        let { type: context_type, uri: context_uri } = context;
+        if (context_type === "playlist") {
+          let [playlist_id] = context_uri.match(/[^:]+$/);
+          this.selectedPlaylistId = playlist_id;
+        } else {
+          this.selectedPlaylistId = null;
+        }
+      }
+
+      this.selectedDeviceId = (device && device.id) || null;
       this.playingInfo = {
         shuffle_state,
         repeat_state,
         progress_ms,
-        duration_ms,
-        track_name,
-        track_artist_name,
         is_playing,
         actions,
-        img_url,
+        ...track_info,
       };
-      if (this.getNextTrackInfoCbId) {
-        clearTimeout(this.getNextTrackInfoCbId);
-      }
-      if (is_playing) {
-        this.getNextTrackInfoCbId = setTimeout(
-          this.getPlayingInfo,
-          duration_ms - progress_ms + 750
-        );
-      }
     },
     async play(playlistId) {
       let data = playlistId
