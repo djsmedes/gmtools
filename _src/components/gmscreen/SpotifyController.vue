@@ -175,9 +175,9 @@ export default {
 
       return await this.spotifyAxios(config);
     },
-    async delay() {
+    async delay(ms = 200) {
       this.isDelay = true;
-      await sleep(200);
+      await sleep(ms);
       this.isDelay = false;
     },
     async getDevices() {
@@ -296,7 +296,7 @@ export default {
         method: "put",
         url: `/me/player/repeat?state=${newState}`,
       });
-      await this.delay();
+      await this.delay(300);
       return this.getPlayingInfo();
     },
     async skipTrack(direction) {
