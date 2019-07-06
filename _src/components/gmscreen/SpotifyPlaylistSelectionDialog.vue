@@ -80,20 +80,31 @@
             md4
             lg3
             xl2
-            class="pl-3"
-            style="overflow: auto; max-height: calc(100vh - 300px)"
+            class="pl-3 pt-3"
+            style="overflow: auto; max-height: calc(100vh - 300px); position: relative;"
           >
+            <div
+              class="drag-over"
+              @drop.prevent="drop"
+              @dragover.prevent=""
+              @dragenter.prevent="dragEnter"
+              @dragleave="dragLeave"
+            >
+              <h4 class="headline pa-3 font-weight-bold">
+                Drop Spotify playlist URL here to add
+              </h4>
+            </div>
             <h4 class="title">
               Selected
             </h4>
-            <v-list>
+            <v-list style="background: transparent;">
               <v-hover v-for="(item, index) in selectedSorted" :key="index">
                 <template #default="{ hover }">
                   <v-list-tile
-                    :class="{ 'pt-1': index }"
+                    :class="{ 'mt-1': index }"
                     class="px-0"
                     :style="{
-                      background: hover ? 'rgba(0, 0, 0, 0.04)' : undefined,
+                      background: hover ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
                     }"
                   >
                     <v-list-tile-avatar>
@@ -162,6 +173,7 @@ export default {
   },
   data() {
     return {
+      console,
       playlists: [],
       totalPlaylistCount: null, // starts as null instead of 0 so we know if we've tried
       selectedIndices: [],
@@ -274,6 +286,24 @@ export default {
         this.selected.splice(selectionIndex, 1);
       }
     },
+    dragEnter($event) {
+      $event.target.classList.add("drag-over__active");
+    },
+    dragLeave($event) {
+      $event.target.classList.remove("drag-over__active");
+    },
+    async drop($event) {
+      $event.target.classList.remove("drag-over__active");
+      for (let dataTransferItem of $event.dataTransfer.items) {
+        if (dataTransferItem.type === "text/plain") {
+          let foo = new Promise(resolve => {
+            dataTransferItem.getAsString(resolve)
+          })
+          let bar = await foo;
+          console.log(bar)
+        }
+      }
+    },
   },
 };
 </script>
@@ -292,6 +322,34 @@ export default {
 /deep/ .px-0 {
   & > .v-list__tile {
     padding-right: 0;
+  }
+}
+.drag-over {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 50;
+  transition: background-color 0.25s;
+  display: flex;
+  align-items: center;
+  & h4 {
+    color: transparent;
+    transition: color 0.25s;
+    pointer-events: none;
+  }
+  &.drag-over__active {
+    background: hsla(214.2, 100%, 70.8%, 0.9);
+    /*background: linear-gradient(*/
+    /*  to bottom,*/
+    /*  hsla(214.2, 100%, 70.8%, 1),*/
+    /*  hsla(214.2, 100%, 70.8%, 0.25)*/
+    /*);*/
+
+    & h4 {
+      color: white;
+    }
   }
 }
 </style>
