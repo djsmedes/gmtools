@@ -56,8 +56,9 @@ export default new Vuex.Store({
       localStorage.setItem("spotifyAuth", JSON.stringify(newAuth));
       state.spotifyAuth = newAuth;
     },
-    clearSpotifyAuth: () => {
+    clearSpotifyAuth: state => {
       localStorage.removeItem("spotifyAuth");
+      state.spotifyAuth = {};
     },
   },
 });
