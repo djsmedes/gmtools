@@ -1,8 +1,73 @@
 <template>
   <v-container>
-    <pre>
-      {{ JSON.stringify(playingInfo, null, 2) }}
-    </pre>
+    <v-layout column align-center>
+      <v-card :width="300" class="elevation-5">
+        <v-img
+          contain
+          aspect-ratio="1"
+          :src="playingInfo.img_url"
+          :max-width="300"
+          :max-height="300"
+        ></v-img>
+      </v-card>
+      <v-flex mt-3 class="title">
+        {{ playingInfo.track_name }}
+      </v-flex>
+      <v-flex>
+        {{ playingInfo.track_artist_name }}
+      </v-flex>
+      <v-layout mt-1 align-center>
+        <v-btn
+          icon
+          @click="toggleShuffleState"
+          :disabled="disallows.toggling_shuffle"
+        >
+          <v-icon :color="playingInfo.shuffle_state ? 'green' : undefined">
+            shuffle
+          </v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          @click="skipTrack('previous')"
+          :disabled="disallows.skipping_prev"
+        >
+          <v-icon>
+            skip_previous
+          </v-icon>
+        </v-btn>
+        <v-btn icon large @click="togglePlayState">
+          <v-icon large>
+            {{ playingInfo.is_playing ? "pause" : "play_arrow" }}
+          </v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          @click="skipTrack('next')"
+          :disabled="disallows.skipping_next"
+        >
+          <v-icon>
+            skip_next
+          </v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          @click="cycleRepeatState"
+          :disabled="
+            disallows.toggling_repeat_track || disallows.toggling_repeat_context
+          "
+        >
+          <v-icon
+            :color="
+              !playingInfo.repeat_state || playingInfo.repeat_state === 'off'
+                ? undefined
+                : 'green'
+            "
+          >
+            {{ playingInfo.repeat_state === "track" ? "repeat_one" : "repeat" }}
+          </v-icon>
+        </v-btn>
+      </v-layout>
+    </v-layout>
 
     <template v-if="isSpotifyAuthorized">
       <v-select
@@ -15,14 +80,8 @@
       <v-btn @click="choosePlaylists">
         Choose playlists
       </v-btn>
-      <v-btn icon @click="play">
-        <v-icon>play_arrow</v-icon>
-      </v-btn>
       <v-btn icon @click="getPlayingInfo">
         <v-icon>info</v-icon>
-      </v-btn>
-      <v-btn icon @click="pause">
-        <v-icon>pause</v-icon>
       </v-btn>
     </template>
     <a :href="spotifyAuthUrl">Authenticate</a>
@@ -33,7 +92,7 @@
 import { mapGetters, mapMutations } from "vuex";
 import axios from "axios";
 import SpotifyPlaylistSelectionDialog from "@/components/gmscreen/SpotifyPlaylistSelectionDialog";
-import { epochNow } from "@/utils/time";
+import { epochNow, sleep } from "@/utils/time";
 import { generateUrl2 } from "@/utils/urls";
 
 export default {
@@ -47,12 +106,24 @@ export default {
       selectedDeviceId: null,
       isPlaying: false,
       getNextTrackInfoCbId: null,
+      isDelay: false,
     };
   },
   computed: {
     ...mapGetters(["spotifyAuth", "spotifyAuthUrl"]),
     isSpotifyAuthorized() {
       return Boolean(this.spotifyAuth && this.spotifyAuth.access_token);
+    },
+    disallows() {
+      if (
+        this.playingInfo &&
+        this.playingInfo.actions &&
+        this.playingInfo.actions.disallows
+      ) {
+        return this.playingInfo.actions.disallows;
+      } else {
+        return {};
+      }
     },
   },
   created() {
@@ -74,6 +145,9 @@ export default {
       });
     },
     async request(config) {
+      if (this.isDelay) {
+        return;
+      }
       if (epochNow() > parseInt(this.spotifyAuth.expires_at)) {
         if (process.env.NODE_ENV !== "production") {
           // eslint-disable-next-line
@@ -100,6 +174,11 @@ export default {
       this.setSpotifyAuth(data);
 
       return await this.spotifyAxios(config);
+    },
+    async delay() {
+      this.isDelay = true;
+      await sleep(200);
+      this.isDelay = false;
     },
     async getDevices() {
       let { data } = await this.request({
@@ -136,8 +215,14 @@ export default {
         is_playing,
         actions,
       } = data;
-      let { duration_ms, name: track_name, artists: track_artists } = track;
+      let {
+        duration_ms,
+        name: track_name,
+        artists: track_artists,
+        album,
+      } = track;
       let [{ name: track_artist_name }] = track_artists;
+      let img_url = this.getImgSrc(album);
       this.selectedDeviceId = device.id;
       this.playingInfo = {
         shuffle_state,
@@ -148,6 +233,7 @@ export default {
         track_artist_name,
         is_playing,
         actions,
+        img_url,
       };
       if (this.getNextTrackInfoCbId) {
         clearTimeout(this.getNextTrackInfoCbId);
@@ -155,17 +241,18 @@ export default {
       if (is_playing) {
         this.getNextTrackInfoCbId = setTimeout(
           this.getPlayingInfo,
-          duration_ms - progress_ms + 500
+          duration_ms - progress_ms + 750
         );
       }
     },
-    async play() {
+    async play(playlistId) {
+      let data = playlistId
+        ? { context_uri: `spotify:playlist:${playlistId}` }
+        : {};
       await this.request({
         method: "put",
         url: `/me/player/play?device_id=${this.selectedDeviceId}`,
-        data: {
-          context_uri: "spotify:user:djsmedes:playlist:5KJsn1QRw6JHAlVSg3LJ0j",
-        },
+        data,
       });
     },
     async pause() {
@@ -173,6 +260,52 @@ export default {
         method: "put",
         url: `/me/player/pause?device_id=${this.selectedDeviceId}`,
       });
+    },
+    async togglePlayState() {
+      if (this.playingInfo.is_playing) {
+        await this.pause();
+      } else {
+        await this.play();
+      }
+      await this.delay();
+      return this.getPlayingInfo();
+    },
+    async toggleShuffleState() {
+      let newState = !this.playingInfo.shuffle_state;
+      await this.request({
+        method: "put",
+        url: `/me/player/shuffle?state=${newState}`,
+      });
+      await this.delay();
+      return this.getPlayingInfo();
+    },
+    async cycleRepeatState() {
+      let newState;
+      switch (this.playingInfo.repeat_state) {
+        case "track":
+          newState = "off";
+          break;
+        case "context":
+          newState = "track";
+          break;
+        default:
+          newState = "context";
+          break;
+      }
+      await this.request({
+        method: "put",
+        url: `/me/player/repeat?state=${newState}`,
+      });
+      await this.delay();
+      return this.getPlayingInfo();
+    },
+    async skipTrack(direction) {
+      await this.request({
+        method: "post",
+        url: `/me/player/${direction}`,
+      });
+      await this.delay();
+      return this.getPlayingInfo();
     },
     async choosePlaylists() {
       let reply = await this.$dialog(SpotifyPlaylistSelectionDialog, {
@@ -183,6 +316,17 @@ export default {
         this.selectedPlaylists = reply;
       }
     },
+    getImgSrc({ images }) {
+      let [tooBig, good, tooSmall] = images;
+      let chosenImage = good || tooBig || tooSmall || { url: "" };
+      return chosenImage.url;
+    },
   },
 };
 </script>
+
+<style scoped lang="scss">
+.v-responsive.v-image {
+  background: linear-gradient(to bottom right, #575757, #adadad);
+}
+</style>
