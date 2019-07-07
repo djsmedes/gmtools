@@ -385,13 +385,6 @@ export default {
         }
       }
     },
-    async getPlaylist(id) {
-      let { data } = await this.request({
-        method: "get",
-        url: `/playlists/${id}`,
-      });
-      console.log(data);
-    },
     async getPlayingInfo() {
       if (this.getNextTrackInfoCbId) {
         clearTimeout(this.getNextTrackInfoCbId);

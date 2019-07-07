@@ -286,23 +286,45 @@ export default {
         this.selected.splice(selectionIndex, 1);
       }
     },
+    async drop($event) {
+      $event.target.classList.remove("drag-over__active");
+      let playlistId = await this.getDraggedPlaylistId($event);
+      if (playlistId) {
+        let playlist = await this.getPlaylist(playlistId);
+      }
+    },
     dragEnter($event) {
       $event.target.classList.add("drag-over__active");
     },
     dragLeave($event) {
       $event.target.classList.remove("drag-over__active");
     },
-    async drop($event) {
-      $event.target.classList.remove("drag-over__active");
+    async getDraggedPlaylistId($event) {
+      let plainText;
       for (let dataTransferItem of $event.dataTransfer.items) {
         if (dataTransferItem.type === "text/plain") {
-          let foo = new Promise(resolve => {
-            dataTransferItem.getAsString(resolve)
-          })
-          let bar = await foo;
-          console.log(bar)
+          plainText = await new Promise(resolve => {
+            dataTransferItem.getAsString(resolve);
+          });
+          break;
         }
       }
+      if (!plainText) {
+        return;
+      }
+      let matches = plainText.match(/[a-zA-Z0-9]+/g);
+      let result = matches.pop();
+      let type = matches.pop();
+      if (type === "playlist") {
+        return result;
+      }
+    },
+    async getPlaylist(id) {
+      let { data } = await this.request({
+        method: "get",
+        url: `/playlists/${id}`,
+      });
+      return data;
     },
   },
 };
