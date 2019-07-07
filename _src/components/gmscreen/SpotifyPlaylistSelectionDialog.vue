@@ -290,7 +290,18 @@ export default {
       $event.target.classList.remove("drag-over__active");
       let playlistId = await this.getDraggedPlaylistId($event);
       if (playlistId) {
+        // if playlistId already in selected, do nothing
+
+        // if not in selected, but is in candidate list, just add it
+
+        // if in neither, add it with .manual = true; these will be displayed separately
+
+        // when new playlists are loaded, check if any of the .manual ones have those ids
+        //   if so, remove .manual
+
         let playlist = await this.getPlaylist(playlistId);
+        console.log(playlist);
+        playlist.manual = true;
       }
     },
     dragEnter($event) {
