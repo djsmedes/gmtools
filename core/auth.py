@@ -122,7 +122,7 @@ def signup_view(request, *args, **kwargs):
     # ========== #
     # CAUTION!!! #
     # ========== #
-    if User.objects.filter(email=email):
+    if User.objects.filter(email__iexact=email):
         response_content['email'] = ['A user with this email already exists.']
         return Response(response_content, status=400)
     else:

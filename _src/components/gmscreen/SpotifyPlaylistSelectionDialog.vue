@@ -300,7 +300,6 @@ export default {
         //   if so, remove .manual
 
         let playlist = await this.getPlaylist(playlistId);
-        console.log(playlist);
         playlist.manual = true;
       }
     },
@@ -323,7 +322,8 @@ export default {
       if (!plainText) {
         return;
       }
-      let matches = plainText.match(/[a-zA-Z0-9]+/g);
+      let [queryRemoved] = plainText.split("?");
+      let matches = queryRemoved.match(/[a-zA-Z0-9]+/g);
       let result = matches.pop();
       let type = matches.pop();
       if (type === "playlist") {
