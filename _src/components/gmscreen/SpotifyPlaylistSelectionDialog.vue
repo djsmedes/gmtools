@@ -82,12 +82,13 @@
             xl2
             class="pl-3 pt-3"
             style="overflow: auto; max-height: calc(100vh - 300px); position: relative;"
+            @dragenter="parentDragEnter"
           >
             <div
+              ref="dragTarget"
               class="drag-over"
               @drop.prevent="drop"
-              @dragover.prevent=""
-              @dragenter.prevent="dragEnter"
+              @dragover.prevent
               @dragleave="dragLeave"
             >
               <h4 class="headline pa-3 font-weight-bold">
@@ -303,11 +304,20 @@ export default {
         playlist.manual = true;
       }
     },
-    dragEnter($event) {
-      $event.target.classList.add("drag-over__active");
+    dragEnter({ target }) {
+      target.classList.add("drag-over__active");
     },
-    dragLeave($event) {
-      $event.target.classList.remove("drag-over__active");
+    dragLeave({ target }) {
+      target.classList.remove("drag-over__active");
+    },
+    parentDragEnter() {
+      try {
+        this.dragEnter({
+          target: this.$refs.dragTarget,
+        });
+      } catch {
+        // no-op
+      }
     },
     async getDraggedPlaylistId($event) {
       let plainText;
@@ -363,7 +373,6 @@ export default {
   height: 100%;
   left: 0;
   top: 0;
-  z-index: 50;
   transition: background-color 0.25s;
   display: flex;
   align-items: center;
@@ -373,12 +382,8 @@ export default {
     pointer-events: none;
   }
   &.drag-over__active {
+    z-index: 5;
     background: hsla(214.2, 100%, 70.8%, 0.9);
-    /*background: linear-gradient(*/
-    /*  to bottom,*/
-    /*  hsla(214.2, 100%, 70.8%, 1),*/
-    /*  hsla(214.2, 100%, 70.8%, 0.25)*/
-    /*);*/
 
     & h4 {
       color: white;
