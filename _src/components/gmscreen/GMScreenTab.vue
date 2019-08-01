@@ -4,6 +4,7 @@
 
 <script>
 import marked from "marked";
+import DOMPurify from "dompurify";
 
 export default {
   name: "GMScreenTab",
@@ -15,7 +16,7 @@ export default {
   },
   computed: {
     compiledMarkdown() {
-      return marked(this.content, { sanitize: true });
+      return DOMPurify.sanitize(marked(this.content));
     },
   },
 };
