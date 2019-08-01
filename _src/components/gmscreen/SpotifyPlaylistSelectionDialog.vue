@@ -101,7 +101,7 @@
                 @click="setShowLinkEntry(!showLinkEntry)"
               >
                 <v-icon>
-                  {{ showLinkEntry ? "close" : "assignment_returned" }}
+                  {{ showLinkEntry ? "close" : "add" }}
                 </v-icon>
               </v-btn>
             </div>
@@ -116,6 +116,7 @@
                     placeholder="Spotify playlist link"
                     hide-details
                     v-model="linkText"
+                    @keydown.enter="addPlaylistFromLink"
                   >
                     <template #append>
                       <v-btn
@@ -164,9 +165,9 @@
               </p>
               <p>
                 Add playlists from the pane to the left, by dragging and
-                dropping from Spotify, or by copying a Spotify playlist link and
-                clicking the <v-icon small>assignment_returned</v-icon> "Add
-                from clipboard" button
+                dropping from Spotify, or by clicking the
+                <v-icon small>add</v-icon>
+                button and entering a Spotify playlist link.
               </p>
             </div>
           </v-flex>
@@ -348,11 +349,18 @@ export default {
       return data;
     },
     async addPlaylistFromLink() {
+      if (!this.linkText) return;
       let playlistId = this.getPlaylistIdFromSpotifyUrl(this.linkText);
       if (playlistId) {
-        let playlist = await this.getPlaylist(playlistId);
-        if (playlist) {
-          this.selected.push(playlist);
+        try {
+          let playlist = await this.getPlaylist(playlistId);
+          if (playlist) {
+            this.selected.push(playlist);
+          }
+        } catch (err) {
+          if (err.response && err.response.status === 404) {
+            this.$showSnack("Invalid playlist link");
+          }
         }
       }
       this.setShowLinkEntry(false);
