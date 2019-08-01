@@ -8,17 +8,13 @@
           <v-icon>close</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-container pl-0>
+      <v-container>
         <v-layout>
-          <v-flex
-            xs6
-            sm6
-            md8
-            lg9
-            xl10
-            style="overflow: auto; max-height: calc(100vh - 300px)"
-          >
-            <v-container grid-list-md py-0>
+          <v-flex xs6 sm6 md8 lg9 xl10>
+            <h4 class="title">
+              Your playlists
+            </h4>
+            <v-container grid-list-md py-0 pl-0 :style="nonOverflowStyle">
               <v-data-iterator
                 :items="playlists"
                 :rows-per-page-items="[-1]"
@@ -79,8 +75,8 @@
             md4
             lg3
             xl2
-            class="pl-3 pt-3"
-            style="overflow: auto; max-height: calc(100vh - 300px); position: relative;"
+            class="pl-3"
+            style="position: relative;"
             @dragenter="parentDragEnter"
           >
             <div
@@ -94,10 +90,47 @@
                 Drop Spotify playlist URL here to add
               </h4>
             </div>
-            <h4 class="title">
-              Selected
-            </h4>
-            <v-list style="background: transparent;">
+            <div style="display: flex">
+              <h4 class="title">
+                Selected
+              </h4>
+              <v-spacer></v-spacer>
+              <v-btn
+                icon
+                style="flex-shrink: 1; margin: -8px 0 -8px 0"
+                @click="setShowLinkEntry(!showLinkEntry)"
+              >
+                <v-icon>
+                  {{ showLinkEntry ? "close" : "assignment_returned" }}
+                </v-icon>
+              </v-btn>
+            </div>
+            <v-list style="background: transparent;" :style="nonOverflowStyle">
+              <v-expand-transition>
+                <v-list-tile v-show="showLinkEntry" class="px-0">
+                  <v-text-field
+                    ref="linkText"
+                    id="foo"
+                    solo
+                    flat
+                    placeholder="Spotify playlist link"
+                    hide-details
+                    v-model="linkText"
+                  >
+                    <template #append>
+                      <v-btn
+                        icon
+                        flat
+                        @click="addPlaylistFromLink"
+                        :disabled="!linkText.length"
+                        color="go"
+                      >
+                        <v-icon>arrow_forward</v-icon>
+                      </v-btn>
+                    </template>
+                  </v-text-field>
+                </v-list-tile>
+              </v-expand-transition>
               <v-hover v-for="(item, index) in sortedSelected" :key="index">
                 <template #default="{ hover }">
                   <v-list-tile
@@ -117,21 +150,25 @@
                         {{ item.name }}
                       </v-list-tile-title>
                     </v-list-tile-content>
-                    <v-btn
-                      icon
-                      flat
-                      v-if="hover"
-                      @click="removeSelected(item)"
-                    >
+                    <v-btn icon flat v-if="hover" @click="removeSelected(item)">
                       <v-icon>clear</v-icon>
                     </v-btn>
                   </v-list-tile>
                 </template>
               </v-hover>
             </v-list>
-            <span v-if="!selected.length" class="grey--text">
-              Select playlists to save them as options from the player.
-            </span>
+            <div v-if="!selected.length" class="grey--text">
+              <p>
+                Selected playlists appear here and are saved as options in the
+                player.
+              </p>
+              <p>
+                Add playlists from the pane to the left, by dragging and
+                dropping from Spotify, or by copying a Spotify playlist link and
+                clicking the <v-icon small>assignment_returned</v-icon> "Add
+                from clipboard" button
+              </p>
+            </div>
           </v-flex>
         </v-layout>
       </v-container>
@@ -177,6 +214,9 @@ export default {
       totalPlaylistCount: null, // starts as null instead of 0 so we know if we've tried
       selected: [...this.preSelected],
       loadingFromSpotify: false,
+      nonOverflowStyle: "overflow: auto; max-height: calc(100vh - 300px)",
+      showLinkEntry: false,
+      linkText: "",
     };
   },
   computed: {
@@ -288,8 +328,12 @@ export default {
       if (!plainText) {
         return;
       }
-      let [queryRemoved] = plainText.split("?");
+      return this.getPlaylistIdFromSpotifyUrl(plainText);
+    },
+    getPlaylistIdFromSpotifyUrl(spotifyUrl) {
+      let [queryRemoved] = spotifyUrl.split("?");
       let matches = queryRemoved.match(/[a-zA-Z0-9]+/g);
+      if (!matches) return;
       let result = matches.pop();
       let type = matches.pop();
       if (type === "playlist") {
@@ -302,6 +346,26 @@ export default {
         url: `/playlists/${id}`,
       });
       return data;
+    },
+    async addPlaylistFromLink() {
+      let playlistId = this.getPlaylistIdFromSpotifyUrl(this.linkText);
+      if (playlistId) {
+        let playlist = await this.getPlaylist(playlistId);
+        if (playlist) {
+          this.selected.push(playlist);
+        }
+      }
+      this.setShowLinkEntry(false);
+    },
+    async setShowLinkEntry(val) {
+      if (val) {
+        this.linkText = "";
+        this.showLinkEntry = true;
+        await this.$nextTick();
+        this.$refs.linkText.focus();
+      } else {
+        this.showLinkEntry = false;
+      }
     },
   },
 };
