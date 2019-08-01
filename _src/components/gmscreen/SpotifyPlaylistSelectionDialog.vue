@@ -383,14 +383,14 @@ export default {
 .v-responsive.v-image {
   background: linear-gradient(to bottom right, #575757, #adadad);
 }
-/deep/ .pl-0,
-/deep/ .px-0 {
+>>> .pl-0,
+>>> .px-0 {
   & > .v-list__tile {
     padding-left: 0;
   }
 }
-/deep/ .pr-0,
-/deep/ .px-0 {
+>>> .pr-0,
+>>> .px-0 {
   & > .v-list__tile {
     padding-right: 0;
   }

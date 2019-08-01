@@ -1,6 +1,5 @@
 import Vue from "vue";
 import Vuetify, { VLayout } from "vuetify/lib";
-import "vuetify/src/stylus/app.styl";
 import VueNativeSock from "vue-native-websocket";
 import App from "@/App";
 import router from "@/router";
