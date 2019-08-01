@@ -16,7 +16,7 @@
           :error-count="errors.password.length"
           label="Password"
           type="password"
-          @input="[errors.email, errors.non_field_errors] = [[], []]"
+          @input="[errors.password, errors.non_field_errors] = [[], []]"
         ></v-text-field>
         <v-expand-transition>
           <template v-if="nonFieldErrors.length">
@@ -26,7 +26,6 @@
               :value="true"
               type="error"
               outline
-              dismissible
             >
               <span v-html="err"></span>
             </v-alert>

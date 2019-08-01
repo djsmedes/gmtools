@@ -36,6 +36,8 @@ export const routeNames = {
   LOGIN: "login",
   SIGNUP: "signup",
   NOT_FOUND: "notFound",
+
+  SPOTIFY_RESPONSE: "spotifyResponse",
 };
 Vue.prototype.$routeNames = routeNames;
 
@@ -184,6 +186,13 @@ const router = new Router({
       component: () =>
         import(/* webpackChunkName: "misc" */ "@/views/AuthAccountOverview"),
       beforeEnter: loginRequired,
+    },
+
+    {
+      path: "/spotify-response/",
+      name: routeNames.SPOTIFY_RESPONSE,
+      component: () =>
+        import(/* webpackChunkName: "misc" */ "@/views/SpotifyAuth"),
     },
 
     {

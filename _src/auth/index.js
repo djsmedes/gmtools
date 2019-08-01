@@ -82,6 +82,7 @@ const authModule = {
         let { user, campaigns } = data;
         if (!user.uuid) {
           commit(mutationTypes.CLEAR_AUTH_USER);
+          commit(mutationTypes.REMOVE_TOKEN);
         } else {
           commit(mutationTypes.SET_AUTH_USER, user);
           commit(mutationTypes.SET_CURRENT_CAMPAIGN, user.current_campaign);

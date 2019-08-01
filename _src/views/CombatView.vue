@@ -107,8 +107,8 @@
       </v-container>
     </v-expand-transition>
 
-    <gm-screen class="hidden-sm-and-down">
-      <template #pageSettings>
+    <combat-control-center class="hidden-sm-and-down">
+      <template #settings>
         <v-form @submit.prevent>
           <v-container grid-list-md>
             <v-layout row wrap>
@@ -147,7 +147,7 @@
           </v-container>
         </v-form>
       </template>
-    </gm-screen>
+    </combat-control-center>
 
     <div style="height: 88px;"></div>
   </div>
@@ -155,7 +155,6 @@
 
 <script>
 import CombatantCard from "@/components/encounters/CombatantCard";
-import Screen from "@/components/gmscreen/GMScreen";
 import ChangeEncounterDialog from "@/components/encounters/ChangeEncounterDialog";
 import {
   Campaign,
@@ -165,13 +164,14 @@ import {
   getCurrentCampaign,
 } from "@/models";
 import { wsMessageMixin } from "@/mixins";
+import CombatControlCenter from "@/components/gmscreen/CombatControlCenter";
 
 export default {
   name: "CombatView",
   mixins: [wsMessageMixin],
   components: {
+    CombatControlCenter,
     CombatantCard,
-    "gm-screen": Screen,
   },
   data() {
     return {
@@ -273,11 +273,14 @@ export default {
       await Promise.all([encounter.save(), this.changeActiveEncounter(null)]);
     },
     onWsMessage(message) {
-      let { action, namespace, data } = message;
+      let { /* action, */ namespace, data } = message;
       let objectList = null;
       switch (namespace) {
         case "combatant":
           objectList = this.combatantsByInitiative;
+          break;
+        case "encounter":
+          // do something with encounter
           break;
       }
       data.forEach(obj => {

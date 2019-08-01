@@ -18,7 +18,7 @@
               ? errors.password1
               : passwordRequirementTexts
           "
-          :error="errors.password1.length"
+          :error="!!errors.password1.length"
           :error-count="
             Math.max(errors.password1.length, passwordRequirementTexts.length)
           "
@@ -65,6 +65,7 @@
 import { authActions } from "@/auth";
 import { generateUrl2 } from "@/utils/urls";
 import axios from "axios";
+import debounce from "lodash/debounce";
 
 const noErrors = {
   non_field_errors: [],
@@ -96,15 +97,8 @@ export default {
       if (!this.password2Touched) {
         return;
       }
-      if (
-        this.password1 &&
-        this.password2 &&
-        this.password1 !== this.password2
-      ) {
-        this.errors.password2 = ["Passwords must match."];
-      } else {
-        this.errors.password2 = [];
-      }
+      this.errors.password2 = [];
+      this.checkPassEquality();
     },
     password2() {
       if (this.password2) {
@@ -113,13 +107,8 @@ export default {
       if (!this.password1Touched) {
         return;
       }
-      if (
-        this.password1 &&
-        this.password2 &&
-        this.password1 !== this.password2
-      ) {
-        this.errors.password2 = ["Passwords must match."];
-      }
+      this.errors.password2 = [];
+      this.checkPassEquality();
     },
   },
   computed: {
@@ -198,7 +187,7 @@ export default {
       if (!value) return true;
       // the backend does more thorough validation, we just want
       //   a basic level of it here for usability purposes
-      if (/[^@]+@[^@]+\.[^@]+/.test(value)) {
+      if (/[^@]+@[^@.]+\.[^@]+/.test(value)) {
         return true;
       } else {
         return "Invalid email address.";
@@ -212,7 +201,7 @@ export default {
           !v ||
           v.length >= 8 ||
           "This password is too short. It must contain at least 8 characters.",
-        v => !/\d+/.test(v) || "This password is entirely numeric.",
+        v => !/^\d+/.test(v) || "This password is entirely numeric.",
       ];
       rules.forEach(rule => {
         let result = rule(this.password1);
@@ -221,6 +210,15 @@ export default {
         }
       });
     },
+    checkPassEquality: debounce(function() {
+      if (
+        this.password1 &&
+        this.password2 &&
+        this.password1 !== this.password2
+      ) {
+        this.errors.password2 = ["Passwords must match."];
+      }
+    }, 500),
   },
 };
 </script>
