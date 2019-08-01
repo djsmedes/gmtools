@@ -65,9 +65,14 @@
                         indefinite
                         v-if="loadingFromSpotify"
                       ></v-progress-linear>
-                      <v-btn v-else flat block @click="loadMore">
-                        Load more...
-                      </v-btn>
+                      <v-tooltip v-else bottom>
+                        <template #activator="{ on }">
+                          <v-btn v-on="on" flat block @click="loadMore">
+                            <v-icon>expand_more</v-icon>
+                          </v-btn>
+                        </template>
+                        Load more
+                      </v-tooltip>
                     </v-fade-transition>
                   </template>
                 </v-data-iterator>
@@ -301,6 +306,7 @@ export default {
         //   if so, remove .manual
 
         let playlist = await this.getPlaylist(playlistId);
+        console.log(playlist);
         playlist.manual = true;
       }
     },
