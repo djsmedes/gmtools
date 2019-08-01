@@ -164,7 +164,18 @@ export default {
   text-decoration: none !important;
 }
 
-.disabled-means-display {
+.v-input--is-disabled:not(.disabled-means-disabled) {
+  &:not(.show-affix-slots-on-disabled) {
+    .v-input__prepend-outer,
+    .v-input__prepend-inner,
+    .v-input__append-outer,
+    .v-input__append-inner {
+      display: none;
+    }
+  }
+  &:not(.show-details-on-disabled) .v-text-field__details {
+    display: none;
+  }
   label {
     color: rgba(0, 0, 0, 0.54) !important;
   }

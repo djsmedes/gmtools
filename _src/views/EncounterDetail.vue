@@ -15,7 +15,6 @@
         <v-flex xs6 sm4 md3>
           <v-text-field
             :disabled="isViewMode"
-            :class="{ 'disabled-means-display': isViewMode }"
             label="Name"
             v-model="encounter.name"
           ></v-text-field>

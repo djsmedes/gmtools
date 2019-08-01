@@ -12,13 +12,11 @@
       <v-form @submit.prevent>
         <v-text-field
           :disabled="!editMode"
-          :class="{ 'disabled-means-display': !editMode }"
           label="Name"
           v-model="combatant.name"
         ></v-text-field>
         <v-textarea
           :disabled="!editMode"
-          :class="{ 'disabled-means-display': !editMode }"
           auto-grow
           :rows="1"
           label="Loot"
@@ -39,7 +37,6 @@
           @paste.native="queryStatblockAutocomplete()"
           :clearable="editMode"
           :disabled="!editMode"
-          :class="{ 'disabled-means-display': !editMode }"
         ></v-autocomplete>
       </v-form>
     </object-detail-m-c>
