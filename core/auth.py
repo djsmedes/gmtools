@@ -134,9 +134,20 @@ def signup_view(request, *args, **kwargs):
     return handle_auth_cookies(request, response, token.key)
 
 
-@api_view(['get'])
-def password_requirements(request, *args, **kwargs):
-    return Response(password_validation.password_validators_help_texts())
+@api_view(['post'])
+def check_password_strength(request, *args, **kwargs):
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    User = get_user_model()
+    user = User(email=email)
+
+    try:
+        password_validation.validate_password(password, user)
+    except ValidationError as e:
+        return Response(e.messages)
+
+    return Response(status=204)
 
 
 class CsrfRotatingTemplateView(TemplateView):
