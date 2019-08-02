@@ -4,7 +4,7 @@
       <v-layout wrap>
         <v-flex xs12 md6 lg4>
           <v-toolbar dense color="transparent" flat class="pa-0">
-            <v-toolbar-title class="display-1 mb-3">
+            <v-toolbar-title class="display-1 mb-4">
               Current Campaign
             </v-toolbar-title>
           </v-toolbar>
@@ -33,7 +33,7 @@
         <invitations class="flex xs12 md6 lg4"></invitations>
       </v-layout>
 
-      <v-toolbar class="pa-0 mt-5" flat color="transparent" dense>
+      <v-toolbar class="pa-0 mt-12" flat color="transparent" dense>
         <v-toolbar-title class="display-1">Other Campaigns</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn color="primary" text @click="tryCreate">

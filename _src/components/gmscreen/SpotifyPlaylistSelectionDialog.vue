@@ -75,7 +75,7 @@
             md4
             lg3
             xl2
-            class="pl-3"
+            class="pl-4"
             style="position: relative;"
             @dragenter="parentDragEnter"
           >
@@ -86,7 +86,7 @@
               @dragover.prevent
               @dragleave="dragLeave"
             >
-              <h4 class="headline pa-3 font-weight-bold">
+              <h4 class="headline pa-4 font-weight-bold">
                 Drop Spotify playlist URL here to add
               </h4>
             </div>

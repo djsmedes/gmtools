@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="error" width="500" class="mx-auto mt-5">
+  <v-card v-if="error" width="500" class="mx-auto mt-12">
     <v-toolbar flat dense dark color="secondary">
       <v-toolbar-title>Uh-oh, something went wrong.</v-toolbar-title>
     </v-toolbar>

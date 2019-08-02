@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-toolbar dense color="transparent" flat class="pa-0">
-      <v-toolbar-title class="display-1 mb-3">
+      <v-toolbar-title class="display-1 mb-4">
         Invitations
       </v-toolbar-title>
       <v-spacer></v-spacer>
@@ -10,7 +10,7 @@
       </v-btn>
     </v-toolbar>
     <v-slide-x-reverse-transition group tag="div">
-      <v-card v-for="invite in invites" :key="invite.uuid" class="mb-3">
+      <v-card v-for="invite in invites" :key="invite.uuid" class="mb-4">
         <v-list two-line>
           <v-list-tile v-if="!showSent">
             <v-list-tile-action>

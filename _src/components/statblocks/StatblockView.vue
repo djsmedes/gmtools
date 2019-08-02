@@ -5,7 +5,7 @@
       {{ creature.size_display | capitalize }} {{ creature.type }},
       {{ creature.alignment_display }}
     </h6>
-    <v-divider class="my-3"></v-divider>
+    <v-divider class="my-4"></v-divider>
     <v-flex>
       <strong>Armor Class</strong> {{ creature.armor_class
       }}{{ creature.armor_kind ? " (" + creature.armor_kind + ")" : "" }}
@@ -14,7 +14,7 @@
       <br />
       <strong>Speed</strong> {{ creature.speed }}
     </v-flex>
-    <v-divider class="my-3"></v-divider>
+    <v-divider class="my-4"></v-divider>
     <v-flex>
       <v-layout>
         <v-flex v-for="abl in abilityScores" :key="abl" xs2 class="text-center">
@@ -28,7 +28,7 @@
         </v-flex>
       </v-layout>
     </v-flex>
-    <v-divider class="my-3"></v-divider>
+    <v-divider class="my-4"></v-divider>
     <v-flex>
       <template v-if="creature.saving_throws">
         <strong>Saving Throws</strong> {{ creature.saving_throws }}
@@ -82,7 +82,7 @@
       <br />
       <strong>Challenge</strong> {{ creature.challenge }}
     </v-flex>
-    <v-divider class="my-3"></v-divider>
+    <v-divider class="my-4"></v-divider>
 
     <v-flex v-if="properties.length">
       <p v-for="prop in properties" :key="prop.uuid">

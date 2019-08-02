@@ -49,7 +49,7 @@
           :style="`height: ${height}px`"
           shrink
           style="max-width: 300px"
-          mx-3
+          mx-4
         >
           <v-layout column align-center fill-height>
             <v-flex shrink>
@@ -69,7 +69,7 @@
                 <v-flex
                   ref="trackTitle"
                   shrink
-                  mt-3
+                  mt-4
                   class="title text-truncate text-center"
                   style="width: 300px"
                   v-on="on"
@@ -147,7 +147,7 @@
                 </v-btn>
               </v-layout>
             </v-flex>
-            <v-flex shrink d-flex class="my-3">
+            <v-flex shrink d-flex class="my-4">
               <v-img :src="spotifyLogo" width="166" contain></v-img>
             </v-flex>
             <v-flex>
@@ -202,7 +202,7 @@
         <v-spacer></v-spacer>
         <v-flex style="max-width: 300px">
           <v-img :src="spotifyLogo" contain></v-img>
-          <div class="mt-3">
+          <div class="mt-4">
             GMTOOLS uses the Spotify Web API to let you control your Spotify
             playback right from here.
           </div>
