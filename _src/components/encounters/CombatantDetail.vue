@@ -94,6 +94,17 @@ export default {
       },
     },
   },
+  async created() {
+    if (this.uuid) {
+      await this.combatant.fetch();
+      if (this.combatant.statblock) {
+        this.statblockAutocompleteLoading = true;
+        this.p_initialStatblock.uuid = this.combatant.statblock;
+        await this.p_initialStatblock.fetch();
+        this.statblockAutocompleteLoading = false;
+      }
+    }
+  },
   methods: {
     async save() {
       this.$emit("save", await this.combatant.save());
@@ -147,17 +158,6 @@ export default {
         this.statblockAutocompleteLoading = false;
       }
     }, 300),
-  },
-  async created() {
-    if (this.uuid) {
-      await this.combatant.fetch();
-      if (this.combatant.statblock) {
-        this.statblockAutocompleteLoading = true;
-        this.p_initialStatblock.uuid = this.combatant.statblock;
-        await this.p_initialStatblock.fetch();
-        this.statblockAutocompleteLoading = false;
-      }
-    }
   },
 };
 </script>

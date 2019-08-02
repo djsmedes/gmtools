@@ -58,14 +58,6 @@ export default {
       loading: false,
     };
   },
-  watch: {
-    async dialog(val) {
-      if (val) {
-        await this.$nextTick();
-        this.$refs.firstField.focus();
-      }
-    },
-  },
   computed: {
     width() {
       switch (this.$vuetify.breakpoint.name) {
@@ -79,6 +71,14 @@ export default {
           return "600px";
         case "xl":
           return "800px";
+      }
+    },
+  },
+  watch: {
+    async dialog(val) {
+      if (val) {
+        await this.$nextTick();
+        this.$refs.firstField.focus();
       }
     },
   },

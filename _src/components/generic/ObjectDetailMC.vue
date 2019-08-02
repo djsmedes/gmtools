@@ -65,15 +65,19 @@ export default {
     },
     title: {
       type: String,
+      default: "",
     },
     deleteAttrs: {
       type: Object,
+      default: () => ({}),
     },
     saveAttrs: {
       type: Object,
+      default: () => ({}),
     },
     cancelAttrs: {
       type: Object,
+      default: () => ({}),
     },
   },
 };

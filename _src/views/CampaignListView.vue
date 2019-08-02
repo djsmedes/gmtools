@@ -80,8 +80,8 @@ import { authUserMixin } from "@/mixins";
 
 export default {
   name: "CampaignListView",
-  mixins: [authUserMixin],
   components: { Invitations, CampaignDetail },
+  mixins: [authUserMixin],
   data() {
     return {
       p_campaignUnderEdit: null,
@@ -109,6 +109,9 @@ export default {
       return require("@/assets/img/icosahedron.svg");
     },
   },
+  created() {
+    this.allCampaigns.fetch();
+  },
   methods: {
     async setCurrentCampaign(uuid) {
       this.showCampaigns = false;
@@ -132,9 +135,6 @@ export default {
         await newCampaign.save();
       }
     },
-  },
-  created() {
-    this.allCampaigns.fetch();
   },
 };
 </script>

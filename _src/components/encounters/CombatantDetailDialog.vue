@@ -22,8 +22,8 @@ import CombatantDetail from "@/components/encounters/CombatantDetail";
 
 export default {
   name: "CombatantDetailDialog",
-  mixins: [functionalDialogMixin],
   components: { CombatantDetail },
+  mixins: [functionalDialogMixin],
   props: {
     uuid: {
       type: String,

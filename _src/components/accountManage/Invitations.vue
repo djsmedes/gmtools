@@ -102,6 +102,9 @@ export default {
       return this.showSent ? this.sentInvites : this.receivedInvites;
     },
   },
+  async created() {
+    this.receivedInvites = await loadInvites();
+  },
   methods: {
     async accept(invite) {
       this.acceptWaiting = invite.uuid;
@@ -144,9 +147,6 @@ export default {
         this.triedLoadingSent = true;
       }
     },
-  },
-  async created() {
-    this.receivedInvites = await loadInvites();
   },
 };
 </script>

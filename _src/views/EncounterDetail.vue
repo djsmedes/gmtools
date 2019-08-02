@@ -94,6 +94,11 @@ export default {
       viewMode: true,
     };
   },
+  async created() {
+    this.$store.commit("needLoading");
+    await Promise.all([this.encounter.fetch(), this.combatants.fetch()]);
+    this.$store.commit("doneLoading");
+  },
   methods: {
     async deleteSelf() {
       await this.encounter.delete();
@@ -106,11 +111,6 @@ export default {
           : { extraAttrData: { encounter: this.uuid } }),
       });
     },
-  },
-  async created() {
-    this.$store.commit("needLoading");
-    await Promise.all([this.encounter.fetch(), this.combatants.fetch()]);
-    this.$store.commit("doneLoading");
   },
 };
 </script>

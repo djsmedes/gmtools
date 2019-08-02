@@ -169,6 +169,22 @@ function generateSavingThrowText(creature, property) {
 export default {
   name: "StatblockView",
   components: { AttackTemplate },
+  filters: {
+    capitalize(value) {
+      if (!value) return "";
+      value = value.toString();
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    },
+    renderSpecifics(value, creature, property) {
+      if (!value) return "";
+      value = value.replace(/{creature}/g, creature.generic_name);
+      value = value.replace(
+        /{saving throw}/g,
+        generateSavingThrowText(creature, property)
+      );
+      return value;
+    },
+  },
   props: {
     creature: {
       type: Statblock,
@@ -216,22 +232,6 @@ export default {
           con_piece +
           ")"
       );
-    },
-  },
-  filters: {
-    capitalize(value) {
-      if (!value) return "";
-      value = value.toString();
-      return value.charAt(0).toUpperCase() + value.slice(1);
-    },
-    renderSpecifics(value, creature, property) {
-      if (!value) return "";
-      value = value.replace(/{creature}/g, creature.generic_name);
-      value = value.replace(
-        /{saving throw}/g,
-        generateSavingThrowText(creature, property)
-      );
-      return value;
     },
   },
 };

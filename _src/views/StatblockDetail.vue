@@ -293,6 +293,21 @@ const propType2Key = {
 export default {
   name: "StatblockDetail",
   components: { StatblockView },
+  directives: {
+    sortableList: {
+      bind(el, binding, vnode) {
+        const options = {
+          handle: ".sortHandle",
+          animation: 150,
+          onUpdate: function(event) {
+            vnode.child.$emit("sorted", event);
+          },
+        };
+
+        Sortable.create(el, options);
+      },
+    },
+  },
   props: {
     uuid: {
       type: String,
@@ -354,6 +369,12 @@ export default {
       ];
     },
   },
+  async created() {
+    if (this.uuid) {
+      this.statblock.fetch();
+      this.creatureProps.fetch();
+    }
+  },
   methods: {
     async save() {
       let creatingNew = !this.statblock.uuid;
@@ -399,27 +420,6 @@ export default {
       const moved = this.statblock[key].splice(oldIndex, 1)[0];
       this.statblock[key].splice(newIndex, 0, moved);
     },
-  },
-  directives: {
-    sortableList: {
-      bind(el, binding, vnode) {
-        const options = {
-          handle: ".sortHandle",
-          animation: 150,
-          onUpdate: function(event) {
-            vnode.child.$emit("sorted", event);
-          },
-        };
-
-        Sortable.create(el, options);
-      },
-    },
-  },
-  async created() {
-    if (this.uuid) {
-      this.statblock.fetch();
-      this.creatureProps.fetch();
-    }
   },
 };
 </script>

@@ -168,11 +168,11 @@ import CombatControlCenter from "@/components/gmscreen/CombatControlCenter";
 
 export default {
   name: "CombatView",
-  mixins: [wsMessageMixin],
   components: {
     CombatControlCenter,
     CombatantCard,
   },
+  mixins: [wsMessageMixin],
   data() {
     return {
       applyingEffectType: "",
@@ -214,6 +214,9 @@ export default {
       }
       return collection;
     },
+  },
+  created() {
+    this.pcCombatants.fetch();
   },
   methods: {
     toggleCombatantWillApply(uuid) {
@@ -289,9 +292,6 @@ export default {
         corresponding.sync();
       });
     },
-  },
-  created() {
-    this.pcCombatants.fetch();
   },
 };
 </script>

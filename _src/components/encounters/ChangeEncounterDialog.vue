@@ -22,7 +22,7 @@ import { functionalDialogMixin } from "@/mixins";
 
 export default {
   name: "ChangeEncounterDialog",
-  mixins: [functionalDialogMixin],
   components: { EncounterChooser },
+  mixins: [functionalDialogMixin],
 };
 </script>

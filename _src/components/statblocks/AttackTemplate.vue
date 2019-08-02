@@ -45,6 +45,14 @@ import { average_roll } from "@/utils/dice";
 
 export default {
   name: "AttackTemplate",
+  filters: {
+    // todo - make this global? look at efficiency both time and space depending on where defined
+    capitalize(value) {
+      if (!value) return "";
+      value = value.toString();
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    },
+  },
   props: {
     creature: {
       type: Statblock,
@@ -85,14 +93,6 @@ export default {
   },
   methods: {
     average_roll,
-  },
-  filters: {
-    // todo - make this global? look at efficiency both time and space depending on where defined
-    capitalize(value) {
-      if (!value) return "";
-      value = value.toString();
-      return value.charAt(0).toUpperCase() + value.slice(1);
-    },
   },
 };
 </script>

@@ -21,7 +21,7 @@
           item-value="uuid"
           item-text="name"
           :menu-props="{ offsetY: true }"
-          returnObject
+          return-object
           v-model="selectedEncounter"
         >
           <template slot="item" slot-scope="{ item }">
@@ -54,14 +54,6 @@ export default {
       }),
     };
   },
-  watch: {
-    showCompleted(val) {
-      if (!this.lazyLoadedCompleted && val) {
-        this.completedEncounters.fetch();
-        this.lazyLoadedCompleted = true;
-      }
-    },
-  },
   computed: {
     currentEncounter() {
       let encounter = new Encounter({
@@ -69,6 +61,14 @@ export default {
       });
       encounter.fetch();
       return encounter;
+    },
+  },
+  watch: {
+    showCompleted(val) {
+      if (!this.lazyLoadedCompleted && val) {
+        this.completedEncounters.fetch();
+        this.lazyLoadedCompleted = true;
+      }
     },
   },
   created() {

@@ -10,7 +10,7 @@ module.exports = {
     "no-unused-vars": 1,
     "vuetify/no-deprecated-classes": "error",
     // "vue/attributes-order": "warn",
-    // "vue/order-in-components": "warn",
+    "vue/order-in-components": "warn",
     "vue/html-self-closing": "off",
   },
   parserOptions: {

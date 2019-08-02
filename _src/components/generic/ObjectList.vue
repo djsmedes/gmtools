@@ -43,12 +43,20 @@
 export default {
   name: "ObjectList",
   props: {
-    detailViewName: String,
-    createViewName: String,
+    detailViewName: {
+      type: String,
+      required: true,
+    },
+    createViewName: {
+      type: String,
+      default: "",
+    },
     objectList: {
+      type: Array,
       default: () => [],
     },
     headers: {
+      type: Array,
       default() {
         return [
           {

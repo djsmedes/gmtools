@@ -89,6 +89,20 @@ export default {
       userNonActionableErrors: [],
     };
   },
+  computed: {
+    nonFieldErrors() {
+      return [...this.userNonActionableErrors, ...this.errors.non_field_errors];
+    },
+    submitDisabled() {
+      return Boolean(
+        !this.formValid ||
+          !this.email ||
+          !this.password1 ||
+          !this.password2 ||
+          this.errors.non_field_errors.length
+      );
+    },
+  },
   watch: {
     password1() {
       if (this.password1) {
@@ -109,20 +123,6 @@ export default {
       }
       this.errors.password2 = [];
       this.checkPassEquality();
-    },
-  },
-  computed: {
-    nonFieldErrors() {
-      return [...this.userNonActionableErrors, ...this.errors.non_field_errors];
-    },
-    submitDisabled() {
-      return Boolean(
-        !this.formValid ||
-          !this.email ||
-          !this.password1 ||
-          !this.password2 ||
-          this.errors.non_field_errors.length
-      );
     },
   },
   created() {

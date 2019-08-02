@@ -172,6 +172,9 @@ export default {
       },
     },
   },
+  created() {
+    this.users.fetch();
+  },
   methods: {
     async tryDelete() {
       let choice = await this.$userChoice(
@@ -220,9 +223,6 @@ export default {
         this.$showSnack("Invitations sent");
       }
     },
-  },
-  created() {
-    this.users.fetch();
   },
 };
 </script>

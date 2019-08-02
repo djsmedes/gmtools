@@ -68,11 +68,6 @@ export default {
       loading: false,
     };
   },
-  watch: {
-    dialog(val) {
-      if (val) this.$nextTick(this.$refs.emails.focus);
-    },
-  },
   computed: {
     width() {
       switch (this.$vuetify.breakpoint.name) {
@@ -87,6 +82,11 @@ export default {
         case "xl":
           return "800px";
       }
+    },
+  },
+  watch: {
+    dialog(val) {
+      if (val) this.$nextTick(this.$refs.emails.focus);
     },
   },
   methods: {

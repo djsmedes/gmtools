@@ -50,6 +50,7 @@ export default {
   props: {
     name: {
       type: String,
+      required: true,
     },
     startEditing: {
       type: Boolean,
@@ -74,6 +75,14 @@ export default {
       deleteDialog: false,
     };
   },
+  computed: {
+    isViewMode() {
+      return this.mode === VIEW_MODE;
+    },
+    isEditMode() {
+      return this.mode === EDIT_MODE;
+    },
+  },
   watch: {
     startEditing: {
       handler(newVal) {
@@ -84,14 +93,6 @@ export default {
         }
       },
       immediate: true,
-    },
-  },
-  computed: {
-    isViewMode() {
-      return this.mode === VIEW_MODE;
-    },
-    isEditMode() {
-      return this.mode === EDIT_MODE;
     },
   },
   methods: {

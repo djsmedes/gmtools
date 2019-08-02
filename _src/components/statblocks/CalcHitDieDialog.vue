@@ -140,20 +140,6 @@ export default {
       adv_con: this.creatureCon,
     };
   },
-  watch: {
-    dialog(val) {
-      if (val) this.$nextTick(this.$refs.firstField.focus);
-    },
-    suggestions(val) {
-      if (!val.includes(this.selection)) this.selection = null;
-    },
-    adv_con() {
-      this.getSuggestions();
-    },
-    adv_size() {
-      this.getSuggestions();
-    },
-  },
   computed: {
     width() {
       switch (this.$vuetify.breakpoint.name) {
@@ -180,6 +166,20 @@ export default {
         num_hit_die: this.selection,
         ...(this.advanced ? { size: this.adv_size, con: this.adv_con } : {}),
       };
+    },
+  },
+  watch: {
+    dialog(val) {
+      if (val) this.$nextTick(this.$refs.firstField.focus);
+    },
+    suggestions(val) {
+      if (!val.includes(this.selection)) this.selection = null;
+    },
+    adv_con() {
+      this.getSuggestions();
+    },
+    adv_size() {
+      this.getSuggestions();
     },
   },
   methods: {

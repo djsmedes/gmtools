@@ -64,6 +64,9 @@ export default {
       tab: new GMScreenTab({ uuid: this.uuid }),
     };
   },
+  async created() {
+    await this.tab.fetch();
+  },
   methods: {
     updateContent: debounce(function(e) {
       this.tab.content = e;
@@ -99,9 +102,6 @@ export default {
         this.$router.push({ name: this.$routeNames.HOME });
       }
     },
-  },
-  async created() {
-    await this.tab.fetch();
   },
 };
 </script>
