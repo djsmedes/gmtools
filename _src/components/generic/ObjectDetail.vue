@@ -1,20 +1,20 @@
 <template>
   <v-card :class="{ 'display-only': isViewMode }">
     <slot :isViewMode="isViewMode"></slot>
-    <slot name="view" v-if="isViewMode"></slot>
-    <slot name="edit" v-if="isEditMode"></slot>
+    <slot v-if="isViewMode" name="view"></slot>
+    <slot v-if="isEditMode" name="edit"></slot>
     <v-card-actions>
       <v-btn
         v-if="(saveFunc || deleteFunc) && isViewMode"
-        @click="enterEditMode"
         flat
+        @click="enterEditMode"
       >
         Edit
       </v-btn>
-      <v-btn v-if="saveFunc && isEditMode" @click="save" flat>
+      <v-btn v-if="saveFunc && isEditMode" flat @click="save">
         Save
       </v-btn>
-      <v-btn v-if="saveFunc && isEditMode" @click="clear" flat>
+      <v-btn v-if="saveFunc && isEditMode" flat @click="clear">
         Cancel
       </v-btn>
       <v-dialog
@@ -22,7 +22,7 @@
         v-model="deleteDialog"
         :width="500"
       >
-        <v-btn flat slot="activator">
+        <v-btn slot="activator" flat>
           Delete
         </v-btn>
         <v-card>

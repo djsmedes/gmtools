@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-tabs fixed-tabs color="transparent" v-model="whichTab">
+    <v-tabs v-model="whichTab" fixed-tabs color="transparent">
       <v-tab>
         Edit
       </v-tab>
@@ -11,7 +11,7 @@
 
     <v-tabs-items v-model="whichTab" class="mt-3">
       <v-tab-item>
-        <v-form @submit.prevent v-model="formValid">
+        <v-form v-model="formValid" @submit.prevent>
           <v-container grid-list-xl>
             <v-layout wrap>
               <v-flex xs12>
@@ -21,48 +21,48 @@
               </v-flex>
               <v-flex xs12>
                 <v-text-field
-                  label="Name"
                   v-model="statblock.name"
+                  label="Name"
                 ></v-text-field>
               </v-flex>
               <v-flex xs12 sm4>
                 <v-select
-                  label="Size"
                   :items="sizeChoices"
                   v-model="statblock.size"
+                  label="Size"
                 ></v-select>
               </v-flex>
               <v-flex xs12 sm4>
                 <v-text-field
-                  label="Type"
                   v-model="statblock.type"
+                  label="Type"
                 ></v-text-field>
               </v-flex>
               <v-flex xs12 sm4>
                 <v-select
-                  label="Alignment"
                   :items="alignmentChoices"
                   v-model="statblock.alignment"
+                  label="Alignment"
                 ></v-select>
               </v-flex>
 
               <v-flex xs12 sm6>
                 <v-text-field
-                  label="Armor class"
                   v-model="statblock.armor_class"
+                  label="Armor class"
                 ></v-text-field>
               </v-flex>
               <v-flex xs12 sm6>
                 <v-text-field
-                  label="Armor kind"
                   v-model="statblock.armor_kind"
+                  label="Armor kind"
                 ></v-text-field>
               </v-flex>
 
               <v-flex xs12 sm6>
                 <v-text-field
-                  label="Number of hit dice"
                   v-model="statblock.num_hit_die"
+                  label="Number of hit dice"
                 ></v-text-field>
               </v-flex>
               <v-flex xs12 sm6>
@@ -73,16 +73,16 @@
 
               <v-flex xs12>
                 <v-text-field
-                  label="Speed"
                   v-model="statblock.speed"
+                  label="Speed"
                 ></v-text-field>
               </v-flex>
 
               <v-flex
-                xs4
-                md2
                 v-for="abl in ['Str', 'Dex', 'Con', 'Int', 'Wis', 'Cha']"
                 :key="abl"
+                xs4
+                md2
               >
                 <v-text-field
                   :label="abl"
@@ -92,71 +92,71 @@
 
               <v-flex xs12>
                 <v-text-field
-                  label="Saving throws"
                   v-model="statblock.saving_throws"
+                  label="Saving throws"
                 ></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <v-text-field
-                  label="Skills"
                   v-model="statblock.skills"
+                  label="Skills"
                 ></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <v-combobox
+                  :items="damageTypes"
+                  v-model="statblock.damage_vulnerabilities"
                   label="Damage vulnerabilities"
                   chips
                   multiple
-                  :items="damageTypes"
-                  v-model="statblock.damage_vulnerabilities"
                 ></v-combobox>
               </v-flex>
               <v-flex xs12>
                 <v-combobox
+                  :items="damageTypes"
+                  v-model="statblock.damage_resistances"
                   label="Damage resistances"
                   chips
                   multiple
-                  :items="damageTypes"
-                  v-model="statblock.damage_resistances"
                 ></v-combobox>
               </v-flex>
               <v-flex xs12>
                 <v-combobox
+                  :items="damageTypes"
+                  v-model="statblock.damage_immunities"
                   label="Damage immunities"
                   chips
                   multiple
-                  :items="damageTypes"
-                  v-model="statblock.damage_immunities"
                 ></v-combobox>
               </v-flex>
               <v-flex xs12>
                 <v-combobox
+                  :items="conditions"
+                  v-model="statblock.condition_immunities"
                   label="Condition immunities"
                   chips
                   multiple
-                  :items="conditions"
-                  v-model="statblock.condition_immunities"
                 ></v-combobox>
               </v-flex>
               <v-flex xs12>
                 <v-text-field
-                  label="Senses"
                   v-model="statblock.senses"
+                  label="Senses"
                 ></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <v-combobox
+                  :items="languages"
+                  v-model="statblock.languages"
                   label="Languages"
                   chips
                   multiple
-                  :items="languages"
-                  v-model="statblock.languages"
                 ></v-combobox>
               </v-flex>
               <v-flex xs12>
                 <v-text-field
-                  label="Challenge rating"
                   v-model="statblock.challenge"
+                  label="Challenge rating"
                 ></v-text-field>
               </v-flex>
 
@@ -167,15 +167,15 @@
               </v-flex>
               <v-flex xs12 sm6>
                 <v-text-field
+                  v-model="statblock.generic_name"
                   label="Generic name"
                   hint="This will be used in action descriptions"
-                  v-model="statblock.generic_name"
                 ></v-text-field>
               </v-flex>
               <v-flex xs12 sm6>
                 <v-text-field
-                  label="Proficiency"
                   v-model="statblock.proficiency"
+                  label="Proficiency"
                 ></v-text-field>
               </v-flex>
               <v-flex xs12>
@@ -186,7 +186,7 @@
             </v-layout>
 
             <v-expand-transition mode="out-in">
-              <v-list subheader class="elevation-1" v-if="statblock.uuid">
+              <v-list v-if="statblock.uuid" subheader class="elevation-1">
                 <v-list-tile
                   class="text-uppercase"
                   color="save"
@@ -205,8 +205,8 @@
                     {{ propListItem.subheader }}
                   </v-subheader>
                   <v-list
-                    :key="'_' + propListItem.subheader"
                     v-sortable-list
+                    :key="'_' + propListItem.subheader"
                     @sorted="objectSortOccurred($event, propListItem.propType)"
                   >
                     <v-list-tile
@@ -235,19 +235,19 @@
         </v-form>
         <v-layout>
           <v-btn
-            @click="statblock.reset()"
-            flat
             :disabled="!statblock.changed()"
+            flat
+            @click="statblock.reset()"
           >
             <v-icon left>cancel</v-icon>
             clear changes
           </v-btn>
           <v-spacer></v-spacer>
           <v-btn
-            @click="save"
+            :disabled="!statblock.changed()"
             color="save"
             flat
-            :disabled="!statblock.changed()"
+            @click="save"
           >
             <v-icon left>save</v-icon>
             save

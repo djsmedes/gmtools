@@ -20,23 +20,23 @@
               <v-flex xs8>
                 <v-autocomplete
                   v-model="existing"
-                  hide-no-data
-                  append-icon=""
                   :search-input.sync="existingSearch"
                   :items="autocompleteMatches"
                   :loading="autocompleteLoading"
+                  hide-no-data
+                  append-icon=""
+                  clearable
                   @keypress="onAutocompleteKeyPress"
                   @keyup.backspace="queryCreaturePropAutocomplete()"
                   @keyup.delete="queryCreaturePropAutocomplete()"
                   @paste.native="queryCreaturePropAutocomplete()"
-                  clearable
                 ></v-autocomplete>
               </v-flex>
               <v-flex xs4 class="text-right">
                 <v-btn
+                  :disabled="!existing"
                   flat
                   color="save"
-                  :disabled="!existing"
                   @click="windowPosition = 1"
                 >
                   preview
@@ -48,10 +48,10 @@
               </v-flex>
               <v-flex xs9 class="text-right">
                 <v-btn
+                  :disabled="!!existing"
                   flat
                   color="save"
                   @click="windowPosition = 1"
-                  :disabled="!!existing"
                 >
                   create a new creature property
                   <v-icon right>arrow_forward</v-icon>
@@ -62,8 +62,8 @@
         </v-window-item>
         <v-window-item>
           <creature-prop-detail
-            :uuid="selectedUuid"
             v-if="windowPosition === 1"
+            :uuid="selectedUuid"
           >
             <template #actions="{ saveFunc, changedFunc }">
               <v-btn flat @click="close(false)">
@@ -72,10 +72,10 @@
               </v-btn>
               <v-spacer></v-spacer>
               <v-btn
-                flat
-                @click="saveAndClose(saveFunc)"
-                color="save"
                 :disabled="!changedFunc()"
+                flat
+                color="save"
+                @click="saveAndClose(saveFunc)"
               >
                 <v-icon left>save</v-icon>
                 save & close

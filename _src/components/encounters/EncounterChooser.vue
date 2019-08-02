@@ -12,17 +12,17 @@
     <v-card-text>
       <v-form @submit.prevent>
         <v-select
-          label="Active encounter"
           :items="
             showCompleted
               ? [...encounters.models, ...completedEncounters.models]
               : encounters.models
           "
+          :menu-props="{ offsetY: true }"
+          v-model="selectedEncounter"
+          label="Active encounter"
           item-value="uuid"
           item-text="name"
-          :menu-props="{ offsetY: true }"
           return-object
-          v-model="selectedEncounter"
         >
           <template slot="item" slot-scope="{ item }">
             {{ item.name }}{{ item.completion_date ? " (completed)" : "" }}
@@ -31,7 +31,7 @@
       </v-form>
     </v-card-text>
     <v-card-actions>
-      <slot name="actions" :selectedEncounter="selectedEncounter"></slot>
+      <slot :selectedEncounter="selectedEncounter" name="actions"></slot>
     </v-card-actions>
   </v-card>
 </template>

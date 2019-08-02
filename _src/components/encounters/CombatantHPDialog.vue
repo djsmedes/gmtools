@@ -9,22 +9,22 @@
           <v-layout wrap>
             <v-flex xs4>
               <v-text-field
-                type="number"
                 v-model.number="returnVal.hp"
+                type="number"
                 label="Current HP"
               ></v-text-field>
             </v-flex>
             <v-flex xs4>
               <v-text-field
-                type="number"
                 v-model.number="returnVal.maxHp"
+                type="number"
                 label="Max HP"
               ></v-text-field>
             </v-flex>
             <v-flex xs4>
               <v-text-field
-                type="number"
                 v-model.number="returnVal.tempHp"
+                type="number"
                 label="Temp HP"
               ></v-text-field>
             </v-flex>

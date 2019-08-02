@@ -1,6 +1,6 @@
 <template>
   <v-card :width="500" class="mx-auto">
-    <v-form ref="form" @submit.stop.prevent="submit" v-model="formValid">
+    <v-form ref="form" v-model="formValid" @submit.stop.prevent="submit">
       <v-card-text>
         <v-text-field
           v-model="email"
@@ -34,7 +34,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn flat type="submit" color="go" :disabled="submitDisabled">
+        <v-btn :disabled="submitDisabled" flat type="submit" color="go">
           Sign in
           <v-icon right>arrow_forward</v-icon>
         </v-btn>

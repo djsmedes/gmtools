@@ -1,5 +1,5 @@
 <template>
-  <v-dialog width="500" v-model="dialog">
+  <v-dialog v-model="dialog" width="500">
     <v-btn slot="activator" flat>
       Change
     </v-btn>

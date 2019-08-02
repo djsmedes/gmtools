@@ -1,9 +1,9 @@
 <template>
   <v-dialog
     v-model="dialog"
+    :persistent="roll !== null"
     width="400"
     @keydown.esc="close(null)"
-    :persistent="roll !== null"
   >
     <v-card>
       <v-card-title class="headline grey lighten-2" primary-title>
@@ -23,17 +23,17 @@
           <v-layout wrap>
             <v-flex xs6>
               <v-text-field
+                v-model="returnVal.initiativeBonus"
                 type="number"
                 pattern="\d*"
-                v-model="returnVal.initiativeBonus"
                 label="Initiative Bonus"
               ></v-text-field>
             </v-flex>
             <v-flex xs6>
               <v-text-field
+                v-model="returnVal.initiative"
                 type="number"
                 pattern="\d*"
-                v-model="returnVal.initiative"
                 label="Initiative"
               ></v-text-field>
             </v-flex>
@@ -44,7 +44,7 @@
         <v-btn flat @click="close(returnVal)">
           Save
         </v-btn>
-        <v-btn flat :disabled="!!roll" @click="rollInitiative">
+        <v-btn :disabled="!!roll" flat @click="rollInitiative">
           Roll
         </v-btn>
         <v-btn flat @click="close(null)">

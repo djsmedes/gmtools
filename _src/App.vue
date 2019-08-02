@@ -3,43 +3,43 @@
     <v-toolbar color="grey darken-3" dark dense>
       <v-toolbar-items>
         <v-btn
+          :to="{ name: $routeNames.HOME }"
           flat
           exact
           class="title no-text-dec"
-          :to="{ name: $routeNames.HOME }"
         >
           <span class="hidden-xs-only">GMTOOLS</span>
           <v-icon dark class="hidden-sm-and-up">home</v-icon>
         </v-btn>
         <v-btn
-          flat
           v-if="authUser.isAuthenticated"
-          class="no-text-dec hidden-xs-only"
           :to="{ name: $routeNames.ENCOUNTERS }"
+          flat
+          class="no-text-dec hidden-xs-only"
         >
           Encounters
         </v-btn>
         <v-btn
-          flat
           v-if="authUser.isAuthenticated"
-          class="no-text-dec hidden-xs-only"
           :to="{ name: $routeNames.COMBATANTS }"
+          flat
+          class="no-text-dec hidden-xs-only"
         >
           Combatants
         </v-btn>
         <v-btn
-          flat
           v-if="authUser.isAuthenticated"
-          class="no-text-dec hidden-xs-only"
           :to="{ name: $routeNames.STATBLOCKS }"
+          flat
+          class="no-text-dec hidden-xs-only"
         >
           Statblocks
         </v-btn>
         <v-btn
-          flat
           v-if="authUser.isAuthenticated"
-          class="no-text-dec hidden-xs-only"
           :to="{ name: $routeNames.CREATUREPROPS }"
+          flat
+          class="no-text-dec hidden-xs-only"
         >
           Creature Properties
         </v-btn>
@@ -48,10 +48,10 @@
       <v-spacer></v-spacer>
 
       <v-toolbar-items v-if="!authUser.isAuthenticated">
-        <v-btn flat class="no-text-dec" :to="{ name: $routeNames.LOGIN }">
+        <v-btn :to="{ name: $routeNames.LOGIN }" flat class="no-text-dec">
           Sign in
         </v-btn>
-        <v-btn flat class="no-text-dec" :to="{ name: $routeNames.SIGNUP }">
+        <v-btn :to="{ name: $routeNames.SIGNUP }" flat class="no-text-dec">
           Sign up
         </v-btn>
       </v-toolbar-items>
@@ -123,9 +123,9 @@
       </v-container>
       <v-dialog
         :value="$store.getters.isLoading"
+        :width="64 + 32"
         hide-overlay
         persistent
-        :width="64 + 32"
       >
         <v-card color="grey darken-3" dark>
           <v-card-text>

@@ -1,11 +1,11 @@
 <template>
   <div>
     <v-speed-dial
+      v-if="!applyingEffectType"
       v-model="fab"
       fixed
       bottom
       right
-      v-if="!applyingEffectType"
       direction="left"
     >
       <v-btn slot="activator" v-model="fab" fab dark color="blue">
@@ -30,31 +30,31 @@
       style="bottom: 16px; right: 16px; left: unset; top: unset;"
     >
       <v-btn
+        v-if="applyingEffectType === effectTypes.BUFF"
+        :ripple="false"
         icon
         dark
         class="green"
-        :ripple="false"
-        v-if="applyingEffectType === effectTypes.BUFF"
         @click="applyingEffectType = effectTypes.DEBUFF"
       >
         <v-icon>trending_up</v-icon>
       </v-btn>
       <v-btn
+        v-if="applyingEffectType === effectTypes.DEBUFF"
+        :ripple="false"
         icon
         dark
         class="red"
-        :ripple="false"
-        v-if="applyingEffectType === effectTypes.DEBUFF"
         @click="applyingEffectType = effectTypes.OTHER"
       >
         <v-icon>trending_down</v-icon>
       </v-btn>
       <v-btn
+        v-if="applyingEffectType === effectTypes.OTHER"
+        :ripple="false"
         icon
         dark
         class="grey"
-        :ripple="false"
-        v-if="applyingEffectType === effectTypes.OTHER"
         @click="applyingEffectType = effectTypes.BUFF"
       >
         <v-icon>trending_flat</v-icon>
@@ -62,10 +62,10 @@
 
       <v-text-field
         :autofocus="!!applyingEffectType"
+        v-model="effectToApply"
         hide-details
         single-line
         box
-        v-model="effectToApply"
       >
       </v-text-field>
 
@@ -86,14 +86,14 @@
       >
         <v-layout wrap>
           <v-flex
+            v-for="combatant in combatantsByInitiative"
+            :key="combatant._uid"
             d-flex
             xs12
             sm6
             md4
             lg3
             xl2
-            v-for="combatant in combatantsByInitiative"
-            :key="combatant._uid"
           >
             <combatant-card
               :combatant="combatant"

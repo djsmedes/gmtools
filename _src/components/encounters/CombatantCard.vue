@@ -1,8 +1,8 @@
 <template>
   <v-card
-    @click.native="$emit('click', combatant.uuid)"
     :raised="active"
     :class="cardClasses"
+    @click.native="$emit('click', combatant.uuid)"
   >
     <v-card-title class="pb-0 pt-2">
       <v-container fluid class="pa-0 ma-0">
@@ -13,7 +13,7 @@
             </h3>
           </v-flex>
           <v-flex xs3>
-            <v-btn icon @click.stop="openInitDialog" :disabled="!!effectMode">
+            <v-btn :disabled="!!effectMode" icon @click.stop="openInitDialog">
               <v-badge overlap left color="transparent">
                 <v-avatar slot="badge" size="12">
                   <span class="black--text">{{ combatant.initiative }}</span>
@@ -33,8 +33,8 @@
         <v-layout wrap>
           <v-chip
             v-if="combatant.temp_hp > 0"
-            @click.stop="openHpDialog"
             close
+            @click.stop="openHpDialog"
             @input="combatant.temp_hp = 0"
           >
             <v-avatar class="white">
@@ -103,32 +103,32 @@
 
     <v-card-actions>
       <v-btn
+        :disabled="!!effectMode"
         icon
         flat
         class="ma-0"
         @click="combatantHp -= largeHPIncrement"
-        :disabled="!!effectMode"
       >
         -{{ largeHPIncrement }}
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn
+        :disabled="!!effectMode"
         icon
         flat
         class="ma-0"
         @click="combatantHp -= 1"
-        :disabled="!!effectMode"
       >
         -1
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn
+        :disabled="!!effectMode"
         icon
         flat
         class="ma-0"
         color="red darken-2"
         @click="openHpDialog"
-        :disabled="!!effectMode"
       >
         <v-progress-circular
           :rotate="-90"
@@ -140,21 +140,21 @@
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn
+        :disabled="!!effectMode"
         icon
         flat
         class="ma-0"
         @click="combatantHp += 1"
-        :disabled="!!effectMode"
       >
         +1
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn
+        :disabled="!!effectMode"
         icon
         flat
         class="ma-0"
         @click="combatantHp += largeHPIncrement"
-        :disabled="!!effectMode"
       >
         +{{ largeHPIncrement }}
       </v-btn>

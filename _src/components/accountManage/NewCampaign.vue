@@ -13,9 +13,9 @@
       <v-card-text>
         Enter a name for your new campaign
         <v-form
-          @submit.prevent="close(textFieldValue)"
-          v-model="formValid"
           ref="form"
+          v-model="formValid"
+          @submit.prevent="close(textFieldValue)"
         >
           <v-text-field
             ref="firstField"
@@ -31,11 +31,11 @@
         </v-btn>
         <v-spacer></v-spacer>
         <v-btn
-          flat
-          @click="close(textFieldValue)"
-          color="save"
           :disabled="!formValid"
           :loading="loading"
+          flat
+          color="save"
+          @click="close(textFieldValue)"
         >
           <v-icon left>save</v-icon>
           save

@@ -7,12 +7,12 @@
       Looks like Spotify authorization has failed.
     </v-card-text>
     <v-card-actions>
-      <v-btn flat :to="{ name: $routeNames.HOME }" exact>
+      <v-btn :to="{ name: $routeNames.HOME }" flat exact>
         <v-icon left>home</v-icon>
         return home
       </v-btn>
       <v-spacer></v-spacer>
-      <v-btn flat :href="spotifyAuthUrl">
+      <v-btn :href="spotifyAuthUrl" flat>
         try again
         <v-icon right>arrow_forward</v-icon>
       </v-btn>

@@ -1,10 +1,10 @@
 <template>
   <v-dialog
     v-model="dialog"
-    persistent
     :max-width="width"
-    @keydown.esc="close(null)"
     :fullscreen="$vuetify.breakpoint.name === 'xs'"
+    persistent
+    @keydown.esc="close(null)"
   >
     <combatant-detail
       :uuid="uuid"

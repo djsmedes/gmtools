@@ -14,7 +14,7 @@
             <h4 class="title">
               Your playlists
             </h4>
-            <v-container grid-list-md py-0 pl-0 :style="nonOverflowStyle">
+            <v-container :style="nonOverflowStyle" grid-list-md py-0 pl-0>
               <v-data-iterator
                 :items="playlists"
                 :rows-per-page-items="[-1]"
@@ -50,15 +50,15 @@
                     </v-hover>
                   </v-flex>
                 </template>
-                <template #footer v-if="!areAllLoaded">
+                <template v-if="!areAllLoaded" #footer>
                   <v-fade-transition mode="out-in">
                     <v-progress-linear
-                      indefinite
                       v-if="loadingFromSpotify"
+                      indefinite
                     ></v-progress-linear>
                     <v-tooltip v-else bottom>
                       <template #activator="{ on }">
-                        <v-btn v-on="on" flat block @click="loadMore">
+                        <v-btn flat block v-on="on" @click="loadMore">
                           <v-icon large>expand_more</v-icon>
                         </v-btn>
                       </template>
@@ -105,26 +105,26 @@
                 </v-icon>
               </v-btn>
             </div>
-            <v-list style="background: transparent;" :style="nonOverflowStyle">
+            <v-list :style="nonOverflowStyle" style="background: transparent;">
               <v-expand-transition>
                 <v-list-tile v-show="showLinkEntry" class="px-0">
                   <v-text-field
-                    ref="linkText"
                     id="foo"
+                    ref="linkText"
+                    v-model="linkText"
                     solo
                     flat
                     placeholder="Spotify playlist link"
                     hide-details
-                    v-model="linkText"
                     @keydown.enter="addPlaylistFromLink"
                   >
                     <template #append>
                       <v-btn
+                        :disabled="!linkText.length"
                         icon
                         flat
-                        @click="addPlaylistFromLink"
-                        :disabled="!linkText.length"
                         color="go"
+                        @click="addPlaylistFromLink"
                       >
                         <v-icon>arrow_forward</v-icon>
                       </v-btn>
@@ -136,10 +136,10 @@
                 <template #default="{ hover }">
                   <v-list-tile
                     :class="{ 'mt-1': index }"
-                    class="px-0"
                     :style="{
                       background: hover ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
                     }"
+                    class="px-0"
                   >
                     <v-list-tile-avatar>
                       <v-avatar tile size="48">
@@ -151,7 +151,7 @@
                         {{ item.name }}
                       </v-list-tile-title>
                     </v-list-tile-content>
-                    <v-btn icon flat v-if="hover" @click="removeSelected(item)">
+                    <v-btn v-if="hover" icon flat @click="removeSelected(item)">
                       <v-icon>clear</v-icon>
                     </v-btn>
                   </v-list-tile>
@@ -178,9 +178,9 @@
         <v-spacer></v-spacer>
         <v-btn
           :disabled="!isSelectionChanged"
-          @click="close(sortedSelected)"
           color="save"
           flat
+          @click="close(sortedSelected)"
         >
           <v-icon left>save</v-icon>
           Save

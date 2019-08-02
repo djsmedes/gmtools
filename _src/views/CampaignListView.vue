@@ -1,6 +1,6 @@
 <template>
   <v-expand-transition mode="out-in">
-    <v-container fluid v-if="campaigns.length" grid-list-xl>
+    <v-container v-if="campaigns.length" fluid grid-list-xl>
       <v-layout wrap>
         <v-flex xs12 md6 lg4>
           <v-toolbar dense color="transparent" flat class="pa-0">
@@ -12,15 +12,15 @@
             <campaign-detail
               :key="currentCampaign._uid"
               :campaign="currentCampaign"
+              :disabled="
+                campaignUnderEdit && campaignUnderEdit !== currentCampaign.uuid
+              "
               @focus="campaignUnderEdit = currentCampaign.uuid"
               @blur="
                 campaignUnderEdit =
                   campaignUnderEdit === currentCampaign.uuid
                     ? null
                     : campaignUnderEdit
-              "
-              :disabled="
-                campaignUnderEdit && campaignUnderEdit !== currentCampaign.uuid
               "
             ></campaign-detail>
           </v-fade-transition>
@@ -45,22 +45,22 @@
         <v-layout v-if="showCampaigns" wrap>
           <v-flex
             v-for="campaign in campaigns"
+            :key="campaign._uid"
             xs12
             md6
             lg4
-            :key="campaign._uid"
             class="campaign-list-item"
           >
             <campaign-detail
               :campaign="campaign"
+              :disabled="
+                campaignUnderEdit && campaignUnderEdit !== campaign.uuid
+              "
               @set-active="setCurrentCampaign"
               @focus="campaignUnderEdit = campaign.uuid"
               @blur="
                 campaignUnderEdit =
                   campaignUnderEdit === campaign.uuid ? null : campaignUnderEdit
-              "
-              :disabled="
-                campaignUnderEdit && campaignUnderEdit !== campaign.uuid
               "
             ></campaign-detail>
           </v-flex>

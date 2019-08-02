@@ -1,7 +1,5 @@
 <template>
   <object-detail
-    @enter-edit-mode="viewMode = false"
-    @enter-view-mode="viewMode = true"
     :name="encounter.name"
     :start-editing="encounter.isNew()"
     :save-func="encounter.save"
@@ -9,14 +7,16 @@
       encounter.isExisting() ? encounter.reset : () => $router.go(-1)
     "
     :delete-func="encounter.isExisting() ? deleteSelf : null"
+    @enter-edit-mode="viewMode = false"
+    @enter-view-mode="viewMode = true"
   >
     <v-container slot-scope="{ isViewMode }" grid-list-lg>
       <v-layout wrap>
         <v-flex xs6 sm4 md3>
           <v-text-field
             :disabled="isViewMode"
-            label="Name"
             v-model="encounter.name"
+            label="Name"
           ></v-text-field>
         </v-flex>
       </v-layout>
@@ -37,11 +37,11 @@
               <v-spacer></v-spacer>
               <v-btn
                 v-if="!isViewMode"
-                @click="openCombatantDialog(item.uuid)"
                 small
                 flat
                 icon
                 class="ma-0"
+                @click="openCombatantDialog(item.uuid)"
               >
                 <v-icon small>edit</v-icon>
               </v-btn>

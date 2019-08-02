@@ -20,7 +20,7 @@
       <v-icon small right>call_made</v-icon>
     </v-btn>
     <v-card-text v-if="editMode">
-      <v-text-field label="Name" v-model="campaign.name"></v-text-field>
+      <v-text-field v-model="campaign.name" label="Name"></v-text-field>
     </v-card-text>
     <v-list v-else>
       <v-subheader>
@@ -78,11 +78,11 @@
       <v-tooltip top>
         <v-btn
           slot="activator"
+          :disabled="disabled"
           flat
           icon
           color="delete"
           @click="tryLeave"
-          :disabled="disabled"
         >
           <v-icon>person_outline</v-icon>
         </v-btn>
@@ -92,11 +92,11 @@
       <v-tooltip top>
         <v-btn
           slot="activator"
+          :disabled="disabled"
           flat
           icon
           color="edit"
           @click="editMode = true"
-          :disabled="disabled"
         >
           <v-icon>edit</v-icon>
         </v-btn>
@@ -106,10 +106,10 @@
       <v-tooltip top>
         <v-btn
           slot="activator"
+          :disabled="disabled"
           flat
           icon
           @click="invitePlayers"
-          :disabled="disabled"
         >
           <v-icon>group_add</v-icon>
         </v-btn>

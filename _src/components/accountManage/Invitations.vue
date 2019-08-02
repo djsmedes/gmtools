@@ -17,10 +17,10 @@
               <v-tooltip top>
                 <v-btn
                   slot="activator"
+                  :loading="acceptWaiting === invite.uuid"
                   icon
                   flat
                   color="green"
-                  :loading="acceptWaiting === invite.uuid"
                   @click="accept(invite)"
                 >
                   <v-icon>check</v-icon>
@@ -43,10 +43,10 @@
               <v-tooltip top>
                 <v-btn
                   slot="activator"
+                  :loading="rejectWaiting === invite.uuid"
                   icon
                   flat
                   color="red"
-                  :loading="rejectWaiting === invite.uuid"
                   @click="reject(invite)"
                 >
                   <v-icon>clear</v-icon>

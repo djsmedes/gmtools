@@ -6,23 +6,23 @@
           <v-card-text>
             <v-form @submit.prevent>
               <v-text-field
-                label="Title"
                 :value="tab.title"
+                label="Title"
                 @input="updateTitle"
               ></v-text-field>
               <v-textarea
+                :auto-grow="true"
+                :value="tab.content"
                 label="Content"
                 hint="This field supports Markdown syntax"
                 box
                 class="text-monospaced"
-                :auto-grow="true"
-                :value="tab.content"
                 @input="updateContent"
               ></v-textarea>
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn flat @click="save()" color="save">
+            <v-btn flat color="save" @click="save()">
               <v-icon left>save</v-icon>
               Save
             </v-btn>

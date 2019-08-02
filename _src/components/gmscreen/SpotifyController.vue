@@ -24,12 +24,12 @@
                   <v-list-tile @click="play(playlist.id)">
                     <v-list-tile-content>
                       <v-list-tile-title
-                        class="text-truncate"
                         :class="{
                           'font-weight-bold':
                             selectedPlaylistId === playlist.id,
                           'green--text': selectedPlaylistId === playlist.id,
                         }"
+                        class="text-truncate"
                       >
                         {{ playlist.name }}
                       </v-list-tile-title>
@@ -46,8 +46,8 @@
           </v-list>
         </v-flex>
         <v-flex
-          shrink
           :style="`height: ${height}px`"
+          shrink
           style="max-width: 300px"
           mx-3
         >
@@ -55,11 +55,11 @@
             <v-flex shrink>
               <v-card :width="300" class="elevation-5">
                 <v-img
-                  contain
-                  aspect-ratio="1"
                   :src="playingInfo.img_url"
                   :max-width="300"
                   :max-height="300"
+                  contain
+                  aspect-ratio="1"
                   class="album-art"
                 ></v-img>
               </v-card>
@@ -87,9 +87,9 @@
             <v-flex shrink>
               <v-layout mt-1 align-center>
                 <v-btn
+                  :disabled="disallows.toggling_shuffle"
                   icon
                   @click="toggleShuffleState"
-                  :disabled="disallows.toggling_shuffle"
                 >
                   <v-icon
                     :color="playingInfo.shuffle_state ? 'green' : undefined"
@@ -98,9 +98,9 @@
                   </v-icon>
                 </v-btn>
                 <v-btn
+                  :disabled="disallows.skipping_prev"
                   icon
                   @click="skipTrack('previous')"
-                  :disabled="disallows.skipping_prev"
                 >
                   <v-icon>
                     skip_previous
@@ -112,21 +112,21 @@
                   </v-icon>
                 </v-btn>
                 <v-btn
+                  :disabled="disallows.skipping_next"
                   icon
                   @click="skipTrack('next')"
-                  :disabled="disallows.skipping_next"
                 >
                   <v-icon>
                     skip_next
                   </v-icon>
                 </v-btn>
                 <v-btn
-                  icon
-                  @click="cycleRepeatState"
                   :disabled="
                     disallows.toggling_repeat_track ||
                       disallows.toggling_repeat_context
                   "
+                  icon
+                  @click="cycleRepeatState"
                 >
                   <v-icon
                     :color="
@@ -174,11 +174,11 @@
                   <v-list-tile @click="setPlaybackDevice(device.id)">
                     <v-list-tile-content>
                       <v-list-tile-title
-                        class="text-truncate"
                         :class="{
                           'font-weight-bold': selectedDeviceId === device.id,
                           'green--text': selectedDeviceId === device.id,
                         }"
+                        class="text-truncate"
                       >
                         {{ device.name }}
                       </v-list-tile-title>
@@ -204,7 +204,7 @@
             GMTOOLS uses the Spotify Web API to let you control your Spotify
             playback right from here.
           </div>
-          <v-btn flat :href="spotifyAuthUrl" class="text-none green--text">
+          <v-btn :href="spotifyAuthUrl" flat class="text-none green--text">
             Connect your Spotify account now
           </v-btn>
         </v-flex>

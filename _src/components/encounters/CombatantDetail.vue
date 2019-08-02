@@ -1,42 +1,42 @@
 <template>
   <v-card>
     <object-detail-m-c
-      title="Combatant"
       :edit-mode.sync="editMode"
-      @save="save"
       :save-attrs="{ disabled: !combatant.changed() }"
-      @cancel="cancel"
       :delete-attrs="{ disabled: !combatant.uuid }"
+      title="Combatant"
+      @save="save"
+      @cancel="cancel"
       @delete="tryDelete"
     >
       <v-form @submit.prevent>
         <v-text-field
           :disabled="!editMode"
-          label="Name"
           v-model="combatant.name"
+          label="Name"
         ></v-text-field>
         <v-textarea
           :disabled="!editMode"
-          auto-grow
           :rows="1"
-          label="Loot"
           v-model="combatant.loot"
+          auto-grow
+          label="Loot"
         ></v-textarea>
         <v-autocomplete
-          label="Statblock"
-          hint="Start typing to search your saved statblocks"
           v-model="combatant.statblock"
-          hide-no-data
-          append-icon=""
           :search-input.sync="statblockSearch"
           :items="statblockAutocompleteMatches"
           :loading="statblockAutocompleteLoading"
+          :clearable="editMode"
+          :disabled="!editMode"
+          label="Statblock"
+          hint="Start typing to search your saved statblocks"
+          hide-no-data
+          append-icon=""
           @keypress="queryStatblockAutocomplete()"
           @keyup.backspace="queryStatblockAutocomplete()"
           @keyup.delete="queryStatblockAutocomplete()"
           @paste.native="queryStatblockAutocomplete()"
-          :clearable="editMode"
-          :disabled="!editMode"
         ></v-autocomplete>
       </v-form>
     </object-detail-m-c>
