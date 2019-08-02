@@ -23,10 +23,11 @@
       @click:append="showPass = !showPass"
       @input="[errors.password1, errors.non_field_errors] = [[], []]"
     >
-      <template v-slot:progress>
+      <template #progress>
         <v-progress-linear
           :value="passStrength"
           :color="passStrengthContent.color"
+          absolute
         ></v-progress-linear>
       </template>
     </v-text-field>
@@ -45,12 +46,12 @@
         color="white"
         content-class="password-help"
       >
-        <template v-slot:activator="{ on }">
+        <template #activator="{ on }">
           <v-btn
-            flat
+            text
             small
             color="grey"
-            class="text-none"
+            class="text-none body-2"
             tabindex="-1"
             @click="showPassHelp = !showPassHelp"
           >
