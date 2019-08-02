@@ -22,19 +22,19 @@
     <v-data-table
       :headers="headers"
       :items="objectList"
-      :rows-per-page-items="[25, 50]"
+      :footer-props="{ 'items-per-page-options': [25, 50] }"
       :search="search"
     >
-      <router-link
-        slot="items"
-        slot-scope="props"
-        :to="{ name: detailViewName, params: { uuid: props.item.uuid } }"
-        tag="tr"
-      >
-        <td v-for="header in headers" :key="header.text">
-          {{ props.item[header.value] }}
-        </td>
-      </router-link>
+      <template #item="{ item }">
+        <router-link
+          :to="{ name: detailViewName, params: { uuid: item.uuid } }"
+          tag="tr"
+        >
+          <td v-for="header in headers" :key="header.text">
+            {{ item[header.value] }}
+          </td>
+        </router-link>
+      </template>
     </v-data-table>
   </v-card>
 </template>

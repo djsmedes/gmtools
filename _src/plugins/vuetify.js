@@ -1,10 +1,9 @@
 import Vue from "vue";
-import Vuetify, { VLayout } from "vuetify/lib";
+import Vuetify from "vuetify/lib";
 
 Vue.use(Vuetify);
 
 export const vuetify = new Vuetify({
-  components: { VLayout },
   theme: {
     primary: "#1976D2",
     secondary: "#424242",

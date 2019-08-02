@@ -17,38 +17,46 @@
             <v-container :style="nonOverflowStyle" grid-list-md py-0 pl-0>
               <v-data-iterator
                 :items="playlists"
-                :rows-per-page-items="[-1]"
-                hide-actions
-                content-tag="v-layout"
-                wrap
+                :items-per-page="-1"
+                hide-default-footer
               >
-                <template #item="{ item }">
-                  <v-flex xs12 sm6 md4 lg3 xl2>
-                    <v-hover>
-                      <template #default="{ hover }">
-                        <v-card
-                          :class="{
-                            'elevation-0': !hover,
-                            'elevation-5': hover,
-                          }"
-                          :color="
-                            isSelected(item) ? 'primary lighten-2' : undefined
-                          "
-                          @click="toggleSelected(item)"
-                        >
-                          <div class="pt-2 mx-2">
-                            <v-img
-                              :src="getImgSrc(item)"
-                              aspect-ratio="1"
-                            ></v-img>
-                          </div>
-                          <v-card-title class="font-weight-medium">
-                            {{ item.name }}
-                          </v-card-title>
-                        </v-card>
-                      </template>
-                    </v-hover>
-                  </v-flex>
+                <template #default="{ items }">
+                  <v-layout wrap>
+                    <v-flex
+                      v-for="item in items"
+                      :key="item.id"
+                      xs12
+                      sm6
+                      md4
+                      lg3
+                      xl2
+                    >
+                      <v-hover>
+                        <template #default="{ hover }">
+                          <v-card
+                            :class="{
+                              'elevation-0': !hover,
+                              'elevation-5': hover,
+                            }"
+                            :color="
+                              isSelected(item) ? 'primary lighten-2' : undefined
+                            "
+                            @click="toggleSelected(item)"
+                          >
+                            <div class="pt-2 mx-2">
+                              <v-img
+                                :src="getImgSrc(item)"
+                                aspect-ratio="1"
+                              ></v-img>
+                            </div>
+                            <v-card-title class="font-weight-medium">
+                              {{ item.name }}
+                            </v-card-title>
+                          </v-card>
+                        </template>
+                      </v-hover>
+                    </v-flex>
+                  </v-layout>
                 </template>
                 <template v-if="!areAllLoaded" #footer>
                   <v-fade-transition mode="out-in">

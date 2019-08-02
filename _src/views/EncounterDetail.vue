@@ -23,40 +23,41 @@
 
       <v-data-iterator
         :items="combatants.models"
-        :pagination.sync="combatantPagination"
-        hide-actions
+        :items-per-page="-1"
+        hide-default-footer
         no-data-text="No combatants"
-        content-tag="v-layout"
-        row
-        wrap
       >
-        <v-flex slot="item" slot-scope="{ item }" xs6 sm4 md3>
-          <v-card>
-            <v-card-title>
-              <h4>{{ item.name }}</h4>
-              <v-spacer></v-spacer>
-              <v-btn
-                v-if="!isViewMode"
-                small
-                text
-                icon
-                class="ma-0"
-                @click="openCombatantDialog(item.uuid)"
-              >
-                <v-icon small>edit</v-icon>
-              </v-btn>
-            </v-card-title>
-            <v-divider></v-divider>
-            <v-list dense>
-              <v-list-tile>
-                <v-list-tile-content>Loot:</v-list-tile-content>
-                <v-list-tile-content class="align-end">
-                  {{ item.loot }}
-                </v-list-tile-content>
-              </v-list-tile>
-            </v-list>
-          </v-card>
-        </v-flex>
+        <template #default="{ items }">
+          <v-layout wrap>
+            <v-flex v-for="item in items" :key="item._uid" xs6 sm4 md3>
+              <v-card>
+                <v-card-title>
+                  <h4>{{ item.name }}</h4>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    v-if="!isViewMode"
+                    small
+                    text
+                    icon
+                    class="ma-0"
+                    @click="openCombatantDialog(item.uuid)"
+                  >
+                    <v-icon small>edit</v-icon>
+                  </v-btn>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-list dense>
+                  <v-list-tile>
+                    <v-list-tile-content>Loot:</v-list-tile-content>
+                    <v-list-tile-content class="align-end">
+                      {{ item.loot }}
+                    </v-list-tile-content>
+                  </v-list-tile>
+                </v-list>
+              </v-card>
+            </v-flex>
+          </v-layout>
+        </template>
       </v-data-iterator>
       <v-btn
         v-if="!isViewMode && encounter.uuid"
@@ -88,9 +89,6 @@ export default {
       combatants: new CombatantList([], {
         storeFilter: { encounter: this.uuid },
       }),
-      combatantPagination: {
-        rowsPerPage: -1,
-      },
       viewMode: true,
     };
   },
