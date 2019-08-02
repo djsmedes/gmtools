@@ -70,7 +70,7 @@
                 ref="trackTitle"
                 shrink
                 mt-3
-                class="title text-truncate text-xs-center"
+                class="title text-truncate text-center"
                 style="width: 300px"
               >
                 {{ playingInfo.track_name || "&mdash;" }}
@@ -275,9 +275,7 @@ export default {
         ...config,
         baseURL: "https://api.spotify.com/v1",
         headers: {
-          Authorization: `${this.spotifyAuth.token_type} ${
-            this.spotifyAuth.access_token
-          }`,
+          Authorization: `${this.spotifyAuth.token_type} ${this.spotifyAuth.access_token}`,
         },
       });
     },
@@ -346,9 +344,7 @@ export default {
       } else {
         await this.getDevices();
         if (!this.selectedDeviceId) {
-          msg = `${
-            device.name
-          } could not be found. Reopen the Spotify app, then refresh the device list.`;
+          msg = `${device.name} could not be found. Reopen the Spotify app, then refresh the device list.`;
         } else {
           this.setPlaybackDevice(device.id);
         }
@@ -375,9 +371,7 @@ export default {
               1
             );
             this.$showSnack(
-              `${
-                attemptedDevice.name
-              } could not be found. Reopen the Spotify app, then refresh the device list.`
+              `${attemptedDevice.name} could not be found. Reopen the Spotify app, then refresh the device list.`
             );
           }
         } else {

@@ -13,6 +13,7 @@ export const wsMessageMixin = {
     this.listenersToTearDown.forEach(teardownFunc => teardownFunc());
   },
   methods: {
+    // eslint-disable-next-line
     onWsMessage(message) {
       if (process.env.NODE_ENV !== "production") {
         // eslint-disable-next-line

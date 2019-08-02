@@ -9,7 +9,7 @@
       <v-card-title class="headline grey lighten-2" primary-title>
         {{ name }}
       </v-card-title>
-      <v-card-text v-if="rolling" class="text-xs-center">
+      <v-card-text v-if="rolling" class="text-center">
         <v-progress-circular indeterminate></v-progress-circular>
       </v-card-text>
       <v-card-text v-else-if="roll">
@@ -20,7 +20,7 @@
       </v-card-text>
       <v-form v-else>
         <v-container fluid>
-          <v-layout row wrap>
+          <v-layout wrap>
             <v-flex xs6>
               <v-text-field
                 type="number"

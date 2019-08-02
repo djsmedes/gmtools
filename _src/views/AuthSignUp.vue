@@ -156,9 +156,7 @@ export default {
                 this.$set(this, "errors", {
                   ...noErrors,
                   non_field_errors: [
-                    `Something unexpected occurred. You may want to&nbsp;<a href="${
-                      this.$route.path
-                    }">refresh the page</a>.`,
+                    `Something unexpected occurred. You may want to&nbsp;<a href="${this.$route.path}">refresh the page</a>.`,
                   ],
                 });
                 break;

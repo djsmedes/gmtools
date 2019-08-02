@@ -32,7 +32,7 @@
                   clearable
                 ></v-autocomplete>
               </v-flex>
-              <v-flex xs4 class="text-xs-right">
+              <v-flex xs4 class="text-right">
                 <v-btn
                   flat
                   color="save"
@@ -46,7 +46,7 @@
               <v-flex xs3 class="grey--text body-2">
                 or
               </v-flex>
-              <v-flex xs9 class="text-xs-right">
+              <v-flex xs9 class="text-right">
                 <v-btn
                   flat
                   color="save"

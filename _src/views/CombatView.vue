@@ -84,7 +84,7 @@
         grid-list-lg
         class="px-0"
       >
-        <v-layout row wrap>
+        <v-layout wrap>
           <v-flex
             d-flex
             xs12
@@ -111,7 +111,7 @@
       <template #settings>
         <v-form @submit.prevent>
           <v-container grid-list-md>
-            <v-layout row wrap>
+            <v-layout wrap>
               <v-flex xs12>
                 <h6 class="title">
                   <span class="grey--text text--darken-1 font-weight-light">
@@ -131,7 +131,7 @@
                 </v-btn>
               </v-flex>
             </v-layout>
-            <v-layout row wrap>
+            <v-layout wrap>
               <v-flex md4 lg3 xl2>
                 <v-switch
                   v-model.number="combatantLargeHPIncrement"

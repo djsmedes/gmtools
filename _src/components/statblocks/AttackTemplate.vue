@@ -1,6 +1,8 @@
 <template>
   <span>
-    &nbsp;<em class="text-capitalize">{{ attackTypeDisplay[creatureProp.attack_type] }}:</em>
+    &nbsp;<em class="text-capitalize"
+      >{{ attackTypeDisplay[creatureProp.attack_type] }}:</em
+    >
     {{ 0 > toHit ? "-" : "+" }}{{ Math.abs(toHit) }} to hit,
     <template v-if="creatureProp.range_second">
       range {{ creatureProp.reach_range }}/{{ creatureProp.range_second }}
@@ -17,12 +19,20 @@
         creature[creatureProp.uses_ability_mod + "_mod"]
       )
     }}
-    ({{ creatureProp.hit_num_damage_dice }}d{{ creatureProp.hit_die_size }}{{ constantDamageDisplay }})
+    ({{ creatureProp.hit_num_damage_dice }}d{{ creatureProp.hit_die_size
+    }}{{ constantDamageDisplay }})
     {{ creatureProp.hit_damage_type }}
     <template v-if="creatureProp.hit_extra_damage_dice">
       damage plus
-      {{ average_roll(creatureProp.hit_extra_damage_die_size, creatureProp.hit_extra_damage_dice) }}
-      ({{ creatureProp.hit_extra_damage_dice }}d{{ creatureProp.hit_extra_damage_die_size }})
+      {{
+        average_roll(
+          creatureProp.hit_extra_damage_die_size,
+          creatureProp.hit_extra_damage_dice
+        )
+      }}
+      ({{ creatureProp.hit_extra_damage_dice }}d{{
+        creatureProp.hit_extra_damage_die_size
+      }})
       {{ creatureProp.hit_extra_damage_type }}
     </template>
     damage.
@@ -54,10 +64,15 @@ export default {
     },
     constantDamageDisplay() {
       if (this.creature[this.creatureProp.uses_ability_mod + "_mod"] > 0) {
-        return " + " + this.creature[this.creatureProp.uses_ability_mod + "_mod"];
+        return (
+          " + " + this.creature[this.creatureProp.uses_ability_mod + "_mod"]
+        );
       }
       if (this.creature[this.creatureProp.uses_ability_mod + "_mod"] < 0) {
-        return " - " + Math.abs(this.creature[this.creatureProp.uses_ability_mod + "_mod"]);
+        return (
+          " - " +
+          Math.abs(this.creature[this.creatureProp.uses_ability_mod + "_mod"])
+        );
       }
       return "";
     },

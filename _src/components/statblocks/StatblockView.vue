@@ -17,12 +17,7 @@
     <v-divider class="my-3"></v-divider>
     <v-flex>
       <v-layout>
-        <v-flex
-          v-for="abl in abilityScores"
-          :key="abl"
-          xs2
-          class="text-xs-center"
-        >
+        <v-flex v-for="abl in abilityScores" :key="abl" xs2 class="text-center">
           <strong class="text-uppercase">{{ abl }}</strong>
           <br />
           {{ creature[abl] }} ({{

@@ -84,9 +84,7 @@ export default {
     async tryDelete() {
       let reply = await this.$userChoice(
         "Confirm delete",
-        `Are you sure you want to delete ${
-          this.tab.title
-        }? This cannot be undone.`,
+        `Are you sure you want to delete ${this.tab.title}? This cannot be undone.`,
         [
           new ButtonOption({
             returnVal: true,

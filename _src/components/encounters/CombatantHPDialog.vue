@@ -6,7 +6,7 @@
       </v-card-title>
       <v-form>
         <v-container fluid>
-          <v-layout row wrap>
+          <v-layout wrap>
             <v-flex xs4>
               <v-text-field
                 type="number"

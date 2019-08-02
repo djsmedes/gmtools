@@ -193,9 +193,7 @@ export default {
     async tryLeave() {
       let choice = await this.$userChoice(
         "Confirm leaving campaign",
-        `<p>Are you sure you want to leave ${
-          this.campaign.name
-        }? You will need to be re-invited by a GM to rejoin it.</p>`,
+        `<p>Are you sure you want to leave ${this.campaign.name}? You will need to be re-invited by a GM to rejoin it.</p>`,
         [
           new ButtonOption({
             returnVal: true,

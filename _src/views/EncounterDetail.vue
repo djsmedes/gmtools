@@ -11,7 +11,7 @@
     :delete-func="encounter.isExisting() ? deleteSelf : null"
   >
     <v-container slot-scope="{ isViewMode }" grid-list-lg>
-      <v-layout row wrap>
+      <v-layout wrap>
         <v-flex xs6 sm4 md3>
           <v-text-field
             :disabled="isViewMode"

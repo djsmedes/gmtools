@@ -6,7 +6,7 @@
   >
     <v-card-title class="pb-0 pt-2">
       <v-container fluid class="pa-0 ma-0">
-        <v-layout row align-center>
+        <v-layout align-center>
           <v-flex xs9>
             <h3 class="headline mb-0 text-truncate">
               {{ combatant.name }}
@@ -30,7 +30,7 @@
 
     <v-card-text class="combatant-card-body">
       <v-container fluid class="pa-0">
-        <v-layout row wrap>
+        <v-layout wrap>
           <v-chip
             v-if="combatant.temp_hp > 0"
             @click.stop="openHpDialog"
@@ -51,7 +51,7 @@
             </span>
           </v-chip>
         </v-layout>
-        <v-layout row wrap>
+        <v-layout wrap>
           <v-chip
             v-for="(buff, index) in combatant.buffs"
             :key="index"
@@ -66,7 +66,7 @@
             </span>
           </v-chip>
         </v-layout>
-        <v-layout row wrap>
+        <v-layout wrap>
           <v-chip
             v-for="(debuff, index) in combatant.debuffs"
             :key="index"
@@ -81,7 +81,7 @@
             </span>
           </v-chip>
         </v-layout>
-        <v-layout row wrap>
+        <v-layout wrap>
           <v-chip
             v-for="(other, index) in combatant.others"
             :key="index"
