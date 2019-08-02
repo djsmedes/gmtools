@@ -6,7 +6,7 @@
       </v-btn>
     </template>
     <encounter-chooser>
-      <template slot="actions" slot-scope="{ selectedEncounter }">
+      <template #actions="{ selectedEncounter }">
         <v-btn text @click="close(selectedEncounter.uuid)">
           Save
         </v-btn>

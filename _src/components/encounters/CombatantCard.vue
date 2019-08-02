@@ -15,9 +15,11 @@
           <v-flex xs3>
             <v-btn :disabled="!!effectMode" icon @click.stop="openInitDialog">
               <v-badge overlap left color="transparent">
-                <v-avatar slot="badge" size="12">
-                  <span class="black--text">{{ combatant.initiative }}</span>
-                </v-avatar>
+                <template #badge>
+                  <v-avatar size="12">
+                    <span class="black--text">{{ combatant.initiative }}</span>
+                  </v-avatar>
+                </template>
                 <v-icon large>directions_run</v-icon>
               </v-badge>
             </v-btn>

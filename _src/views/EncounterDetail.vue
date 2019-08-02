@@ -47,12 +47,12 @@
                 </v-card-title>
                 <v-divider></v-divider>
                 <v-list dense>
-                  <v-list-tile>
-                    <v-list-tile-content>Loot:</v-list-tile-content>
-                    <v-list-tile-content class="align-end">
+                  <v-list-item>
+                    <v-list-item-content>Loot:</v-list-item-content>
+                    <v-list-item-content class="align-end">
                       {{ item.loot }}
-                    </v-list-tile-content>
-                  </v-list-tile>
+                    </v-list-item-content>
+                  </v-list-item>
                 </v-list>
               </v-card>
             </v-flex>

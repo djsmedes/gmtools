@@ -21,9 +21,9 @@
             <div :style="`overflow: auto; max-height: ${height - 48}px`">
               <v-hover v-for="playlist in playlists" :key="playlist.id">
                 <template #default="{ hover }">
-                  <v-list-tile @click="play(playlist.id)">
-                    <v-list-tile-content>
-                      <v-list-tile-title
+                  <v-list-item @click="play(playlist.id)">
+                    <v-list-item-content>
+                      <v-list-item-title
                         :class="{
                           'font-weight-bold':
                             selectedPlaylistId === playlist.id,
@@ -32,14 +32,14 @@
                         class="text-truncate"
                       >
                         {{ playlist.name }}
-                      </v-list-tile-title>
-                    </v-list-tile-content>
-                    <v-list-tile-action>
+                      </v-list-item-title>
+                    </v-list-item-content>
+                    <v-list-item-action>
                       <v-icon :color="hover ? 'green' : 'grey lighten-3'">
                         play_arrow
                       </v-icon>
-                    </v-list-tile-action>
-                  </v-list-tile>
+                    </v-list-item-action>
+                  </v-list-item>
                 </template>
               </v-hover>
             </div>
@@ -173,9 +173,9 @@
             <div :style="`overflow: auto; max-height: ${height - 48}px`">
               <v-hover v-for="device in devices" :key="device.id">
                 <template #default="{ hover }">
-                  <v-list-tile @click="setPlaybackDevice(device.id)">
-                    <v-list-tile-content>
-                      <v-list-tile-title
+                  <v-list-item @click="setPlaybackDevice(device.id)">
+                    <v-list-item-content>
+                      <v-list-item-title
                         :class="{
                           'font-weight-bold': selectedDeviceId === device.id,
                           'green--text': selectedDeviceId === device.id,
@@ -183,14 +183,14 @@
                         class="text-truncate"
                       >
                         {{ device.name }}
-                      </v-list-tile-title>
-                    </v-list-tile-content>
-                    <v-list-tile-action>
+                      </v-list-item-title>
+                    </v-list-item-content>
+                    <v-list-item-action>
                       <v-icon :color="hover ? 'green' : 'grey lighten-3'">
                         play_arrow
                       </v-icon>
-                    </v-list-tile-action>
-                  </v-list-tile>
+                    </v-list-item-action>
+                  </v-list-item>
                 </template>
               </v-hover>
             </div>

@@ -140,7 +140,7 @@
                   :false-value="5"
                   :true-value="10"
                 >
-                  <template slot="label">
+                  <template #label>
                     Larger damage increment
                   </template>
                 </v-switch>

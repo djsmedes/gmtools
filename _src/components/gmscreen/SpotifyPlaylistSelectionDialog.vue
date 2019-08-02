@@ -115,7 +115,7 @@
             </div>
             <v-list :style="nonOverflowStyle" style="background: transparent;">
               <v-expand-transition>
-                <v-list-tile v-show="showLinkEntry" class="px-0">
+                <v-list-item v-show="showLinkEntry" class="px-0">
                   <v-text-field
                     id="foo"
                     ref="linkText"
@@ -138,31 +138,31 @@
                       </v-btn>
                     </template>
                   </v-text-field>
-                </v-list-tile>
+                </v-list-item>
               </v-expand-transition>
               <v-hover v-for="(item, index) in sortedSelected" :key="index">
                 <template #default="{ hover }">
-                  <v-list-tile
+                  <v-list-item
                     :class="{ 'mt-1': index }"
                     :style="{
                       background: hover ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
                     }"
                     class="px-0"
                   >
-                    <v-list-tile-avatar>
+                    <v-list-item-avatar>
                       <v-avatar tile size="48">
                         <v-img :src="getImgSrc(item)"></v-img>
                       </v-avatar>
-                    </v-list-tile-avatar>
-                    <v-list-tile-content>
-                      <v-list-tile-title class="text-truncate">
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                      <v-list-item-title class="text-truncate">
                         {{ item.name }}
-                      </v-list-tile-title>
-                    </v-list-tile-content>
+                      </v-list-item-title>
+                    </v-list-item-content>
                     <v-btn v-if="hover" icon text @click="removeSelected(item)">
                       <v-icon>clear</v-icon>
                     </v-btn>
-                  </v-list-tile>
+                  </v-list-item>
                 </template>
               </v-hover>
             </v-list>

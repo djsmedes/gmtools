@@ -26,24 +26,24 @@
       <v-subheader>
         GMs
       </v-subheader>
-      <v-list-tile v-for="user in gmList" :key="user._uid">
-        <v-list-tile-content>
-          <v-list-tile-title>
+      <v-list-item v-for="user in gmList" :key="user._uid">
+        <v-list-item-content>
+          <v-list-item-title>
             {{ user.name }}
-          </v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
+          </v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
       <v-divider></v-divider>
       <v-subheader>
         Players
       </v-subheader>
-      <v-list-tile v-for="user in playerList" :key="user._uid">
-        <v-list-tile-content>
-          <v-list-tile-title>
+      <v-list-item v-for="user in playerList" :key="user._uid">
+        <v-list-item-content>
+          <v-list-item-title>
             {{ user.name }}
-          </v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
+          </v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
       <v-divider></v-divider>
     </v-list>
     <v-card-actions v-show="editMode">

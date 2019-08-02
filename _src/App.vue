@@ -59,7 +59,9 @@
         <template #activator="{ on }">
           <v-btn icon text v-on="on">
             <v-badge overlap>
-              <span v-if="false" slot="badge"></span>
+              <template #badge>
+                <span v-if="false"></span>
+              </template>
               <v-icon dark>notifications</v-icon>
             </v-badge>
           </v-btn>
@@ -74,48 +76,48 @@
           </template>
 
           <v-list subheader>
-            <v-list-tile class="grey--text">
+            <v-list-item class="grey--text">
               <span>
                 Signed in as <strong>{{ authUser.name }}</strong>
               </span>
-            </v-list-tile>
-            <v-list-tile class="grey--text">
+            </v-list-item>
+            <v-list-item class="grey--text">
               <span>
                 Playing <strong>{{ currentCampaign.name }}</strong>
               </span>
-            </v-list-tile>
+            </v-list-item>
             <v-divider class="mt-1 mb-1"></v-divider>
-            <v-list-tile :to="{ name: $routeNames.CAMPAIGNS }">
-              <v-list-tile-action>
+            <v-list-item :to="{ name: $routeNames.CAMPAIGNS }">
+              <v-list-item-action>
                 <v-icon>recent_actors</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>
                   Campaigns
-                </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-            <v-list-tile :to="{ name: $routeNames.ACCOUNT_SETTINGS }">
-              <v-list-tile-action>
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item :to="{ name: $routeNames.ACCOUNT_SETTINGS }">
+              <v-list-item-action>
                 <v-icon>build</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>
                   Account
-                </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
             <v-divider class="mt-1 mb-1"></v-divider>
-            <v-list-tile @click="logout">
-              <v-list-tile-action>
+            <v-list-item @click="logout">
+              <v-list-item-action>
                 <v-icon>exit_to_app</v-icon>
-              </v-list-tile-action>
-              <v-list-tile-content>
-                <v-list-tile-title>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title>
                   Sign out
-                </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
         </v-menu>
       </v-toolbar-items>

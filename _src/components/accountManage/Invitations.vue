@@ -12,8 +12,8 @@
     <v-slide-x-reverse-transition group tag="div">
       <v-card v-for="invite in invites" :key="invite.uuid" class="mb-4">
         <v-list two-line>
-          <v-list-tile v-if="!showSent">
-            <v-list-tile-action>
+          <v-list-item v-if="!showSent">
+            <v-list-item-action>
               <v-tooltip top>
                 <template #activator="{ on }">
                   <v-btn
@@ -29,19 +29,19 @@
                 </template>
                 <span class="body-2">Accept</span>
               </v-tooltip>
-            </v-list-tile-action>
+            </v-list-item-action>
 
-            <v-list-tile-content>
-              <v-list-tile-title>
+            <v-list-item-content>
+              <v-list-item-title>
                 {{ invite.approver_external_identifier }}
-              </v-list-tile-title>
-              <v-list-tile-sub-title>
+              </v-list-item-title>
+              <v-list-item-subtitle>
                 Invited to
                 <strong>{{ invite.campaign_name }}</strong>
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
+              </v-list-item-subtitle>
+            </v-list-item-content>
 
-            <v-list-tile-action>
+            <v-list-item-action>
               <v-tooltip top>
                 <template #activator="{ on }">
                   <v-btn
@@ -57,19 +57,19 @@
                 </template>
                 <span class="body-2">Reject</span>
               </v-tooltip>
-            </v-list-tile-action>
-          </v-list-tile>
-          <v-list-tile v-else>
-            <v-list-tile-content>
-              <v-list-tile-title>
+            </v-list-item-action>
+          </v-list-item>
+          <v-list-item v-else>
+            <v-list-item-content>
+              <v-list-item-title>
                 {{ invite.joiner_external_identifier }}
-              </v-list-tile-title>
-              <v-list-tile-sub-title>
+              </v-list-item-title>
+              <v-list-item-subtitle>
                 Invited to
                 <strong>{{ invite.campaign_name }}</strong>
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
       </v-card>
     </v-slide-x-reverse-transition>

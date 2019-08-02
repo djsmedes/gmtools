@@ -187,14 +187,14 @@
 
             <v-expand-transition mode="out-in">
               <v-list v-if="statblock.uuid" subheader class="elevation-1">
-                <v-list-tile
+                <v-list-item
                   class="text-uppercase"
                   color="save"
                   @click="editCreatureProp(null)"
                 >
                   <v-icon left color="save">add</v-icon>
                   add a property or action
-                </v-list-tile>
+                </v-list-item>
                 <template
                   v-for="propListItem in creaturePropListItems.filter(
                     l => l.items.length
@@ -209,20 +209,20 @@
                     :key="'_' + propListItem.subheader"
                     @sorted="objectSortOccurred($event, propListItem.propType)"
                   >
-                    <v-list-tile
+                    <v-list-item
                       v-for="prop in propListItem.items"
                       :key="prop.uuid"
                       @click.stop
                     >
-                      <v-list-tile-action class="sortHandle">
+                      <v-list-item-action class="sortHandle">
                         <v-icon style="cursor: row-resize" color="grey">
                           drag_handle
                         </v-icon>
-                      </v-list-tile-action>
-                      <v-list-tile-title @click="editCreatureProp(prop.uuid)">
+                      </v-list-item-action>
+                      <v-list-item-title @click="editCreatureProp(prop.uuid)">
                         {{ prop.title }}
-                      </v-list-tile-title>
-                    </v-list-tile>
+                      </v-list-item-title>
+                    </v-list-item>
                   </v-list>
                 </template>
               </v-list>

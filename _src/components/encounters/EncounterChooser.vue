@@ -24,7 +24,7 @@
           item-text="name"
           return-object
         >
-          <template slot="item" slot-scope="{ item }">
+          <template #item="{ item }">
             {{ item.name }}{{ item.completion_date ? " (completed)" : "" }}
           </template>
         </v-select>
