@@ -74,7 +74,7 @@
       </v-card>
     </v-slide-x-reverse-transition>
     <v-layout v-if="!invites.length" justify-center align-center fill-height>
-      <v-flex shrink class="grey--text subheading">
+      <v-flex shrink class="grey--text subtitle-1">
         No invitations
       </v-flex>
     </v-layout>

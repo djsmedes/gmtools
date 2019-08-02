@@ -1,7 +1,7 @@
 <template>
   <v-layout column>
     <h3 class="headline">{{ creature.name }}</h3>
-    <h6 class="subheading">
+    <h6 class="subtitle-1">
       {{ creature.size_display | capitalize }} {{ creature.type }},
       {{ creature.alignment_display }}
     </h6>
