@@ -105,7 +105,7 @@
       <v-btn
         :disabled="!!effectMode"
         icon
-        flat
+        text
         class="ma-0"
         @click="combatantHp -= largeHPIncrement"
       >
@@ -115,7 +115,7 @@
       <v-btn
         :disabled="!!effectMode"
         icon
-        flat
+        text
         class="ma-0"
         @click="combatantHp -= 1"
       >
@@ -125,7 +125,7 @@
       <v-btn
         :disabled="!!effectMode"
         icon
-        flat
+        text
         class="ma-0"
         color="red darken-2"
         @click="openHpDialog"
@@ -142,7 +142,7 @@
       <v-btn
         :disabled="!!effectMode"
         icon
-        flat
+        text
         class="ma-0"
         @click="combatantHp += 1"
       >
@@ -152,7 +152,7 @@
       <v-btn
         :disabled="!!effectMode"
         icon
-        flat
+        text
         class="ma-0"
         @click="combatantHp += largeHPIncrement"
       >

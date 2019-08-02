@@ -4,17 +4,17 @@
       <v-toolbar-title class="title">{{ title }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <template v-if="editMode">
-        <v-btn icon flat color="save" @click="$emit('save')">
+        <v-btn icon text color="save" @click="$emit('save')">
           <v-icon>save</v-icon>
         </v-btn>
-        <v-btn icon flat color="cancel" @click="$emit('cancel')">
+        <v-btn icon text color="cancel" @click="$emit('cancel')">
           <v-icon>cancel</v-icon>
         </v-btn>
       </template>
       <v-btn
         v-else
         icon
-        flat
+        text
         color="edit"
         @click="$emit('update:editMode', true)"
       >
@@ -29,7 +29,7 @@
       <v-layout v-if="editMode">
         <v-btn
           v-bind="deleteAttrs"
-          flat
+          text
           color="delete"
           @click="$emit('delete')"
         >
@@ -37,13 +37,13 @@
           delete
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn v-bind="saveAttrs" flat color="save" @click="$emit('save')">
+        <v-btn v-bind="saveAttrs" text color="save" @click="$emit('save')">
           <v-icon left>save</v-icon>
           save
         </v-btn>
         <v-btn
           v-bind="cancelAttrs"
-          flat
+          text
           color="cancel"
           @click="$emit('cancel')"
         >

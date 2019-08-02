@@ -14,7 +14,7 @@
             <v-subheader class="pt-0 pr-0" d-flex>
               Playlists
               <v-spacer></v-spacer>
-              <v-btn icon flat color="edit" @click="choosePlaylists">
+              <v-btn icon text color="edit" @click="choosePlaylists">
                 <v-icon>edit</v-icon>
               </v-btn>
             </v-subheader>
@@ -150,7 +150,7 @@
             </v-flex>
             <v-flex>
               <v-btn
-                flat
+                text
                 class="grey--text text--lighten-1 text-none"
                 @click="confirmDisconnect"
               >
@@ -164,7 +164,7 @@
             <v-subheader class="pt-0 pr-0" d-flex>
               Playback Devices
               <v-spacer></v-spacer>
-              <v-btn icon flat color="edit" @click="getDevices">
+              <v-btn icon text color="edit" @click="getDevices">
                 <v-icon>autorenew</v-icon>
               </v-btn>
             </v-subheader>
@@ -204,7 +204,7 @@
             GMTOOLS uses the Spotify Web API to let you control your Spotify
             playback right from here.
           </div>
-          <v-btn :href="spotifyAuthUrl" flat class="text-none green--text">
+          <v-btn :href="spotifyAuthUrl" text class="text-none green--text">
             Connect your Spotify account now
           </v-btn>
         </v-flex>

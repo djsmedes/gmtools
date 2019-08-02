@@ -66,7 +66,7 @@
                 ></v-text-field>
               </v-flex>
               <v-flex xs12 sm6>
-                <v-btn flat color="save" @click="helpCalcHitDie">
+                <v-btn text color="save" @click="helpCalcHitDie">
                   Help me calculate hit dice
                 </v-btn>
               </v-flex>
@@ -236,7 +236,7 @@
         <v-layout>
           <v-btn
             :disabled="!statblock.changed()"
-            flat
+            text
             @click="statblock.reset()"
           >
             <v-icon left>cancel</v-icon>
@@ -246,7 +246,7 @@
           <v-btn
             :disabled="!statblock.changed()"
             color="save"
-            flat
+            text
             @click="save"
           >
             <v-icon left>save</v-icon>

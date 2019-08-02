@@ -5,7 +5,7 @@
         Invitations
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn flat color="grey" @click="toggleShowingSent">
+      <v-btn text color="grey" @click="toggleShowingSent">
         {{ showSent ? "see received" : "see sent" }}
       </v-btn>
     </v-toolbar>
@@ -19,7 +19,7 @@
                   slot="activator"
                   :loading="acceptWaiting === invite.uuid"
                   icon
-                  flat
+                  text
                   color="green"
                   @click="accept(invite)"
                 >
@@ -45,7 +45,7 @@
                   slot="activator"
                   :loading="rejectWaiting === invite.uuid"
                   icon
-                  flat
+                  text
                   color="red"
                   @click="reject(invite)"
                 >

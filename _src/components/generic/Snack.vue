@@ -1,7 +1,7 @@
 <template>
   <v-snackbar v-model="snack" v-bind="snackAttrs">
     {{ message }}
-    <v-btn v-if="!buttonList.length" icon flat @click="close(false)">
+    <v-btn v-if="!buttonList.length" icon text @click="close(false)">
       <v-icon>close</v-icon>
     </v-btn>
     <v-btn

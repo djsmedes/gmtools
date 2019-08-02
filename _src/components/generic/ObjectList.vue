@@ -12,7 +12,7 @@
       <v-btn
         v-if="!!createViewName"
         :to="{ name: createViewName }"
-        flat
+        text
         color="edit"
       >
         <v-icon left>add</v-icon>

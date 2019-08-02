@@ -123,10 +123,10 @@
                 </h6>
               </v-flex>
               <v-flex xs12>
-                <v-btn flat @click="tryChangeEncounter">
+                <v-btn text @click="tryChangeEncounter">
                   Change
                 </v-btn>
-                <v-btn flat @click="completeEncounter">
+                <v-btn text @click="completeEncounter">
                   Complete
                 </v-btn>
               </v-flex>

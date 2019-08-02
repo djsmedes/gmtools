@@ -58,7 +58,7 @@
                     ></v-progress-linear>
                     <v-tooltip v-else bottom>
                       <template #activator="{ on }">
-                        <v-btn flat block v-on="on" @click="loadMore">
+                        <v-btn text block v-on="on" @click="loadMore">
                           <v-icon large>expand_more</v-icon>
                         </v-btn>
                       </template>
@@ -122,7 +122,7 @@
                       <v-btn
                         :disabled="!linkText.length"
                         icon
-                        flat
+                        text
                         color="go"
                         @click="addPlaylistFromLink"
                       >
@@ -151,7 +151,7 @@
                         {{ item.name }}
                       </v-list-tile-title>
                     </v-list-tile-content>
-                    <v-btn v-if="hover" icon flat @click="removeSelected(item)">
+                    <v-btn v-if="hover" icon text @click="removeSelected(item)">
                       <v-icon>clear</v-icon>
                     </v-btn>
                   </v-list-tile>
@@ -179,7 +179,7 @@
         <v-btn
           :disabled="!isSelectionChanged"
           color="save"
-          flat
+          text
           @click="close(sortedSelected)"
         >
           <v-icon left>save</v-icon>

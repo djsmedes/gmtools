@@ -4,7 +4,7 @@
       <v-toolbar-items>
         <v-btn
           :to="{ name: $routeNames.HOME }"
-          flat
+          text
           exact
           class="title no-text-dec"
         >
@@ -14,7 +14,7 @@
         <v-btn
           v-if="authUser.isAuthenticated"
           :to="{ name: $routeNames.ENCOUNTERS }"
-          flat
+          text
           class="no-text-dec hidden-xs-only"
         >
           Encounters
@@ -22,7 +22,7 @@
         <v-btn
           v-if="authUser.isAuthenticated"
           :to="{ name: $routeNames.COMBATANTS }"
-          flat
+          text
           class="no-text-dec hidden-xs-only"
         >
           Combatants
@@ -30,7 +30,7 @@
         <v-btn
           v-if="authUser.isAuthenticated"
           :to="{ name: $routeNames.STATBLOCKS }"
-          flat
+          text
           class="no-text-dec hidden-xs-only"
         >
           Statblocks
@@ -38,7 +38,7 @@
         <v-btn
           v-if="authUser.isAuthenticated"
           :to="{ name: $routeNames.CREATUREPROPS }"
-          flat
+          text
           class="no-text-dec hidden-xs-only"
         >
           Creature Properties
@@ -48,15 +48,15 @@
       <v-spacer></v-spacer>
 
       <v-toolbar-items v-if="!authUser.isAuthenticated">
-        <v-btn :to="{ name: $routeNames.LOGIN }" flat class="no-text-dec">
+        <v-btn :to="{ name: $routeNames.LOGIN }" text class="no-text-dec">
           Sign in
         </v-btn>
-        <v-btn :to="{ name: $routeNames.SIGNUP }" flat class="no-text-dec">
+        <v-btn :to="{ name: $routeNames.SIGNUP }" text class="no-text-dec">
           Sign up
         </v-btn>
       </v-toolbar-items>
       <v-toolbar-items v-else>
-        <v-btn slot="activator" icon flat>
+        <v-btn slot="activator" icon text>
           <v-badge overlap>
             <span v-if="false" slot="badge"></span>
             <v-icon dark>notifications</v-icon>
@@ -64,7 +64,7 @@
         </v-btn>
 
         <v-menu offset-y left>
-          <v-btn slot="activator" flat>
+          <v-btn slot="activator" text>
             <v-icon dark>person</v-icon>
             <v-icon dark>arrow_drop_down</v-icon>
           </v-btn>

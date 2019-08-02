@@ -10,7 +10,7 @@
         :key="index"
         :input-value="activeWindow === index"
         icon
-        flat
+        text
         @click="activeWindow = index"
       >
         <v-icon v-text="window.icon"></v-icon>

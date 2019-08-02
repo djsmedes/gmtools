@@ -3,7 +3,7 @@
     <v-card-title>
       <h4 class="title">Change Encounter</h4>
       <v-spacer></v-spacer>
-      <v-btn flat @click="showCompleted = !showCompleted">
+      <v-btn text @click="showCompleted = !showCompleted">
         Completed
         <v-icon v-if="showCompleted" right>visibility</v-icon>
         <v-icon v-else right>visibility_off</v-icon>

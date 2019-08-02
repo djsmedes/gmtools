@@ -11,7 +11,7 @@
     </v-card-title>
     <v-btn
       v-if="!isCurrentCampaign"
-      flat
+      text
       small
       color="save"
       @click="$emit('set-active', uuid)"
@@ -48,7 +48,7 @@
     </v-list>
     <v-card-actions v-show="editMode">
       <v-tooltip top>
-        <v-btn slot="activator" flat icon color="delete" @click="tryDelete">
+        <v-btn slot="activator" text icon color="delete" @click="tryDelete">
           <v-icon>delete</v-icon>
         </v-btn>
         <span>Delete</span>
@@ -57,7 +57,7 @@
       <v-tooltip top>
         <v-btn
           slot="activator"
-          flat
+          text
           icon
           color="cancel"
           @click="editMode = false"
@@ -68,7 +68,7 @@
       </v-tooltip>
       <v-spacer></v-spacer>
       <v-tooltip top>
-        <v-btn slot="activator" flat icon color="save" @click="save">
+        <v-btn slot="activator" text icon color="save" @click="save">
           <v-icon>save</v-icon>
         </v-btn>
         <span>Save</span>
@@ -79,7 +79,7 @@
         <v-btn
           slot="activator"
           :disabled="disabled"
-          flat
+          text
           icon
           color="delete"
           @click="tryLeave"
@@ -93,7 +93,7 @@
         <v-btn
           slot="activator"
           :disabled="disabled"
-          flat
+          text
           icon
           color="edit"
           @click="editMode = true"
@@ -107,7 +107,7 @@
         <v-btn
           slot="activator"
           :disabled="disabled"
-          flat
+          text
           icon
           @click="invitePlayers"
         >

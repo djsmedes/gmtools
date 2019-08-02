@@ -166,7 +166,7 @@
       >
         <v-btn
           :disabled="!creatureprop.changed()"
-          flat
+          text
           @click="creatureprop.reset()"
         >
           <v-icon left>cancel</v-icon>
@@ -175,7 +175,7 @@
         <v-spacer></v-spacer>
         <v-btn
           :disabled="!creatureprop.changed()"
-          flat
+          text
           color="save"
           @click="creatureprop.save()"
         >

@@ -7,7 +7,7 @@
         </v-tab>
       </v-tabs>
       <v-spacer></v-spacer>
-      <v-btn :disabled="activeTab <= 0" flat icon @click="changeTabIndex(-1)">
+      <v-btn :disabled="activeTab <= 0" text icon @click="changeTabIndex(-1)">
         <v-icon>arrow_left</v-icon>
       </v-btn>
       <span
@@ -20,7 +20,7 @@
       </span>
       <v-btn
         :disabled="activeTab >= tabList.models.length - 1"
-        flat
+        text
         icon
         @click="changeTabIndex(1)"
       >
@@ -29,15 +29,15 @@
       <v-btn
         v-if="tab.uuid"
         :to="{ name: $routeNames.GMSCREENTAB, params: { uuid: tab.uuid } }"
-        flat
+        text
         icon
       >
         <v-icon>edit</v-icon>
       </v-btn>
-      <v-btn v-else flat icon disabled>
+      <v-btn v-else text icon disabled>
         <v-icon>edit</v-icon>
       </v-btn>
-      <v-btn :to="{ name: $routeNames.GMSCREENTAB_CREATE }" flat icon>
+      <v-btn :to="{ name: $routeNames.GMSCREENTAB_CREATE }" text icon>
         <v-icon>add</v-icon>
       </v-btn>
     </v-toolbar>

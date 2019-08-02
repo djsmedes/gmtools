@@ -6,15 +6,15 @@
     <v-card-actions>
       <v-btn
         v-if="(saveFunc || deleteFunc) && isViewMode"
-        flat
+        text
         @click="enterEditMode"
       >
         Edit
       </v-btn>
-      <v-btn v-if="saveFunc && isEditMode" flat @click="save">
+      <v-btn v-if="saveFunc && isEditMode" text @click="save">
         Save
       </v-btn>
-      <v-btn v-if="saveFunc && isEditMode" flat @click="clear">
+      <v-btn v-if="saveFunc && isEditMode" text @click="clear">
         Cancel
       </v-btn>
       <v-dialog
@@ -22,7 +22,7 @@
         v-model="deleteDialog"
         :width="500"
       >
-        <v-btn slot="activator" flat>
+        <v-btn slot="activator" text>
           Delete
         </v-btn>
         <v-card>
@@ -30,8 +30,8 @@
             Are you sure you want to delete {{ name }}? This cannot be undone.
           </v-card-text>
           <v-card-actions>
-            <v-btn flat @click="deleteSelf"> Yes, delete {{ name }} </v-btn>
-            <v-btn flat @click="deleteDialog = false">
+            <v-btn text @click="deleteSelf"> Yes, delete {{ name }} </v-btn>
+            <v-btn text @click="deleteDialog = false">
               Cancel
             </v-btn>
           </v-card-actions>

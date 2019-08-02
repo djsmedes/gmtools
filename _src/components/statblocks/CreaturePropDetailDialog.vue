@@ -35,7 +35,7 @@
               <v-flex xs4 class="text-right">
                 <v-btn
                   :disabled="!existing"
-                  flat
+                  text
                   color="save"
                   @click="windowPosition = 1"
                 >
@@ -49,7 +49,7 @@
               <v-flex xs9 class="text-right">
                 <v-btn
                   :disabled="!!existing"
-                  flat
+                  text
                   color="save"
                   @click="windowPosition = 1"
                 >
@@ -66,14 +66,14 @@
             :uuid="selectedUuid"
           >
             <template #actions="{ saveFunc, changedFunc }">
-              <v-btn flat @click="close(false)">
+              <v-btn text @click="close(false)">
                 <v-icon left>cancel</v-icon>
                 cancel & close
               </v-btn>
               <v-spacer></v-spacer>
               <v-btn
                 :disabled="!changedFunc()"
-                flat
+                text
                 color="save"
                 @click="saveAndClose(saveFunc)"
               >

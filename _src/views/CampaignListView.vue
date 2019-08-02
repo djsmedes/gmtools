@@ -36,7 +36,7 @@
       <v-toolbar class="pa-0 mt-5" flat color="transparent" dense>
         <v-toolbar-title class="display-1">Other Campaigns</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn color="primary" flat @click="tryCreate">
+        <v-btn color="primary" text @click="tryCreate">
           <v-icon left>add</v-icon>
           Create a new campaign
         </v-btn>

@@ -33,13 +33,13 @@
       </v-form>
       <v-divider></v-divider>
       <v-card-actions>
-        <v-btn flat @click="close(returnVal)">
+        <v-btn text @click="close(returnVal)">
           Save
         </v-btn>
-        <v-btn flat @click="returnVal.hp = returnVal.maxHp">
+        <v-btn text @click="returnVal.hp = returnVal.maxHp">
           Full health
         </v-btn>
-        <v-btn flat @click="close(null)">
+        <v-btn text @click="close(null)">
           Cancel
         </v-btn>
       </v-card-actions>

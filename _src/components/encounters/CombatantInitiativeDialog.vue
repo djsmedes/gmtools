@@ -41,13 +41,13 @@
         </v-container>
       </v-form>
       <v-card-actions>
-        <v-btn flat @click="close(returnVal)">
+        <v-btn text @click="close(returnVal)">
           Save
         </v-btn>
-        <v-btn :disabled="!!roll" flat @click="rollInitiative">
+        <v-btn :disabled="!!roll" text @click="rollInitiative">
           Roll
         </v-btn>
-        <v-btn flat @click="close(null)">
+        <v-btn text @click="close(null)">
           {{ roll ? "Ignore" : "Cancel" }}
         </v-btn>
       </v-card-actions>

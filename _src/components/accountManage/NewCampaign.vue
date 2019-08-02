@@ -25,7 +25,7 @@
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-btn flat @click="close(false)">
+        <v-btn text @click="close(false)">
           <v-icon left>cancel</v-icon>
           cancel
         </v-btn>
@@ -33,7 +33,7 @@
         <v-btn
           :disabled="!formValid"
           :loading="loading"
-          flat
+          text
           color="save"
           @click="close(textFieldValue)"
         >

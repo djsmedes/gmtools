@@ -34,7 +34,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn :disabled="submitDisabled" flat type="submit" color="go">
+        <v-btn :disabled="submitDisabled" text type="submit" color="go">
           Sign in
           <v-icon right>arrow_forward</v-icon>
         </v-btn>

@@ -52,7 +52,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn :disabled="submitDisabled" flat type="submit">
+        <v-btn :disabled="submitDisabled" text type="submit">
           Sign up
           <v-icon right>arrow_forward</v-icon>
         </v-btn>

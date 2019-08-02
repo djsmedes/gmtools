@@ -22,11 +22,11 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn flat color="save" @click="save()">
+            <v-btn text color="save" @click="save()">
               <v-icon left>save</v-icon>
               Save
             </v-btn>
-            <v-btn v-if="!tab.isNew()" flat color="red" @click="tryDelete">
+            <v-btn v-if="!tab.isNew()" text color="red" @click="tryDelete">
               <v-icon left>delete</v-icon>
               Delete
             </v-btn>

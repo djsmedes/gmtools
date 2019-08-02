@@ -38,7 +38,7 @@
               <v-btn
                 v-if="!isViewMode"
                 small
-                flat
+                text
                 icon
                 class="ma-0"
                 @click="openCombatantDialog(item.uuid)"
@@ -60,7 +60,7 @@
       </v-data-iterator>
       <v-btn
         v-if="!isViewMode && encounter.uuid"
-        flat
+        text
         @click="openCombatantDialog(null)"
         >+ Add Combatant</v-btn
       >
