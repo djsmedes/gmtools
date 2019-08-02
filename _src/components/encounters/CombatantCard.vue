@@ -34,10 +34,11 @@
           <v-chip
             v-if="combatant.temp_hp > 0"
             close
+            pill
             @click.stop="openHpDialog"
-            @input="combatant.temp_hp = 0"
+            @click:close="combatant.temp_hp = 0"
           >
-            <v-avatar class="white">
+            <v-avatar left class="white">
               <v-progress-circular
                 :rotate="-90"
                 :value="hpPercentage(combatant.temp_hp)"
@@ -55,10 +56,11 @@
           <v-chip
             v-for="(buff, index) in combatant.buffs"
             :key="index"
+            pill
             close
-            @input="removeEffect(combatant.buffs, index)"
+            @click:close="removeEffect(combatant.buffs, index)"
           >
-            <v-avatar color="green">
+            <v-avatar left color="green">
               <v-icon small style="color: #fff;">trending_up</v-icon>
             </v-avatar>
             <span class="text-truncate font-weight-medium effect-text">
@@ -70,10 +72,11 @@
           <v-chip
             v-for="(debuff, index) in combatant.debuffs"
             :key="index"
+            pill
             close
-            @input="removeEffect(combatant.debuffs, index)"
+            @click:close="removeEffect(combatant.debuffs, index)"
           >
-            <v-avatar color="red">
+            <v-avatar left color="red">
               <v-icon small style="color: #fff;">trending_down</v-icon>
             </v-avatar>
             <span class="text-truncate font-weight-medium effect-text">
@@ -85,10 +88,11 @@
           <v-chip
             v-for="(other, index) in combatant.others"
             :key="index"
+            pill
             close
-            @input="removeEffect(combatant.others, index)"
+            @click:close="removeEffect(combatant.others, index)"
           >
-            <v-avatar color="grey">
+            <v-avatar left color="grey">
               <v-icon small style="color: #fff;">trending_flat</v-icon>
             </v-avatar>
             <span class="text-truncate font-weight-medium effect-text">
