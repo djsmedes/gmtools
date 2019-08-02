@@ -14,67 +14,69 @@
             <v-subheader class="pt-0 pr-0" d-flex>
               Playlists
               <v-spacer></v-spacer>
-              <v-btn icon flat color="edit" @click="choosePlaylists">
+              <v-btn icon text color="edit" @click="choosePlaylists">
                 <v-icon>edit</v-icon>
               </v-btn>
             </v-subheader>
             <div :style="`overflow: auto; max-height: ${height - 48}px`">
               <v-hover v-for="playlist in playlists" :key="playlist.id">
                 <template #default="{ hover }">
-                  <v-list-tile @click="play(playlist.id)">
-                    <v-list-tile-content>
-                      <v-list-tile-title
-                        class="text-truncate"
+                  <v-list-item @click="play(playlist.id)">
+                    <v-list-item-content>
+                      <v-list-item-title
                         :class="{
                           'font-weight-bold':
                             selectedPlaylistId === playlist.id,
                           'green--text': selectedPlaylistId === playlist.id,
                         }"
+                        class="text-truncate"
                       >
                         {{ playlist.name }}
-                      </v-list-tile-title>
-                    </v-list-tile-content>
-                    <v-list-tile-action>
+                      </v-list-item-title>
+                    </v-list-item-content>
+                    <v-list-item-action>
                       <v-icon :color="hover ? 'green' : 'grey lighten-3'">
                         play_arrow
                       </v-icon>
-                    </v-list-tile-action>
-                  </v-list-tile>
+                    </v-list-item-action>
+                  </v-list-item>
                 </template>
               </v-hover>
             </div>
           </v-list>
         </v-flex>
         <v-flex
-          shrink
           :style="`height: ${height}px`"
+          shrink
           style="max-width: 300px"
-          mx-3
+          mx-4
         >
           <v-layout column align-center fill-height>
             <v-flex shrink>
               <v-card :width="300" class="elevation-5">
                 <v-img
-                  contain
-                  aspect-ratio="1"
                   :src="playingInfo.img_url"
                   :max-width="300"
                   :max-height="300"
+                  contain
+                  aspect-ratio="1"
                   class="album-art"
                 ></v-img>
               </v-card>
             </v-flex>
             <v-tooltip bottom>
-              <v-flex
-                slot="activator"
-                ref="trackTitle"
-                shrink
-                mt-3
-                class="title text-truncate text-xs-center"
-                style="width: 300px"
-              >
-                {{ playingInfo.track_name || "&mdash;" }}
-              </v-flex>
+              <template #activator="{ on }">
+                <v-flex
+                  ref="trackTitle"
+                  shrink
+                  mt-4
+                  class="title text-truncate text-center"
+                  style="width: 300px"
+                  v-on="on"
+                >
+                  {{ playingInfo.track_name || "&mdash;" }}
+                </v-flex>
+              </template>
               {{ playingInfo.track_name || "&mdash;" }}
               <template v-if="playingInfo.track_url">
                 <br />
@@ -87,9 +89,9 @@
             <v-flex shrink>
               <v-layout mt-1 align-center>
                 <v-btn
+                  :disabled="disallows.toggling_shuffle"
                   icon
                   @click="toggleShuffleState"
-                  :disabled="disallows.toggling_shuffle"
                 >
                   <v-icon
                     :color="playingInfo.shuffle_state ? 'green' : undefined"
@@ -98,9 +100,9 @@
                   </v-icon>
                 </v-btn>
                 <v-btn
+                  :disabled="disallows.skipping_prev"
                   icon
                   @click="skipTrack('previous')"
-                  :disabled="disallows.skipping_prev"
                 >
                   <v-icon>
                     skip_previous
@@ -112,21 +114,21 @@
                   </v-icon>
                 </v-btn>
                 <v-btn
+                  :disabled="disallows.skipping_next"
                   icon
                   @click="skipTrack('next')"
-                  :disabled="disallows.skipping_next"
                 >
                   <v-icon>
                     skip_next
                   </v-icon>
                 </v-btn>
                 <v-btn
-                  icon
-                  @click="cycleRepeatState"
                   :disabled="
                     disallows.toggling_repeat_track ||
                       disallows.toggling_repeat_context
                   "
+                  icon
+                  @click="cycleRepeatState"
                 >
                   <v-icon
                     :color="
@@ -145,12 +147,12 @@
                 </v-btn>
               </v-layout>
             </v-flex>
-            <v-flex shrink d-flex class="my-3">
+            <v-flex shrink d-flex class="my-4">
               <v-img :src="spotifyLogo" width="166" contain></v-img>
             </v-flex>
             <v-flex>
               <v-btn
-                flat
+                text
                 class="grey--text text--lighten-1 text-none"
                 @click="confirmDisconnect"
               >
@@ -164,31 +166,31 @@
             <v-subheader class="pt-0 pr-0" d-flex>
               Playback Devices
               <v-spacer></v-spacer>
-              <v-btn icon flat color="edit" @click="getDevices">
+              <v-btn icon text color="edit" @click="getDevices">
                 <v-icon>autorenew</v-icon>
               </v-btn>
             </v-subheader>
             <div :style="`overflow: auto; max-height: ${height - 48}px`">
               <v-hover v-for="device in devices" :key="device.id">
                 <template #default="{ hover }">
-                  <v-list-tile @click="setPlaybackDevice(device.id)">
-                    <v-list-tile-content>
-                      <v-list-tile-title
-                        class="text-truncate"
+                  <v-list-item @click="setPlaybackDevice(device.id)">
+                    <v-list-item-content>
+                      <v-list-item-title
                         :class="{
                           'font-weight-bold': selectedDeviceId === device.id,
                           'green--text': selectedDeviceId === device.id,
                         }"
+                        class="text-truncate"
                       >
                         {{ device.name }}
-                      </v-list-tile-title>
-                    </v-list-tile-content>
-                    <v-list-tile-action>
+                      </v-list-item-title>
+                    </v-list-item-content>
+                    <v-list-item-action>
                       <v-icon :color="hover ? 'green' : 'grey lighten-3'">
                         play_arrow
                       </v-icon>
-                    </v-list-tile-action>
-                  </v-list-tile>
+                    </v-list-item-action>
+                  </v-list-item>
                 </template>
               </v-hover>
             </div>
@@ -200,11 +202,11 @@
         <v-spacer></v-spacer>
         <v-flex style="max-width: 300px">
           <v-img :src="spotifyLogo" contain></v-img>
-          <div class="mt-3">
+          <div class="mt-4">
             GMTOOLS uses the Spotify Web API to let you control your Spotify
             playback right from here.
           </div>
-          <v-btn flat :href="spotifyAuthUrl" class="text-none green--text">
+          <v-btn :href="spotifyAuthUrl" text class="text-none green--text">
             Connect your Spotify account now
           </v-btn>
         </v-flex>
@@ -275,9 +277,7 @@ export default {
         ...config,
         baseURL: "https://api.spotify.com/v1",
         headers: {
-          Authorization: `${this.spotifyAuth.token_type} ${
-            this.spotifyAuth.access_token
-          }`,
+          Authorization: `${this.spotifyAuth.token_type} ${this.spotifyAuth.access_token}`,
         },
       });
     },
@@ -346,9 +346,7 @@ export default {
       } else {
         await this.getDevices();
         if (!this.selectedDeviceId) {
-          msg = `${
-            device.name
-          } could not be found. Reopen the Spotify app, then refresh the device list.`;
+          msg = `${device.name} could not be found. Reopen the Spotify app, then refresh the device list.`;
         } else {
           this.setPlaybackDevice(device.id);
         }
@@ -375,9 +373,7 @@ export default {
               1
             );
             this.$showSnack(
-              `${
-                attemptedDevice.name
-              } could not be found. Reopen the Spotify app, then refresh the device list.`
+              `${attemptedDevice.name} could not be found. Reopen the Spotify app, then refresh the device list.`
             );
           }
         } else {

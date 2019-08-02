@@ -1,17 +1,19 @@
 <template>
   <div>
     <v-speed-dial
+      v-if="!applyingEffectType"
       v-model="fab"
       fixed
       bottom
       right
-      v-if="!applyingEffectType"
       direction="left"
     >
-      <v-btn slot="activator" v-model="fab" fab dark color="blue">
-        <v-icon>more_vert</v-icon>
-        <v-icon>close</v-icon>
-      </v-btn>
+      <template #activator>
+        <v-btn fab dark color="blue">
+          <v-icon v-if="fab">close</v-icon>
+          <v-icon v-else>more_vert</v-icon>
+        </v-btn>
+      </template>
       <v-btn fab dark small color="grey" @click="enterApplyOtherMode">
         <v-icon>trending_flat</v-icon>
       </v-btn>
@@ -30,31 +32,31 @@
       style="bottom: 16px; right: 16px; left: unset; top: unset;"
     >
       <v-btn
+        v-if="applyingEffectType === effectTypes.BUFF"
+        :ripple="false"
         icon
         dark
         class="green"
-        :ripple="false"
-        v-if="applyingEffectType === effectTypes.BUFF"
         @click="applyingEffectType = effectTypes.DEBUFF"
       >
         <v-icon>trending_up</v-icon>
       </v-btn>
       <v-btn
+        v-if="applyingEffectType === effectTypes.DEBUFF"
+        :ripple="false"
         icon
         dark
         class="red"
-        :ripple="false"
-        v-if="applyingEffectType === effectTypes.DEBUFF"
         @click="applyingEffectType = effectTypes.OTHER"
       >
         <v-icon>trending_down</v-icon>
       </v-btn>
       <v-btn
+        v-if="applyingEffectType === effectTypes.OTHER"
+        :ripple="false"
         icon
         dark
         class="grey"
-        :ripple="false"
-        v-if="applyingEffectType === effectTypes.OTHER"
         @click="applyingEffectType = effectTypes.BUFF"
       >
         <v-icon>trending_flat</v-icon>
@@ -62,10 +64,10 @@
 
       <v-text-field
         :autofocus="!!applyingEffectType"
+        v-model="effectToApply"
         hide-details
         single-line
-        box
-        v-model="effectToApply"
+        filled
       >
       </v-text-field>
 
@@ -84,16 +86,16 @@
         grid-list-lg
         class="px-0"
       >
-        <v-layout row wrap>
+        <v-layout wrap>
           <v-flex
+            v-for="combatant in combatantsByInitiative"
+            :key="combatant._uid"
             d-flex
             xs12
             sm6
             md4
             lg3
             xl2
-            v-for="combatant in combatantsByInitiative"
-            :key="combatant._uid"
           >
             <combatant-card
               :combatant="combatant"
@@ -111,7 +113,7 @@
       <template #settings>
         <v-form @submit.prevent>
           <v-container grid-list-md>
-            <v-layout row wrap>
+            <v-layout wrap>
               <v-flex xs12>
                 <h6 class="title">
                   <span class="grey--text text--darken-1 font-weight-light">
@@ -123,22 +125,22 @@
                 </h6>
               </v-flex>
               <v-flex xs12>
-                <v-btn flat @click="tryChangeEncounter">
+                <v-btn text @click="tryChangeEncounter">
                   Change
                 </v-btn>
-                <v-btn flat @click="completeEncounter">
+                <v-btn text @click="completeEncounter">
                   Complete
                 </v-btn>
               </v-flex>
             </v-layout>
-            <v-layout row wrap>
+            <v-layout wrap>
               <v-flex md4 lg3 xl2>
                 <v-switch
                   v-model.number="combatantLargeHPIncrement"
                   :false-value="5"
                   :true-value="10"
                 >
-                  <template slot="label">
+                  <template #label>
                     Larger damage increment
                   </template>
                 </v-switch>
@@ -168,11 +170,11 @@ import CombatControlCenter from "@/components/gmscreen/CombatControlCenter";
 
 export default {
   name: "CombatView",
-  mixins: [wsMessageMixin],
   components: {
     CombatControlCenter,
     CombatantCard,
   },
+  mixins: [wsMessageMixin],
   data() {
     return {
       applyingEffectType: "",
@@ -214,6 +216,9 @@ export default {
       }
       return collection;
     },
+  },
+  created() {
+    this.pcCombatants.fetch();
   },
   methods: {
     toggleCombatantWillApply(uuid) {
@@ -289,9 +294,6 @@ export default {
         corresponding.sync();
       });
     },
-  },
-  created() {
-    this.pcCombatants.fetch();
   },
 };
 </script>

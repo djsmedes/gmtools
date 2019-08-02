@@ -1,42 +1,42 @@
 <template>
   <v-card>
     <object-detail-m-c
-      title="Combatant"
       :edit-mode.sync="editMode"
-      @save="save"
       :save-attrs="{ disabled: !combatant.changed() }"
-      @cancel="cancel"
       :delete-attrs="{ disabled: !combatant.uuid }"
+      title="Combatant"
+      @save="save"
+      @cancel="cancel"
       @delete="tryDelete"
     >
       <v-form @submit.prevent>
         <v-text-field
           :disabled="!editMode"
-          label="Name"
           v-model="combatant.name"
+          label="Name"
         ></v-text-field>
         <v-textarea
           :disabled="!editMode"
-          auto-grow
           :rows="1"
-          label="Loot"
           v-model="combatant.loot"
+          auto-grow
+          label="Loot"
         ></v-textarea>
         <v-autocomplete
-          label="Statblock"
-          hint="Start typing to search your saved statblocks"
           v-model="combatant.statblock"
-          hide-no-data
-          append-icon=""
           :search-input.sync="statblockSearch"
           :items="statblockAutocompleteMatches"
           :loading="statblockAutocompleteLoading"
+          :clearable="editMode"
+          :disabled="!editMode"
+          label="Statblock"
+          hint="Start typing to search your saved statblocks"
+          hide-no-data
+          append-icon=""
           @keypress="queryStatblockAutocomplete()"
           @keyup.backspace="queryStatblockAutocomplete()"
           @keyup.delete="queryStatblockAutocomplete()"
           @paste.native="queryStatblockAutocomplete()"
-          :clearable="editMode"
-          :disabled="!editMode"
         ></v-autocomplete>
       </v-form>
     </object-detail-m-c>
@@ -94,6 +94,17 @@ export default {
       },
     },
   },
+  async created() {
+    if (this.uuid) {
+      await this.combatant.fetch();
+      if (this.combatant.statblock) {
+        this.statblockAutocompleteLoading = true;
+        this.p_initialStatblock.uuid = this.combatant.statblock;
+        await this.p_initialStatblock.fetch();
+        this.statblockAutocompleteLoading = false;
+      }
+    }
+  },
   methods: {
     async save() {
       this.$emit("save", await this.combatant.save());
@@ -147,17 +158,6 @@ export default {
         this.statblockAutocompleteLoading = false;
       }
     }, 300),
-  },
-  async created() {
-    if (this.uuid) {
-      await this.combatant.fetch();
-      if (this.combatant.statblock) {
-        this.statblockAutocompleteLoading = true;
-        this.p_initialStatblock.uuid = this.combatant.statblock;
-        await this.p_initialStatblock.fetch();
-        this.statblockAutocompleteLoading = false;
-      }
-    }
   },
 };
 </script>

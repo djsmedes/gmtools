@@ -1,23 +1,25 @@
 <template>
   <v-card
-    @click.native="$emit('click', combatant.uuid)"
     :raised="active"
     :class="cardClasses"
+    @click.native="$emit('click', combatant.uuid)"
   >
     <v-card-title class="pb-0 pt-2">
       <v-container fluid class="pa-0 ma-0">
-        <v-layout row align-center>
+        <v-layout align-center>
           <v-flex xs9>
             <h3 class="headline mb-0 text-truncate">
               {{ combatant.name }}
             </h3>
           </v-flex>
           <v-flex xs3>
-            <v-btn icon @click.stop="openInitDialog" :disabled="!!effectMode">
+            <v-btn :disabled="!!effectMode" icon @click.stop="openInitDialog">
               <v-badge overlap left color="transparent">
-                <v-avatar slot="badge" size="12">
-                  <span class="black--text">{{ combatant.initiative }}</span>
-                </v-avatar>
+                <template #badge>
+                  <v-avatar size="12">
+                    <span class="black--text">{{ combatant.initiative }}</span>
+                  </v-avatar>
+                </template>
                 <v-icon large>directions_run</v-icon>
               </v-badge>
             </v-btn>
@@ -30,14 +32,15 @@
 
     <v-card-text class="combatant-card-body">
       <v-container fluid class="pa-0">
-        <v-layout row wrap>
+        <v-layout wrap>
           <v-chip
             v-if="combatant.temp_hp > 0"
-            @click.stop="openHpDialog"
             close
-            @input="combatant.temp_hp = 0"
+            pill
+            @click.stop="openHpDialog"
+            @click:close="combatant.temp_hp = 0"
           >
-            <v-avatar class="white">
+            <v-avatar left class="white">
               <v-progress-circular
                 :rotate="-90"
                 :value="hpPercentage(combatant.temp_hp)"
@@ -51,14 +54,15 @@
             </span>
           </v-chip>
         </v-layout>
-        <v-layout row wrap>
+        <v-layout wrap>
           <v-chip
             v-for="(buff, index) in combatant.buffs"
             :key="index"
+            pill
             close
-            @input="removeEffect(combatant.buffs, index)"
+            @click:close="removeEffect(combatant.buffs, index)"
           >
-            <v-avatar color="green">
+            <v-avatar left color="green">
               <v-icon small style="color: #fff;">trending_up</v-icon>
             </v-avatar>
             <span class="text-truncate font-weight-medium effect-text">
@@ -66,14 +70,15 @@
             </span>
           </v-chip>
         </v-layout>
-        <v-layout row wrap>
+        <v-layout wrap>
           <v-chip
             v-for="(debuff, index) in combatant.debuffs"
             :key="index"
+            pill
             close
-            @input="removeEffect(combatant.debuffs, index)"
+            @click:close="removeEffect(combatant.debuffs, index)"
           >
-            <v-avatar color="red">
+            <v-avatar left color="red">
               <v-icon small style="color: #fff;">trending_down</v-icon>
             </v-avatar>
             <span class="text-truncate font-weight-medium effect-text">
@@ -81,14 +86,15 @@
             </span>
           </v-chip>
         </v-layout>
-        <v-layout row wrap>
+        <v-layout wrap>
           <v-chip
             v-for="(other, index) in combatant.others"
             :key="index"
+            pill
             close
-            @input="removeEffect(combatant.others, index)"
+            @click:close="removeEffect(combatant.others, index)"
           >
-            <v-avatar color="grey">
+            <v-avatar left color="grey">
               <v-icon small style="color: #fff;">trending_flat</v-icon>
             </v-avatar>
             <span class="text-truncate font-weight-medium effect-text">
@@ -103,32 +109,32 @@
 
     <v-card-actions>
       <v-btn
+        :disabled="!!effectMode"
         icon
-        flat
+        text
         class="ma-0"
         @click="combatantHp -= largeHPIncrement"
-        :disabled="!!effectMode"
       >
         -{{ largeHPIncrement }}
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn
+        :disabled="!!effectMode"
         icon
-        flat
+        text
         class="ma-0"
         @click="combatantHp -= 1"
-        :disabled="!!effectMode"
       >
         -1
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn
+        :disabled="!!effectMode"
         icon
-        flat
+        text
         class="ma-0"
         color="red darken-2"
         @click="openHpDialog"
-        :disabled="!!effectMode"
       >
         <v-progress-circular
           :rotate="-90"
@@ -140,21 +146,21 @@
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn
+        :disabled="!!effectMode"
         icon
-        flat
+        text
         class="ma-0"
         @click="combatantHp += 1"
-        :disabled="!!effectMode"
       >
         +1
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn
+        :disabled="!!effectMode"
         icon
-        flat
+        text
         class="ma-0"
         @click="combatantHp += largeHPIncrement"
-        :disabled="!!effectMode"
       >
         +{{ largeHPIncrement }}
       </v-btn>

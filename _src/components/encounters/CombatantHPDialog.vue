@@ -6,25 +6,25 @@
       </v-card-title>
       <v-form>
         <v-container fluid>
-          <v-layout row wrap>
+          <v-layout wrap>
             <v-flex xs4>
               <v-text-field
-                type="number"
                 v-model.number="returnVal.hp"
+                type="number"
                 label="Current HP"
               ></v-text-field>
             </v-flex>
             <v-flex xs4>
               <v-text-field
-                type="number"
                 v-model.number="returnVal.maxHp"
+                type="number"
                 label="Max HP"
               ></v-text-field>
             </v-flex>
             <v-flex xs4>
               <v-text-field
-                type="number"
                 v-model.number="returnVal.tempHp"
+                type="number"
                 label="Temp HP"
               ></v-text-field>
             </v-flex>
@@ -33,13 +33,13 @@
       </v-form>
       <v-divider></v-divider>
       <v-card-actions>
-        <v-btn flat @click="close(returnVal)">
+        <v-btn text @click="close(returnVal)">
           Save
         </v-btn>
-        <v-btn flat @click="returnVal.hp = returnVal.maxHp">
+        <v-btn text @click="returnVal.hp = returnVal.maxHp">
           Full health
         </v-btn>
-        <v-btn flat @click="close(null)">
+        <v-btn text @click="close(null)">
           Cancel
         </v-btn>
       </v-card-actions>
@@ -56,6 +56,7 @@ export default {
   props: {
     name: {
       type: String,
+      default: "",
     },
     hp: {
       type: Number,
@@ -66,7 +67,8 @@ export default {
       required: true,
     },
     tempHp: {
-      typ: Number,
+      type: Number,
+      default: 0,
     },
   },
   data() {

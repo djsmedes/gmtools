@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid v-html="compiledMarkdown" class="gm-screen"> </v-container>
+  <v-container fluid class="gm-screen" v-html="compiledMarkdown"> </v-container>
 </template>
 
 <script>

@@ -1,14 +1,16 @@
 <template>
-  <v-dialog width="500" v-model="dialog">
-    <v-btn slot="activator" flat>
-      Change
-    </v-btn>
+  <v-dialog v-model="dialog" width="500">
+    <template #activator="{ on }">
+      <v-btn text v-on="on">
+        Change
+      </v-btn>
+    </template>
     <encounter-chooser>
-      <template slot="actions" slot-scope="{ selectedEncounter }">
-        <v-btn flat @click="close(selectedEncounter.uuid)">
+      <template #actions="{ selectedEncounter }">
+        <v-btn text @click="close(selectedEncounter.uuid)">
           Save
         </v-btn>
-        <v-btn flat @click="close(null)">
+        <v-btn text @click="close(null)">
           Cancel
         </v-btn>
       </template>
@@ -22,7 +24,7 @@ import { functionalDialogMixin } from "@/mixins";
 
 export default {
   name: "ChangeEncounterDialog",
-  mixins: [functionalDialogMixin],
   components: { EncounterChooser },
+  mixins: [functionalDialogMixin],
 };
 </script>

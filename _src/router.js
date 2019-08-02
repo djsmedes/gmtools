@@ -55,21 +55,27 @@ const router = new Router({
       path: "/combatants/",
       name: routeNames.COMBATANTS,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "@/components/encounters/CombatantList"),
+        import(
+          /* webpackChunkName: "combatants" */ "@/components/encounters/CombatantList"
+        ),
       beforeEnter: loginRequired,
     },
     {
       path: "/combatants/new/",
       name: routeNames.COMBATANT_CREATE,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "@/components/encounters/CombatantDetail"),
+        import(
+          /* webpackChunkName: "combatants" */ "@/components/encounters/CombatantDetail"
+        ),
       beforeEnter: loginRequired,
     },
     {
       path: "/combatants/:uuid/",
       name: routeNames.COMBATANT,
       component: () =>
-        import(/* webpackChunkName: "combatants" */ "@/components/encounters/CombatantDetail"),
+        import(
+          /* webpackChunkName: "combatants" */ "@/components/encounters/CombatantDetail"
+        ),
       beforeEnter: loginRequired,
       props: true,
     },
@@ -144,7 +150,9 @@ const router = new Router({
       path: "/creatureprops/:uuid/",
       name: routeNames.CREATUREPROP,
       component: () =>
-        import(/* webpackChunkName: "statblocks" */ "@/views/CreaturePropDetail"),
+        import(
+          /* webpackChunkName: "statblocks" */ "@/views/CreaturePropDetail"
+        ),
       beforeEnter: loginRequired,
       props: true,
     },

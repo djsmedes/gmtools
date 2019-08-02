@@ -11,7 +11,7 @@
     </v-card-title>
     <v-btn
       v-if="!isCurrentCampaign"
-      flat
+      text
       small
       color="save"
       @click="$emit('set-active', uuid)"
@@ -20,99 +20,105 @@
       <v-icon small right>call_made</v-icon>
     </v-btn>
     <v-card-text v-if="editMode">
-      <v-text-field label="Name" v-model="campaign.name"></v-text-field>
+      <v-text-field v-model="campaign.name" label="Name"></v-text-field>
     </v-card-text>
     <v-list v-else>
       <v-subheader>
         GMs
       </v-subheader>
-      <v-list-tile v-for="user in gmList" :key="user._uid">
-        <v-list-tile-content>
-          <v-list-tile-title>
+      <v-list-item v-for="user in gmList" :key="user._uid">
+        <v-list-item-content>
+          <v-list-item-title>
             {{ user.name }}
-          </v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
+          </v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
       <v-divider></v-divider>
       <v-subheader>
         Players
       </v-subheader>
-      <v-list-tile v-for="user in playerList" :key="user._uid">
-        <v-list-tile-content>
-          <v-list-tile-title>
+      <v-list-item v-for="user in playerList" :key="user._uid">
+        <v-list-item-content>
+          <v-list-item-title>
             {{ user.name }}
-          </v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
+          </v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
       <v-divider></v-divider>
     </v-list>
     <v-card-actions v-show="editMode">
       <v-tooltip top>
-        <v-btn slot="activator" flat icon color="delete" @click="tryDelete">
-          <v-icon>delete</v-icon>
-        </v-btn>
+        <template #activator="{ on }">
+          <v-btn text icon color="delete" v-on="on" @click="tryDelete">
+            <v-icon>delete</v-icon>
+          </v-btn>
+        </template>
         <span>Delete</span>
       </v-tooltip>
       <v-spacer></v-spacer>
       <v-tooltip top>
-        <v-btn
-          slot="activator"
-          flat
-          icon
-          color="cancel"
-          @click="editMode = false"
-        >
-          <v-icon>cancel</v-icon>
-        </v-btn>
+        <template #activator="{ on }">
+          <v-btn text icon color="cancel" v-on="on" @click="editMode = false">
+            <v-icon>cancel</v-icon>
+          </v-btn>
+        </template>
         <span>Cancel</span>
       </v-tooltip>
       <v-spacer></v-spacer>
       <v-tooltip top>
-        <v-btn slot="activator" flat icon color="save" @click="save">
-          <v-icon>save</v-icon>
-        </v-btn>
+        <template #activator="{ on }">
+          <v-btn text icon color="save" v-on="on" @click="save">
+            <v-icon>save</v-icon>
+          </v-btn>
+        </template>
         <span>Save</span>
       </v-tooltip>
     </v-card-actions>
     <v-card-actions v-show="!editMode">
       <v-tooltip top>
-        <v-btn
-          slot="activator"
-          flat
-          icon
-          color="delete"
-          @click="tryLeave"
-          :disabled="disabled"
-        >
-          <v-icon>person_outline</v-icon>
-        </v-btn>
-        <span>Leave this campaign</span>
+        <template #activator="{ on }">
+          <v-btn
+            :disabled="disabled"
+            text
+            icon
+            color="delete"
+            v-on="on"
+            @click="tryLeave"
+          >
+            <v-icon>person_outline</v-icon>
+          </v-btn>
+        </template>
+        Leave this campaign
       </v-tooltip>
       <v-spacer></v-spacer>
       <v-tooltip top>
-        <v-btn
-          slot="activator"
-          flat
-          icon
-          color="edit"
-          @click="editMode = true"
-          :disabled="disabled"
-        >
-          <v-icon>edit</v-icon>
-        </v-btn>
+        <template #activator="{ on }">
+          <v-btn
+            :disabled="disabled"
+            text
+            icon
+            color="edit"
+            v-on="on"
+            @click="editMode = true"
+          >
+            <v-icon>edit</v-icon>
+          </v-btn>
+        </template>
         <span>Edit</span>
       </v-tooltip>
       <v-spacer></v-spacer>
       <v-tooltip top>
-        <v-btn
-          slot="activator"
-          flat
-          icon
-          @click="invitePlayers"
-          :disabled="disabled"
-        >
-          <v-icon>group_add</v-icon>
-        </v-btn>
+        <template #activator="{ on }">
+          <v-btn
+            :disabled="disabled"
+            text
+            icon
+            v-on="on"
+            @click="invitePlayers"
+          >
+            <v-icon>group_add</v-icon>
+          </v-btn>
+        </template>
         <span>Invite players</span>
       </v-tooltip>
     </v-card-actions>
@@ -172,6 +178,9 @@ export default {
       },
     },
   },
+  created() {
+    this.users.fetch();
+  },
   methods: {
     async tryDelete() {
       let choice = await this.$userChoice(
@@ -193,9 +202,7 @@ export default {
     async tryLeave() {
       let choice = await this.$userChoice(
         "Confirm leaving campaign",
-        `<p>Are you sure you want to leave ${
-          this.campaign.name
-        }? You will need to be re-invited by a GM to rejoin it.</p>`,
+        `<p>Are you sure you want to leave ${this.campaign.name}? You will need to be re-invited by a GM to rejoin it.</p>`,
         [
           new ButtonOption({
             returnVal: true,
@@ -222,9 +229,6 @@ export default {
         this.$showSnack("Invitations sent");
       }
     },
-  },
-  created() {
-    this.users.fetch();
   },
 };
 </script>

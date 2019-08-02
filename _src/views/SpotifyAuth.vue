@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="error" width="500" class="mx-auto mt-5">
+  <v-card v-if="error" width="500" class="mx-auto mt-12">
     <v-toolbar flat dense dark color="secondary">
       <v-toolbar-title>Uh-oh, something went wrong.</v-toolbar-title>
     </v-toolbar>
@@ -7,12 +7,12 @@
       Looks like Spotify authorization has failed.
     </v-card-text>
     <v-card-actions>
-      <v-btn flat :to="{ name: $routeNames.HOME }" exact>
+      <v-btn :to="{ name: $routeNames.HOME }" text exact>
         <v-icon left>home</v-icon>
         return home
       </v-btn>
       <v-spacer></v-spacer>
-      <v-btn flat :href="spotifyAuthUrl">
+      <v-btn :href="spotifyAuthUrl" text>
         try again
         <v-icon right>arrow_forward</v-icon>
       </v-btn>

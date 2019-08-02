@@ -1,10 +1,10 @@
 <template>
   <v-expand-transition mode="out-in">
-    <v-container fluid v-if="campaigns.length" grid-list-xl>
+    <v-container v-if="campaigns.length" fluid grid-list-xl>
       <v-layout wrap>
         <v-flex xs12 md6 lg4>
           <v-toolbar dense color="transparent" flat class="pa-0">
-            <v-toolbar-title class="display-1 mb-3">
+            <v-toolbar-title class="display-1 mb-4">
               Current Campaign
             </v-toolbar-title>
           </v-toolbar>
@@ -12,15 +12,15 @@
             <campaign-detail
               :key="currentCampaign._uid"
               :campaign="currentCampaign"
+              :disabled="
+                campaignUnderEdit && campaignUnderEdit !== currentCampaign.uuid
+              "
               @focus="campaignUnderEdit = currentCampaign.uuid"
               @blur="
                 campaignUnderEdit =
                   campaignUnderEdit === currentCampaign.uuid
                     ? null
                     : campaignUnderEdit
-              "
-              :disabled="
-                campaignUnderEdit && campaignUnderEdit !== currentCampaign.uuid
               "
             ></campaign-detail>
           </v-fade-transition>
@@ -33,10 +33,10 @@
         <invitations class="flex xs12 md6 lg4"></invitations>
       </v-layout>
 
-      <v-toolbar class="pa-0 mt-5" flat color="transparent" dense>
+      <v-toolbar class="pa-0 mt-12" flat color="transparent" dense>
         <v-toolbar-title class="display-1">Other Campaigns</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn color="primary" flat @click="tryCreate">
+        <v-btn color="primary" text @click="tryCreate">
           <v-icon left>add</v-icon>
           Create a new campaign
         </v-btn>
@@ -45,22 +45,22 @@
         <v-layout v-if="showCampaigns" wrap>
           <v-flex
             v-for="campaign in campaigns"
+            :key="campaign._uid"
             xs12
             md6
             lg4
-            :key="campaign._uid"
             class="campaign-list-item"
           >
             <campaign-detail
               :campaign="campaign"
+              :disabled="
+                campaignUnderEdit && campaignUnderEdit !== campaign.uuid
+              "
               @set-active="setCurrentCampaign"
               @focus="campaignUnderEdit = campaign.uuid"
               @blur="
                 campaignUnderEdit =
                   campaignUnderEdit === campaign.uuid ? null : campaignUnderEdit
-              "
-              :disabled="
-                campaignUnderEdit && campaignUnderEdit !== campaign.uuid
               "
             ></campaign-detail>
           </v-flex>
@@ -80,8 +80,8 @@ import { authUserMixin } from "@/mixins";
 
 export default {
   name: "CampaignListView",
-  mixins: [authUserMixin],
   components: { Invitations, CampaignDetail },
+  mixins: [authUserMixin],
   data() {
     return {
       p_campaignUnderEdit: null,
@@ -109,6 +109,9 @@ export default {
       return require("@/assets/img/icosahedron.svg");
     },
   },
+  created() {
+    this.allCampaigns.fetch();
+  },
   methods: {
     async setCurrentCampaign(uuid) {
       this.showCampaigns = false;
@@ -132,9 +135,6 @@ export default {
         await newCampaign.save();
       }
     },
-  },
-  created() {
-    this.allCampaigns.fetch();
   },
 };
 </script>

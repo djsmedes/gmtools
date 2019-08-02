@@ -13,9 +13,9 @@
       <v-card-text>
         Enter a name for your new campaign
         <v-form
-          @submit.prevent="close(textFieldValue)"
-          v-model="formValid"
           ref="form"
+          v-model="formValid"
+          @submit.prevent="close(textFieldValue)"
         >
           <v-text-field
             ref="firstField"
@@ -25,17 +25,17 @@
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-btn flat @click="close(false)">
+        <v-btn text @click="close(false)">
           <v-icon left>cancel</v-icon>
           cancel
         </v-btn>
         <v-spacer></v-spacer>
         <v-btn
-          flat
-          @click="close(textFieldValue)"
-          color="save"
           :disabled="!formValid"
           :loading="loading"
+          text
+          color="save"
+          @click="close(textFieldValue)"
         >
           <v-icon left>save</v-icon>
           save
@@ -58,14 +58,6 @@ export default {
       loading: false,
     };
   },
-  watch: {
-    async dialog(val) {
-      if (val) {
-        await this.$nextTick();
-        this.$refs.firstField.focus();
-      }
-    },
-  },
   computed: {
     width() {
       switch (this.$vuetify.breakpoint.name) {
@@ -79,6 +71,14 @@ export default {
           return "600px";
         case "xl":
           return "800px";
+      }
+    },
+  },
+  watch: {
+    async dialog(val) {
+      if (val) {
+        await this.$nextTick();
+        this.$refs.firstField.focus();
       }
     },
   },

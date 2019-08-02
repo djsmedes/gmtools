@@ -1,6 +1,6 @@
 <template>
   <v-card :width="500" class="mx-auto">
-    <v-form ref="form" @submit.stop.prevent="submit" v-model="formValid">
+    <v-form ref="form" v-model="formValid" @submit.stop.prevent="submit">
       <v-card-text>
         <v-text-field
           v-model="email"
@@ -23,9 +23,8 @@
             <v-alert
               v-for="(err, index) in nonFieldErrors"
               :key="index"
-              :value="true"
               type="error"
-              outline
+              outlined
             >
               <span v-html="err"></span>
             </v-alert>
@@ -34,7 +33,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn flat type="submit" color="go" :disabled="submitDisabled">
+        <v-btn :disabled="submitDisabled" text type="submit" color="go">
           Sign in
           <v-icon right>arrow_forward</v-icon>
         </v-btn>
@@ -56,6 +55,7 @@ export default {
   name: "AuthLogin",
   props: {
     successRoute: {
+      type: Object,
       default: function() {
         return { name: this.$routeNames.HOME };
       },
@@ -108,9 +108,7 @@ export default {
                 this.$set(this, "errors", {
                   ...noErrors,
                   non_field_errors: [
-                    `Something unexpected occurred. You may want to&nbsp;<a href="${
-                      this.$route.path
-                    }">refresh the page</a>.`,
+                    `Something unexpected occurred. You may want to&nbsp;<a href="${this.$route.path}">refresh the page</a>.`,
                   ],
                 });
                 break;

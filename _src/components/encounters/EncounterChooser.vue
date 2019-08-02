@@ -3,7 +3,7 @@
     <v-card-title>
       <h4 class="title">Change Encounter</h4>
       <v-spacer></v-spacer>
-      <v-btn flat @click="showCompleted = !showCompleted">
+      <v-btn text @click="showCompleted = !showCompleted">
         Completed
         <v-icon v-if="showCompleted" right>visibility</v-icon>
         <v-icon v-else right>visibility_off</v-icon>
@@ -12,26 +12,26 @@
     <v-card-text>
       <v-form @submit.prevent>
         <v-select
-          label="Active encounter"
           :items="
             showCompleted
               ? [...encounters.models, ...completedEncounters.models]
               : encounters.models
           "
+          :menu-props="{ offsetY: true }"
+          v-model="selectedEncounter"
+          label="Active encounter"
           item-value="uuid"
           item-text="name"
-          :menu-props="{ offsetY: true }"
-          returnObject
-          v-model="selectedEncounter"
+          return-object
         >
-          <template slot="item" slot-scope="{ item }">
+          <template #item="{ item }">
             {{ item.name }}{{ item.completion_date ? " (completed)" : "" }}
           </template>
         </v-select>
       </v-form>
     </v-card-text>
     <v-card-actions>
-      <slot name="actions" :selectedEncounter="selectedEncounter"></slot>
+      <slot :selectedEncounter="selectedEncounter" name="actions"></slot>
     </v-card-actions>
   </v-card>
 </template>
@@ -54,14 +54,6 @@ export default {
       }),
     };
   },
-  watch: {
-    showCompleted(val) {
-      if (!this.lazyLoadedCompleted && val) {
-        this.completedEncounters.fetch();
-        this.lazyLoadedCompleted = true;
-      }
-    },
-  },
   computed: {
     currentEncounter() {
       let encounter = new Encounter({
@@ -69,6 +61,14 @@ export default {
       });
       encounter.fetch();
       return encounter;
+    },
+  },
+  watch: {
+    showCompleted(val) {
+      if (!this.lazyLoadedCompleted && val) {
+        this.completedEncounters.fetch();
+        this.lazyLoadedCompleted = true;
+      }
     },
   },
   created() {

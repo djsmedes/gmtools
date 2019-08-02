@@ -4,17 +4,17 @@
       <v-toolbar-title class="title">{{ title }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <template v-if="editMode">
-        <v-btn icon flat color="save" @click="$emit('save')">
+        <v-btn icon text color="save" @click="$emit('save')">
           <v-icon>save</v-icon>
         </v-btn>
-        <v-btn icon flat color="cancel" @click="$emit('cancel')">
+        <v-btn icon text color="cancel" @click="$emit('cancel')">
           <v-icon>cancel</v-icon>
         </v-btn>
       </template>
       <v-btn
         v-else
         icon
-        flat
+        text
         color="edit"
         @click="$emit('update:editMode', true)"
       >
@@ -23,29 +23,29 @@
     </v-toolbar>
     <v-container>
       <slot v-if="editMode || !$slots['view-only']"></slot>
-      <slot name="view-only" v-else></slot>
+      <slot v-else name="view-only"></slot>
     </v-container>
     <v-expand-transition>
       <v-layout v-if="editMode">
         <v-btn
-          flat
+          v-bind="deleteAttrs"
+          text
           color="delete"
           @click="$emit('delete')"
-          v-bind="deleteAttrs"
         >
           <v-icon left>delete</v-icon>
           delete
         </v-btn>
         <v-spacer></v-spacer>
-        <v-btn flat color="save" @click="$emit('save')" v-bind="saveAttrs">
+        <v-btn v-bind="saveAttrs" text color="save" @click="$emit('save')">
           <v-icon left>save</v-icon>
           save
         </v-btn>
         <v-btn
-          flat
+          v-bind="cancelAttrs"
+          text
           color="cancel"
           @click="$emit('cancel')"
-          v-bind="cancelAttrs"
         >
           <v-icon left>cancel</v-icon>
           cancel
@@ -65,15 +65,19 @@ export default {
     },
     title: {
       type: String,
+      default: "",
     },
     deleteAttrs: {
       type: Object,
+      default: () => ({}),
     },
     saveAttrs: {
       type: Object,
+      default: () => ({}),
     },
     cancelAttrs: {
       type: Object,
+      default: () => ({}),
     },
   },
 };

@@ -1,76 +1,80 @@
 <template>
   <div>
     <v-toolbar dense color="transparent" flat class="pa-0">
-      <v-toolbar-title class="display-1 mb-3">
+      <v-toolbar-title class="display-1 mb-4">
         Invitations
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn flat color="grey" @click="toggleShowingSent">
+      <v-btn text color="grey" @click="toggleShowingSent">
         {{ showSent ? "see received" : "see sent" }}
       </v-btn>
     </v-toolbar>
     <v-slide-x-reverse-transition group tag="div">
-      <v-card v-for="invite in invites" :key="invite.uuid" class="mb-3">
+      <v-card v-for="invite in invites" :key="invite.uuid" class="mb-4">
         <v-list two-line>
-          <v-list-tile v-if="!showSent">
-            <v-list-tile-action>
+          <v-list-item v-if="!showSent">
+            <v-list-item-action>
               <v-tooltip top>
-                <v-btn
-                  slot="activator"
-                  icon
-                  flat
-                  color="green"
-                  :loading="acceptWaiting === invite.uuid"
-                  @click="accept(invite)"
-                >
-                  <v-icon>check</v-icon>
-                </v-btn>
+                <template #activator="{ on }">
+                  <v-btn
+                    :loading="acceptWaiting === invite.uuid"
+                    icon
+                    text
+                    color="green"
+                    v-on="on"
+                    @click="accept(invite)"
+                  >
+                    <v-icon>check</v-icon>
+                  </v-btn>
+                </template>
                 <span class="body-2">Accept</span>
               </v-tooltip>
-            </v-list-tile-action>
+            </v-list-item-action>
 
-            <v-list-tile-content>
-              <v-list-tile-title>
+            <v-list-item-content>
+              <v-list-item-title>
                 {{ invite.approver_external_identifier }}
-              </v-list-tile-title>
-              <v-list-tile-sub-title>
+              </v-list-item-title>
+              <v-list-item-subtitle>
                 Invited to
                 <strong>{{ invite.campaign_name }}</strong>
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
+              </v-list-item-subtitle>
+            </v-list-item-content>
 
-            <v-list-tile-action>
+            <v-list-item-action>
               <v-tooltip top>
-                <v-btn
-                  slot="activator"
-                  icon
-                  flat
-                  color="red"
-                  :loading="rejectWaiting === invite.uuid"
-                  @click="reject(invite)"
-                >
-                  <v-icon>clear</v-icon>
-                </v-btn>
+                <template #activator="{ on }">
+                  <v-btn
+                    :loading="rejectWaiting === invite.uuid"
+                    icon
+                    text
+                    color="red"
+                    v-on="on"
+                    @click="reject(invite)"
+                  >
+                    <v-icon>clear</v-icon>
+                  </v-btn>
+                </template>
                 <span class="body-2">Reject</span>
               </v-tooltip>
-            </v-list-tile-action>
-          </v-list-tile>
-          <v-list-tile v-else>
-            <v-list-tile-content>
-              <v-list-tile-title>
+            </v-list-item-action>
+          </v-list-item>
+          <v-list-item v-else>
+            <v-list-item-content>
+              <v-list-item-title>
                 {{ invite.joiner_external_identifier }}
-              </v-list-tile-title>
-              <v-list-tile-sub-title>
+              </v-list-item-title>
+              <v-list-item-subtitle>
                 Invited to
                 <strong>{{ invite.campaign_name }}</strong>
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
       </v-card>
     </v-slide-x-reverse-transition>
     <v-layout v-if="!invites.length" justify-center align-center fill-height>
-      <v-flex shrink class="grey--text subheading">
+      <v-flex shrink class="grey--text subtitle-1">
         No invitations
       </v-flex>
     </v-layout>
@@ -101,6 +105,9 @@ export default {
     invites() {
       return this.showSent ? this.sentInvites : this.receivedInvites;
     },
+  },
+  async created() {
+    this.receivedInvites = await loadInvites();
   },
   methods: {
     async accept(invite) {
@@ -144,9 +151,6 @@ export default {
         this.triedLoadingSent = true;
       }
     },
-  },
-  async created() {
-    this.receivedInvites = await loadInvites();
   },
 };
 </script>

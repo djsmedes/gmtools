@@ -1,6 +1,4 @@
 import Vue from "vue";
-import Vuetify, { VLayout } from "vuetify/lib";
-import "vuetify/src/stylus/app.styl";
 import VueNativeSock from "vue-native-websocket";
 import App from "@/App";
 import router from "@/router";
@@ -9,29 +7,9 @@ import axios from "axios";
 import { authMutations, authModuleName } from "@/auth";
 import { stateKeys } from "@/auth/vuexKeys";
 import { ModuleSocket } from "@/utils/websockets";
-import { dialogPlugin } from "@/plugins/userChoiceDialog";
-import { showSnackPlugin } from "@/plugins/showSnack";
+import { dialogPlugin, showSnackPlugin, vuetify } from "@/plugins";
 
 Vue.config.productionTip = false;
-Vue.use(Vuetify, {
-  components: { VLayout },
-  theme: {
-    primary: "#1976D2",
-    secondary: "#424242",
-    accent: "#82B1FF",
-
-    success: "#4CAF50",
-    error: "#FF5252",
-    info: "#2196F3",
-    warning: "#FFC107",
-
-    edit: "#1976D2",
-    save: "#1976D2",
-    go: "#1976D2",
-    cancel: "#424242",
-    delete: "#FF5252",
-  },
-});
 
 Vue.use(dialogPlugin);
 Vue.use(showSnackPlugin);
@@ -46,6 +24,7 @@ axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 
 const vm = new Vue({
+  vuetify,
   router,
   store,
   render: h => h(App),

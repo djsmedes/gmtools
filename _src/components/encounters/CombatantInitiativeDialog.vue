@@ -1,15 +1,15 @@
 <template>
   <v-dialog
     v-model="dialog"
+    :persistent="roll !== null"
     width="400"
     @keydown.esc="close(null)"
-    :persistent="roll !== null"
   >
     <v-card>
       <v-card-title class="headline grey lighten-2" primary-title>
         {{ name }}
       </v-card-title>
-      <v-card-text v-if="rolling" class="text-xs-center">
+      <v-card-text v-if="rolling" class="text-center">
         <v-progress-circular indeterminate></v-progress-circular>
       </v-card-text>
       <v-card-text v-else-if="roll">
@@ -20,20 +20,20 @@
       </v-card-text>
       <v-form v-else>
         <v-container fluid>
-          <v-layout row wrap>
+          <v-layout wrap>
             <v-flex xs6>
               <v-text-field
+                v-model="returnVal.initiativeBonus"
                 type="number"
                 pattern="\d*"
-                v-model="returnVal.initiativeBonus"
                 label="Initiative Bonus"
               ></v-text-field>
             </v-flex>
             <v-flex xs6>
               <v-text-field
+                v-model="returnVal.initiative"
                 type="number"
                 pattern="\d*"
-                v-model="returnVal.initiative"
                 label="Initiative"
               ></v-text-field>
             </v-flex>
@@ -41,13 +41,13 @@
         </v-container>
       </v-form>
       <v-card-actions>
-        <v-btn flat @click="close(returnVal)">
+        <v-btn text @click="close(returnVal)">
           Save
         </v-btn>
-        <v-btn flat :disabled="!!roll" @click="rollInitiative">
+        <v-btn :disabled="!!roll" text @click="rollInitiative">
           Roll
         </v-btn>
-        <v-btn flat @click="close(null)">
+        <v-btn text @click="close(null)">
           {{ roll ? "Ignore" : "Cancel" }}
         </v-btn>
       </v-card-actions>
@@ -65,12 +65,15 @@ export default {
   props: {
     name: {
       type: String,
+      required: true,
     },
     initiative: {
       type: Number,
+      default: 0,
     },
     initiativeBonus: {
       type: Number,
+      default: 0,
     },
   },
   data() {

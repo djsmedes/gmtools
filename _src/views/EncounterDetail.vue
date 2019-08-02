@@ -1,7 +1,5 @@
 <template>
   <object-detail
-    @enter-edit-mode="viewMode = false"
-    @enter-view-mode="viewMode = true"
     :name="encounter.name"
     :start-editing="encounter.isNew()"
     :save-func="encounter.save"
@@ -9,58 +7,61 @@
       encounter.isExisting() ? encounter.reset : () => $router.go(-1)
     "
     :delete-func="encounter.isExisting() ? deleteSelf : null"
+    @enter-edit-mode="viewMode = false"
+    @enter-view-mode="viewMode = true"
   >
     <v-container slot-scope="{ isViewMode }" grid-list-lg>
-      <v-layout row wrap>
+      <v-layout wrap>
         <v-flex xs6 sm4 md3>
           <v-text-field
             :disabled="isViewMode"
-            label="Name"
             v-model="encounter.name"
+            label="Name"
           ></v-text-field>
         </v-flex>
       </v-layout>
 
       <v-data-iterator
         :items="combatants.models"
-        :pagination.sync="combatantPagination"
-        hide-actions
+        :items-per-page="-1"
+        hide-default-footer
         no-data-text="No combatants"
-        content-tag="v-layout"
-        row
-        wrap
       >
-        <v-flex slot="item" slot-scope="{ item }" xs6 sm4 md3>
-          <v-card>
-            <v-card-title>
-              <h4>{{ item.name }}</h4>
-              <v-spacer></v-spacer>
-              <v-btn
-                v-if="!isViewMode"
-                @click="openCombatantDialog(item.uuid)"
-                small
-                flat
-                icon
-                class="ma-0"
-              >
-                <v-icon small>edit</v-icon>
-              </v-btn>
-            </v-card-title>
-            <v-divider></v-divider>
-            <v-list dense>
-              <v-list-tile>
-                <v-list-tile-content>Loot:</v-list-tile-content>
-                <v-list-tile-content class="align-end">
-                  {{ item.loot }}
-                </v-list-tile-content>
-              </v-list-tile>
-            </v-list>
-          </v-card>
-        </v-flex>
+        <template #default="{ items }">
+          <v-layout wrap>
+            <v-flex v-for="item in items" :key="item._uid" xs6 sm4 md3>
+              <v-card>
+                <v-card-title>
+                  <h4>{{ item.name }}</h4>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    v-if="!isViewMode"
+                    small
+                    text
+                    icon
+                    class="ma-0"
+                    @click="openCombatantDialog(item.uuid)"
+                  >
+                    <v-icon small>edit</v-icon>
+                  </v-btn>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-list dense>
+                  <v-list-item>
+                    <v-list-item-content>Loot:</v-list-item-content>
+                    <v-list-item-content class="align-end">
+                      {{ item.loot }}
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-card>
+            </v-flex>
+          </v-layout>
+        </template>
       </v-data-iterator>
       <v-btn
         v-if="!isViewMode && encounter.uuid"
-        flat
+        text
         @click="openCombatantDialog(null)"
         >+ Add Combatant</v-btn
       >
@@ -88,11 +89,13 @@ export default {
       combatants: new CombatantList([], {
         storeFilter: { encounter: this.uuid },
       }),
-      combatantPagination: {
-        rowsPerPage: -1,
-      },
       viewMode: true,
     };
+  },
+  async created() {
+    this.$store.commit("needLoading");
+    await Promise.all([this.encounter.fetch(), this.combatants.fetch()]);
+    this.$store.commit("doneLoading");
   },
   methods: {
     async deleteSelf() {
@@ -106,11 +109,6 @@ export default {
           : { extraAttrData: { encounter: this.uuid } }),
       });
     },
-  },
-  async created() {
-    this.$store.commit("needLoading");
-    await Promise.all([this.encounter.fetch(), this.combatants.fetch()]);
-    this.$store.commit("doneLoading");
   },
 };
 </script>

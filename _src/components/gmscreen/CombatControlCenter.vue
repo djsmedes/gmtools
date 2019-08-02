@@ -8,10 +8,10 @@
       <v-btn
         v-for="(window, index) in windows"
         :key="index"
-        icon
-        flat
-        @click="activeWindow = index"
         :input-value="activeWindow === index"
+        icon
+        text
+        @click="activeWindow = index"
       >
         <v-icon v-text="window.icon"></v-icon>
       </v-btn>

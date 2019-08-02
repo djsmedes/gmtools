@@ -12,32 +12,32 @@
       <v-card-text>
         Type an email address, then press &nbsp;<kbd>enter</kbd>&nbsp; or
         &nbsp;<kbd>tab</kbd>&nbsp; to enter more.
-        <v-form @submit.prevent v-model="formValid" ref="form">
+        <v-form ref="form" v-model="formValid" @submit.prevent>
           <v-combobox
             ref="emails"
-            multiple
             v-model="emailsToInvite"
-            chips
-            hide-selected
             :append-icon="''"
             :rules="[validateEmails]"
+            multiple
+            chips
+            hide-selected
             validate-on-blur
           >
           </v-combobox>
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-btn flat @click="close(false)">
+        <v-btn text @click="close(false)">
           <v-icon left>cancel</v-icon>
           cancel
         </v-btn>
         <v-spacer></v-spacer>
         <v-btn
-          flat
-          @click="sendInvites"
-          color="save"
           :disabled="!formValid || !emailsToInvite.length"
           :loading="loading"
+          text
+          color="save"
+          @click="sendInvites"
         >
           <v-icon left>send</v-icon>
           send invites
@@ -68,11 +68,6 @@ export default {
       loading: false,
     };
   },
-  watch: {
-    dialog(val) {
-      if (val) this.$nextTick(this.$refs.emails.focus);
-    },
-  },
   computed: {
     width() {
       switch (this.$vuetify.breakpoint.name) {
@@ -87,6 +82,11 @@ export default {
         case "xl":
           return "800px";
       }
+    },
+  },
+  watch: {
+    dialog(val) {
+      if (val) this.$nextTick(this.$refs.emails.focus);
     },
   },
   methods: {

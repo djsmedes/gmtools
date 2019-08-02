@@ -1,20 +1,20 @@
 <template>
   <v-card :class="{ 'display-only': isViewMode }">
     <slot :isViewMode="isViewMode"></slot>
-    <slot name="view" v-if="isViewMode"></slot>
-    <slot name="edit" v-if="isEditMode"></slot>
+    <slot v-if="isViewMode" name="view"></slot>
+    <slot v-if="isEditMode" name="edit"></slot>
     <v-card-actions>
       <v-btn
         v-if="(saveFunc || deleteFunc) && isViewMode"
+        text
         @click="enterEditMode"
-        flat
       >
         Edit
       </v-btn>
-      <v-btn v-if="saveFunc && isEditMode" @click="save" flat>
+      <v-btn v-if="saveFunc && isEditMode" text @click="save">
         Save
       </v-btn>
-      <v-btn v-if="saveFunc && isEditMode" @click="clear" flat>
+      <v-btn v-if="saveFunc && isEditMode" text @click="clear">
         Cancel
       </v-btn>
       <v-dialog
@@ -22,16 +22,18 @@
         v-model="deleteDialog"
         :width="500"
       >
-        <v-btn flat slot="activator">
-          Delete
-        </v-btn>
+        <template #activator="{ on }">
+          <v-btn text v-on="on">
+            Delete
+          </v-btn>
+        </template>
         <v-card>
           <v-card-text>
             Are you sure you want to delete {{ name }}? This cannot be undone.
           </v-card-text>
           <v-card-actions>
-            <v-btn flat @click="deleteSelf"> Yes, delete {{ name }} </v-btn>
-            <v-btn flat @click="deleteDialog = false">
+            <v-btn text @click="deleteSelf"> Yes, delete {{ name }} </v-btn>
+            <v-btn text @click="deleteDialog = false">
               Cancel
             </v-btn>
           </v-card-actions>
@@ -50,6 +52,7 @@ export default {
   props: {
     name: {
       type: String,
+      required: true,
     },
     startEditing: {
       type: Boolean,
@@ -74,6 +77,14 @@ export default {
       deleteDialog: false,
     };
   },
+  computed: {
+    isViewMode() {
+      return this.mode === VIEW_MODE;
+    },
+    isEditMode() {
+      return this.mode === EDIT_MODE;
+    },
+  },
   watch: {
     startEditing: {
       handler(newVal) {
@@ -84,14 +95,6 @@ export default {
         }
       },
       immediate: true,
-    },
-  },
-  computed: {
-    isViewMode() {
-      return this.mode === VIEW_MODE;
-    },
-    isEditMode() {
-      return this.mode === EDIT_MODE;
     },
   },
   methods: {

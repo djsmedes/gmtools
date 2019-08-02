@@ -32,12 +32,12 @@
           <v-btn
             v-for="suggestion in suggestions"
             :key="suggestion"
-            :outline="selection !== suggestion"
+            :outlined="selection !== suggestion"
             :depressed="selection === suggestion"
             :dark="selection === suggestion"
             color="save"
-            @click="updateSelection(suggestion)"
             class="text-none"
+            @click="updateSelection(suggestion)"
           >
             {{ hit_point_string(suggestion) }}
           </v-btn>
@@ -48,7 +48,7 @@
             </v-btn>
           </v-layout>
           <v-expand-transition>
-            <v-form @submit.prevent v-if="advanced">
+            <v-form v-if="advanced" @submit.prevent>
               <p>
                 Tweak the constitution score (which controls the constant
                 contribution to HP) and size (which controls the size of the hit
@@ -63,16 +63,16 @@
                 <v-layout wrap>
                   <v-flex xs6>
                     <v-text-field
-                      label="Constitution score"
                       :value="adv_con"
+                      label="Constitution score"
                       @input="updateAdvCon"
                     ></v-text-field>
                   </v-flex>
                   <v-flex xs6>
                     <v-select
-                      label="Size"
                       :items="sizeChoices"
                       v-model="adv_size"
+                      label="Size"
                     ></v-select>
                   </v-flex>
                 </v-layout>
@@ -88,10 +88,10 @@
         </v-btn>
         <v-spacer></v-spacer>
         <v-btn
-          flat
-          @click="close(returnValue)"
-          color="save"
           :disabled="!selection"
+          flat
+          color="save"
+          @click="close(returnValue)"
         >
           <v-icon left>save</v-icon>
           use selection
@@ -140,20 +140,6 @@ export default {
       adv_con: this.creatureCon,
     };
   },
-  watch: {
-    dialog(val) {
-      if (val) this.$nextTick(this.$refs.firstField.focus);
-    },
-    suggestions(val) {
-      if (!val.includes(this.selection)) this.selection = null;
-    },
-    adv_con() {
-      this.getSuggestions();
-    },
-    adv_size() {
-      this.getSuggestions();
-    },
-  },
   computed: {
     width() {
       switch (this.$vuetify.breakpoint.name) {
@@ -180,6 +166,20 @@ export default {
         num_hit_die: this.selection,
         ...(this.advanced ? { size: this.adv_size, con: this.adv_con } : {}),
       };
+    },
+  },
+  watch: {
+    dialog(val) {
+      if (val) this.$nextTick(this.$refs.firstField.focus);
+    },
+    suggestions(val) {
+      if (!val.includes(this.selection)) this.selection = null;
+    },
+    adv_con() {
+      this.getSuggestions();
+    },
+    adv_size() {
+      this.getSuggestions();
     },
   },
   methods: {

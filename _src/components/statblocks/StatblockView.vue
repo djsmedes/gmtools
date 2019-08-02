@@ -1,11 +1,11 @@
 <template>
   <v-layout column>
     <h3 class="headline">{{ creature.name }}</h3>
-    <h6 class="subheading">
+    <h6 class="subtitle-1">
       {{ creature.size_display | capitalize }} {{ creature.type }},
       {{ creature.alignment_display }}
     </h6>
-    <v-divider class="my-3"></v-divider>
+    <v-divider class="my-4"></v-divider>
     <v-flex>
       <strong>Armor Class</strong> {{ creature.armor_class
       }}{{ creature.armor_kind ? " (" + creature.armor_kind + ")" : "" }}
@@ -14,15 +14,10 @@
       <br />
       <strong>Speed</strong> {{ creature.speed }}
     </v-flex>
-    <v-divider class="my-3"></v-divider>
+    <v-divider class="my-4"></v-divider>
     <v-flex>
       <v-layout>
-        <v-flex
-          v-for="abl in abilityScores"
-          :key="abl"
-          xs2
-          class="text-xs-center"
-        >
+        <v-flex v-for="abl in abilityScores" :key="abl" xs2 class="text-center">
           <strong class="text-uppercase">{{ abl }}</strong>
           <br />
           {{ creature[abl] }} ({{
@@ -33,7 +28,7 @@
         </v-flex>
       </v-layout>
     </v-flex>
-    <v-divider class="my-3"></v-divider>
+    <v-divider class="my-4"></v-divider>
     <v-flex>
       <template v-if="creature.saving_throws">
         <strong>Saving Throws</strong> {{ creature.saving_throws }}
@@ -87,7 +82,7 @@
       <br />
       <strong>Challenge</strong> {{ creature.challenge }}
     </v-flex>
-    <v-divider class="my-3"></v-divider>
+    <v-divider class="my-4"></v-divider>
 
     <v-flex v-if="properties.length">
       <p v-for="prop in properties" :key="prop.uuid">
@@ -174,6 +169,22 @@ function generateSavingThrowText(creature, property) {
 export default {
   name: "StatblockView",
   components: { AttackTemplate },
+  filters: {
+    capitalize(value) {
+      if (!value) return "";
+      value = value.toString();
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    },
+    renderSpecifics(value, creature, property) {
+      if (!value) return "";
+      value = value.replace(/{creature}/g, creature.generic_name);
+      value = value.replace(
+        /{saving throw}/g,
+        generateSavingThrowText(creature, property)
+      );
+      return value;
+    },
+  },
   props: {
     creature: {
       type: Statblock,
@@ -221,22 +232,6 @@ export default {
           con_piece +
           ")"
       );
-    },
-  },
-  filters: {
-    capitalize(value) {
-      if (!value) return "";
-      value = value.toString();
-      return value.charAt(0).toUpperCase() + value.slice(1);
-    },
-    renderSpecifics(value, creature, property) {
-      if (!value) return "";
-      value = value.replace(/{creature}/g, creature.generic_name);
-      value = value.replace(
-        /{saving throw}/g,
-        generateSavingThrowText(creature, property)
-      );
-      return value;
     },
   },
 };

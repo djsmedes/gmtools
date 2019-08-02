@@ -6,27 +6,27 @@
           <v-card-text>
             <v-form @submit.prevent>
               <v-text-field
-                label="Title"
                 :value="tab.title"
+                label="Title"
                 @input="updateTitle"
               ></v-text-field>
               <v-textarea
-                label="Content"
-                hint="This field supports Markdown syntax"
-                box
-                class="text-monospaced"
                 :auto-grow="true"
                 :value="tab.content"
+                label="Content"
+                hint="This field supports Markdown syntax"
+                filled
+                class="text-monospaced"
                 @input="updateContent"
               ></v-textarea>
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn flat @click="save()" color="save">
+            <v-btn text color="save" @click="save()">
               <v-icon left>save</v-icon>
               Save
             </v-btn>
-            <v-btn v-if="!tab.isNew()" flat color="red" @click="tryDelete">
+            <v-btn v-if="!tab.isNew()" text color="red" @click="tryDelete">
               <v-icon left>delete</v-icon>
               Delete
             </v-btn>
@@ -64,6 +64,9 @@ export default {
       tab: new GMScreenTab({ uuid: this.uuid }),
     };
   },
+  async created() {
+    await this.tab.fetch();
+  },
   methods: {
     updateContent: debounce(function(e) {
       this.tab.content = e;
@@ -84,9 +87,7 @@ export default {
     async tryDelete() {
       let reply = await this.$userChoice(
         "Confirm delete",
-        `Are you sure you want to delete ${
-          this.tab.title
-        }? This cannot be undone.`,
+        `Are you sure you want to delete ${this.tab.title}? This cannot be undone.`,
         [
           new ButtonOption({
             returnVal: true,
@@ -101,9 +102,6 @@ export default {
         this.$router.push({ name: this.$routeNames.HOME });
       }
     },
-  },
-  async created() {
-    await this.tab.fetch();
   },
 };
 </script>

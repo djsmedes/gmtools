@@ -1,43 +1,43 @@
 <template>
   <div>
     <v-toolbar color="grey lighten-3" dense flat>
-      <v-tabs v-model="activeTab" color="transparent" slider-color="black">
+      <v-tabs v-model="activeTab" background-color="transparent" color="black">
         <v-tab v-for="(item, index) in tabList.models" :key="index">
           {{ item.title }}
         </v-tab>
       </v-tabs>
       <v-spacer></v-spacer>
-      <v-btn flat icon :disabled="activeTab <= 0" @click="changeTabIndex(-1)">
+      <v-btn :disabled="activeTab <= 0" text icon @click="changeTabIndex(-1)">
         <v-icon>arrow_left</v-icon>
       </v-btn>
       <span
-        class="body-2 text-uppercase"
         :style="{
           cursor: 'default',
         }"
+        class="body-2 text-uppercase"
       >
         Reorder
       </span>
       <v-btn
-        flat
-        icon
         :disabled="activeTab >= tabList.models.length - 1"
+        text
+        icon
         @click="changeTabIndex(1)"
       >
         <v-icon>arrow_right</v-icon>
       </v-btn>
       <v-btn
         v-if="tab.uuid"
-        flat
-        icon
         :to="{ name: $routeNames.GMSCREENTAB, params: { uuid: tab.uuid } }"
+        text
+        icon
       >
         <v-icon>edit</v-icon>
       </v-btn>
-      <v-btn v-else flat icon disabled>
+      <v-btn v-else text icon disabled>
         <v-icon>edit</v-icon>
       </v-btn>
-      <v-btn flat icon :to="{ name: $routeNames.GMSCREENTAB_CREATE }">
+      <v-btn :to="{ name: $routeNames.GMSCREENTAB_CREATE }" text icon>
         <v-icon>add</v-icon>
       </v-btn>
     </v-toolbar>

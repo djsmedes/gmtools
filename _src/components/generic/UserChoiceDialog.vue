@@ -1,8 +1,8 @@
 <template>
   <v-dialog
     v-model="dialog"
-    persistent
     :max-width="width"
+    persistent
     @keydown.esc="close(null)"
   >
     <v-toolbar v-if="title" dark color="primary" dense>
