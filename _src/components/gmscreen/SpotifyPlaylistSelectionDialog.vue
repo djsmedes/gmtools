@@ -223,7 +223,10 @@ export default {
       totalPlaylistCount: null, // starts as null instead of 0 so we know if we've tried
       selected: [...this.preSelected],
       loadingFromSpotify: false,
-      nonOverflowStyle: "overflow: auto; max-height: calc(100vh - 300px)",
+      nonOverflowStyle: {
+        overflow: "auto",
+        "max-height": `calc(100vh - 300px)`,
+      },
       showLinkEntry: false,
       linkText: "",
     };
