@@ -205,4 +205,10 @@ export default {
 nav.pa-0 > .v-toolbar__content {
   padding: 0;
 }
+
+.v-btn--icon {
+  height: 36px !important;
+  width: 36px !important;
+  margin: 6px;
+}
 </style>
