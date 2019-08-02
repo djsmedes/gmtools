@@ -56,18 +56,22 @@
         </v-btn>
       </v-toolbar-items>
       <v-toolbar-items v-else>
-        <v-btn slot="activator" icon text>
-          <v-badge overlap>
-            <span v-if="false" slot="badge"></span>
-            <v-icon dark>notifications</v-icon>
-          </v-badge>
-        </v-btn>
+        <template #activator="{ on }">
+          <v-btn icon text v-on="on">
+            <v-badge overlap>
+              <span v-if="false" slot="badge"></span>
+              <v-icon dark>notifications</v-icon>
+            </v-badge>
+          </v-btn>
+        </template>
 
         <v-menu offset-y left>
-          <v-btn slot="activator" text>
-            <v-icon dark>person</v-icon>
-            <v-icon dark>arrow_drop_down</v-icon>
-          </v-btn>
+          <template #activator="{ on }">
+            <v-btn text v-on="on">
+              <v-icon dark>person</v-icon>
+              <v-icon dark>arrow_drop_down</v-icon>
+            </v-btn>
+          </template>
 
           <v-list subheader>
             <v-list-tile class="grey--text">

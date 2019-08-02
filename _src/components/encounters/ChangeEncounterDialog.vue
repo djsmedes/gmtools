@@ -1,8 +1,10 @@
 <template>
   <v-dialog v-model="dialog" width="500">
-    <v-btn slot="activator" text>
-      Change
-    </v-btn>
+    <template #activator="{ on }">
+      <v-btn text v-on="on">
+        Change
+      </v-btn>
+    </template>
     <encounter-chooser>
       <template slot="actions" slot-scope="{ selectedEncounter }">
         <v-btn text @click="close(selectedEncounter.uuid)">

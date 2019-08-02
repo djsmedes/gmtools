@@ -8,10 +8,12 @@
       right
       direction="left"
     >
-      <v-btn slot="activator" v-model="fab" fab dark color="blue">
-        <v-icon>more_vert</v-icon>
-        <v-icon>close</v-icon>
-      </v-btn>
+      <template #activator="{ on }">
+        <v-btn v-model="fab" fab dark color="blue" v-on="on">
+          <v-icon>more_vert</v-icon>
+          <v-icon>close</v-icon>
+        </v-btn>
+      </template>
       <v-btn fab dark small color="grey" @click="enterApplyOtherMode">
         <v-icon>trending_flat</v-icon>
       </v-btn>

@@ -48,71 +48,77 @@
     </v-list>
     <v-card-actions v-show="editMode">
       <v-tooltip top>
-        <v-btn slot="activator" text icon color="delete" @click="tryDelete">
-          <v-icon>delete</v-icon>
-        </v-btn>
+        <template #activator="{ on }">
+          <v-btn text icon color="delete" v-on="on" @click="tryDelete">
+            <v-icon>delete</v-icon>
+          </v-btn>
+        </template>
         <span>Delete</span>
       </v-tooltip>
       <v-spacer></v-spacer>
       <v-tooltip top>
-        <v-btn
-          slot="activator"
-          text
-          icon
-          color="cancel"
-          @click="editMode = false"
-        >
-          <v-icon>cancel</v-icon>
-        </v-btn>
+        <template #activator="{ on }">
+          <v-btn text icon color="cancel" v-on="on" @click="editMode = false">
+            <v-icon>cancel</v-icon>
+          </v-btn>
+        </template>
         <span>Cancel</span>
       </v-tooltip>
       <v-spacer></v-spacer>
       <v-tooltip top>
-        <v-btn slot="activator" text icon color="save" @click="save">
-          <v-icon>save</v-icon>
-        </v-btn>
+        <template #activator="{ on }">
+          <v-btn text icon color="save" v-on="on" @click="save">
+            <v-icon>save</v-icon>
+          </v-btn>
+        </template>
         <span>Save</span>
       </v-tooltip>
     </v-card-actions>
     <v-card-actions v-show="!editMode">
       <v-tooltip top>
-        <v-btn
-          slot="activator"
-          :disabled="disabled"
-          text
-          icon
-          color="delete"
-          @click="tryLeave"
-        >
-          <v-icon>person_outline</v-icon>
-        </v-btn>
-        <span>Leave this campaign</span>
+        <template #activator="{ on }">
+          <v-btn
+            :disabled="disabled"
+            text
+            icon
+            color="delete"
+            v-on="on"
+            @click="tryLeave"
+          >
+            <v-icon>person_outline</v-icon>
+          </v-btn>
+        </template>
+        Leave this campaign
       </v-tooltip>
       <v-spacer></v-spacer>
       <v-tooltip top>
-        <v-btn
-          slot="activator"
-          :disabled="disabled"
-          text
-          icon
-          color="edit"
-          @click="editMode = true"
-        >
-          <v-icon>edit</v-icon>
-        </v-btn>
+        <template #activator="{ on }">
+          <v-btn
+            :disabled="disabled"
+            text
+            icon
+            color="edit"
+            v-on="on"
+            @click="editMode = true"
+          >
+            <v-icon>edit</v-icon>
+          </v-btn>
+        </template>
         <span>Edit</span>
       </v-tooltip>
       <v-spacer></v-spacer>
       <v-tooltip top>
-        <v-btn
-          slot="activator"
-          :disabled="disabled"
-          text
-          icon
-          @click="invitePlayers"
-        >
-          <v-icon>group_add</v-icon>
-        </v-btn>
+        <template #activator="{ on }">
+          <v-btn
+            :disabled="disabled"
+            text
+            icon
+            v-on="on"
+            @click="invitePlayers"
+          >
+            <v-icon>group_add</v-icon>
+          </v-btn>
+        </template>
         <span>Invite players</span>
       </v-tooltip>
     </v-card-actions>

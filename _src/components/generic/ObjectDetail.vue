@@ -22,9 +22,11 @@
         v-model="deleteDialog"
         :width="500"
       >
-        <v-btn slot="activator" text>
-          Delete
-        </v-btn>
+        <template #activator="{ on }">
+          <v-btn text v-on="on">
+            Delete
+          </v-btn>
+        </template>
         <v-card>
           <v-card-text>
             Are you sure you want to delete {{ name }}? This cannot be undone.

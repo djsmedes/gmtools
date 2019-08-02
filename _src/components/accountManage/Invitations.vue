@@ -15,16 +15,18 @@
           <v-list-tile v-if="!showSent">
             <v-list-tile-action>
               <v-tooltip top>
-                <v-btn
-                  slot="activator"
-                  :loading="acceptWaiting === invite.uuid"
-                  icon
-                  text
-                  color="green"
-                  @click="accept(invite)"
-                >
-                  <v-icon>check</v-icon>
-                </v-btn>
+                <template #activator="{ on }">
+                  <v-btn
+                    :loading="acceptWaiting === invite.uuid"
+                    icon
+                    text
+                    color="green"
+                    v-on="on"
+                    @click="accept(invite)"
+                  >
+                    <v-icon>check</v-icon>
+                  </v-btn>
+                </template>
                 <span class="body-2">Accept</span>
               </v-tooltip>
             </v-list-tile-action>
@@ -41,16 +43,18 @@
 
             <v-list-tile-action>
               <v-tooltip top>
-                <v-btn
-                  slot="activator"
-                  :loading="rejectWaiting === invite.uuid"
-                  icon
-                  text
-                  color="red"
-                  @click="reject(invite)"
-                >
-                  <v-icon>clear</v-icon>
-                </v-btn>
+                <template #activator="{ on }">
+                  <v-btn
+                    :loading="rejectWaiting === invite.uuid"
+                    icon
+                    text
+                    color="red"
+                    v-on="on"
+                    @click="reject(invite)"
+                  >
+                    <v-icon>clear</v-icon>
+                  </v-btn>
+                </template>
                 <span class="body-2">Reject</span>
               </v-tooltip>
             </v-list-tile-action>

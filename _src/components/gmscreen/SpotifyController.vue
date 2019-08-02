@@ -65,16 +65,18 @@
               </v-card>
             </v-flex>
             <v-tooltip bottom>
-              <v-flex
-                slot="activator"
-                ref="trackTitle"
-                shrink
-                mt-3
-                class="title text-truncate text-center"
-                style="width: 300px"
-              >
-                {{ playingInfo.track_name || "&mdash;" }}
-              </v-flex>
+              <template #activator="{ on }">
+                <v-flex
+                  ref="trackTitle"
+                  shrink
+                  mt-3
+                  class="title text-truncate text-center"
+                  style="width: 300px"
+                  v-on="on"
+                >
+                  {{ playingInfo.track_name || "&mdash;" }}
+                </v-flex>
+              </template>
               {{ playingInfo.track_name || "&mdash;" }}
               <template v-if="playingInfo.track_url">
                 <br />
