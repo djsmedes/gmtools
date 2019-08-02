@@ -41,7 +41,7 @@
               v-for="(err, index) in nonFieldErrors"
               :key="index"
               type="error"
-              outline
+              outlined
               dismissible
             >
               <span v-html="err"></span>

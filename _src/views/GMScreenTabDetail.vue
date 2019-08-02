@@ -15,7 +15,7 @@
                 :value="tab.content"
                 label="Content"
                 hint="This field supports Markdown syntax"
-                box
+                filled
                 class="text-monospaced"
                 @input="updateContent"
               ></v-textarea>

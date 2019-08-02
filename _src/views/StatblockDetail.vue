@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-tabs v-model="whichTab" fixed-tabs color="transparent">
+    <v-tabs v-model="whichTab" fixed-tabs background-color="transparent">
       <v-tab>
         Edit
       </v-tab>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-toolbar color="grey lighten-3" dense flat>
-      <v-tabs v-model="activeTab" color="transparent" slider-color="black">
+      <v-tabs v-model="activeTab" background-color="transparent" color="black">
         <v-tab v-for="(item, index) in tabList.models" :key="index">
           {{ item.title }}
         </v-tab>

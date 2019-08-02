@@ -32,7 +32,7 @@
           <v-btn
             v-for="suggestion in suggestions"
             :key="suggestion"
-            :outline="selection !== suggestion"
+            :outlined="selection !== suggestion"
             :depressed="selection === suggestion"
             :dark="selection === suggestion"
             color="save"

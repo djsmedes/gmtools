@@ -24,7 +24,7 @@
               v-for="(err, index) in nonFieldErrors"
               :key="index"
               type="error"
-              outline
+              outlined
             >
               <span v-html="err"></span>
             </v-alert>

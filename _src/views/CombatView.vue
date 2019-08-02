@@ -67,7 +67,7 @@
         v-model="effectToApply"
         hide-details
         single-line
-        box
+        filled
       >
       </v-text-field>
 
