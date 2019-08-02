@@ -8,10 +8,10 @@
       right
       direction="left"
     >
-      <template #activator="{ on }">
-        <v-btn v-model="fab" fab dark color="blue" v-on="on">
-          <v-icon>more_vert</v-icon>
-          <v-icon>close</v-icon>
+      <template #activator>
+        <v-btn fab dark color="blue">
+          <v-icon v-if="fab">close</v-icon>
+          <v-icon v-else>more_vert</v-icon>
         </v-btn>
       </template>
       <v-btn fab dark small color="grey" @click="enterApplyOtherMode">
