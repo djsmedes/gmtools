@@ -23,7 +23,6 @@
             <v-alert
               v-for="(err, index) in nonFieldErrors"
               :key="index"
-              :value="true"
               type="error"
               outline
             >
