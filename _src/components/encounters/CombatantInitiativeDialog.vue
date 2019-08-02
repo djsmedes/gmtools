@@ -65,12 +65,15 @@ export default {
   props: {
     name: {
       type: String,
+      required: true,
     },
     initiative: {
       type: Number,
+      default: 0,
     },
     initiativeBonus: {
       type: Number,
+      default: 0,
     },
   },
   data() {

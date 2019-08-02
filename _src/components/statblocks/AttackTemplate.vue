@@ -1,8 +1,8 @@
 <template>
   <span>
-    &nbsp;<em class="text-capitalize"
-      >{{ attackTypeDisplay[creatureProp.attack_type] }}:</em
-    >
+    &nbsp;<em class="text-capitalize">
+      {{ attackTypeDisplay[creatureProp.attack_type] }}:
+    </em>
     {{ 0 > toHit ? "-" : "+" }}{{ Math.abs(toHit) }} to hit,
     <template v-if="creatureProp.range_second">
       range {{ creatureProp.reach_range }}/{{ creatureProp.range_second }}
@@ -46,8 +46,14 @@ import { average_roll } from "@/utils/dice";
 export default {
   name: "AttackTemplate",
   props: {
-    creature: Statblock,
-    creatureProp: CreatureProp,
+    creature: {
+      type: Statblock,
+      required: true,
+    },
+    creatureProp: {
+      type: CreatureProp,
+      required: true,
+    },
   },
   data() {
     return {

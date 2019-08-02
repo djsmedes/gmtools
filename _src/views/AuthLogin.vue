@@ -56,6 +56,7 @@ export default {
   name: "AuthLogin",
   props: {
     successRoute: {
+      type: Object,
       default: function() {
         return { name: this.$routeNames.HOME };
       },

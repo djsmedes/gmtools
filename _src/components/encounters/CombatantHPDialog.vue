@@ -56,6 +56,7 @@ export default {
   props: {
     name: {
       type: String,
+      default: "",
     },
     hp: {
       type: Number,
@@ -66,7 +67,8 @@ export default {
       required: true,
     },
     tempHp: {
-      typ: Number,
+      type: Number,
+      default: 0,
     },
   },
   data() {
