@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-toolbar color="grey darken-3" dark dense>
+    <v-toolbar color="grey darken-3" dark dense style="flex: none">
       <v-toolbar-items>
         <v-btn
           :to="{ name: $routeNames.HOME }"
