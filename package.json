@@ -4,7 +4,7 @@
   "private": true,
   "author": "Daniel Smedema",
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --port 8080",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint _src/*",
     "build+report": "vue-cli-service build --report"

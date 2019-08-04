@@ -120,12 +120,12 @@ export default {
         "Confirm delete",
         `<p>Are you sure you want to delete ${this.combatant.name}?</p>`,
         [
+          new ButtonOption(),
           new ButtonOption({
             returnVal: true,
             text: `Yes, delete ${this.combatant.name}`,
             attrs: { color: "delete" },
           }),
-          new ButtonOption(),
         ]
       );
       if (reply) {

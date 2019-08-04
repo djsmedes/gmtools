@@ -1,30 +1,33 @@
 <template>
-  <v-dialog v-model="dialog" width="500">
-    <template #activator="{ on }">
-      <v-btn text v-on="on">
-        Change
-      </v-btn>
-    </template>
+  <functional-dialog-wrapper
+    v-bind="dialogAttrs"
+    title="Change Encounter"
+    v-on="dialogListeners"
+  >
     <encounter-chooser>
       <template #actions="{ selectedEncounter }">
-        <v-btn text @click="close(selectedEncounter.uuid)">
-          Save
-        </v-btn>
+        <v-spacer></v-spacer>
         <v-btn text @click="close(null)">
+          <v-icon left>cancel</v-icon>
           Cancel
+        </v-btn>
+        <v-btn text color="save" @click="close(selectedEncounter.uuid)">
+          <v-icon left>save</v-icon>
+          Save
         </v-btn>
       </template>
     </encounter-chooser>
-  </v-dialog>
+  </functional-dialog-wrapper>
 </template>
 
 <script>
 import EncounterChooser from "@/components/encounters/EncounterChooser";
 import { functionalDialogMixin } from "@/mixins";
+import FunctionalDialogWrapper from "@/components/generic/FunctionalDialogWrapper";
 
 export default {
   name: "ChangeEncounterDialog",
-  components: { EncounterChooser },
+  components: { FunctionalDialogWrapper, EncounterChooser },
   mixins: [functionalDialogMixin],
 };
 </script>

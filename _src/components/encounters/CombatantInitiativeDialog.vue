@@ -1,66 +1,66 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    :persistent="roll !== null"
-    width="400"
-    @keydown.esc="close(null)"
+  <functional-dialog-wrapper
+    v-bind="dialogAttrs"
+    :title="`Initiative: ${name}`"
+    v-on="dialogListeners"
   >
-    <v-card>
-      <v-card-title class="headline grey lighten-2" primary-title>
-        {{ name }}
-      </v-card-title>
-      <v-card-text v-if="rolling" class="text-center">
-        <v-progress-circular indeterminate></v-progress-circular>
-      </v-card-text>
-      <v-card-text v-else-if="roll">
-        <span class="title">
-          You rolled: {{ roll + initiativeBonus }} ({{ roll }} +
-          {{ initiativeBonus }})
-        </span>
-      </v-card-text>
-      <v-form v-else>
-        <v-container fluid>
-          <v-layout wrap>
-            <v-flex xs6>
-              <v-text-field
-                v-model="returnVal.initiativeBonus"
-                type="number"
-                pattern="\d*"
-                label="Initiative Bonus"
-              ></v-text-field>
-            </v-flex>
-            <v-flex xs6>
-              <v-text-field
-                v-model="returnVal.initiative"
-                type="number"
-                pattern="\d*"
-                label="Initiative"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-form>
-      <v-card-actions>
-        <v-btn text @click="close(returnVal)">
-          Save
-        </v-btn>
-        <v-btn :disabled="!!roll" text @click="rollInitiative">
-          Roll
-        </v-btn>
-        <v-btn text @click="close(null)">
-          {{ roll ? "Ignore" : "Cancel" }}
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    <v-card-text v-if="rolling" class="text-center">
+      <v-progress-circular indeterminate></v-progress-circular>
+    </v-card-text>
+    <v-card-text v-else-if="roll">
+      <span class="title">
+        You rolled: {{ roll + initiativeBonus }} ({{ roll }} +
+        {{ initiativeBonus }})
+      </span>
+    </v-card-text>
+    <v-form v-else>
+      <v-container grid-list-md>
+        <v-layout wrap>
+          <v-flex xs6>
+            <v-text-field
+              v-model="returnVal.initiativeBonus"
+              type="number"
+              pattern="\d*"
+              label="Initiative Bonus"
+            ></v-text-field>
+          </v-flex>
+          <v-flex xs6>
+            <v-text-field
+              v-model="returnVal.initiative"
+              type="number"
+              pattern="\d*"
+              label="Initiative"
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-form>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn text @click="close(null)">
+        <v-icon left>mdi-close-circle</v-icon>
+        {{ roll ? "Ignore" : "Cancel" }}
+      </v-btn>
+      <v-btn :disabled="!!roll" text @click="rollInitiative">
+        <v-icon left>mdi-dice-d20</v-icon>
+        Roll
+      </v-btn>
+      <v-btn text color="save" @click="close(returnVal)">
+        <v-icon left>mdi-content-save</v-icon>
+        Save
+      </v-btn>
+    </v-card-actions>
+  </functional-dialog-wrapper>
 </template>
 
 <script>
 import functionalDialog from "@/mixins/functionalDialog";
 import { sleep } from "@/utils/time";
+import FunctionalDialogWrapper from "@/components/generic/FunctionalDialogWrapper";
 
 export default {
   name: "CombatantInitiativeDialog",
+  components: { FunctionalDialogWrapper },
   mixins: [functionalDialog],
   props: {
     name: {

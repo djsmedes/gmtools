@@ -6,7 +6,7 @@ export class ButtonOption {
     this.text = text;
     this.attrs = {
       // add defaults here
-      flat: true,
+      text: true,
       ...attrs,
     };
   }

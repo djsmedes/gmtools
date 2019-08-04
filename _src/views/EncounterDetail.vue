@@ -1,82 +1,15 @@
 <template>
-  <object-detail
-    :name="encounter.name"
-    :start-editing="encounter.isNew()"
-    :save-func="encounter.save"
-    :clear-func="
-      encounter.isExisting() ? encounter.reset : () => $router.go(-1)
-    "
-    :delete-func="encounter.isExisting() ? deleteSelf : null"
-    @enter-edit-mode="viewMode = false"
-    @enter-view-mode="viewMode = true"
-  >
-    <v-container slot-scope="{ isViewMode }" grid-list-lg>
-      <v-layout wrap>
-        <v-flex xs6 sm4 md3>
-          <v-text-field
-            :disabled="isViewMode"
-            v-model="encounter.name"
-            label="Name"
-          ></v-text-field>
-        </v-flex>
-      </v-layout>
-
-      <v-data-iterator
-        :items="combatants.models"
-        :items-per-page="-1"
-        hide-default-footer
-        no-data-text="No combatants"
-      >
-        <template #default="{ items }">
-          <v-layout wrap>
-            <v-flex v-for="item in items" :key="item._uid" xs6 sm4 md3>
-              <v-card>
-                <v-card-title>
-                  <h4>{{ item.name }}</h4>
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    v-if="!isViewMode"
-                    small
-                    text
-                    icon
-                    class="ma-0"
-                    @click="openCombatantDialog(item.uuid)"
-                  >
-                    <v-icon small>edit</v-icon>
-                  </v-btn>
-                </v-card-title>
-                <v-divider></v-divider>
-                <v-list dense>
-                  <v-list-item>
-                    <v-list-item-content>Loot:</v-list-item-content>
-                    <v-list-item-content class="align-end">
-                      {{ item.loot }}
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-              </v-card>
-            </v-flex>
-          </v-layout>
-        </template>
-      </v-data-iterator>
-      <v-btn
-        v-if="!isViewMode && encounter.uuid"
-        text
-        @click="openCombatantDialog(null)"
-        >+ Add Combatant</v-btn
-      >
-    </v-container>
-  </object-detail>
+  <pre>
+    {{ JSON.stringify(encounter, null, 2) }}
+  </pre>
 </template>
 
 <script>
-import ObjectDetail from "@/components/generic/ObjectDetail";
 import CombatantDetailDialog from "@/components/encounters/CombatantDetailDialog";
 import { Encounter, CombatantList } from "@/models";
 
 export default {
   name: "EncounterDetail",
-  components: { ObjectDetail },
   props: {
     uuid: {
       type: String,

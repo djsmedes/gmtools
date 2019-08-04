@@ -1,10 +1,8 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    :max-width="width"
-    :fullscreen="$vuetify.breakpoint.name === 'xs'"
-    persistent
-    @keydown.esc="close(null)"
+  <functional-dialog-wrapper
+    v-bind="dialogAttrs"
+    title="Combatant Detail"
+    v-on="dialogListeners"
   >
     <combatant-detail
       :uuid="uuid"
@@ -13,16 +11,17 @@
       @cancel="close(null)"
       @deleted="close(null)"
     ></combatant-detail>
-  </v-dialog>
+  </functional-dialog-wrapper>
 </template>
 
 <script>
 import functionalDialogMixin from "@/mixins/functionalDialog";
 import CombatantDetail from "@/components/encounters/CombatantDetail";
+import FunctionalDialogWrapper from "@/components/generic/FunctionalDialogWrapper";
 
 export default {
   name: "CombatantDetailDialog",
-  components: { CombatantDetail },
+  components: { FunctionalDialogWrapper, CombatantDetail },
   mixins: [functionalDialogMixin],
   props: {
     uuid: {
@@ -32,22 +31,6 @@ export default {
     extraAttrData: {
       type: Object,
       default: () => ({}),
-    },
-  },
-  computed: {
-    width() {
-      switch (this.$vuetify.breakpoint.name) {
-        case "xs":
-          return;
-        case "sm":
-          return "400px";
-        case "md":
-          return "500px";
-        case "lg":
-          return "600px";
-        case "xl":
-          return "800px";
-      }
     },
   },
 };

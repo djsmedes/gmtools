@@ -1,55 +1,50 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    :max-width="width"
-    :fullscreen="$vuetify.breakpoint.xsOnly"
-    persistent
-    @keydown.esc="close(null)"
+  <functional-dialog-wrapper
+    v-bind="dialogAttrs"
+    title="Create Campaign"
+    v-on="dialogListeners"
   >
-    <v-toolbar dark color="grey darken-2" dense>
-      <v-toolbar-title>Create Campaign</v-toolbar-title>
-    </v-toolbar>
-    <v-card tile>
-      <v-card-text>
-        Enter a name for your new campaign
-        <v-form
-          ref="form"
-          v-model="formValid"
-          @submit.prevent="close(textFieldValue)"
-        >
-          <v-text-field
-            ref="firstField"
-            v-model="textFieldValue"
-            :rules="[v => (!!v && !!String(v).trim()) || 'Required']"
-          ></v-text-field>
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn text @click="close(false)">
-          <v-icon left>cancel</v-icon>
-          cancel
-        </v-btn>
-        <v-spacer></v-spacer>
-        <v-btn
-          :disabled="!formValid"
-          :loading="loading"
-          text
-          color="save"
-          @click="close(textFieldValue)"
-        >
-          <v-icon left>save</v-icon>
-          save
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    <v-card-text>
+      Enter a name for your new campaign
+      <v-form
+        ref="form"
+        v-model="formValid"
+        @submit.prevent="close(textFieldValue)"
+      >
+        <v-text-field
+          ref="firstField"
+          v-model="textFieldValue"
+          :rules="[v => (!!v && !!String(v).trim()) || 'Required']"
+        ></v-text-field>
+      </v-form>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn text @click="close(false)">
+        <v-icon left>mdi-close-circle</v-icon>
+        cancel
+      </v-btn>
+      <v-btn
+        :disabled="!formValid"
+        :loading="loading"
+        text
+        color="save"
+        @click="close(textFieldValue)"
+      >
+        <v-icon left>mdi-content-save</v-icon>
+        save
+      </v-btn>
+    </v-card-actions>
+  </functional-dialog-wrapper>
 </template>
 
 <script>
 import functionalDialogMixin from "@/mixins/functionalDialog";
+import FunctionalDialogWrapper from "@/components/generic/FunctionalDialogWrapper";
 
 export default {
   name: "NewCampaign",
+  components: { FunctionalDialogWrapper },
   mixins: [functionalDialogMixin],
   data() {
     return {

@@ -1,110 +1,106 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    :max-width="width"
-    :fullscreen="$vuetify.breakpoint.xsOnly"
-    persistent
-    @keydown.esc="close(null)"
+  <functional-dialog-wrapper
+    v-bind="dialogAttrs"
+    title="Calculate Hit Dice"
+    v-on="dialogListeners"
   >
-    <v-toolbar dark color="grey darken-2" dense>
-      <v-toolbar-title>Calculate Hit Dice</v-toolbar-title>
-    </v-toolbar>
-    <v-card tile>
-      <v-card-text>
-        <p>About how many hit points should the creature have in total?</p>
-        <v-form @submit.prevent="getSuggestions">
-          <v-layout>
-            <v-flex grow>
-              <v-text-field
-                ref="firstField"
-                v-model="userHpEstimate"
-              ></v-text-field>
-            </v-flex>
-            <v-btn flat icon @click="getSuggestions">
-              <v-icon>arrow_forward</v-icon>
+    <v-card-text>
+      <p>About how many hit points should the creature have in total?</p>
+      <v-form @submit.prevent="getSuggestions">
+        <v-text-field ref="firstField" v-model="userHpEstimate">
+          <template #append>
+            <v-btn
+              :disabled="!userHpEstimate"
+              text
+              icon
+              color="go"
+              @click="getSuggestions"
+            >
+              <v-icon>mdi-arrow-right</v-icon>
             </v-btn>
-          </v-layout>
-        </v-form>
-      </v-card-text>
-      <v-expand-transition>
-        <v-card-text v-if="suggestions.length">
-          <p>Choose one of the HP suggestions below.</p>
-          <v-btn
-            v-for="suggestion in suggestions"
-            :key="suggestion"
-            :outlined="selection !== suggestion"
-            :depressed="selection === suggestion"
-            :dark="selection === suggestion"
-            color="save"
-            class="text-none"
-            @click="updateSelection(suggestion)"
-          >
-            {{ hit_point_string(suggestion) }}
-          </v-btn>
-          <v-layout>
-            <v-spacer></v-spacer>
-            <v-btn flat small color="grey" @click="advanced = !advanced">
-              {{ advanced ? "hide advanced options" : "I need more choices" }}
-            </v-btn>
-          </v-layout>
-          <v-expand-transition>
-            <v-form v-if="advanced" @submit.prevent>
-              <p>
-                Tweak the constitution score (which controls the constant
-                contribution to HP) and size (which controls the size of the hit
-                dice) to reach your desired HP total.
-              </p>
-              <p>
-                Reducing the constitution or size of the creature will mean that
-                each hit die adds a smaller increment, making it easier to get
-                closer to a desired HP total, but using more hit die.
-              </p>
-              <v-container grid-list-xl>
-                <v-layout wrap>
-                  <v-flex xs6>
-                    <v-text-field
-                      :value="adv_con"
-                      label="Constitution score"
-                      @input="updateAdvCon"
-                    ></v-text-field>
-                  </v-flex>
-                  <v-flex xs6>
-                    <v-select
-                      :items="sizeChoices"
-                      v-model="adv_size"
-                      label="Size"
-                    ></v-select>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-            </v-form>
-          </v-expand-transition>
-        </v-card-text>
-      </v-expand-transition>
-      <v-card-actions>
-        <v-btn flat @click="close(false)">
-          <v-icon left>cancel</v-icon>
-          cancel
-        </v-btn>
-        <v-spacer></v-spacer>
+          </template>
+        </v-text-field>
+      </v-form>
+    </v-card-text>
+    <v-expand-transition>
+      <v-card-text v-if="suggestions.length">
+        <p>Choose one of the HP suggestions below.</p>
         <v-btn
-          :disabled="!selection"
-          flat
+          v-for="suggestion in suggestions"
+          :key="suggestion"
+          :outlined="selection !== suggestion"
+          :depressed="selection === suggestion"
+          :dark="selection === suggestion"
           color="save"
-          @click="close(returnValue)"
+          class="text-none"
+          @click="updateSelection(suggestion)"
         >
-          <v-icon left>save</v-icon>
-          use selection
+          {{ hit_point_string(suggestion) }}
         </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+        <v-layout>
+          <v-spacer></v-spacer>
+          <v-btn text small color="grey" @click="advanced = !advanced">
+            {{ advanced ? "hide advanced options" : "I need more choices" }}
+          </v-btn>
+        </v-layout>
+        <v-expand-transition>
+          <v-form v-if="advanced" @submit.prevent>
+            <p>
+              Tweak the constitution score (which controls the constant
+              contribution to HP) and size (which controls the size of the hit
+              dice) to reach your desired HP total.
+            </p>
+            <p>
+              Reducing the constitution or size of the creature will mean that
+              each hit die adds a smaller increment, making it easier to get
+              closer to a desired HP total, but using more hit die.
+            </p>
+            <v-container grid-list-xl>
+              <v-layout wrap>
+                <v-flex xs6>
+                  <v-text-field
+                    :value="adv_con"
+                    label="Constitution score"
+                    @input="updateAdvCon"
+                  ></v-text-field>
+                </v-flex>
+                <v-flex xs6>
+                  <v-select
+                    :items="sizeChoices"
+                    v-model="adv_size"
+                    label="Size"
+                  ></v-select>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-form>
+        </v-expand-transition>
+      </v-card-text>
+    </v-expand-transition>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn text @click="close(false)">
+        <v-icon left>cancel</v-icon>
+        cancel
+      </v-btn>
+      <v-btn
+        :disabled="!selection"
+        text
+        color="save"
+        @click="close(returnValue)"
+      >
+        <v-icon left>save</v-icon>
+        use selection
+      </v-btn>
+    </v-card-actions>
+  </functional-dialog-wrapper>
 </template>
 
 <script>
 import functionalDialogMixin from "@/mixins/functionalDialog";
 import { calculateModifier, sizeChoices } from "@/models/statblock";
 import debounce from "lodash/debounce";
+import FunctionalDialogWrapper from "@/components/generic/FunctionalDialogWrapper";
 
 const size_2_die = {
   1: 4,
@@ -117,6 +113,7 @@ const size_2_die = {
 
 export default {
   name: "CalcHitDieDialog",
+  components: { FunctionalDialogWrapper },
   mixins: [functionalDialogMixin],
   props: {
     creatureSize: {

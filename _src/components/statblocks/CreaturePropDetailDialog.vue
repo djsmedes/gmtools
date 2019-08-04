@@ -1,91 +1,81 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    :max-width="width"
-    :fullscreen="$vuetify.breakpoint.xsOnly"
-    persistent
-    @keydown.esc="close(null)"
+  <functional-dialog-wrapper
+    v-bind="dialogAttrs"
+    title="Editing Creature Property"
+    v-on="dialogListeners"
   >
-    <v-toolbar dark color="grey darken-2" dense>
-      <v-toolbar-title>Editing Creature Property</v-toolbar-title>
-    </v-toolbar>
-    <v-card flat>
-      <v-window v-model="windowPosition">
-        <v-window-item>
-          <v-container>
-            <v-layout wrap align-baseline>
-              <v-flex xs12 class="grey--text body-2">
-                Search for an existing creature property to add
-              </v-flex>
-              <v-flex xs8>
-                <v-autocomplete
-                  v-model="existing"
-                  :search-input.sync="existingSearch"
-                  :items="autocompleteMatches"
-                  :loading="autocompleteLoading"
-                  hide-no-data
-                  append-icon=""
-                  clearable
-                  @keypress="onAutocompleteKeyPress"
-                  @keyup.backspace="queryCreaturePropAutocomplete()"
-                  @keyup.delete="queryCreaturePropAutocomplete()"
-                  @paste.native="queryCreaturePropAutocomplete()"
-                ></v-autocomplete>
-              </v-flex>
-              <v-flex xs4 class="text-right">
-                <v-btn
-                  :disabled="!existing"
-                  text
-                  color="save"
-                  @click="windowPosition = 1"
-                >
-                  preview
-                  <v-icon right>arrow_forward</v-icon>
-                </v-btn>
-              </v-flex>
-              <v-flex xs3 class="grey--text body-2">
-                or
-              </v-flex>
-              <v-flex xs9 class="text-right">
-                <v-btn
-                  :disabled="!!existing"
-                  text
-                  color="save"
-                  @click="windowPosition = 1"
-                >
-                  create a new creature property
-                  <v-icon right>arrow_forward</v-icon>
-                </v-btn>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-window-item>
-        <v-window-item>
-          <creature-prop-detail
-            v-if="windowPosition === 1"
-            :uuid="selectedUuid"
-          >
-            <template #actions="{ saveFunc, changedFunc }">
-              <v-btn text @click="close(false)">
-                <v-icon left>cancel</v-icon>
-                cancel & close
-              </v-btn>
-              <v-spacer></v-spacer>
+    <v-window v-model="windowPosition">
+      <v-window-item>
+        <v-container>
+          <v-layout wrap align-baseline>
+            <v-flex xs12 class="grey--text body-2">
+              Search for an existing creature property to add
+            </v-flex>
+            <v-flex xs8>
+              <v-autocomplete
+                v-model="existing"
+                :search-input.sync="existingSearch"
+                :items="autocompleteMatches"
+                :loading="autocompleteLoading"
+                hide-no-data
+                append-icon=""
+                clearable
+                @keypress="onAutocompleteKeyPress"
+                @keyup.backspace="queryCreaturePropAutocomplete()"
+                @keyup.delete="queryCreaturePropAutocomplete()"
+                @paste.native="queryCreaturePropAutocomplete()"
+              ></v-autocomplete>
+            </v-flex>
+            <v-flex xs4 class="text-right">
               <v-btn
-                :disabled="!changedFunc()"
+                :disabled="!existing"
                 text
                 color="save"
-                @click="saveAndClose(saveFunc)"
+                @click="windowPosition = 1"
               >
-                <v-icon left>save</v-icon>
-                save & close
+                preview
+                <v-icon right>arrow_forward</v-icon>
               </v-btn>
-            </template>
-          </creature-prop-detail>
-        </v-window-item>
-      </v-window>
-    </v-card>
-  </v-dialog>
+            </v-flex>
+            <v-flex xs3 class="grey--text body-2">
+              or
+            </v-flex>
+            <v-flex xs9 class="text-right">
+              <v-btn
+                :disabled="!!existing"
+                text
+                color="save"
+                @click="windowPosition = 1"
+              >
+                create a new creature property
+                <v-icon right>arrow_forward</v-icon>
+              </v-btn>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-window-item>
+      <v-window-item>
+        <creature-prop-detail v-if="windowPosition === 1" :uuid="selectedUuid">
+          <template #actions="{ saveFunc, changedFunc }">
+            <v-btn text @click="close(false)">
+              <v-icon left>cancel</v-icon>
+              cancel & close
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn
+              :disabled="!changedFunc()"
+              text
+              color="save"
+              @click="saveAndClose(saveFunc)"
+            >
+              <v-icon left>save</v-icon>
+              save & close
+            </v-btn>
+          </template>
+        </creature-prop-detail>
+      </v-window-item>
+    </v-window>
+  </functional-dialog-wrapper>
 </template>
 
 <script>
@@ -95,10 +85,11 @@ import axios from "axios";
 import { generateUrl2 } from "@/utils/urls";
 import debounce from "lodash/debounce";
 import { sleep } from "@/utils/time";
+import FunctionalDialogWrapper from "@/components/generic/FunctionalDialogWrapper";
 
 export default {
   name: "CreaturePropDetailDialog",
-  components: { CreaturePropDetail },
+  components: { FunctionalDialogWrapper, CreaturePropDetail },
   mixins: [functionalDialogMixin],
   props: {
     uuid: {

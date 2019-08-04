@@ -1,210 +1,207 @@
 <template>
-  <v-dialog v-model="dialog" v-bind="sizeAttrs" @keydown.esc="close(null)">
-    <v-card>
-      <v-toolbar flat dark dense class="grey darken-3">
-        <v-toolbar-title>Choose playlists</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn icon @click="close(null)">
-          <v-icon>close</v-icon>
-        </v-btn>
-      </v-toolbar>
-      <v-container>
-        <v-layout>
-          <v-flex xs6 sm6 md8 lg9 xl10>
-            <h4 class="title">
-              Your playlists
-            </h4>
-            <v-container :style="nonOverflowStyle" grid-list-md py-0 pl-0>
-              <v-data-iterator
-                :items="playlists"
-                :items-per-page="-1"
-                hide-default-footer
-              >
-                <template #default="{ items }">
-                  <v-layout wrap>
-                    <v-flex
-                      v-for="item in items"
-                      :key="item.id"
-                      xs12
-                      sm6
-                      md4
-                      lg3
-                      xl2
-                    >
-                      <v-hover>
-                        <template #default="{ hover }">
-                          <v-card
-                            :class="{
-                              'elevation-0': !hover,
-                              'elevation-5': hover,
-                            }"
-                            :color="
-                              isSelected(item) ? 'primary lighten-2' : undefined
-                            "
-                            @click="toggleSelected(item)"
-                          >
-                            <div class="pt-2 mx-2">
-                              <v-img
-                                :src="getImgSrc(item)"
-                                aspect-ratio="1"
-                              ></v-img>
-                            </div>
-                            <v-card-title class="font-weight-medium">
-                              {{ item.name }}
-                            </v-card-title>
-                          </v-card>
-                        </template>
-                      </v-hover>
-                    </v-flex>
-                  </v-layout>
-                </template>
-                <template v-if="!areAllLoaded" #footer>
-                  <v-fade-transition mode="out-in">
-                    <v-progress-linear
-                      v-if="loadingFromSpotify"
-                      indefinite
-                    ></v-progress-linear>
-                    <v-tooltip v-else bottom>
-                      <template #activator="{ on }">
-                        <v-btn text block v-on="on" @click="loadMore">
-                          <v-icon large>expand_more</v-icon>
-                        </v-btn>
-                      </template>
-                      Load more
-                    </v-tooltip>
-                  </v-fade-transition>
-                </template>
-              </v-data-iterator>
-            </v-container>
-          </v-flex>
-          <v-flex
-            xs6
-            sm6
-            md4
-            lg3
-            xl2
-            class="pl-4"
-            style="position: relative;"
-            @dragenter="parentDragEnter"
-          >
-            <div
-              ref="dragTarget"
-              class="drag-over"
-              @drop.prevent="drop"
-              @dragover.prevent
-              @dragleave="dragLeave"
+  <functional-dialog-wrapper
+    v-bind="dialogAttrs"
+    title="Choose Playlists"
+    v-on="dialogListeners"
+  >
+    <v-container>
+      <v-layout>
+        <v-flex xs6 sm6 md8 lg9 xl10>
+          <h4 class="title">
+            Your playlists
+          </h4>
+          <v-container :style="nonOverflowStyle" grid-list-md py-0 pl-0>
+            <v-data-iterator
+              :items="playlists"
+              :items-per-page="-1"
+              hide-default-footer
             >
-              <h4 class="headline pa-4 font-weight-bold">
-                Drop Spotify playlist URL here to add
-              </h4>
-            </div>
-            <div style="display: flex">
-              <h4 class="title">
-                Selected
-              </h4>
-              <v-spacer></v-spacer>
-              <v-btn
-                icon
-                style="flex-shrink: 1; margin: -8px 0 -8px 0"
-                @click="setShowLinkEntry(!showLinkEntry)"
-              >
-                <v-icon>
-                  {{ showLinkEntry ? "close" : "add" }}
-                </v-icon>
-              </v-btn>
-            </div>
-            <v-list :style="nonOverflowStyle" style="background: transparent;">
-              <v-expand-transition>
-                <v-list-item v-show="showLinkEntry" class="px-0">
-                  <v-text-field
-                    id="foo"
-                    ref="linkText"
-                    v-model="linkText"
-                    solo
-                    flat
-                    placeholder="Spotify playlist link"
-                    hide-details
-                    @keydown.enter="addPlaylistFromLink"
+              <template #default="{ items }">
+                <v-layout wrap>
+                  <v-flex
+                    v-for="item in items"
+                    :key="item.id"
+                    xs12
+                    sm6
+                    md4
+                    lg3
+                    xl2
                   >
-                    <template #append>
-                      <v-btn
-                        :disabled="!linkText.length"
-                        icon
-                        text
-                        color="go"
-                        @click="addPlaylistFromLink"
-                      >
-                        <v-icon>arrow_forward</v-icon>
+                    <v-hover>
+                      <template #default="{ hover }">
+                        <v-card
+                          :class="{
+                            'elevation-0': !hover,
+                            'elevation-5': hover,
+                          }"
+                          :color="
+                            isSelected(item) ? 'primary lighten-2' : undefined
+                          "
+                          @click="toggleSelected(item)"
+                        >
+                          <div class="pt-2 mx-2">
+                            <v-img
+                              :src="getImgSrc(item)"
+                              aspect-ratio="1"
+                            ></v-img>
+                          </div>
+                          <v-card-title class="font-weight-medium">
+                            {{ item.name }}
+                          </v-card-title>
+                        </v-card>
+                      </template>
+                    </v-hover>
+                  </v-flex>
+                </v-layout>
+              </template>
+              <template v-if="!areAllLoaded" #footer>
+                <v-fade-transition mode="out-in">
+                  <v-progress-linear
+                    v-if="loadingFromSpotify"
+                    indefinite
+                  ></v-progress-linear>
+                  <v-tooltip v-else bottom>
+                    <template #activator="{ on }">
+                      <v-btn text block v-on="on" @click="loadMore">
+                        <v-icon large>expand_more</v-icon>
                       </v-btn>
                     </template>
-                  </v-text-field>
-                </v-list-item>
-              </v-expand-transition>
-              <v-hover v-for="(item, index) in sortedSelected" :key="index">
-                <template #default="{ hover }">
-                  <v-list-item
-                    :class="{ 'mt-1': index }"
-                    :style="{
-                      background: hover ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
-                    }"
-                    class="px-0"
-                  >
-                    <v-list-item-avatar>
-                      <v-avatar tile size="48">
-                        <v-img :src="getImgSrc(item)"></v-img>
-                      </v-avatar>
-                    </v-list-item-avatar>
-                    <v-list-item-content>
-                      <v-list-item-title class="text-truncate">
-                        {{ item.name }}
-                      </v-list-item-title>
-                    </v-list-item-content>
-                    <v-btn v-if="hover" icon text @click="removeSelected(item)">
-                      <v-icon>clear</v-icon>
-                    </v-btn>
-                  </v-list-item>
-                </template>
-              </v-hover>
-            </v-list>
-            <div v-if="!selected.length" class="grey--text">
-              <p>
-                Selected playlists appear here and are saved as options in the
-                player.
-              </p>
-              <p>
-                Add playlists from the pane to the left, by dragging and
-                dropping from Spotify, or by clicking the
-                <v-icon small>add</v-icon>
-                button and entering a Spotify playlist link.
-              </p>
-            </div>
-          </v-flex>
-        </v-layout>
-      </v-container>
-
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-          :disabled="!isSelectionChanged"
-          color="save"
-          text
-          @click="close(sortedSelected)"
+                    Load more
+                  </v-tooltip>
+                </v-fade-transition>
+              </template>
+            </v-data-iterator>
+          </v-container>
+        </v-flex>
+        <v-flex
+          xs6
+          sm6
+          md4
+          lg3
+          xl2
+          class="pl-4"
+          style="position: relative;"
+          @dragenter="parentDragEnter"
         >
-          <v-icon left>save</v-icon>
-          Save
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+          <div
+            ref="dragTarget"
+            class="drag-over"
+            @drop.prevent="drop"
+            @dragover.prevent
+            @dragleave="dragLeave"
+          >
+            <h4 class="headline pa-4 font-weight-bold">
+              Drop Spotify playlist URL here to add
+            </h4>
+          </div>
+          <div style="display: flex">
+            <h4 class="title">
+              Selected
+            </h4>
+            <v-spacer></v-spacer>
+            <v-btn
+              icon
+              style="flex-shrink: 1; margin: -8px 0 -8px 0"
+              @click="setShowLinkEntry(!showLinkEntry)"
+            >
+              <v-icon>
+                {{ showLinkEntry ? "close" : "add" }}
+              </v-icon>
+            </v-btn>
+          </div>
+          <v-list :style="nonOverflowStyle" style="background: transparent;">
+            <v-expand-transition>
+              <v-list-item v-show="showLinkEntry" class="px-0">
+                <v-text-field
+                  id="foo"
+                  ref="linkText"
+                  v-model="linkText"
+                  solo
+                  flat
+                  placeholder="Spotify playlist link"
+                  hide-details
+                  @keydown.enter="addPlaylistFromLink"
+                >
+                  <template #append>
+                    <v-btn
+                      :disabled="!linkText.length"
+                      icon
+                      text
+                      color="go"
+                      @click="addPlaylistFromLink"
+                    >
+                      <v-icon>arrow_forward</v-icon>
+                    </v-btn>
+                  </template>
+                </v-text-field>
+              </v-list-item>
+            </v-expand-transition>
+            <v-hover v-for="(item, index) in sortedSelected" :key="index">
+              <template #default="{ hover }">
+                <v-list-item
+                  :class="{ 'mt-1': index }"
+                  :style="{
+                    background: hover ? 'rgba(0, 0, 0, 0.04)' : 'transparent',
+                  }"
+                  class="px-0"
+                >
+                  <v-list-item-avatar>
+                    <v-avatar tile size="48">
+                      <v-img :src="getImgSrc(item)"></v-img>
+                    </v-avatar>
+                  </v-list-item-avatar>
+                  <v-list-item-content>
+                    <v-list-item-title class="text-truncate">
+                      {{ item.name }}
+                    </v-list-item-title>
+                  </v-list-item-content>
+                  <v-btn v-if="hover" icon text @click="removeSelected(item)">
+                    <v-icon>clear</v-icon>
+                  </v-btn>
+                </v-list-item>
+              </template>
+            </v-hover>
+          </v-list>
+          <div v-if="!selected.length" class="grey--text">
+            <p>
+              Selected playlists appear here and are saved as options in the
+              player.
+            </p>
+            <p>
+              Add playlists from the pane to the left, by dragging and dropping
+              from Spotify, or by clicking the
+              <v-icon small>add</v-icon>
+              button and entering a Spotify playlist link.
+            </p>
+          </div>
+        </v-flex>
+      </v-layout>
+    </v-container>
+
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn
+        :disabled="!isSelectionChanged"
+        color="save"
+        text
+        @click="close(sortedSelected)"
+      >
+        <v-icon left>mdi-content-save</v-icon>
+        Save
+      </v-btn>
+    </v-card-actions>
+  </functional-dialog-wrapper>
 </template>
 
 <script>
 import { functionalDialogMixin } from "@/mixins";
 import xorBy from "lodash/xorBy";
 import sortBy from "lodash/sortBy";
+import FunctionalDialogWrapper from "@/components/generic/FunctionalDialogWrapper";
 
 export default {
   name: "SpotifyPlaylistSelectionDialog",
+  components: { FunctionalDialogWrapper },
   mixins: [functionalDialogMixin],
   props: {
     request: {
