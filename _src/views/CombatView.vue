@@ -1,84 +1,108 @@
 <template>
   <div>
-    <v-speed-dial
-      v-if="!applyingEffectType"
-      v-model="fab"
-      fixed
-      bottom
-      right
-      direction="left"
-    >
-      <template #activator>
-        <v-btn fab dark color="primary">
-          <v-icon v-if="fab">close</v-icon>
-          <v-icon v-else>more_vert</v-icon>
+    <v-fade-transition>
+      <v-speed-dial
+        v-if="!applyingEffectType"
+        v-model="fab"
+        fixed
+        bottom
+        right
+        direction="left"
+      >
+        <template #activator>
+          <v-btn fab dark color="primary">
+            <v-icon v-if="fab">close</v-icon>
+            <v-icon v-else>more_vert</v-icon>
+          </v-btn>
+        </template>
+        <v-btn fab dark small color="grey" @click="enterApplyOtherMode">
+          <v-icon>trending_flat</v-icon>
         </v-btn>
-      </template>
-      <v-btn fab dark small color="grey" @click="enterApplyOtherMode">
-        <v-icon>trending_flat</v-icon>
-      </v-btn>
-      <v-btn fab dark small color="red" @click="enterApplyDebuffMode">
-        <v-icon>trending_down</v-icon>
-      </v-btn>
-      <v-btn fab dark small color="green" @click="enterApplyBuffMode">
-        <v-icon>trending_up</v-icon>
-      </v-btn>
-    </v-speed-dial>
-
-    <v-toolbar
-      v-if="!!applyingEffectType"
-      floating
-      fixed
-      style="bottom: 16px; right: 16px; left: unset; top: unset;"
-    >
-      <v-btn
-        v-if="applyingEffectType === effectTypes.BUFF"
-        :ripple="false"
-        icon
-        dark
-        class="green"
-        @click="applyingEffectType = effectTypes.DEBUFF"
+        <v-btn fab dark small color="red" @click="enterApplyDebuffMode">
+          <v-icon>trending_down</v-icon>
+        </v-btn>
+        <v-btn fab dark small color="green" @click="enterApplyBuffMode">
+          <v-icon>trending_up</v-icon>
+        </v-btn>
+      </v-speed-dial>
+      <v-card
+        v-else
+        :style="{
+          bottom: '16px',
+          right: '16px',
+          left: 'auto',
+          top: 'auto',
+          'border-radius': '24px',
+          position: 'fixed',
+          'z-index': 20,
+        }"
+        class="elevation-5"
+        floating
       >
-        <v-icon>trending_up</v-icon>
-      </v-btn>
-      <v-btn
-        v-if="applyingEffectType === effectTypes.DEBUFF"
-        :ripple="false"
-        icon
-        dark
-        class="red"
-        @click="applyingEffectType = effectTypes.OTHER"
-      >
-        <v-icon>trending_down</v-icon>
-      </v-btn>
-      <v-btn
-        v-if="applyingEffectType === effectTypes.OTHER"
-        :ripple="false"
-        icon
-        dark
-        class="grey"
-        @click="applyingEffectType = effectTypes.BUFF"
-      >
-        <v-icon>trending_flat</v-icon>
-      </v-btn>
+        <v-text-field
+          :autofocus="!!applyingEffectType"
+          v-model="effectToApply"
+          hide-details
+          single-line
+          solo
+          flat
+          class="no-inner-padding"
+        >
+          <template #prepend-inner>
+            <v-btn
+              v-if="applyingEffectType === effectTypes.BUFF"
+              :ripple="false"
+              icon
+              dark
+              class="green"
+              @click="applyingEffectType = effectTypes.DEBUFF"
+            >
+              <v-icon>trending_up</v-icon>
+            </v-btn>
+            <v-btn
+              v-if="applyingEffectType === effectTypes.DEBUFF"
+              :ripple="false"
+              icon
+              dark
+              class="red"
+              @click="applyingEffectType = effectTypes.OTHER"
+            >
+              <v-icon>trending_down</v-icon>
+            </v-btn>
+            <v-btn
+              v-if="applyingEffectType === effectTypes.OTHER"
+              :ripple="false"
+              icon
+              dark
+              class="grey"
+              @click="applyingEffectType = effectTypes.BUFF"
+            >
+              <v-icon>trending_flat</v-icon>
+            </v-btn>
+          </template>
+          <template #append>
+            <v-btn
+              :disabled="!combatantsToApply.length || !effectToApply"
+              :color="
+                applyingEffectType === effectTypes.BUFF
+                  ? 'green'
+                  : applyingEffectType === effectTypes.DEBUFF
+                  ? 'red'
+                  : undefined
+              "
+              icon
+              @click="saveAppliedEffects"
+            >
+              <v-icon>mdi-chevron-double-up</v-icon>
+            </v-btn>
 
-      <v-text-field
-        :autofocus="!!applyingEffectType"
-        v-model="effectToApply"
-        hide-details
-        single-line
-        filled
-      >
-      </v-text-field>
-
-      <v-btn icon @click="saveAppliedEffects">
-        <v-icon>check</v-icon>
-      </v-btn>
-
-      <v-btn icon @click="exitApplyEffectMode">
-        <v-icon>clear</v-icon>
-      </v-btn>
-    </v-toolbar>
+            <v-btn icon @click="exitApplyEffectMode">
+              <v-icon>clear</v-icon>
+            </v-btn>
+          </template>
+        </v-text-field>
+      </v-card>
+    </v-fade-transition>
 
     <v-expand-transition mode="out-in">
       <v-container

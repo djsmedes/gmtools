@@ -207,4 +207,8 @@ nav.pa-0 > .v-toolbar__content {
   width: 36px !important;
   margin: 6px;
 }
+
+.no-inner-padding .v-input__slot {
+  padding: 0 !important;
+}
 </style>
