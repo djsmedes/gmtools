@@ -33,6 +33,18 @@ export const functionalDialogMixin = {
       }
       return attrs;
     },
+    dialogAttrs() {
+      return {
+        "size-attrs": this.sizeAttrs,
+        visible: this.dialog,
+      };
+    },
+    dialogListeners() {
+      return {
+        "update:visible": $event => (this.dialog = $event),
+        close: (...args) => this.close(...args),
+      };
+    },
   },
   methods: {
     open() {

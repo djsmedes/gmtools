@@ -38,60 +38,16 @@
         {{ passStrengthContent.description }}
       </span>
       <v-spacer></v-spacer>
-      <v-tooltip
-        v-model="showPassHelp"
-        :nudge-right="30"
-        :max-width="300"
-        right
-        color="white"
-        content-class="password-help"
+      <v-btn
+        text
+        small
+        color="grey"
+        class="text-none body-2"
+        tabindex="-1"
+        @click="showPassHelp"
       >
-        <template #activator="{ on }">
-          <v-btn
-            text
-            small
-            color="grey"
-            class="text-none body-2"
-            tabindex="-1"
-            @click="showPassHelp = !showPassHelp"
-          >
-            How do I create a strong password?
-          </v-btn>
-        </template>
-        <v-toolbar flat dense dark color="grey darken-3">
-          <v-toolbar-title>
-            Strong Passwords
-          </v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn icon @click="showPassHelp = false">
-            <v-icon>close</v-icon>
-          </v-btn>
-        </v-toolbar>
-        <v-container class="black--text pa-2">
-          <ul>
-            <li class="mt-2">Are longer rather than shorter</li>
-            <li class="mt-2">
-              Contain a mix of character classes, i.e. upper- and lowercase
-              letters, numbers, and special characters like #$%^
-            </li>
-            <li class="mt-2">
-              Are not easy to guess, like 1234 or password1
-            </li>
-            <li class="mt-2">
-              Are not similar to your other personal information like your email
-              address
-            </li>
-            <li class="mt-2">
-              Are unique (i.e. not reused for multiple services)
-            </li>
-          </ul>
-          <p class="mt-3">
-            It is difficult to remember dozens of unique, strong passwords, so
-            cybersecurity experts recommend the use of a password manager like
-            LastPass or 1Password.
-          </p>
-        </v-container>
-      </v-tooltip>
+        How do I create a strong password?
+      </v-btn>
     </v-layout>
     <v-text-field
       v-model="password2"
@@ -134,6 +90,7 @@ import debounce from "lodash/debounce";
 import axios from "axios";
 import { generateUrl2 } from "@/utils/urls";
 import { countdown } from "@/utils/time";
+import PasswordHelpDialog from "@/components/accountManage/PasswordHelpDialog";
 
 const noErrors = {
   non_field_errors: [],
@@ -207,7 +164,6 @@ export default {
       password2: "",
       showPass: false,
       passStrength: -1,
-      showPassHelp: false,
     };
   },
   computed: {
@@ -376,6 +332,9 @@ export default {
       } else {
         return "Invalid email address.";
       }
+    },
+    showPassHelp() {
+      this.$dialog(PasswordHelpDialog);
     },
   },
 };
