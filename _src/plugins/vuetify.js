@@ -3,6 +3,8 @@ import Vuetify from "vuetify/lib";
 
 Vue.use(Vuetify);
 
+// dnd red: #E40712
+
 const baseColors = {
   primary: "#5A84CC",
   secondary: "#424242",
