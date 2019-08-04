@@ -18,14 +18,17 @@ function asyncDialog(ComponentConstructor, componentProps) {
     propsData: componentProps,
   });
   dialog.$mount();
-  document.body.appendChild(dialog.$el);
+  document.getElementById("functionalDialog").appendChild(dialog.$el);
   dialog.open();
 
   return new Promise(resolve => {
     dialog.$once("close", returnVal => {
       // timeout to allow the close animation to play before we rip this out of the DOM and burn it
       setTimeout(() => {
-        document.body.removeChild(dialog.$el);
+        try {
+          document.getElementById("functionalDialog").removeChild(dialog.$el);
+          // eslint-disable-next-line no-empty
+        } catch {}
         dialog.$destroy();
         resolve(returnVal);
       }, 100);

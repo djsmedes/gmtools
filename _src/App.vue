@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-toolbar color="secondary" dark dense style="flex: none">
-      <v-toolbar-items>
+      <v-toolbar-items class="flex-grow-1">
         <v-btn
           :to="{ name: $routeNames.HOME }"
           text
@@ -11,51 +11,38 @@
           <span class="hidden-xs-only">GMTOOLS</span>
           <v-icon dark class="hidden-sm-and-up">home</v-icon>
         </v-btn>
-        <v-btn
-          v-if="authUser.isAuthenticated"
-          :to="{ name: $routeNames.ENCOUNTERS }"
-          text
-          class="no-text-dec hidden-xs-only"
-        >
-          Encounters
-        </v-btn>
-        <v-btn
-          v-if="authUser.isAuthenticated"
-          :to="{ name: $routeNames.COMBATANTS }"
-          text
-          class="no-text-dec hidden-xs-only"
-        >
-          Combatants
-        </v-btn>
-        <v-btn
-          v-if="authUser.isAuthenticated"
-          :to="{ name: $routeNames.STATBLOCKS }"
-          text
-          class="no-text-dec hidden-xs-only"
-        >
-          Statblocks
-        </v-btn>
-        <v-btn
-          v-if="authUser.isAuthenticated"
-          :to="{ name: $routeNames.CREATUREPROPS }"
-          text
-          class="no-text-dec hidden-xs-only"
-        >
-          Creature Properties
-        </v-btn>
+        <template v-if="authUser.isAuthenticated">
+          <v-btn
+            :to="{ name: $routeNames.ENCOUNTERS }"
+            text
+            class="no-text-dec hidden-xs-only"
+          >
+            Encounters
+          </v-btn>
+          <v-btn
+            :to="{ name: $routeNames.COMBATANTS }"
+            text
+            class="no-text-dec hidden-xs-only"
+          >
+            Combatants
+          </v-btn>
+          <v-btn
+            :to="{ name: $routeNames.STATBLOCKS }"
+            text
+            class="no-text-dec hidden-xs-only"
+          >
+            Statblocks
+          </v-btn>
+          <v-btn
+            :to="{ name: $routeNames.CREATUREPROPS }"
+            text
+            class="no-text-dec hidden-xs-only"
+          >
+            Creature Properties
+          </v-btn>
+        </template>
       </v-toolbar-items>
-
-      <v-spacer></v-spacer>
-
-      <v-toolbar-items v-if="!authUser.isAuthenticated">
-        <v-btn :to="{ name: $routeNames.LOGIN }" text class="no-text-dec">
-          Sign in
-        </v-btn>
-        <v-btn :to="{ name: $routeNames.SIGNUP }" text class="no-text-dec">
-          Sign up
-        </v-btn>
-      </v-toolbar-items>
-      <v-toolbar-items v-else>
+      <v-toolbar-items v-if="authUser.isAuthenticated">
         <template #activator="{ on }">
           <v-btn icon text v-on="on">
             <v-badge overlap>
@@ -121,6 +108,14 @@
           </v-list>
         </v-menu>
       </v-toolbar-items>
+      <v-toolbar-items v-else>
+        <v-btn :to="{ name: $routeNames.LOGIN }" text class="no-text-dec">
+          Sign in
+        </v-btn>
+        <v-btn :to="{ name: $routeNames.SIGNUP }" text class="no-text-dec">
+          Sign up
+        </v-btn>
+      </v-toolbar-items>
     </v-toolbar>
 
     <v-content style="position: relative">
@@ -147,6 +142,7 @@
         </v-card>
       </v-dialog>
     </v-content>
+    <div id="functionalDialog" :key="$route.path"></div>
   </v-app>
 </template>
 
