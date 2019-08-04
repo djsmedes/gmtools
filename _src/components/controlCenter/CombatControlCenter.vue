@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import GMScreen from "@/components/gmscreen/GMScreen";
-import SpotifyController from "@/components/gmscreen/SpotifyController";
+import GMScreen from "@/components/controlCenter/GMScreen";
+import SpotifyController from "@/components/controlCenter/SpotifyController";
 
 export default {
   name: "CombatControlCenter",

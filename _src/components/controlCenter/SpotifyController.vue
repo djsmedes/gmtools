@@ -219,7 +219,7 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import axios from "axios";
-import SpotifyPlaylistSelectionDialog from "@/components/gmscreen/SpotifyPlaylistSelectionDialog";
+import SpotifyPlaylistSelectionDialog from "@/components/controlCenter/SpotifyPlaylistSelectionDialog";
 import { epochNow, sleep } from "@/utils/time";
 import { generateUrl2 } from "@/utils/urls";
 import { ButtonOption } from "@/plugins/userChoiceDialog";

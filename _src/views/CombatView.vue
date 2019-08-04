@@ -166,7 +166,7 @@ import {
   getCurrentCampaign,
 } from "@/models";
 import { wsMessageMixin } from "@/mixins";
-import CombatControlCenter from "@/components/gmscreen/CombatControlCenter";
+import CombatControlCenter from "@/components/controlCenter/CombatControlCenter";
 
 export default {
   name: "CombatView",

@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import ScreenTab from "@/components/gmscreen/GMScreenTab";
+import ScreenTab from "@/components/controlCenter/GMScreenTab";
 import { GMScreenTab, GMScreenTabList } from "@/models";
 
 export default {

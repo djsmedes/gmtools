@@ -44,7 +44,7 @@
 
 <script>
 import debounce from "lodash/debounce";
-import ScreenTab from "@/components/gmscreen/GMScreenTab";
+import ScreenTab from "@/components/controlCenter/GMScreenTab";
 import { GMScreenTab } from "@/models";
 import { ButtonOption } from "@/plugins/userChoiceDialog";
 
