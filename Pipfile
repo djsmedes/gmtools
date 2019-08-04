@@ -19,6 +19,8 @@ django-smalluuid = "*"
 channels = "*"
 channels-redis = "*"
 requests = "*"
+graphene-django = "*"
+django-filter = "*"
 
 [dev-packages]
 

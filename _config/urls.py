@@ -1,6 +1,8 @@
 from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
+from graphene_django.views import GraphQLView
 
+from .schema import schema
 from accounts.viewsets import UserViewSet, CampaignViewSet, InvitationViewSet
 from accounts.views import UserView
 from combat.viewsets import (
@@ -72,6 +74,7 @@ urlpatterns = [
     path('api/signup/', signup_view, name='api-signup'),
     path('api/password-validate/', check_password_strength, name='password-reqs'),
     path('api/spotify-auth/', spotify_auth, name='spotify-auth'),
+    path('graphql/', GraphQLView.as_view(graphiql=True, schema=schema)),
 ]
 
 urlpatterns += [

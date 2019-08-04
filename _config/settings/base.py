@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rules.apps.AutodiscoverRulesConfig',
     'authtools',
+    'graphene_django',
 
     # local apps
     'core.apps.CoreConfig',
