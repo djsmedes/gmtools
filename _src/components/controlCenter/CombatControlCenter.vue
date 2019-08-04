@@ -8,7 +8,7 @@
       <v-btn
         v-for="(window, index) in windows"
         :key="index"
-        :input-value="activeWindow === index"
+        :color="activeWindow === index ? 'primary' : undefined"
         icon
         text
         @click="activeWindow = index"

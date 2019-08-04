@@ -4,7 +4,7 @@ import Vuetify from "vuetify/lib";
 Vue.use(Vuetify);
 
 const baseColors = {
-  primary: "#1976D2",
+  primary: "#5A84CC",
   secondary: "#424242",
   accent: "#82B1FF",
 

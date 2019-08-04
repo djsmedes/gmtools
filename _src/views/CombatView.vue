@@ -9,7 +9,7 @@
       direction="left"
     >
       <template #activator>
-        <v-btn fab dark color="blue">
+        <v-btn fab dark color="primary">
           <v-icon v-if="fab">close</v-icon>
           <v-icon v-else>more_vert</v-icon>
         </v-btn>
