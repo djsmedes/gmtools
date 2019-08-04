@@ -27,6 +27,10 @@ module.exports = {
         secure: false,
         ws: true,
       },
+      "/graphql": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
     },
   },
 

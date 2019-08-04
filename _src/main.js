@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueNativeSock from "vue-native-websocket";
+import VueApollo from "vue-apollo";
 import App from "@/App";
 import router from "@/router";
 import store from "@/store";
@@ -7,12 +8,18 @@ import axios from "axios";
 import { authMutations, authModuleName } from "@/auth";
 import { stateKeys } from "@/auth/vuexKeys";
 import { ModuleSocket } from "@/utils/websockets";
-import { dialogPlugin, showSnackPlugin, vuetify } from "@/plugins";
+import {
+  dialogPlugin,
+  showSnackPlugin,
+  vuetify,
+  apolloProvider,
+} from "@/plugins";
 
 Vue.config.productionTip = false;
 
 Vue.use(dialogPlugin);
 Vue.use(showSnackPlugin);
+Vue.use(VueApollo);
 
 Vue.use(VueNativeSock, "//" + window.location.host + "/ws/combat/", {
   connectManually: true,
@@ -27,6 +34,7 @@ const vm = new Vue({
   vuetify,
   router,
   store,
+  apolloProvider,
   render: h => h(App),
 }).$mount("#app");
 

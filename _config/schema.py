@@ -29,17 +29,18 @@ class StatblockType(DjangoObjectType):
         return queryset
 
 
-# class CreaturePropType(DjangoObjectType):
-#     class Meta:
-#         model = CreatureProp
-#
-#     prop_type = graphene.Int()
+class CreaturePropType(DjangoObjectType):
+    class Meta:
+        model = CreatureProp
+
+    prop_type = graphene.Int()
 
 
 class CombatQuery(object):
     statblock_set = DjangoFilterConnectionField(StatblockType)
     statblock = graphene.relay.Node.Field(StatblockType)
-    # creatureprop_set = graphene.List(CreaturePropType)
+    creatureprop_set = graphene.List(CreaturePropType)
+    creatureprop = graphene.Field(CreaturePropType, uuid=graphene.String())
 
     # def resolve_statblock_set(self, info, **kwargs):
     #     return Statblock.objects.all()
@@ -47,8 +48,11 @@ class CombatQuery(object):
     # def resolve_statblock(self, info, uuid):
     #     return Statblock.objects.get(uuid=uuid)
 
-    # def resolve_creatureprop_set(self, info, **kwargs):
-    #     return CreatureProp.objects.prefetch_related('statblock_set').all()
+    def resolve_creatureprop_set(self, info, **kwargs):
+        return CreatureProp.objects.prefetch_related('statblock_set').all()
+
+    def resolve_creatureprop(self, info, uuid):
+        return CreatureProp.objects.get(uuid=uuid)
 
 
 class Query(CombatQuery, graphene.ObjectType):
