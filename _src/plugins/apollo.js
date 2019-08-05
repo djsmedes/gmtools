@@ -15,8 +15,12 @@ const httpLink = createHttpLink({
 
 // Cache implementation
 const cache = new InMemoryCache({
-  dataIdFromObject: object => object.uuid || null,
-  addTypename: false,
+  cacheRedirects: {
+    Query: {
+      creatureprop: (_, args, { getCacheKey }) =>
+        getCacheKey({ __typename: "CreaturePropType", id: args.id }),
+    },
+  },
 });
 
 // Create the apollo client

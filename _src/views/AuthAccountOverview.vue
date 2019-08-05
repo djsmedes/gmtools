@@ -35,7 +35,7 @@ export default {
       query: gql`
         query {
           creaturepropSet {
-            uuid
+            id
             title
           }
         }
@@ -52,7 +52,7 @@ export default {
   methods: {
     testCache() {
       this.$dialog(StatblockTestDialog, {
-        uuid: this.creatureprops[0].uuid,
+        id: this.creatureprops[0].id,
       });
     },
   },
