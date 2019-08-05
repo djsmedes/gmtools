@@ -9,6 +9,7 @@ const httpLink = createHttpLink({
   // You should use an absolute URL here
   uri: window.location.protocol + "//" + window.location.host + "/graphql/",
   headers: {
+    // todo - make this reactive or ideally make django just use the damn cookie
     "X-CSRFToken": getCookie("csrftoken"),
   },
 });
