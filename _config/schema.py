@@ -34,10 +34,6 @@ class CreaturePropType(DjangoObjectType):
         model = CreatureProp
 
     prop_type = graphene.Int()
-    id = graphene.String()
-
-    def resolve_id(self, info):
-        return self.uuid
 
 
 class CombatQuery(object):

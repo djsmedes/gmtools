@@ -20,7 +20,7 @@ export default {
   components: { FunctionalDialogWrapper },
   mixins: [functionalDialogMixin],
   props: {
-    id: {
+    uuid: {
       type: String,
       required: true,
     },
@@ -28,15 +28,15 @@ export default {
   apollo: {
     creatureprop: {
       query: gql`
-        query BigQuery($id: String!) {
-          creatureprop(id: $id) {
-            id
+        query BigQuery($uuid: String!) {
+          creatureprop(uuid: $uuid) {
+            uuid
             title
           }
         }
       `,
       variables() {
-        return { id: this.id };
+        return { uuid: this.uuid };
       },
     },
   },

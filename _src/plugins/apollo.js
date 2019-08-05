@@ -15,7 +15,7 @@ const httpLink = createHttpLink({
 });
 
 const simpleCacheRedirect = (_, args, { getCacheKey }) =>
-  getCacheKey({ id: args.id });
+  getCacheKey({ uuid: args.uuid });
 
 // Cache implementation
 const cache = new InMemoryCache({
@@ -25,7 +25,7 @@ const cache = new InMemoryCache({
     },
   },
   addTypename: false,
-  dataIdFromObject: data => data.id,
+  dataIdFromObject: data => data.uuid,
 });
 
 // Create the apollo client
