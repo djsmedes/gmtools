@@ -21,6 +21,7 @@ channels-redis = "*"
 requests = "*"
 graphene-django = "*"
 django-filter = "*"
+graphene-django-extras = "*"
 
 [dev-packages]
 

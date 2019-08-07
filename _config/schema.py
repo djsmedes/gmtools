@@ -1,23 +1,13 @@
 import graphene
 
 from graphene_django.types import DjangoObjectType
-from graphene_django.filter import DjangoFilterConnectionField
+from graphene_django_extras.fields import DjangoFilterListField
 
 from core.models import CampaignOwnedModel
-from combat.models import Statblock, CreatureProp
+from combat.models import CreatureProp
 
 
-class StatblockType(DjangoObjectType):
-    class Meta:
-        model = Statblock
-        filter_fields = {
-            'proficiency': [
-                "exact",
-                "gte", "lte", "lt", "gt", "isnull"
-            ]
-        }
-        interfaces = (graphene.relay.Node,)
-
+class CampaignOwnedMixin:
     @classmethod
     def get_queryset(cls, queryset, info):
         if issubclass(cls._meta.model, CampaignOwnedModel):
@@ -29,30 +19,25 @@ class StatblockType(DjangoObjectType):
         return queryset
 
 
-class CreaturePropType(DjangoObjectType):
+class CreaturePropType(CampaignOwnedMixin, DjangoObjectType):
     class Meta:
         model = CreatureProp
-
-    prop_type = graphene.Int()
+        filter_fields = {
+            "prop_type": {
+                "exact",
+                "gt",
+                "lt",
+            },
+            "title": {
+                "exact",
+                "icontains",
+            }
+        }
 
 
 class CombatQuery(object):
-    statblock_set = DjangoFilterConnectionField(StatblockType)
-    statblock = graphene.relay.Node.Field(StatblockType)
-    creatureprop_set = graphene.List(CreaturePropType)
+    creatureprop_set = DjangoFilterListField(CreaturePropType)
     creatureprop = graphene.Field(CreaturePropType, id=graphene.String())
-
-    # def resolve_statblock_set(self, info, **kwargs):
-    #     return Statblock.objects.all()
-    #
-    # def resolve_statblock(self, info, uuid):
-    #     return Statblock.objects.get(uuid=uuid)
-
-    def resolve_creatureprop_set(self, info, **kwargs):
-        return CreatureProp.objects.prefetch_related('statblock_set').all()
-
-    def resolve_creatureprop(self, info, id):
-        return CreatureProp.objects.get(uuid=id)
 
 
 class Query(CombatQuery, graphene.ObjectType):
