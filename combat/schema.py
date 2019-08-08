@@ -28,3 +28,4 @@ class CombatantType(CampaignOwnedMixin, DjangoObjectType):
 
 class CombatQuery:
     combatant_set = DjangoFilterConnectionField(CombatantType)
+    combatant = relay.Node.Field(CombatantType)
