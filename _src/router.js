@@ -55,9 +55,7 @@ const router = new Router({
       path: "/combatants/",
       name: routeNames.COMBATANTS,
       component: () =>
-        import(
-          /* webpackChunkName: "combatants" */ "@/components/encounters/CombatantList"
-        ),
+        import(/* webpackChunkName: "combatants" */ "@/views/CombatantList"),
       beforeEnter: loginRequired,
     },
     {

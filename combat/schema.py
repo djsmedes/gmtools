@@ -7,6 +7,11 @@ from core.schema import CampaignOwnedMixin
 
 
 class CountableConnection(relay.Connection):
+    """
+    from:
+    https://github.com/graphql-python/graphene-django/issues/162
+    """
+
     class Meta:
         abstract = True
 
@@ -31,7 +36,7 @@ class CombatantType(CampaignOwnedMixin, DjangoObjectType):
             "campaign",
         )
         filter_fields = {
-            "initiative": ["exact", "gte"],
+            "name": ["exact", "iexact", "contains", "icontains"],
         }
         interfaces = (relay.Node,)
         connection_class = CountableConnection

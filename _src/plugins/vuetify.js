@@ -8,6 +8,7 @@ Vue.use(Vuetify);
 const baseColors = {
   primary: "#5A84CC",
   secondary: "#424242",
+  tertiary: "#cdcdcd",
   accent: "#82B1FF",
 
   success: "#4CAF50",
