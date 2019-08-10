@@ -8,22 +8,14 @@ import { get as getCookie } from "js-cookie";
 const httpLink = createHttpLink({
   // You should use an absolute URL here
   uri: window.location.protocol + "//" + window.location.host + "/graphql/",
-  headers: {
-    // todo - make this reactive or ideally make django just use the damn cookie
-    "X-CSRFToken": getCookie("csrftoken"),
+  fetch: (uri, options) => {
+    options.headers["X-CSRFToken"] = getCookie("csrftoken");
+    return fetch(uri, options);
   },
 });
 
-const simpleCacheRedirect = (_, args, { getCacheKey }) =>
-  getCacheKey({ uuid: args.uuid });
-
 // Cache implementation
 const cache = new InMemoryCache({
-  cacheRedirects: {
-    Query: {
-      creatureprop: simpleCacheRedirect,
-    },
-  },
   addTypename: false,
   dataIdFromObject: data => data.uuid,
 });

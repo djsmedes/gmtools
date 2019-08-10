@@ -1,9 +1,19 @@
-from graphene import relay
+from graphene import relay, Int
 from graphene_django.types import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 
 from .models import Combatant
 from core.schema import CampaignOwnedMixin
+
+
+class CountableConnection(relay.Connection):
+    class Meta:
+        abstract = True
+
+    total_count = Int()
+
+    def resolve_total_count(self, info, **kwargs):
+        return self.iterable.count()
 
 
 class CombatantType(CampaignOwnedMixin, DjangoObjectType):
@@ -24,6 +34,7 @@ class CombatantType(CampaignOwnedMixin, DjangoObjectType):
             "initiative": ["exact", "gte"],
         }
         interfaces = (relay.Node,)
+        connection_class = CountableConnection
 
 
 class CombatQuery:

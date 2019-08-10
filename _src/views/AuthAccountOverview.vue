@@ -21,7 +21,22 @@
 
 <script>
 import gql from "graphql-tag";
+import cloneDeep from "lodash/cloneDeep";
+import findIndex from "lodash/findIndex";
+
 const first = 1;
+
+function mergeInEdges(oldEdges, newEdges, previous = false) {
+  oldEdges = cloneDeep(oldEdges);
+  newEdges = cloneDeep(newEdges);
+  for (let oldEdge of oldEdges) {
+    let idx = findIndex(newEdges, edge => edge.node.uuid === oldEdge.node.uuid);
+    if (idx !== -1) {
+      oldEdge = newEdges.splice(idx, 1);
+    }
+  }
+  return previous ? [...newEdges, ...oldEdges] : [...oldEdges, ...newEdges];
+}
 
 export default {
   name: "AuthAccountOverview",
@@ -120,11 +135,13 @@ export default {
             },
         // Transform the previous result with new data
         updateQuery: (priorResult, { fetchMoreResult: thisResult }) => {
-          let newEdges = thisResult.combatantSet.edges;
-
           return {
             combatantSet: {
-              edges: [...priorResult.combatantSet.edges, ...newEdges],
+              edges: mergeInEdges(
+                priorResult.combatantSet.edges,
+                thisResult.combatantSet.edges,
+                previous
+              ),
               pageInfo: thisResult.combatantSet.pageInfo,
             },
           };
